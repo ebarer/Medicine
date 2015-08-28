@@ -7,16 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE6E551D1B9040C900805397 /* Medicine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */; settings = {ASSET_TAGS = (); }; };
+		CE6E551E1B9040C900805397 /* Medicine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551A1B9040C900805397 /* Medicine.swift */; settings = {ASSET_TAGS = (); }; };
+		CE6E551F1B9040C900805397 /* History+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551B1B9040C900805397 /* History+CoreDataProperties.swift */; settings = {ASSET_TAGS = (); }; };
+		CE6E55201B9040C900805397 /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551C1B9040C900805397 /* History.swift */; settings = {ASSET_TAGS = (); }; };
 		CEA250E91B90396C00BBE466 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA250E81B90396C00BBE466 /* AppDelegate.swift */; };
 		CEA250EE1B90396C00BBE466 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEA250EC1B90396C00BBE466 /* Main.storyboard */; };
 		CEA250F31B90396C00BBE466 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CEA250F21B90396C00BBE466 /* Assets.xcassets */; };
 		CEA250F61B90396C00BBE466 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEA250F41B90396C00BBE466 /* LaunchScreen.storyboard */; };
 		CEA250FF1B903BC200BBE466 /* AddMedicationTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA250FE1B903BC200BBE466 /* AddMedicationTVC.swift */; settings = {ASSET_TAGS = (); }; };
 		CEA251021B903BE400BBE466 /* MainTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA251011B903BE400BBE466 /* MainTVC.swift */; settings = {ASSET_TAGS = (); }; };
-		CEA251091B903E4200BBE466 /* Medicine.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CEA251071B903E4200BBE466 /* Medicine.xcdatamodeld */; settings = {ASSET_TAGS = (); }; };
+		CEA2510C1B903E7D00BBE466 /* Medicine.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CEA2510A1B903E7D00BBE466 /* Medicine.xcdatamodeld */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Medicine+CoreDataProperties.swift"; path = "Medicine/Models/Medicine+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		CE6E551A1B9040C900805397 /* Medicine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Medicine.swift; path = Medicine/Models/Medicine.swift; sourceTree = "<group>"; };
+		CE6E551B1B9040C900805397 /* History+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "History+CoreDataProperties.swift"; path = "Medicine/Models/History+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		CE6E551C1B9040C900805397 /* History.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = History.swift; path = Medicine/Models/History.swift; sourceTree = "<group>"; };
 		CEA250E51B90396C00BBE466 /* Medicine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Medicine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEA250E81B90396C00BBE466 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CEA250ED1B90396C00BBE466 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -25,7 +33,7 @@
 		CEA250F71B90396C00BBE466 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CEA250FE1B903BC200BBE466 /* AddMedicationTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddMedicationTVC.swift; path = Add/AddMedicationTVC.swift; sourceTree = "<group>"; };
 		CEA251011B903BE400BBE466 /* MainTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainTVC.swift; path = Main/MainTVC.swift; sourceTree = "<group>"; };
-		CEA251081B903E4200BBE466 /* Medicine.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Medicine.xcdatamodel; sourceTree = "<group>"; };
+		CEA2510B1B903E7D00BBE466 /* Medicine.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Medicine.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +47,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CE6E55211B9040E700805397 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				CEA2510A1B903E7D00BBE466 /* Medicine.xcdatamodeld */,
+				CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */,
+				CE6E551A1B9040C900805397 /* Medicine.swift */,
+				CE6E551B1B9040C900805397 /* History+CoreDataProperties.swift */,
+				CE6E551C1B9040C900805397 /* History.swift */,
+			);
+			name = Models;
+			path = ..;
+			sourceTree = "<group>";
+		};
 		CEA250DC1B90396C00BBE466 = {
 			isa = PBXGroup;
 			children = (
@@ -61,7 +82,7 @@
 				CEA250E81B90396C00BBE466 /* AppDelegate.swift */,
 				CEA250F41B90396C00BBE466 /* LaunchScreen.storyboard */,
 				CEA250EC1B90396C00BBE466 /* Main.storyboard */,
-				CEA251071B903E4200BBE466 /* Medicine.xcdatamodeld */,
+				CE6E55211B9040E700805397 /* Models */,
 				CEA251031B903BE900BBE466 /* Main */,
 				CEA251001B903BC900BBE466 /* Add */,
 				CEA250FD1B9039E600BBE466 /* Other */,
@@ -164,10 +185,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CEA251091B903E4200BBE466 /* Medicine.xcdatamodeld in Sources */,
+				CE6E551F1B9040C900805397 /* History+CoreDataProperties.swift in Sources */,
 				CEA250FF1B903BC200BBE466 /* AddMedicationTVC.swift in Sources */,
+				CE6E55201B9040C900805397 /* History.swift in Sources */,
+				CE6E551E1B9040C900805397 /* Medicine.swift in Sources */,
 				CEA251021B903BE400BBE466 /* MainTVC.swift in Sources */,
+				CE6E551D1B9040C900805397 /* Medicine+CoreDataProperties.swift in Sources */,
 				CEA250E91B90396C00BBE466 /* AppDelegate.swift in Sources */,
+				CEA2510C1B903E7D00BBE466 /* Medicine.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,17 +342,19 @@
 				CEA250FC1B90396C00BBE466 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		CEA251071B903E4200BBE466 /* Medicine.xcdatamodeld */ = {
+		CEA2510A1B903E7D00BBE466 /* Medicine.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				CEA251081B903E4200BBE466 /* Medicine.xcdatamodel */,
+				CEA2510B1B903E7D00BBE466 /* Medicine.xcdatamodel */,
 			);
-			currentVersion = CEA251081B903E4200BBE466 /* Medicine.xcdatamodel */;
-			path = Medicine.xcdatamodeld;
+			currentVersion = CEA2510B1B903E7D00BBE466 /* Medicine.xcdatamodel */;
+			name = Medicine.xcdatamodeld;
+			path = Medicine/Medicine.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

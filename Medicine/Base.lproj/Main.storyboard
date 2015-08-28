@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8187.4" systemVersion="15A263e" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="WH0-Wl-VP6">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8151.3"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Medicine-->
@@ -14,12 +15,22 @@
                         <animations/>
                         <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="EQE-7U-RYh">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="medicationCell" textLabel="n1u-dO-pwG" style="IBUITableViewCellStyleDefault" id="EQE-7U-RYh">
                                 <rect key="frame" x="0.0" y="113.5" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="EQE-7U-RYh" id="6no-j4-Oqk">
                                     <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="n1u-dO-pwG">
+                                            <rect key="frame" x="15" y="0.0" width="570" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <animations/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
                                     <animations/>
                                 </tableViewCellContentView>
                                 <animations/>
@@ -60,7 +71,23 @@
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ZAB-pc-QNR" id="gTQ-tb-sbO">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="aUB-cb-bSK">
+                                                    <rect key="frame" x="8" y="8" width="584" height="30"/>
+                                                    <animations/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits"/>
+                                                    <connections>
+                                                        <action selector="setName:" destination="fie-c0-S3Y" eventType="editingChanged" id="fwa-AJ-quN"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
                                             <animations/>
+                                            <constraints>
+                                                <constraint firstItem="aUB-cb-bSK" firstAttribute="leading" secondItem="gTQ-tb-sbO" secondAttribute="leadingMargin" id="2u0-QT-er9"/>
+                                                <constraint firstItem="aUB-cb-bSK" firstAttribute="top" secondItem="gTQ-tb-sbO" secondAttribute="topMargin" id="YSL-UU-ISq"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="aUB-cb-bSK" secondAttribute="trailing" id="zRV-Mh-5Rr"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                         <animations/>
                                     </tableViewCell>
@@ -95,12 +122,12 @@
                     <navigationItem key="navigationItem" title="New Medication" id="cYi-CC-y8C">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="zyb-VZ-VdL">
                             <connections>
-                                <segue destination="bwR-0M-z0o" kind="unwind" unwindAction="unwindForCancel:towardsViewController:" id="cvu-CH-ygj"/>
+                                <segue destination="bwR-0M-z0o" kind="unwind" unwindAction="unwindForCancel:" id="KRq-wv-R6P"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Add" style="done" id="G2M-Th-F5D">
                             <connections>
-                                <segue destination="bwR-0M-z0o" kind="unwind" unwindAction="unwindForAdd:towardsViewController:" id="aZ1-qc-U1F"/>
+                                <segue destination="bwR-0M-z0o" kind="unwind" unwindAction="unwindForAdd:" id="aaN-Hx-xxh"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>

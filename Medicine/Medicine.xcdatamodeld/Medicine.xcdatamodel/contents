@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="8118.20" systemVersion="15A216g" minimumToolsVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7701" systemVersion="15A263e" minimumToolsVersion="Automatic">
     <entity name="History" representedClassName=".History" syncable="YES">
         <attribute name="date" attributeType="Date" syncable="YES"/>
         <relationship name="medicine" maxCount="1" deletionRule="Cascade" destinationEntity="Medicine" inverseName="history" inverseEntity="Medicine" syncable="YES"/>
@@ -15,9 +15,8 @@
         <attribute name="timeStart" optional="YES" attributeType="Date" syncable="YES"/>
         <relationship name="history" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="History" inverseName="medicine" inverseEntity="History" syncable="YES"/>
     </entity>
-    <fetchRequest name="FetchRequest" entity="Medicine" predicateString="TRUEPREDICATE"/>
     <elements>
-        <element name="History" positionX="-72" positionY="144" width="128" height="73"/>
-        <element name="Medicine" positionX="-290" positionY="-0" width="128" height="28"/>
+        <element name="History" positionX="-92" positionY="51" width="128" height="73"/>
+        <element name="Medicine" positionX="-263" positionY="-142" width="128" height="178"/>
     </elements>
 </model>

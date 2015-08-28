@@ -16,7 +16,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
+        // Pass managed object context to MainTVC
+        let rvc = self.window?.rootViewController as! UINavigationController
+        let tvc = rvc.topViewController as! MainTVC
+        tvc.moc = self.managedObjectContext
+        
         return true
     }
 
