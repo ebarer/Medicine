@@ -16,37 +16,78 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        // Set global tint colour
+        window?.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+        
         // Pass managed object context to MainTVC
         let rvc = self.window?.rootViewController as! UINavigationController
         let tvc = rvc.topViewController as! MainTVC
         tvc.moc = self.managedObjectContext
         
+        // Register for notifications and actions
+        let notificationType: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
+        
+        let takeAction = UIMutableUserNotificationAction()
+        takeAction.identifier = "takeDose"
+        takeAction.title = "Take Dose"
+        takeAction.activationMode = UIUserNotificationActivationMode.Background
+        takeAction.destructive = false
+        takeAction.authenticationRequired = true
+        
+        let snoozeAction = UIMutableUserNotificationAction()
+        snoozeAction.identifier = "snoozeReminder"
+        snoozeAction.title = "Snooze"
+        snoozeAction.activationMode = UIUserNotificationActivationMode.Background
+        snoozeAction.destructive = false
+        snoozeAction.authenticationRequired = false
+        
+        let category = UIMutableUserNotificationCategory()
+        category.identifier = "Reminder"
+        category.setActions([takeAction, snoozeAction], forContext: UIUserNotificationActionContext.Default)
+        
+        let categories = NSSet(array: [category])
+        let settings = UIUserNotificationSettings(forTypes: notificationType, categories: categories as? Set<UIUserNotificationCategory>)
+        application.registerUserNotificationSettings(settings)
+        application.registerForRemoteNotifications()
+        
         return true
     }
 
-    func applicationWillResignActive(application: UIApplication) {
-        // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-        // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-    }
-
-    func applicationDidEnterBackground(application: UIApplication) {
-        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    }
-
-    func applicationWillEnterForeground(application: UIApplication) {
-        // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-    }
-
-    func applicationDidBecomeActive(application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    }
+    func applicationWillResignActive(application: UIApplication) {}
+    
+    func applicationDidEnterBackground(application: UIApplication) {}
+    
+    func applicationWillEnterForeground(application: UIApplication) {}
+    
+    func applicationDidBecomeActive(application: UIApplication) {}
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
         self.saveContext()
     }
+    
+    
+    // MARK: - Push Notifications stack
+    
+    func application(application: UIApplication, didRegisterUserNotificationSettings notificationSettings: UIUserNotificationSettings) {
+        application.registerUserNotificationSettings(notificationSettings)
+    }
+    
+    func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
+        NSNotificationCenter.defaultCenter().postNotificationName("medNotification", object: nil, userInfo: notification.userInfo)
+    }
+    
+    func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {
+        if identifier == "takeDose" {
+            NSNotificationCenter.defaultCenter().postNotificationName("takeDoseNotification", object: nil, userInfo: notification.userInfo)
+        } else if identifier == "snoozeReminder" {
+            NSNotificationCenter.defaultCenter().postNotificationName("snoozeReminderNotification", object: nil, userInfo: notification.userInfo)
+        }
+        
+        completionHandler()
+    }
+    
 
     // MARK: - Core Data stack
 

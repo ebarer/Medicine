@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7701" systemVersion="15A263e" minimumToolsVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="8193.2" systemVersion="15A263e" minimumToolsVersion="Automatic">
     <entity name="History" representedClassName=".History" syncable="YES">
         <attribute name="date" attributeType="Date" syncable="YES"/>
-        <relationship name="medicine" maxCount="1" deletionRule="Cascade" destinationEntity="Medicine" inverseName="history" inverseEntity="Medicine" syncable="YES"/>
+        <relationship name="medicine" maxCount="1" deletionRule="Nullify" destinationEntity="Medicine" inverseName="history" inverseEntity="Medicine" syncable="YES"/>
     </entity>
     <entity name="Medicine" representedClassName=".Medicine" syncable="YES">
         <attribute name="dosageAmount" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="dosageNext" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="dosageType" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
-        <attribute name="frequencyDuration" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="frequencyInterval" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="frequencyDuration" attributeType="Float" defaultValueString="3" syncable="YES"/>
+        <attribute name="frequencyInterval" attributeType="Integer 16" defaultValueString="1" syncable="YES"/>
+        <attribute name="medicineID" attributeType="String" syncable="YES"/>
         <attribute name="name" attributeType="String" minValueString="1" spotlightIndexingEnabled="YES" syncable="YES"/>
         <attribute name="timeEnd" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="timeStart" optional="YES" attributeType="Date" syncable="YES"/>
-        <relationship name="history" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="History" inverseName="medicine" inverseEntity="History" syncable="YES"/>
+        <relationship name="history" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="History" inverseName="medicine" inverseEntity="History" syncable="YES"/>
     </entity>
     <elements>
-        <element name="History" positionX="-92" positionY="51" width="128" height="73"/>
-        <element name="Medicine" positionX="-263" positionY="-142" width="128" height="178"/>
+        <element name="History" positionX="-92" positionY="51" width="128" height="75"/>
+        <element name="Medicine" positionX="-263" positionY="-142" width="128" height="195"/>
     </elements>
 </model>
