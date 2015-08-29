@@ -37,13 +37,18 @@ class HistoryTVC: UITableViewController {
         for index in 0...6 {
             let sectionDate = printSectionDate(index)
             
+            // Initialize date log
             log[sectionDate] = [History]()
             
+            // Store history in log
             for dose in history {
                 if (cal.isDate(dose.date, inSameDayAsDate: sectionDate)) {
                     log[sectionDate]?.insert(dose, atIndex: 0)
                 }
             }
+            
+            // Sort each log date
+            log[sectionDate]?.sortInPlace({ $0.date.compare($1.date) == NSComparisonResult.OrderedDescending })
         }
     }
 
