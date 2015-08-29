@@ -38,6 +38,7 @@ class MainTVC: UITableViewController {
         
         // Load medications
         let request = NSFetchRequest(entityName:"Medicine")
+        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
         
         do {
             let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
@@ -116,7 +117,9 @@ class MainTVC: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-        print("\(fromIndexPath.row) - \(toIndexPath.row)")
+        medication[fromIndexPath.row].sortOrder = Int16(toIndexPath.row)
+        medication[toIndexPath.row].sortOrder = Int16(fromIndexPath.row)
+        medication.sortInPlace({ $0.sortOrder < $1.sortOrder })
     }
     
     
@@ -124,57 +127,72 @@ class MainTVC: UITableViewController {
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let med = medication[indexPath.row]
         
-        let alert = UIAlertController(title: med.name, message: nil, preferredStyle: .ActionSheet)
-        
-        alert.addAction(UIAlertAction(title: "Take Next", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-            // TODO: Handle false by displaying error "Medication already taken within last 5 minutes. If error, untake last dose."
-            if (med.takeNextDose(self.moc)) {
-                self.appDelegate.saveContext()
-                tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
-            } else {
-                tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            }
-        }))
-        
-        // If next dosage is set, allow user to clear notification
-        if (med.nextDose != nil) {
-            alert.addAction(UIAlertAction(title: "Untake Last", style: .Destructive, handler: {(action) -> Void in
-                if (med.untakeLastDose(self.moc)) {
+        if (tableView.editing == false) {
+            let alert = UIAlertController(title: med.name, message: nil, preferredStyle: .ActionSheet)
+            
+            alert.addAction(UIAlertAction(title: "Take Next", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+                // TODO: Handle false by displaying error "Medication already taken within last 5 minutes. If error, untake last dose."
+                if (med.takeNextDose(self.moc)) {
                     self.appDelegate.saveContext()
                     tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
                 } else {
                     tableView.deselectRowAtIndexPath(indexPath, animated: true)
                 }
             }))
+            
+            // If next dosage is set, allow user to clear notification
+            if (med.nextDose != nil) {
+                alert.addAction(UIAlertAction(title: "Untake Last", style: .Destructive, handler: {(action) -> Void in
+                    if (med.untakeLastDose(self.moc)) {
+                        self.appDelegate.saveContext()
+                        tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+                    } else {
+                        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                    }
+                }))
+            }
+            
+            alert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
+                self.moc.deleteObject(self.medication[indexPath.row])
+                self.appDelegate.saveContext()
+                self.medication.removeAtIndex(indexPath.row)
+                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            }))
+            
+            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
+                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            }))
+            
+            alert.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+            presentViewController(alert, animated: true, completion: nil)
+        } else {
+            self.performSegueWithIdentifier("editMedication", sender: medication[indexPath.row])
         }
-        
-        alert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
-            self.moc.deleteObject(self.medication[indexPath.row])
-            self.appDelegate.saveContext()
-            self.medication.removeAtIndex(indexPath.row)
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        }))
-        
-        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        }))
-        
-        alert.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
-        presentViewController(alert, animated: true, completion: nil)
     }
     
     
     // MARK: - Navigation
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if (segue.identifier == "addMedication") {
+        if segue.identifier == "addMedication" {
             let entity = NSEntityDescription.entityForName("Medicine", inManagedObjectContext: moc)
             let temp = Medicine(entity: entity!, insertIntoManagedObjectContext: moc)
             
             let vc = segue.destinationViewController as! UINavigationController
             let addVC = vc.topViewController as! AddMedicationTVC
+            addVC.title = "New Medication"
             addVC.med = temp
-        } else if (segue.identifier == "viewMedicationDetails") {
+        }
+        
+        if segue.identifier == "editMedication" {
+            let vc = segue.destinationViewController as! UINavigationController
+            let addVC = vc.topViewController as! AddMedicationTVC
+            addVC.title = "Edit Medication"
+            addVC.med = sender as! Medicine
+            addVC.editMode = true
+        }
+        
+        if segue.identifier == "viewMedicationDetails" {
             let vc = segue.destinationViewController as! HistoryTVC
             if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
                 vc.med = medication[index.row]
@@ -187,6 +205,7 @@ class MainTVC: UITableViewController {
         let svc = unwindSegue.sourceViewController as! AddMedicationTVC
         
         if let addMed = svc.med {
+            addMed.sortOrder = Int16(medication.count)
             medication.append(addMed)
             appDelegate.saveContext()
             self.tableView.reloadData()

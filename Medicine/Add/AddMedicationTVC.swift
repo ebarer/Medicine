@@ -11,7 +11,7 @@ import UIKit
 class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
     
     var med: Medicine?
-    
+    var editMode: Bool = false
     
     // MARK: - Outlets
     
@@ -22,10 +22,16 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        print(med)
+        
+        if editMode == true {
+            
+        }
     }
     
     override func viewDidAppear(animated: Bool) {
-        if (medicationName.text!.isEmpty) {
+        if medicationName.text!.isEmpty {
             medicationName.becomeFirstResponder()
         }
     }

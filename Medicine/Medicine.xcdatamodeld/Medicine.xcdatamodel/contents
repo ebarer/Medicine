@@ -11,12 +11,13 @@
         <attribute name="intervalUnit" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="medicineID" attributeType="String" syncable="YES"/>
         <attribute name="name" attributeType="String" minValueString="1" spotlightIndexingEnabled="YES" syncable="YES"/>
+        <attribute name="sortOrder" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="timeEnd" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="timeStart" optional="YES" attributeType="Date" syncable="YES"/>
         <relationship name="history" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="History" inverseName="medicine" inverseEntity="History" syncable="YES"/>
     </entity>
     <elements>
         <element name="History" positionX="-92" positionY="51" width="128" height="75"/>
-        <element name="Medicine" positionX="-263" positionY="-142" width="128" height="180"/>
+        <element name="Medicine" positionX="-263" positionY="-142" width="128" height="195"/>
     </elements>
 </model>

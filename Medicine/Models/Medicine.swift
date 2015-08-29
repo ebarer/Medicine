@@ -183,5 +183,4 @@ class Medicine: NSManagedObject {
             }
         }
     }
-
 }

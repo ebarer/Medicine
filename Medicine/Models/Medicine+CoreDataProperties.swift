@@ -15,6 +15,7 @@ import CoreData
 extension Medicine {
 
     @NSManaged var medicineID: String
+    @NSManaged var sortOrder: Int16
     @NSManaged var name: String?
     
     @NSManaged var dosageAmount: Float

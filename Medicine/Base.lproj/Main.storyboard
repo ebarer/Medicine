@@ -60,6 +60,9 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <segue destination="TkC-nl-YZH" kind="presentation" identifier="editMedication" id="kVj-wu-aDW"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x4v-fN-eJ1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -158,7 +161,7 @@
                             <barButtonItem systemItem="add" id="4lj-l9-gIq">
                                 <connections>
                                     <action selector="logDose:" destination="8iN-e7-hT2" id="tGU-fV-OJe"/>
-                                    <segue destination="JTK-lA-bGm" kind="presentation" id="oVb-q5-6Xo"/>
+                                    <segue destination="JTK-lA-bGm" kind="presentation" identifier="addHistory" id="oVb-q5-6Xo"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>
@@ -551,4 +554,7 @@
             <point key="canvasLocation" x="3134" y="785"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="kVj-wu-aDW"/>
+    </inferredMetricsTieBreakers>
 </document>
