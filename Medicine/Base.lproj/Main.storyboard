@@ -90,7 +90,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zNh-Fi-739" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="541" y="413"/>
+            <point key="canvasLocation" x="636" y="413"/>
         </scene>
         <!--MainUINC-->
         <scene sceneID="LoW-Ye-XXc">
@@ -221,7 +221,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HE9-8Z-BVq" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="ujE-cl-k0e" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="3946" y="785"/>
+            <point key="canvasLocation" x="3837" y="785"/>
         </scene>
         <!--New Medication-->
         <scene sceneID="pgC-cu-YBw">
@@ -526,7 +526,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oy1-UR-dOD" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="V8x-MZ-JyG" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="3134" y="10"/>
+            <point key="canvasLocation" x="3073.5" y="10"/>
         </scene>
         <!--MainUINC-->
         <scene sceneID="eru-tN-JO1">
@@ -550,7 +550,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wEo-Xm-IUx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3134" y="785"/>
+            <point key="canvasLocation" x="3073.5" y="785"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
