@@ -26,7 +26,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         print(med)
         
         if editMode == true {
-            
+            medicationName.text = med?.name
         }
     }
     

@@ -90,7 +90,9 @@ class MainTVC: UITableViewController {
         // Set medication subtitle to next dosage date
         if let date = med.nextDose {
             let dateFormatter = NSDateFormatter()
-            dateFormatter.dateFormat = "MMM d, h:mm a"
+            // dateFormatter.dateFormat = "MMM d, h:mm a"
+            dateFormatter.dateFormat = "h:mm a"
+            
             let subtitle = NSMutableAttributedString(string: String("Next dose: \(dateFormatter.stringFromDate(date))"))
 
             if (med.isOverdue) {
@@ -188,7 +190,7 @@ class MainTVC: UITableViewController {
             let vc = segue.destinationViewController as! UINavigationController
             let addVC = vc.topViewController as! AddMedicationTVC
             addVC.title = "Edit Medication"
-            addVC.med = sender as! Medicine
+            addVC.med = sender as! Medicine?
             addVC.editMode = true
         }
         
