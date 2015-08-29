@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE5C7CBB1B91D127002D0BEA /* HistoryAddVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5C7CBA1B91D127002D0BEA /* HistoryAddVC.swift */; settings = {ASSET_TAGS = (); }; };
+		CE63264D1B90A9A50009F9AE /* HistoryTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE63264C1B90A9A50009F9AE /* HistoryTVC.swift */; settings = {ASSET_TAGS = (); }; };
+		CE63264F1B9149C80009F9AE /* MainUINC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE63264E1B9149C80009F9AE /* MainUINC.swift */; settings = {ASSET_TAGS = (); }; };
 		CE6E551D1B9040C900805397 /* Medicine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */; settings = {ASSET_TAGS = (); }; };
 		CE6E551E1B9040C900805397 /* Medicine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551A1B9040C900805397 /* Medicine.swift */; settings = {ASSET_TAGS = (); }; };
 		CE6E551F1B9040C900805397 /* History+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551B1B9040C900805397 /* History+CoreDataProperties.swift */; settings = {ASSET_TAGS = (); }; };
@@ -21,6 +24,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CE5C7CBA1B91D127002D0BEA /* HistoryAddVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HistoryAddVC.swift; path = Main/HistoryAddVC.swift; sourceTree = "<group>"; };
+		CE63264B1B90A64B0009F9AE /* DateTests.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = DateTests.playground; sourceTree = "<group>"; };
+		CE63264C1B90A9A50009F9AE /* HistoryTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HistoryTVC.swift; path = Main/HistoryTVC.swift; sourceTree = "<group>"; };
+		CE63264E1B9149C80009F9AE /* MainUINC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainUINC.swift; path = Main/MainUINC.swift; sourceTree = "<group>"; };
 		CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Medicine+CoreDataProperties.swift"; path = "Medicine/Models/Medicine+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		CE6E551A1B9040C900805397 /* Medicine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Medicine.swift; path = Medicine/Models/Medicine.swift; sourceTree = "<group>"; };
 		CE6E551B1B9040C900805397 /* History+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "History+CoreDataProperties.swift"; path = "Medicine/Models/History+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -47,6 +54,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CE5C7CBC1B91D12F002D0BEA /* History */ = {
+			isa = PBXGroup;
+			children = (
+				CE63264C1B90A9A50009F9AE /* HistoryTVC.swift */,
+				CE5C7CBA1B91D127002D0BEA /* HistoryAddVC.swift */,
+			);
+			name = History;
+			sourceTree = "<group>";
+		};
 		CE6E55211B9040E700805397 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -65,6 +81,7 @@
 			children = (
 				CEA250E71B90396C00BBE466 /* Medicine */,
 				CEA250E61B90396C00BBE466 /* Products */,
+				CE63264B1B90A64B0009F9AE /* DateTests.playground */,
 			);
 			sourceTree = "<group>";
 		};
@@ -82,9 +99,10 @@
 				CEA250E81B90396C00BBE466 /* AppDelegate.swift */,
 				CEA250F41B90396C00BBE466 /* LaunchScreen.storyboard */,
 				CEA250EC1B90396C00BBE466 /* Main.storyboard */,
-				CE6E55211B9040E700805397 /* Models */,
 				CEA251031B903BE900BBE466 /* Main */,
+				CE5C7CBC1B91D12F002D0BEA /* History */,
 				CEA251001B903BC900BBE466 /* Add */,
+				CE6E55211B9040E700805397 /* Models */,
 				CEA250FD1B9039E600BBE466 /* Other */,
 			);
 			path = Medicine;
@@ -110,6 +128,7 @@
 		CEA251031B903BE900BBE466 /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				CE63264E1B9149C80009F9AE /* MainUINC.swift */,
 				CEA251011B903BE400BBE466 /* MainTVC.swift */,
 			);
 			name = Main;
@@ -146,6 +165,7 @@
 				TargetAttributes = {
 					CEA250E41B90396C00BBE466 = {
 						CreatedOnToolsVersion = 7.0;
+						DevelopmentTeam = 5ZJB9DN7AQ;
 					};
 				};
 			};
@@ -190,8 +210,11 @@
 				CE6E55201B9040C900805397 /* History.swift in Sources */,
 				CE6E551E1B9040C900805397 /* Medicine.swift in Sources */,
 				CEA251021B903BE400BBE466 /* MainTVC.swift in Sources */,
+				CE63264F1B9149C80009F9AE /* MainUINC.swift in Sources */,
+				CE5C7CBB1B91D127002D0BEA /* HistoryAddVC.swift in Sources */,
 				CE6E551D1B9040C900805397 /* Medicine+CoreDataProperties.swift in Sources */,
 				CEA250E91B90396C00BBE466 /* AppDelegate.swift in Sources */,
+				CE63264D1B90A9A50009F9AE /* HistoryTVC.swift in Sources */,
 				CEA2510C1B903E7D00BBE466 /* Medicine.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -305,6 +328,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Medicine/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine;
@@ -316,6 +340,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Medicine/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine;

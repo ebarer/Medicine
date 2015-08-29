@@ -12,28 +12,31 @@ import CoreData
 class MainTVC: UITableViewController {
     
     var medication = [Medicine]()
+    
+    // MARK: - Helper variables
+    
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var moc: NSManagedObjectContext!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Uncomment the following line to preserve selection between presentations
-        self.clearsSelectionOnViewWillAppear = false
+        // Remove header
+        tableView.tableHeaderView = UIView(frame: CGRectMake(0.0, 0.0, tableView.bounds.size.width, 0.01))
         
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+        // Table modifications
+        self.clearsSelectionOnViewWillAppear = false
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
         
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "internalNotification:", name: "medNotification", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "takeMedicationNotification:", name: "takeDoseNotification", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "snoozeReminderNotification:", name: "snoozeReminderNotification", object: nil)
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-
-        // Retrieve all medications
+        
+        // Cancel all notifications
+        UIApplication.sharedApplication().cancelAllLocalNotifications()
+        
+        // Load medications
         let request = NSFetchRequest(entityName:"Medicine")
         
         do {
@@ -41,7 +44,7 @@ class MainTVC: UITableViewController {
             
             if let results = fetchedResults {
                 medication = results
-
+                
                 // Schedule all notifications
                 for med in medication {
                     med.setNotification()
@@ -55,6 +58,11 @@ class MainTVC: UITableViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        self.tableView.reloadData()
+    }
 
     
     // MARK: - Table view data source
@@ -67,6 +75,10 @@ class MainTVC: UITableViewController {
         return medication.count
     }
     
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 100.0
+    }
+    
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("medicationCell", forIndexPath: indexPath)
         let med = medication[indexPath.row]
@@ -75,10 +87,20 @@ class MainTVC: UITableViewController {
         cell.textLabel?.text = med.name
         
         // Set medication subtitle to next dosage date
-        if let date = med.nextDose() {
-            cell.detailTextLabel?.text = String("Next dose: \(date)")
+        if let date = med.nextDose {
+            let dateFormatter = NSDateFormatter()
+            dateFormatter.dateFormat = "MMM d, h:mm a"
+            let subtitle = NSMutableAttributedString(string: String("Next dose: \(dateFormatter.stringFromDate(date))"))
+
+            if (med.isOverdue) {
+                subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, subtitle.length))
+            }
+            
+            subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
+            
+            cell.detailTextLabel?.attributedText = subtitle
         } else {
-            cell.detailTextLabel?.text = String("Tap to take next dose")
+            cell.detailTextLabel?.attributedText = NSAttributedString(string: "Tap to take next dose", attributes: [NSForegroundColorAttributeName: UIColor.lightGrayColor()])
         }
         
         return cell
@@ -88,9 +110,7 @@ class MainTVC: UITableViewController {
         if editingStyle == .Delete {
             moc.deleteObject(medication[indexPath.row])
             appDelegate.saveContext()
-
             medication.removeAtIndex(indexPath.row)
-            
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         }
     }
@@ -101,44 +121,37 @@ class MainTVC: UITableViewController {
     
     
     // MARK: - Table view delegate
-    
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let med = medication[indexPath.row]
         
         let alert = UIAlertController(title: med.name, message: nil, preferredStyle: .ActionSheet)
         
-        alert.addAction(UIAlertAction(title: "Info", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-            self.performSegueWithIdentifier("medicationDetails", sender: indexPath.row)
-        }))
-        
         alert.addAction(UIAlertAction(title: "Take Next", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-            med.takeNextDose(self.moc)
-            self.appDelegate.saveContext()
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+            // TODO: Handle false by displaying error "Medication already taken within last 5 minutes. If error, untake last dose."
+            if (med.takeNextDose(self.moc)) {
+                self.appDelegate.saveContext()
+                tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+            } else {
+                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            }
         }))
         
         // If next dosage is set, allow user to clear notification
-        if (med.dosageNext > 0.0) {
+        if (med.nextDose != nil) {
             alert.addAction(UIAlertAction(title: "Untake Last", style: .Destructive, handler: {(action) -> Void in
-                
-            }))
-            
-            alert.addAction(UIAlertAction(title: "Clear Notification", style: .Destructive, handler: {(action) -> Void in
-                // Clear local notification
-                med.cancelNotification()
-                med.dosageNext = 0.0
-                
-                tableView.reloadData()
+                if (med.untakeLastDose(self.moc)) {
+                    self.appDelegate.saveContext()
+                    tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+                } else {
+                    tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                }
             }))
         }
         
         alert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
             self.moc.deleteObject(self.medication[indexPath.row])
             self.appDelegate.saveContext()
-            
             self.medication.removeAtIndex(indexPath.row)
-            
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         }))
         
@@ -154,17 +167,23 @@ class MainTVC: UITableViewController {
     // MARK: - Navigation
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Pass the selected object to the new view controller.
-        let svc = segue.destinationViewController as! UINavigationController
-        let tvc = svc.topViewController as! AddMedicationTVC
-        
-        let entity = NSEntityDescription.entityForName("Medicine", inManagedObjectContext: moc)
-        let temp = Medicine(entity: entity!, insertIntoManagedObjectContext: moc)
-        tvc.med = temp
+        if (segue.identifier == "addMedication") {
+            let entity = NSEntityDescription.entityForName("Medicine", inManagedObjectContext: moc)
+            let temp = Medicine(entity: entity!, insertIntoManagedObjectContext: moc)
+            
+            let vc = segue.destinationViewController as! UINavigationController
+            let addVC = vc.topViewController as! AddMedicationTVC
+            addVC.med = temp
+        } else if (segue.identifier == "viewMedicationDetails") {
+            let vc = segue.destinationViewController as! HistoryTVC
+            if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
+                vc.med = medication[index.row]
+                vc.moc = self.moc
+            }
+        }
     }
     
-    
-    @IBAction func unwindForAdd(unwindSegue: UIStoryboardSegue) {
+    @IBAction func medicationUnwindAdd(unwindSegue: UIStoryboardSegue) {
         let svc = unwindSegue.sourceViewController as! AddMedicationTVC
         
         if let addMed = svc.med {
@@ -174,8 +193,8 @@ class MainTVC: UITableViewController {
         }
     }
     
-    @IBAction func unwindForCancel(unwindSegue: UIStoryboardSegue) {
-        let svc = unwindSegue.sourceViewController as! AddMedicationTVC
+    @IBAction func medicationUnwindCancel(unwindSegue: UIStoryboardSegue) {
+        // let svc = unwindSegue.sourceViewController as! AddMedicationTVC
     }
     
     
@@ -185,20 +204,22 @@ class MainTVC: UITableViewController {
         if let id = notification.userInfo!["id"] as? String {
             let medQuery = medication.filter{ $0.medicineID == id }.first
             if let med = medQuery {
-                let message = String(format:"Time to take %g %@ of %@", med.dosageAmount, med.dosageType, med.name!)
-                
-                let alert = UIAlertController(title: "Take \(med.name!)", message: message, preferredStyle: .Alert)
-                
-                alert.addAction(UIAlertAction(title: "Take Dose", style: .Default, handler: {(action) -> Void in
-                    self.takeMedicationNotification(notification)
-                }))
-                
-                alert.addAction(UIAlertAction(title: "Snooze", style: .Cancel, handler: {(action) -> Void in
-                    self.snoozeReminderNotification(notification)
-                }))
-                
-                alert.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
-                presentViewController(alert, animated: true, completion: nil)
+                if let name = med.name {
+                    let message = String(format:"Time to take %g %@ of %@", med.dosageAmount, med.dosageType, name)
+                    
+                    let alert = UIAlertController(title: "Take \(name)", message: message, preferredStyle: .Alert)
+                    
+                    alert.addAction(UIAlertAction(title: "Take Dose", style: .Default, handler: {(action) -> Void in
+                        self.takeMedicationNotification(notification)
+                    }))
+                    
+                    alert.addAction(UIAlertAction(title: "Snooze", style: .Cancel, handler: {(action) -> Void in
+                        self.snoozeReminderNotification(notification)
+                    }))
+                    
+                    alert.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+                    presentViewController(alert, animated: true, completion: nil)
+                }
             }
         }
     }
@@ -207,9 +228,10 @@ class MainTVC: UITableViewController {
         if let id = notification.userInfo!["id"] as? String {
             let medQuery = medication.filter{ $0.medicineID == id }.first
             if let med = medQuery {
-                med.takeNextDose(moc)
-                appDelegate.saveContext()
-                self.tableView.reloadData()
+                if (med.takeNextDose(self.moc)) {
+                    self.appDelegate.saveContext()
+                    self.tableView.reloadData()
+                }
             }
         }
     }

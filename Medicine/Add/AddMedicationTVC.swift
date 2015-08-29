@@ -8,45 +8,47 @@
 
 import UIKit
 
-class AddMedicationTVC: UITableViewController {
+class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
     
     var med: Medicine?
     
+    
+    // MARK: - Outlets
+    
+    @IBOutlet var medicationName: UITextField!
+    
+    
+    // MARK: - View methods
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-        
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        if (medicationName.text!.isEmpty) {
+            medicationName.becomeFirstResponder()
+        }
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
-    // MARK: - Table view data source
-    
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 2
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch (section) {
-        case 0:
-            return 1
-        case 1:
-            return 1
-        default:
-            return 0
-        }
-    }
     
     // MARK: - Set medicine values
+    
     @IBAction func setName(sender: UITextField) {
         med?.name = sender.text
     }
     
+    @IBAction func setInterval(sender: UITextField) {
+        if let text = sender.text {
+            med?.interval = (text as NSString).floatValue
+        }
+    }
 }

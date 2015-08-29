@@ -13,19 +13,18 @@ import Foundation
 import CoreData
 
 extension Medicine {
-    
+
     @NSManaged var medicineID: String
     @NSManaged var name: String?
     
     @NSManaged var dosageAmount: Float
     @NSManaged var dosageType: Int16
     
-    @NSManaged var frequencyDuration: Float
-    @NSManaged var frequencyInterval: Int16
+    @NSManaged var interval: Float
+    @NSManaged var intervalUnit: Int16
     @NSManaged var timeEnd: NSTimeInterval
     @NSManaged var timeStart: NSTimeInterval
-
-    @NSManaged var dosageNext: NSTimeInterval
+    
     @NSManaged var history: NSOrderedSet?
 
 }
