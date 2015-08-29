@@ -214,9 +214,7 @@ class MainTVC: UITableViewController {
         }
     }
     
-    @IBAction func medicationUnwindCancel(unwindSegue: UIStoryboardSegue) {
-        // let svc = unwindSegue.sourceViewController as! AddMedicationTVC
-    }
+    @IBAction func medicationUnwindCancel(unwindSegue: UIStoryboardSegue) {}
     
     
     // MARK: - Local Notifications

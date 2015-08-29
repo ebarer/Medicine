@@ -26,7 +26,10 @@ class HistoryTVC: UITableViewController {
         super.viewDidLoad()
 
         // Customize navigation bar
-        self.title = "\(med.name!) History"
+        if let name = med.name {
+            self.title = "\(name) History"
+        }
+        
         self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
         // Sort history
@@ -134,13 +137,7 @@ class HistoryTVC: UITableViewController {
         self.tableView.reloadData()
     }
     
-    @IBAction func historyUnwindCancel(unwindSegue: UIStoryboardSegue) {
-        // let svc = unwindSegue.sourceViewController as! AddMedicationTVC
-    }
-    
-    @IBAction func logDose(sender: AnyObject) {
-        print("logging history for \(med.name!)")
-    }
+    @IBAction func historyUnwindCancel(unwindSegue: UIStoryboardSegue) {}
     
     func printSectionDate(section: Int) -> NSDate {
         return cal.dateByAddingUnit(NSCalendarUnit.Day, value: -1 * section, toDate: cal.startOfDayForDate(NSDate()), options: [])!

@@ -160,7 +160,6 @@
                             <barButtonItem systemItem="edit" id="wJN-dN-NxZ"/>
                             <barButtonItem systemItem="add" id="4lj-l9-gIq">
                                 <connections>
-                                    <action selector="logDose:" destination="8iN-e7-hT2" id="tGU-fV-OJe"/>
                                     <segue destination="JTK-lA-bGm" kind="presentation" identifier="addHistory" id="oVb-q5-6Xo"/>
                                 </connections>
                             </barButtonItem>
