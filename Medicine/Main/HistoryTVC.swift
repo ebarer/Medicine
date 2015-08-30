@@ -35,7 +35,7 @@ class HistoryTVC: UITableViewController {
         // Sort history
         let history = med.history?.array as! [History]
         for index in 0...6 {
-            let sectionDate = printSectionDate(index)
+            let sectionDate = getSectionDate(index)
             
             // Initialize date log
             log[sectionDate] = [History]()
@@ -64,7 +64,7 @@ class HistoryTVC: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let sectionDate = printSectionDate(section)
+        let sectionDate = getSectionDate(section)
         if let count = log[sectionDate]?.count {
             return count
         }
@@ -73,7 +73,7 @@ class HistoryTVC: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let sectionDate = printSectionDate(section)
+        let sectionDate = getSectionDate(section)
         
         // Special header for today/yesterday
         if (section == 0) {
@@ -90,7 +90,7 @@ class HistoryTVC: UITableViewController {
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("historyCell", forIndexPath: indexPath)
-        let sectionDate = printSectionDate(indexPath.section)
+        let sectionDate = getSectionDate(indexPath.section)
 
         if let history = log[sectionDate] {
             dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
@@ -106,7 +106,7 @@ class HistoryTVC: UITableViewController {
     // MARK: - Table view delegate
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        let sectionDate = printSectionDate(indexPath.section)
+        let sectionDate = getSectionDate(indexPath.section)
         
         if editingStyle == .Delete {
             if let history = log[sectionDate] {
@@ -152,7 +152,7 @@ class HistoryTVC: UITableViewController {
     
     @IBAction func historyUnwindCancel(unwindSegue: UIStoryboardSegue) {}
     
-    func printSectionDate(section: Int) -> NSDate {
+    func getSectionDate(section: Int) -> NSDate {
         return cal.dateByAddingUnit(NSCalendarUnit.Day, value: -1 * section, toDate: cal.startOfDayForDate(NSDate()), options: [])!
     }
 

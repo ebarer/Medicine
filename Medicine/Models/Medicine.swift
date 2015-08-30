@@ -143,7 +143,9 @@ class Medicine: NSManagedObject {
     
     func setNotification() {
         if let date = nextDose {
-            scheduleNotification(date)
+            if date.compare(NSDate()) == .OrderedDescending {
+                scheduleNotification(date)
+            }
         }
     }
     

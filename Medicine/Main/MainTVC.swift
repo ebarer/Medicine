@@ -93,13 +93,17 @@ class MainTVC: UITableViewController {
             // dateFormatter.dateFormat = "MMM d, h:mm a"
             dateFormatter.dateFormat = "h:mm a"
             
-            let subtitle = NSMutableAttributedString(string: String("Next dose: \(dateFormatter.stringFromDate(date))"))
+            let subtitle = NSMutableAttributedString()
 
             if (med.isOverdue) {
-                subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, subtitle.length))
+                subtitle.appendAttributedString(NSAttributedString(string: "Overdue: "))
+                subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, 8))
+            } else {
+                subtitle.appendAttributedString(NSAttributedString(string: "Next dose: "))
+                subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
             }
             
-            subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
+            subtitle.appendAttributedString(NSAttributedString(string: "\(dateFormatter.stringFromDate(date))"))
             
             cell.detailTextLabel?.attributedText = subtitle
         } else {
@@ -168,7 +172,7 @@ class MainTVC: UITableViewController {
             alert.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
             presentViewController(alert, animated: true, completion: nil)
         } else {
-            self.performSegueWithIdentifier("editMedication", sender: medication[indexPath.row])
+            self.performSegueWithIdentifier("editMedication", sender: indexPath.row)
         }
     }
     
@@ -190,7 +194,7 @@ class MainTVC: UITableViewController {
             let vc = segue.destinationViewController as! UINavigationController
             let addVC = vc.topViewController as! AddMedicationTVC
             addVC.title = "Edit Medication"
-            addVC.med = sender as! Medicine?
+            addVC.med = medication[sender as! Int]
             addVC.editMode = true
         }
         
@@ -208,8 +212,12 @@ class MainTVC: UITableViewController {
         
         if let addMed = svc.med {
             addMed.sortOrder = Int16(medication.count)
-            medication.append(addMed)
             appDelegate.saveContext()
+            
+            if svc.editMode == false {
+                medication.append(addMed)
+            }
+
             self.tableView.reloadData()
         }
     }
@@ -237,6 +245,8 @@ class MainTVC: UITableViewController {
                     }))
                     
                     alert.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+                    
+                    // TODO: Don't display if not front most VC
                     presentViewController(alert, animated: true, completion: nil)
                 }
             }

@@ -17,16 +17,24 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     @IBOutlet var medicationName: UITextField!
     
+    @IBOutlet var intervalUnit: UITextField!
+    @IBOutlet var interval: UITextField!
     
     // MARK: - View methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(med)
-        
         if editMode == true {
             medicationName.text = med?.name
+            
+            if let medInterval = med?.interval {
+                interval.text = String(medInterval)
+            }
+            
+            if let medIntervalUnit = med?.intervalUnit {
+                intervalUnit.text = String(medIntervalUnit)
+            }
         }
     }
     
@@ -48,11 +56,11 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     // MARK: - Set medicine values
     
-    @IBAction func setName(sender: UITextField) {
+    @IBAction func updateName(sender: UITextField) {
         med?.name = sender.text
     }
     
-    @IBAction func setInterval(sender: UITextField) {
+    @IBAction func updateInterval(sender: UITextField) {
         if let text = sender.text {
             med?.interval = (text as NSString).floatValue
         }
