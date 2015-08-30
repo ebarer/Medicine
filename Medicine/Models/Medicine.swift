@@ -11,48 +11,13 @@ import CoreData
 
 class Medicine: NSManagedObject {
     
-    let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         self.medicineID = NSUUID().UUIDString
     }
     
     
-    // MARK: - Helper variables
-    var nextDose: NSDate? {
-        return calculateInterval(lastDose?.date)
-    }
-    
-    var lastDose: History? {
-        if let lastHistory = history {
-            if let object = lastHistory.firstObject {
-                var dose = object as! History
-                
-                for next in lastHistory.array as! [History] {
-                    if (dose.date.compare(next.date) == .OrderedAscending) {
-                        dose = next
-                    }
-                }
-                
-                return dose;
-            }
-        }
-        
-        return nil
-    }
-    
-    var isOverdue: Bool {
-        if let date = nextDose {
-            return (NSDate().compare(date) == .OrderedDescending)
-        }
-        
-        return false
-    }
-    
-    
     // MARK: - Dose methods
-    
     func calculateInterval(modDate: NSDate?) -> NSDate? {
         var returnDate: NSDate? = nil
         
@@ -140,7 +105,6 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Notification methods
-    
     func setNotification() {
         if let date = nextDose {
             if date.compare(NSDate()) == .OrderedDescending {
@@ -176,8 +140,7 @@ class Medicine: NSManagedObject {
         // Schedule new notification
         scheduleNotification(snoozeDelay)
     }
-    
-    // Cancel previous notification
+
     func cancelNotification() {
         let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
         for notification in notifications {
@@ -188,4 +151,116 @@ class Medicine: NSManagedObject {
             }
         }
     }
+    
+    
+    // MARK: - Member variables
+    var type: Doses {
+        get { return Doses(rawValue: self.dosageType)! }
+        set { self.dosageType = newValue.rawValue }
+    }
+    
+    var unit: Intervals {
+        get { return Intervals(rawValue: self.intervalUnit)! }
+        set { self.intervalUnit = newValue.rawValue }
+    }
+    
+    
+    // MARK: - Helper variables
+    let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+    
+    var nextDose: NSDate? {
+        return calculateInterval(lastDose?.date)
+    }
+    
+    var lastDose: History?{
+        if let lastHistory = history {
+            if let object = lastHistory.firstObject {
+                var dose = object as! History
+                
+                for next in lastHistory.array as! [History] {
+                    if (dose.date.compare(next.date) == .OrderedAscending) {
+                        dose = next
+                    }
+                }
+                
+                return dose;
+            }
+        }
+        
+        return nil
+    }
+    
+    var isOverdue: Bool {
+        if let date = nextDose {
+            return (NSDate().compare(date) == .OrderedDescending)
+        }
+        
+        return false
+    }
+}
+
+
+// MARK: - Units Enum
+enum Doses: Int16 {
+    case None = -1
+    case Pills = 0
+    case Milligrams
+    case Millilitres
+    
+    static var count: Int16 {
+        return 3
+    }
+    
+    func units(amount:Double?) -> String {
+        switch self {
+        case .Pills:
+            if (amount != nil && amount == 1.0) {
+                return "Pill"
+            } else {
+                return "Pills"
+            }
+        case .Milligrams: return "mg"
+        case .Millilitres: return "mL"
+        default: return ""
+        }
+    }
+}
+
+
+// MARK: - Frequencies Enum
+enum Intervals: Int16, CustomStringConvertible {
+    case None = 0
+    case Hourly
+    case Daily
+    case Weekly
+    
+    static var count: Int16 {
+        return 4
+    }
+    
+    var description: String {
+        switch self {
+        case .None: return "None"
+        case .Hourly: return "Hourly"
+        case .Daily: return "Daily"
+        case .Weekly: return "Weekly"
+        }
+    }
+    
+    var units: String {
+        switch self {
+        case .None: return "None"
+        case .Hourly: return "Hour"
+        case .Daily: return "Day"
+        case .Weekly: return "Week"
+        }
+    }
+    
+    var unitsPlural: String {
+        switch self {
+        case .None: return "None"
+        default: return units + "s"
+        }
+    }
+
 }

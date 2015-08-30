@@ -6,12 +6,23 @@
 //  Copyright © 2015 Elliot Barer. All rights reserved.
 //
 
+//name: String?
+//
+//dosageAmount: Float
+//dosageType: Int16
+//
+//interval: Float
+//intervalUnit: Int16
+//timeEnd: NSTimeInterval
+//timeStart: NSTimeInterval
+
 import UIKit
 
 class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
     
     var med: Medicine?
     var editMode: Bool = false
+    
     
     // MARK: - Outlets
     
@@ -20,10 +31,15 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     @IBOutlet var intervalUnit: UITextField!
     @IBOutlet var interval: UITextField!
     
+    
     // MARK: - View methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        print(med)
+        print(med?.type)
+        print(med?.unit)
         
         if editMode == true {
             medicationName.text = med?.name

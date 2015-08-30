@@ -28,27 +28,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let notificationType: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
         
         let takeAction = UIMutableUserNotificationAction()
-        takeAction.identifier = "takeDose"
-        takeAction.title = "Take Dose"
-        takeAction.activationMode = UIUserNotificationActivationMode.Background
-        takeAction.destructive = false
-        takeAction.authenticationRequired = true
+            takeAction.identifier = "takeDose"
+            takeAction.title = "Take Dose"
+            takeAction.activationMode = UIUserNotificationActivationMode.Background
+            takeAction.destructive = false
+            takeAction.authenticationRequired = true
         
         let snoozeAction = UIMutableUserNotificationAction()
-        snoozeAction.identifier = "snoozeReminder"
-        snoozeAction.title = "Snooze"
-        snoozeAction.activationMode = UIUserNotificationActivationMode.Background
-        snoozeAction.destructive = false
-        snoozeAction.authenticationRequired = false
+            snoozeAction.identifier = "snoozeReminder"
+            snoozeAction.title = "Snooze"
+            snoozeAction.activationMode = UIUserNotificationActivationMode.Background
+            snoozeAction.destructive = false
+            snoozeAction.authenticationRequired = false
         
         let category = UIMutableUserNotificationCategory()
-        category.identifier = "Reminder"
-        category.setActions([takeAction, snoozeAction], forContext: UIUserNotificationActionContext.Default)
+            category.identifier = "Reminder"
+            category.setActions([takeAction, snoozeAction], forContext: UIUserNotificationActionContext.Default)
         
         let categories = NSSet(array: [category])
         let settings = UIUserNotificationSettings(forTypes: notificationType, categories: categories as? Set<UIUserNotificationCategory>)
+
         application.registerUserNotificationSettings(settings)
-        application.registerForRemoteNotifications()
         
         return true
     }

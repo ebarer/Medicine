@@ -23,6 +23,7 @@ extension Medicine {
     
     @NSManaged var interval: Float
     @NSManaged var intervalUnit: Int16
+    
     @NSManaged var timeEnd: NSTimeInterval
     @NSManaged var timeStart: NSTimeInterval
     
