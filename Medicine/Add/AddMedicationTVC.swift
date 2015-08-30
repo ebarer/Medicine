@@ -6,16 +6,6 @@
 //  Copyright © 2015 Elliot Barer. All rights reserved.
 //
 
-//name: String?
-//
-//dosageAmount: Float
-//dosageType: Int16
-//
-//interval: Float
-//intervalUnit: Int16
-//timeEnd: NSTimeInterval
-//timeStart: NSTimeInterval
-
 import UIKit
 
 class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
@@ -25,32 +15,30 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     
     // MARK: - Outlets
-    
     @IBOutlet var medicationName: UITextField!
-    
+    @IBOutlet var dosageUnit: UITextField!
+    @IBOutlet var dosage: UITextField!
     @IBOutlet var intervalUnit: UITextField!
     @IBOutlet var interval: UITextField!
-    
+    @IBOutlet var timeStart: UITextField!
+    @IBOutlet var timeEnd: UITextField!
+
     
     // MARK: - View methods
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(med)
-        print(med?.type)
-        print(med?.unit)
-        
         if editMode == true {
             medicationName.text = med?.name
+
+            dosageUnit.text = med?.dosageUnit.units(med?.dosage)
+            dosage.text = med?.dosage.description
             
-            if let medInterval = med?.interval {
-                interval.text = String(medInterval)
-            }
+            intervalUnit.text = med?.intervalUnit.units(med?.interval)
+            interval.text = med?.interval.description
             
-            if let medIntervalUnit = med?.intervalUnit {
-                intervalUnit.text = String(medIntervalUnit)
-            }
+            //timeEnd: NSTimeInterval
+            //timeStart: NSTimeInterval
         }
     }
     
@@ -69,11 +57,44 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         return true
     }
     
+    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        if section == 2 {
+            return "Take this medication every \(med!.interval) \(med!.intervalUnit.units(med!.interval)) until midnight."
+        }
+        
+        return nil
+    }
+    
     
     // MARK: - Set medicine values
-    
     @IBAction func updateName(sender: UITextField) {
         med?.name = sender.text
+    }
+    
+    @IBAction func updateDosageUnit(sender: UITextField) {
+        if let text = sender.text {
+            if let raw = Int16(text) {
+                if raw < Doses.count {
+                    med?.dosageUnit = Doses(rawValue: raw)!
+                }
+            }
+        }
+    }
+    
+    @IBAction func updateDose(sender: UITextField) {
+        if let text = sender.text {
+            med?.dosage = (text as NSString).floatValue
+        }
+    }
+    
+    @IBAction func updateIntervalUnit(sender: UITextField) {
+        if let text = sender.text {
+            if let raw = Int16(text) {
+                if raw < Intervals.count {
+                    med?.intervalUnit = Intervals(rawValue: raw)!
+                }
+            }
+        }
     }
     
     @IBAction func updateInterval(sender: UITextField) {
@@ -82,3 +103,8 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         }
     }
 }
+
+
+
+
+

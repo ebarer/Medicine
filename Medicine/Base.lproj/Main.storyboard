@@ -288,6 +288,9 @@
                                                     <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="calibratedRGB"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <textInputTraits key="textInputTraits"/>
+                                                    <connections>
+                                                        <action selector="updateDosageUnit:" destination="lZ2-LX-sWf" eventType="editingChanged" id="NtG-9Q-hK8"/>
+                                                    </connections>
                                                 </textField>
                                             </subviews>
                                             <animations/>
@@ -325,6 +328,9 @@
                                                     <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="calibratedRGB"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
+                                                    <connections>
+                                                        <action selector="updateDose:" destination="lZ2-LX-sWf" eventType="editingChanged" id="yD3-XO-xaE"/>
+                                                    </connections>
                                                 </textField>
                                             </subviews>
                                             <animations/>
@@ -366,6 +372,9 @@
                                                     <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="calibratedRGB"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <textInputTraits key="textInputTraits"/>
+                                                    <connections>
+                                                        <action selector="updateIntervalUnit:" destination="lZ2-LX-sWf" eventType="editingChanged" id="T3q-se-j14"/>
+                                                    </connections>
                                                 </textField>
                                             </subviews>
                                             <animations/>
@@ -404,7 +413,7 @@
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
                                                     <connections>
-                                                        <action selector="updateInterval:" destination="lZ2-LX-sWf" eventType="editingChanged" id="Qhx-fL-qbB"/>
+                                                        <action selector="updateInterval:" destination="lZ2-LX-sWf" eventType="editingChanged" id="bGz-Rh-bz1"/>
                                                     </connections>
                                                 </textField>
                                             </subviews>
@@ -519,9 +528,13 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="dosage" destination="riD-Zs-cKL" id="GYN-P9-J7L"/>
+                        <outlet property="dosageUnit" destination="gWG-HW-U0g" id="hMy-81-nsY"/>
                         <outlet property="interval" destination="lhG-Zj-Up0" id="39b-vc-itE"/>
                         <outlet property="intervalUnit" destination="ULr-8u-myA" id="Emz-jD-WOc"/>
                         <outlet property="medicationName" destination="nuv-Fd-1Az" id="vrB-mX-5rp"/>
+                        <outlet property="timeEnd" destination="eaE-V3-XrS" id="hzQ-GM-vDq"/>
+                        <outlet property="timeStart" destination="YmZ-ku-rY0" id="XJI-yY-PIO"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oy1-UR-dOD" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -126,6 +126,7 @@ class MainTVC: UITableViewController {
         medication[fromIndexPath.row].sortOrder = Int16(toIndexPath.row)
         medication[toIndexPath.row].sortOrder = Int16(fromIndexPath.row)
         medication.sortInPlace({ $0.sortOrder < $1.sortOrder })
+        appDelegate.saveContext()
     }
     
     
@@ -211,13 +212,12 @@ class MainTVC: UITableViewController {
         let svc = unwindSegue.sourceViewController as! AddMedicationTVC
         
         if let addMed = svc.med {
-            addMed.sortOrder = Int16(medication.count)
-            appDelegate.saveContext()
-            
             if svc.editMode == false {
+                addMed.sortOrder = Int16(medication.count + 1)
                 medication.append(addMed)
             }
-
+            
+            appDelegate.saveContext()
             self.tableView.reloadData()
         }
     }
@@ -232,7 +232,7 @@ class MainTVC: UITableViewController {
             let medQuery = medication.filter{ $0.medicineID == id }.first
             if let med = medQuery {
                 if let name = med.name {
-                    let message = String(format:"Time to take %g %@ of %@", med.dosageAmount, med.dosageType, name)
+                    let message = String(format:"Time to take %g %@ of %@", med.dosage, med.dosageUnit.units(med.dosage), name)
                     
                     let alert = UIAlertController(title: "Take \(name) \(med.lastDose?.date)", message: message, preferredStyle: .Alert)
                     

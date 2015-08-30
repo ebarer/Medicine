@@ -23,18 +23,16 @@ class Medicine: NSManagedObject {
         
         if let date = modDate {
             switch (intervalUnit) {
-            case 0:
+            case .Hourly:
                 let hr = Int(interval)
                 let min = Int(60 * (interval % 1))
                 
                 returnDate = cal.dateByAddingUnit(NSCalendarUnit.Hour, value: hr, toDate: date, options: [])
                 returnDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: min, toDate: returnDate!, options: [])
-            case 1:
+            case .Daily:
                 returnDate = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])
-            case 2:
+            case .Weekly:
                 returnDate = cal.dateByAddingUnit(NSCalendarUnit.WeekOfYear, value: Int(interval), toDate: date, options: [])
-            default:
-                returnDate = nil
             }
         }
         
@@ -119,7 +117,7 @@ class Medicine: NSManagedObject {
             
             notification.alertAction = "View Dose"
             notification.alertTitle = "Take \(medName)"
-            notification.alertBody = String(format:"Time to take %g %@ of %@", dosageAmount, dosageType, medName)
+            notification.alertBody = String(format:"Time to take %g %@ of %@", dosage, dosageUnit.units(dosage), medName)
             notification.soundName = UILocalNotificationDefaultSoundName
             notification.category = "Reminder"
             notification.userInfo = ["id": self.medicineID]
@@ -154,14 +152,14 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Member variables
-    var type: Doses {
-        get { return Doses(rawValue: self.dosageType)! }
-        set { self.dosageType = newValue.rawValue }
+    var dosageUnit: Doses {
+        get { return Doses(rawValue: self.dosageUnitInt)! }
+        set { self.dosageUnitInt = newValue.rawValue }
     }
     
-    var unit: Intervals {
-        get { return Intervals(rawValue: self.intervalUnit)! }
-        set { self.intervalUnit = newValue.rawValue }
+    var intervalUnit: Intervals {
+        get { return Intervals(rawValue: self.intervalUnitInt)! }
+        set { self.intervalUnitInt = newValue.rawValue }
     }
     
     
@@ -201,8 +199,7 @@ class Medicine: NSManagedObject {
 
 
 // MARK: - Units Enum
-enum Doses: Int16 {
-    case None = -1
+enum Doses: Int16, CustomStringConvertible {
     case Pills = 0
     case Milligrams
     case Millilitres
@@ -211,7 +208,15 @@ enum Doses: Int16 {
         return 3
     }
     
-    func units(amount:Double?) -> String {
+    var description: String {
+        switch self {
+        case .Pills: return "Pills"
+        case .Milligrams: return "Milligrams"
+        case .Millilitres: return "Millilitres"
+        }
+    }
+    
+    func units(amount: Float?) -> String {
         switch self {
         case .Pills:
             if (amount != nil && amount == 1.0) {
@@ -220,8 +225,7 @@ enum Doses: Int16 {
                 return "Pills"
             }
         case .Milligrams: return "mg"
-        case .Millilitres: return "mL"
-        default: return ""
+        case .Millilitres: return "ml"
         }
     }
 }
@@ -229,38 +233,36 @@ enum Doses: Int16 {
 
 // MARK: - Frequencies Enum
 enum Intervals: Int16, CustomStringConvertible {
-    case None = 0
-    case Hourly
+    case Hourly = 0
     case Daily
     case Weekly
     
     static var count: Int16 {
-        return 4
+        return 3
     }
     
     var description: String {
         switch self {
-        case .None: return "None"
         case .Hourly: return "Hourly"
         case .Daily: return "Daily"
         case .Weekly: return "Weekly"
         }
     }
     
-    var units: String {
+    func units(amount: Float?) -> String {
+        var string = ""
+        
         switch self {
-        case .None: return "None"
-        case .Hourly: return "Hour"
-        case .Daily: return "Day"
-        case .Weekly: return "Week"
+        case .Hourly: string = "Hour"
+        case .Daily: string = "Day"
+        case .Weekly: string = "Week"
         }
-    }
-    
-    var unitsPlural: String {
-        switch self {
-        case .None: return "None"
-        default: return units + "s"
+        
+        if (amount != 1) {
+            string += "s"
         }
+        
+        return string
     }
 
 }
