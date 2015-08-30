@@ -7,20 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CE5C7CBB1B91D127002D0BEA /* HistoryAddVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5C7CBA1B91D127002D0BEA /* HistoryAddVC.swift */; settings = {ASSET_TAGS = (); }; };
-		CE63264D1B90A9A50009F9AE /* HistoryTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE63264C1B90A9A50009F9AE /* HistoryTVC.swift */; settings = {ASSET_TAGS = (); }; };
-		CE63264F1B9149C80009F9AE /* MainUINC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE63264E1B9149C80009F9AE /* MainUINC.swift */; settings = {ASSET_TAGS = (); }; };
-		CE6E551D1B9040C900805397 /* Medicine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */; settings = {ASSET_TAGS = (); }; };
-		CE6E551E1B9040C900805397 /* Medicine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551A1B9040C900805397 /* Medicine.swift */; settings = {ASSET_TAGS = (); }; };
-		CE6E551F1B9040C900805397 /* History+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551B1B9040C900805397 /* History+CoreDataProperties.swift */; settings = {ASSET_TAGS = (); }; };
-		CE6E55201B9040C900805397 /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551C1B9040C900805397 /* History.swift */; settings = {ASSET_TAGS = (); }; };
+		CE5C7CBB1B91D127002D0BEA /* HistoryAddVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5C7CBA1B91D127002D0BEA /* HistoryAddVC.swift */; };
+		CE63264D1B90A9A50009F9AE /* HistoryTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE63264C1B90A9A50009F9AE /* HistoryTVC.swift */; };
+		CE63264F1B9149C80009F9AE /* MainUINC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE63264E1B9149C80009F9AE /* MainUINC.swift */; };
+		CE6E551D1B9040C900805397 /* Medicine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */; };
+		CE6E551E1B9040C900805397 /* Medicine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551A1B9040C900805397 /* Medicine.swift */; };
+		CE6E551F1B9040C900805397 /* History+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551B1B9040C900805397 /* History+CoreDataProperties.swift */; };
+		CE6E55201B9040C900805397 /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551C1B9040C900805397 /* History.swift */; };
 		CEA250E91B90396C00BBE466 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA250E81B90396C00BBE466 /* AppDelegate.swift */; };
 		CEA250EE1B90396C00BBE466 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEA250EC1B90396C00BBE466 /* Main.storyboard */; };
 		CEA250F31B90396C00BBE466 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CEA250F21B90396C00BBE466 /* Assets.xcassets */; };
 		CEA250F61B90396C00BBE466 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEA250F41B90396C00BBE466 /* LaunchScreen.storyboard */; };
-		CEA250FF1B903BC200BBE466 /* AddMedicationTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA250FE1B903BC200BBE466 /* AddMedicationTVC.swift */; settings = {ASSET_TAGS = (); }; };
-		CEA251021B903BE400BBE466 /* MainTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA251011B903BE400BBE466 /* MainTVC.swift */; settings = {ASSET_TAGS = (); }; };
-		CEA2510C1B903E7D00BBE466 /* Medicine.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CEA2510A1B903E7D00BBE466 /* Medicine.xcdatamodeld */; settings = {ASSET_TAGS = (); }; };
+		CEA250FF1B903BC200BBE466 /* AddMedicationTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA250FE1B903BC200BBE466 /* AddMedicationTVC.swift */; };
+		CEA251021B903BE400BBE466 /* MainTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA251011B903BE400BBE466 /* MainTVC.swift */; };
+		CEA2510C1B903E7D00BBE466 /* Medicine.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CEA2510A1B903E7D00BBE466 /* Medicine.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -330,7 +330,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Medicine/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -343,7 +343,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Medicine/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine;
 				PRODUCT_NAME = "$(TARGET_NAME)";

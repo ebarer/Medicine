@@ -226,7 +226,7 @@ class MainTVC: UITableViewController {
                 if let name = med.name {
                     let message = String(format:"Time to take %g %@ of %@", med.dosageAmount, med.dosageType, name)
                     
-                    let alert = UIAlertController(title: "Take \(name)", message: message, preferredStyle: .Alert)
+                    let alert = UIAlertController(title: "Take \(name) \(med.lastDose?.date)", message: message, preferredStyle: .Alert)
                     
                     alert.addAction(UIAlertAction(title: "Take Dose", style: .Default, handler: {(action) -> Void in
                         self.takeMedicationNotification(notification)

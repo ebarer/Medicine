@@ -48,7 +48,7 @@ class HistoryTVC: UITableViewController {
             }
             
             // Sort each log date
-            log[sectionDate]?.sortInPlace({ $0.date.compare($1.date) == NSComparisonResult.OrderedDescending })
+            log[sectionDate]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
         }
     }
 
@@ -136,7 +136,15 @@ class HistoryTVC: UITableViewController {
         // Add to log
         let index = cal.startOfDayForDate(svc.date)
         log[index]?.insert(newDose, atIndex: 0)
-        log[index]?.sortInPlace({ $0.date.compare($1.date) == NSComparisonResult.OrderedDescending })
+        log[index]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
+        
+        // Reschedule notification if newest addition
+        if let date = med.lastDose?.date {
+            if (newDose.date.compare(date) == .OrderedDescending || newDose.date.compare(date) == .OrderedSame) {
+                med.cancelNotification()
+                med.setNotification()
+            }
+        }
         
         // Reload table
         self.tableView.reloadData()

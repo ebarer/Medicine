@@ -127,7 +127,10 @@ class Medicine: NSManagedObject {
             // Schedule new notification based on previous dose
             let fireDate = calculateInterval(lastDose?.date)
             if let date = fireDate {
-                scheduleNotification(date)
+                if date.compare(NSDate()) == .OrderedDescending {
+                    scheduleNotification(date)
+                }
+                
                 return true
             }
         }
