@@ -1,15 +1,15 @@
 //
-//  HistoryAddVC.swift
+//  HistoryAddTVC.swift
 //  Medicine
 //
-//  Created by Elliot Barer on 2015-08-29.
+//  Created by Elliot Barer on 2015-08-31.
 //  Copyright © 2015 Elliot Barer. All rights reserved.
 //
 
 import UIKit
 
-class HistoryAddVC: UIViewController {
-
+class HistoryAddTVC: UITableViewController {
+    
     var date = NSDate()
     let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
     @IBOutlet var picker: UIDatePicker!
@@ -21,13 +21,13 @@ class HistoryAddVC: UIViewController {
         picker.minimumDate = cal.dateByAddingUnit(NSCalendarUnit.Day, value: -6, toDate: cal.startOfDayForDate(NSDate()), options: [])
         picker.maximumDate = NSDate()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-
+    
     @IBAction func updateDate(sender: UIDatePicker) {
         date = sender.date
     }
-    
+
 }

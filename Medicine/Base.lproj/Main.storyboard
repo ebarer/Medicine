@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8187.4" systemVersion="15A263e" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="WH0-Wl-VP6">
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8151.3"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
@@ -27,7 +28,7 @@
                                             <rect key="frame" x="15" y="25" width="49.5" height="32.5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <animations/>
-                                            <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
+                                            <fontDescription key="fontDescription" type="system" weight="light" pointSize="27"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -171,56 +172,72 @@
             <point key="canvasLocation" x="2309" y="785"/>
         </scene>
         <!--Log Dose-->
-        <scene sceneID="1AJ-Gb-eIH">
+        <scene sceneID="Prc-iJ-bqO">
             <objects>
-                <viewController id="X7O-L6-Lj8" customClass="HistoryAddVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="NkN-M5-ukI"/>
-                        <viewControllerLayoutGuide type="bottom" id="l5E-dL-VeA"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="G9M-hr-PWl">
+                <tableViewController id="671-U9-QaQ" customClass="HistoryAddTVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="static" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="ZyV-pw-h4Z">
                         <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="F76-RI-M7y">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="216"/>
-                                <animations/>
-                                <date key="date" timeIntervalSinceReferenceDate="462540013.61978197">
-                                    <!--2015-08-29 11:20:13 +0000-->
-                                </date>
-                                <connections>
-                                    <action selector="updateDate:" destination="X7O-L6-Lj8" eventType="valueChanged" id="wsr-jf-mq2"/>
-                                </connections>
-                            </datePicker>
-                        </subviews>
                         <animations/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="F76-RI-M7y" firstAttribute="top" secondItem="NkN-M5-ukI" secondAttribute="bottom" id="1dT-0R-AYh"/>
-                            <constraint firstItem="F76-RI-M7y" firstAttribute="leading" secondItem="G9M-hr-PWl" secondAttribute="leading" id="1o3-3G-U65"/>
-                            <constraint firstAttribute="trailing" secondItem="F76-RI-M7y" secondAttribute="trailing" id="3Kf-RY-fIW"/>
-                        </constraints>
-                    </view>
-                    <navigationItem key="navigationItem" title="Log Dose" id="LJk-Xt-U6C">
-                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="kvC-ME-eGs">
+                        <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                        <sections>
+                            <tableViewSection headerTitle="Specify the time you took the dose" id="Fnv-JI-T45">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="216" id="fyP-iD-YDm">
+                                        <rect key="frame" x="0.0" y="49.5" width="600" height="216"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fyP-iD-YDm" id="GGz-gR-hHM">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="215.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="F76-RI-M7y">
+                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="216"/>
+                                                    <animations/>
+                                                    <date key="date" timeIntervalSinceReferenceDate="462540013.61978197">
+                                                        <!--2015-08-29 11:20:13 +0000-->
+                                                    </date>
+                                                    <connections>
+                                                        <action selector="updateDate:" destination="671-U9-QaQ" eventType="editingChanged" id="D1D-UA-Dtr"/>
+                                                    </connections>
+                                                </datePicker>
+                                            </subviews>
+                                            <animations/>
+                                            <constraints>
+                                                <constraint firstItem="F76-RI-M7y" firstAttribute="leading" secondItem="GGz-gR-hHM" secondAttribute="leading" id="EhK-OC-2dC"/>
+                                                <constraint firstAttribute="trailing" secondItem="F76-RI-M7y" secondAttribute="trailing" id="XmV-IY-cmg"/>
+                                                <constraint firstItem="F76-RI-M7y" firstAttribute="top" secondItem="GGz-gR-hHM" secondAttribute="top" id="Za1-Jk-Vev"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <animations/>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                        </sections>
+                        <connections>
+                            <outlet property="dataSource" destination="671-U9-QaQ" id="F6O-Uj-iVj"/>
+                            <outlet property="delegate" destination="671-U9-QaQ" id="jvr-Tw-JUx"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Log Dose" id="LVr-Vh-yVF">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="cwF-11-I9J">
                             <connections>
-                                <segue destination="ujE-cl-k0e" kind="unwind" unwindAction="historyUnwindCancel:" id="6oA-Cs-3VV"/>
+                                <segue destination="Ft7-mH-aZD" kind="unwind" unwindAction="historyUnwindCancel:" id="EKH-ct-9Lj"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="Joc-Sc-7vf">
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="W7t-6J-73k">
                             <connections>
-                                <segue destination="ujE-cl-k0e" kind="unwind" unwindAction="historyUnwindAdd:" id="7h6-M9-uYk"/>
+                                <segue destination="Ft7-mH-aZD" kind="unwind" unwindAction="historyUnwindAdd:" id="5j9-DV-NBW"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="picker" destination="F76-RI-M7y" id="asY-AG-iNO"/>
+                        <outlet property="picker" destination="F76-RI-M7y" id="pnJ-L8-KRT"/>
                     </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="HE9-8Z-BVq" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="ujE-cl-k0e" userLabel="Exit" sceneMemberID="exit"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="qxL-vy-x3y" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="Ft7-mH-aZD" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="3837" y="785"/>
+            <point key="canvasLocation" x="3822" y="785"/>
         </scene>
         <!--New Medication-->
         <scene sceneID="pgC-cu-YBw">
@@ -559,7 +576,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="X7O-L6-Lj8" kind="relationship" relationship="rootViewController" id="fyC-Ec-GAg"/>
+                        <segue destination="671-U9-QaQ" kind="relationship" relationship="rootViewController" id="wkK-DZ-ROv"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wEo-Xm-IUx" userLabel="First Responder" sceneMemberID="firstResponder"/>

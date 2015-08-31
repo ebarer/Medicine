@@ -126,7 +126,7 @@ class HistoryTVC: UITableViewController {
     
     @IBAction func historyUnwindAdd(unwindSegue: UIStoryboardSegue) {
         // Log dose
-        let svc = unwindSegue.sourceViewController as! HistoryAddVC
+        let svc = unwindSegue.sourceViewController as! HistoryAddTVC
         let entity = NSEntityDescription.entityForName("History", inManagedObjectContext: moc)
         let newDose = History(entity: entity!, insertIntoManagedObjectContext: moc)
         newDose.medicine = med
