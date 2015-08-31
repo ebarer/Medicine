@@ -147,14 +147,14 @@
         <!--AddDose-->
         <scene sceneID="V2c-5F-wuu">
             <objects>
-                <viewControllerPlaceholder storyboardName="AddDose" id="bZR-7Y-tt8" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2P2-5h-dae" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewControllerPlaceholder storyboardName="AddDose" id="bZR-7Y-tt8" sceneMemberID="viewController"/>
             </objects>
             <point key="canvasLocation" x="1765.5" y="893"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="tQz-wz-X6o"/>
         <segue reference="lTw-3x-mfN"/>
+        <segue reference="0Oe-mX-irt"/>
     </inferredMetricsTieBreakers>
 </document>

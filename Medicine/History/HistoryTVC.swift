@@ -41,7 +41,7 @@ class HistoryTVC: UITableViewController {
         let fixedButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
         normalButtons.append(fixedButton)
         
-        let addButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add, target: self, action: "addNewDose")
+        let addButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add, target: self, action: "addDose")
         normalButtons.append(addButton)
 
         let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: "deleteDoses")
@@ -170,9 +170,7 @@ class HistoryTVC: UITableViewController {
     
     func deleteDoses() {
         if let selectedRowIndexes = tableView.indexPathsForSelectedRows {
-            for index in selectedRowIndexes.reverse() {
-                print(index.row)
-                
+            for index in selectedRowIndexes.reverse() {                
                 let sectionDate = getSectionDate(index.section)
                 
                 if let logItems = log[sectionDate] {

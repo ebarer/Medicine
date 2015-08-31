@@ -162,7 +162,7 @@ class MainTVC: UITableViewController {
             }))
             
             alert.addAction(UIAlertAction(title: "Log Previous Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-                self.performSegueWithIdentifier("addNewDose", sender: self)
+                self.performSegueWithIdentifier("addDose", sender: self)
             }))
             
             // If next dosage is set, allow user to clear notification
