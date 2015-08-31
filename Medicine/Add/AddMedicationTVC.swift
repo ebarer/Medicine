@@ -52,17 +52,19 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         super.didReceiveMemoryWarning()
     }
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    }
     
+    // MARK: - Table view delegate
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         if section == 2 {
             return "Take this medication every \(med!.interval) \(med!.intervalUnit.units(med!.interval)) until midnight."
         }
         
         return nil
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
     
     

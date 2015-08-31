@@ -115,9 +115,14 @@ class MainTVC: UITableViewController {
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
+            // Cancel all notifications for medication
+            medication[indexPath.row].cancelNotification()
+            
+            // Remove medication from array and persistent store
             moc.deleteObject(medication[indexPath.row])
             appDelegate.saveContext()
             medication.removeAtIndex(indexPath.row)
+            
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         }
     }

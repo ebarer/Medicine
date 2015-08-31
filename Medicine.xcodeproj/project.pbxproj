@@ -25,7 +25,6 @@
 
 /* Begin PBXFileReference section */
 		CE5C7CBA1B91D127002D0BEA /* HistoryAddVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HistoryAddVC.swift; path = Main/HistoryAddVC.swift; sourceTree = "<group>"; };
-		CE63264B1B90A64B0009F9AE /* DateTests.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = DateTests.playground; sourceTree = "<group>"; };
 		CE63264C1B90A9A50009F9AE /* HistoryTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HistoryTVC.swift; path = Main/HistoryTVC.swift; sourceTree = "<group>"; };
 		CE63264E1B9149C80009F9AE /* MainUINC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainUINC.swift; path = Main/MainUINC.swift; sourceTree = "<group>"; };
 		CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Medicine+CoreDataProperties.swift"; path = "Medicine/Models/Medicine+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -81,7 +80,6 @@
 			children = (
 				CEA250E71B90396C00BBE466 /* Medicine */,
 				CEA250E61B90396C00BBE466 /* Products */,
-				CE63264B1B90A64B0009F9AE /* DateTests.playground */,
 			);
 			sourceTree = "<group>";
 		};
