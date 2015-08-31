@@ -13,10 +13,14 @@ class MainTVC: UITableViewController {
     
     var medication = [Medicine]()
     
+    
     // MARK: - Helper variables
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var moc: NSManagedObjectContext!
+    
+    
+    // MARK: - View methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,13 +60,15 @@ class MainTVC: UITableViewController {
         }
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-    
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        self.navigationController?.setToolbarHidden(true, animated: true)
         self.tableView.reloadData()
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        print("MainTVC")
     }
 
     
@@ -118,9 +124,11 @@ class MainTVC: UITableViewController {
             // Cancel all notifications for medication
             medication[indexPath.row].cancelNotification()
             
-            // Remove medication from array and persistent store
+            // Remove medication from persistent store
             moc.deleteObject(medication[indexPath.row])
             appDelegate.saveContext()
+            
+            // Remove medication from array
             medication.removeAtIndex(indexPath.row)
             
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
@@ -136,13 +144,14 @@ class MainTVC: UITableViewController {
     
     
     // MARK: - Table view delegate
+    
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let med = medication[indexPath.row]
         
         if (tableView.editing == false) {
             let alert = UIAlertController(title: med.name, message: nil, preferredStyle: .ActionSheet)
             
-            alert.addAction(UIAlertAction(title: "Take Next", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+            alert.addAction(UIAlertAction(title: "Take Next Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
                 // TODO: Handle false by displaying error "Medication already taken within last 5 minutes. If error, untake last dose."
                 if (med.takeNextDose(self.moc)) {
                     self.appDelegate.saveContext()
@@ -152,9 +161,13 @@ class MainTVC: UITableViewController {
                 }
             }))
             
+            alert.addAction(UIAlertAction(title: "Log Previous Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+                self.performSegueWithIdentifier("addNewDose", sender: self)
+            }))
+            
             // If next dosage is set, allow user to clear notification
             if (med.nextDose != nil) {
-                alert.addAction(UIAlertAction(title: "Untake Last", style: .Destructive, handler: {(action) -> Void in
+                alert.addAction(UIAlertAction(title: "Undo Last Dose", style: .Destructive, handler: {(action) -> Void in
                     if (med.untakeLastDose(self.moc)) {
                         self.appDelegate.saveContext()
                         tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
@@ -165,9 +178,17 @@ class MainTVC: UITableViewController {
             }
             
             alert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
+                
+                // Cancel all notifications for medication
+                self.medication[indexPath.row].cancelNotification()
+                
+                // Remove medication from persistent store
                 self.moc.deleteObject(self.medication[indexPath.row])
                 self.appDelegate.saveContext()
+
+                // Remove medication from array
                 self.medication.removeAtIndex(indexPath.row)
+                
                 tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
             }))
             
@@ -201,7 +222,6 @@ class MainTVC: UITableViewController {
             let addVC = vc.topViewController as! AddMedicationTVC
             addVC.title = "Edit Medication"
             addVC.med = medication[sender as! Int]
-            addVC.editMode = true
         }
         
         if segue.identifier == "viewMedicationDetails" {
@@ -213,21 +233,56 @@ class MainTVC: UITableViewController {
         }
     }
     
+    
+    // MARK: - Unwind methods
+    
     @IBAction func medicationUnwindAdd(unwindSegue: UIStoryboardSegue) {
-        let svc = unwindSegue.sourceViewController as! AddMedicationTVC
-        
-        if let addMed = svc.med {
-            if svc.editMode == false {
-                addMed.sortOrder = Int16(medication.count + 1)
+        if let svc = unwindSegue.sourceViewController as? AddMedicationTVC, addMed = svc.med {
+            if let selectedIndex = tableView.indexPathForSelectedRow {
+                appDelegate.saveContext()
+                
+                tableView.reloadRowsAtIndexPaths([selectedIndex], withRowAnimation: .None)
+            } else {
+                let newIndex = NSIndexPath(forRow: medication.count, inSection: 0)
+                
+                addMed.sortOrder = Int16(newIndex.row)
                 medication.append(addMed)
+                appDelegate.saveContext()
+                
+                tableView.insertRowsAtIndexPaths([newIndex], withRowAnimation: .Bottom)
+            }
+        }
+    }
+    
+    @IBAction func medicationUnwindCancel(unwindSegue: UIStoryboardSegue) {
+        moc.rollback()
+    }
+    
+    @IBAction func historyUnwindAdd(unwindSegue: UIStoryboardSegue) {
+        if let selectedIndex = tableView.indexPathForSelectedRow {
+            // Log dose
+            let svc = unwindSegue.sourceViewController as! AddDoseTVC
+            let entity = NSEntityDescription.entityForName("History", inManagedObjectContext: moc)
+            let newDose = History(entity: entity!, insertIntoManagedObjectContext: moc)
+            let med = medication[selectedIndex.row]
+            newDose.medicine = med
+            newDose.date = svc.date
+            appDelegate.saveContext()
+            
+            // Reschedule notification if newest addition
+            if let date = med.lastDose?.date {
+                if (newDose.date.compare(date) == .OrderedDescending || newDose.date.compare(date) == .OrderedSame) {
+                    med.cancelNotification()
+                    med.setNotification()
+                }
             }
             
-            appDelegate.saveContext()
+            // Reload table
             self.tableView.reloadData()
         }
     }
     
-    @IBAction func medicationUnwindCancel(unwindSegue: UIStoryboardSegue) {}
+    @IBAction func historyUnwindCancel(unwindSegue: UIStoryboardSegue) {}
     
     
     // MARK: - Local Notifications

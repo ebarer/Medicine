@@ -8,7 +8,7 @@
 
 import UIKit
 
-class HistoryAddTVC: UITableViewController {
+class AddDoseTVC: UITableViewController {
     
     var date = NSDate()
     let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!

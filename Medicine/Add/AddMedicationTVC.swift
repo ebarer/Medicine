@@ -10,11 +10,11 @@ import UIKit
 
 class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
     
-    var med: Medicine?
-    var editMode: Bool = false
+    weak var med: Medicine?
     
     
     // MARK: - Outlets
+    
     @IBOutlet var medicationName: UITextField!
     @IBOutlet var dosageUnit: UITextField!
     @IBOutlet var dosage: UITextField!
@@ -25,21 +25,17 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
 
     
     // MARK: - View methods
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if editMode == true {
-            medicationName.text = med?.name
+        medicationName.text = med?.name
 
-            dosageUnit.text = med?.dosageUnit.units(med?.dosage)
-            dosage.text = med?.dosage.description
-            
-            intervalUnit.text = med?.intervalUnit.units(med?.interval)
-            interval.text = med?.interval.description
-            
-            //timeEnd: NSTimeInterval
-            //timeStart: NSTimeInterval
-        }
+        dosageUnit.text = med?.dosageUnit.units(med?.dosage)
+        dosage.text = med?.dosage.description
+        
+        intervalUnit.text = med?.intervalUnit.units(med?.interval)
+        interval.text = med?.interval.description
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -50,10 +46,12 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+        print("AddMedicationTVC")
     }
     
     
     // MARK: - Table view delegate
+    
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         if section == 2 {
             return "Take this medication every \(med!.interval) \(med!.intervalUnit.units(med!.interval)) until midnight."
@@ -69,6 +67,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     
     // MARK: - Set medicine values
+    
     @IBAction func updateName(sender: UITextField) {
         med?.name = sender.text
     }

@@ -4,7 +4,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8151.3"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
-        <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
     </dependencies>
     <scenes>
         <!--Medicine-->
@@ -44,7 +43,7 @@
                                 </tableViewCellContentView>
                                 <animations/>
                                 <connections>
-                                    <segue destination="8iN-e7-hT2" kind="show" identifier="viewMedicationDetails" trigger="accessoryAction" id="Ev5-ep-rym"/>
+                                    <segue destination="hvL-QA-tmo" kind="show" identifier="viewMedicationDetails" trigger="accessoryAction" id="LK1-7V-jnC"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -62,11 +61,20 @@
                     </navigationItem>
                     <connections>
                         <segue destination="TkC-nl-YZH" kind="presentation" identifier="editMedication" id="kVj-wu-aDW"/>
+                        <segue destination="Dvp-ro-yf6" kind="presentation" identifier="addNewDose" id="gJg-3I-vWf"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x4v-fN-eJ1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1390" y="413"/>
+        </scene>
+        <!--AddDose-->
+        <scene sceneID="S3S-qo-h8E">
+            <objects>
+                <viewControllerPlaceholder storyboardName="AddDose" id="Dvp-ro-yf6" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Rpp-K2-a1E" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1390.5" y="852"/>
         </scene>
         <!--MainUINC-->
         <scene sceneID="Je1-oK-fKE">
@@ -117,23 +125,23 @@
             <point key="canvasLocation" x="2309" y="10"/>
         </scene>
         <!--History-->
-        <scene sceneID="6hB-Tj-ssX">
+        <scene sceneID="VDi-Go-ddB">
             <objects>
-                <tableViewController id="8iN-e7-hT2" customClass="HistoryTVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="Baz-tc-Gc6">
+                <tableViewController id="hvL-QA-tmo" customClass="HistoryTVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelection="NO" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="vl9-ZG-gZC">
                         <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <animations/>
                         <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="historyCell" textLabel="V8u-R6-Y9X" style="IBUITableViewCellStyleDefault" id="3ox-NQ-Jo3">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="historyCell" textLabel="Wer-MF-Qyn" style="IBUITableViewCellStyleDefault" id="VGS-jB-4Z9">
                                 <rect key="frame" x="0.0" y="49.5" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="3ox-NQ-Jo3" id="yFc-mc-ogK">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="VGS-jB-4Z9" id="YUP-WK-mvb">
                                     <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="V8u-R6-Y9X">
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Wer-MF-Qyn">
                                             <rect key="frame" x="15" y="0.0" width="570" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <animations/>
@@ -148,96 +156,26 @@
                             </tableViewCell>
                         </prototypes>
                         <connections>
-                            <outlet property="dataSource" destination="8iN-e7-hT2" id="vcW-jd-gR5"/>
-                            <outlet property="delegate" destination="8iN-e7-hT2" id="J5d-MO-k8e"/>
+                            <outlet property="dataSource" destination="hvL-QA-tmo" id="0dk-zA-SAA"/>
+                            <outlet property="delegate" destination="hvL-QA-tmo" id="jwa-44-aQE"/>
                         </connections>
                     </tableView>
-                    <toolbarItems>
-                        <barButtonItem title="Item" id="TS9-Cl-Mjp"/>
-                    </toolbarItems>
-                    <navigationItem key="navigationItem" title="History" id="298-JD-Wed">
-                        <rightBarButtonItems>
-                            <barButtonItem systemItem="edit" id="wJN-dN-NxZ"/>
-                            <barButtonItem systemItem="add" id="4lj-l9-gIq">
-                                <connections>
-                                    <segue destination="JTK-lA-bGm" kind="presentation" identifier="addHistory" id="oVb-q5-6Xo"/>
-                                </connections>
-                            </barButtonItem>
-                        </rightBarButtonItems>
-                    </navigationItem>
-                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <navigationItem key="navigationItem" title="History" id="HUT-Jb-HvZ"/>
+                    <connections>
+                        <segue destination="Pyc-Wa-Y4y" kind="presentation" identifier="addNewDose" id="HsK-uM-nHC"/>
+                    </connections>
                 </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="YsB-n5-SgP" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Z1B-Nm-fXJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2309" y="785"/>
         </scene>
-        <!--Log Dose-->
-        <scene sceneID="Prc-iJ-bqO">
+        <!--AddDose-->
+        <scene sceneID="hhH-m5-com">
             <objects>
-                <tableViewController id="671-U9-QaQ" customClass="HistoryAddTVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="static" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="ZyV-pw-h4Z">
-                        <rect key="frame" x="0.0" y="64" width="600" height="536"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <animations/>
-                        <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
-                        <sections>
-                            <tableViewSection headerTitle="Specify the time you took the dose" id="Fnv-JI-T45">
-                                <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="216" id="fyP-iD-YDm">
-                                        <rect key="frame" x="0.0" y="49.5" width="600" height="216"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fyP-iD-YDm" id="GGz-gR-hHM">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="215.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="F76-RI-M7y">
-                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="216"/>
-                                                    <animations/>
-                                                    <date key="date" timeIntervalSinceReferenceDate="462540013.61978197">
-                                                        <!--2015-08-29 11:20:13 +0000-->
-                                                    </date>
-                                                    <connections>
-                                                        <action selector="updateDate:" destination="671-U9-QaQ" eventType="editingChanged" id="D1D-UA-Dtr"/>
-                                                    </connections>
-                                                </datePicker>
-                                            </subviews>
-                                            <animations/>
-                                            <constraints>
-                                                <constraint firstItem="F76-RI-M7y" firstAttribute="leading" secondItem="GGz-gR-hHM" secondAttribute="leading" id="EhK-OC-2dC"/>
-                                                <constraint firstAttribute="trailing" secondItem="F76-RI-M7y" secondAttribute="trailing" id="XmV-IY-cmg"/>
-                                                <constraint firstItem="F76-RI-M7y" firstAttribute="top" secondItem="GGz-gR-hHM" secondAttribute="top" id="Za1-Jk-Vev"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                        <animations/>
-                                    </tableViewCell>
-                                </cells>
-                            </tableViewSection>
-                        </sections>
-                        <connections>
-                            <outlet property="dataSource" destination="671-U9-QaQ" id="F6O-Uj-iVj"/>
-                            <outlet property="delegate" destination="671-U9-QaQ" id="jvr-Tw-JUx"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" title="Log Dose" id="LVr-Vh-yVF">
-                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="cwF-11-I9J">
-                            <connections>
-                                <segue destination="Ft7-mH-aZD" kind="unwind" unwindAction="historyUnwindCancel:" id="EKH-ct-9Lj"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="W7t-6J-73k">
-                            <connections>
-                                <segue destination="Ft7-mH-aZD" kind="unwind" unwindAction="historyUnwindAdd:" id="5j9-DV-NBW"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="picker" destination="F76-RI-M7y" id="pnJ-L8-KRT"/>
-                    </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="qxL-vy-x3y" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="Ft7-mH-aZD" userLabel="Exit" sceneMemberID="exit"/>
+                <viewControllerPlaceholder storyboardName="AddDose" id="Pyc-Wa-Y4y" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="MKO-SZ-rJX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3822" y="785"/>
+            <point key="canvasLocation" x="2855.5" y="785"/>
         </scene>
         <!--New Medication-->
         <scene sceneID="pgC-cu-YBw">
@@ -558,30 +496,6 @@
                 <exit id="V8x-MZ-JyG" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="3073.5" y="10"/>
-        </scene>
-        <!--MainUINC-->
-        <scene sceneID="eru-tN-JO1">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="JTK-lA-bGm" customClass="MainUINC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="6Nj-C9-lAA">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
-                        <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                        <color key="barTintColor" red="0.98431372549999996" green="0.0" blue="0.17254901959999999" alpha="1" colorSpace="calibratedRGB"/>
-                        <textAttributes key="titleTextAttributes">
-                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                        </textAttributes>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="671-U9-QaQ" kind="relationship" relationship="rootViewController" id="wkK-DZ-ROv"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="wEo-Xm-IUx" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3073.5" y="785"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
