@@ -25,12 +25,12 @@ class MainTVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Remove header
-        tableView.tableHeaderView = UIView(frame: CGRectMake(0.0, 0.0, tableView.bounds.size.width, 0.01))
-        
-        // Table modifications
+        // Modify VC
         self.clearsSelectionOnViewWillAppear = false
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
+        
+        // Modify table
+        tableView.tableHeaderView = UIView(frame: CGRectMake(0.0, 0.0, tableView.bounds.size.width, 0.01))
         
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "internalNotification:", name: "medNotification", object: nil)
@@ -90,6 +90,9 @@ class MainTVC: UITableViewController {
         let cell = tableView.dequeueReusableCellWithIdentifier("medicationCell", forIndexPath: indexPath)
         let med = medication[indexPath.row]
         
+        // Set cell tint
+        cell.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+        
         // Set medication name
         cell.textLabel?.text = med.name
         
@@ -102,14 +105,13 @@ class MainTVC: UITableViewController {
             let subtitle = NSMutableAttributedString()
 
             if (med.isOverdue) {
-                subtitle.appendAttributedString(NSAttributedString(string: "Overdue: "))
-                subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, 8))
+                subtitle.appendAttributedString(NSAttributedString(string: "Overdue: \(dateFormatter.stringFromDate(date))"))
+                subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, subtitle.length))
+                subtitle.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(15.0), range: NSMakeRange(0, 8))
             } else {
-                subtitle.appendAttributedString(NSAttributedString(string: "Next dose: "))
+                subtitle.appendAttributedString(NSAttributedString(string: "Next dose: \(dateFormatter.stringFromDate(date))"))
                 subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
             }
-            
-            subtitle.appendAttributedString(NSAttributedString(string: "\(dateFormatter.stringFromDate(date))"))
             
             cell.detailTextLabel?.attributedText = subtitle
         } else {
@@ -119,27 +121,31 @@ class MainTVC: UITableViewController {
         return cell
     }
     
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
-            // Cancel all notifications for medication
-            medication[indexPath.row].cancelNotification()
-            
-            // Remove medication from persistent store
-            moc.deleteObject(medication[indexPath.row])
-            appDelegate.saveContext()
-            
-            // Remove medication from array
-            medication.removeAtIndex(indexPath.row)
-            
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        }
-    }
-    
     override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
         medication[fromIndexPath.row].sortOrder = Int16(toIndexPath.row)
         medication[toIndexPath.row].sortOrder = Int16(fromIndexPath.row)
         medication.sortInPlace({ $0.sortOrder < $1.sortOrder })
         appDelegate.saveContext()
+    }
+    
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        if editingStyle == .Delete {
+            deleteMed(indexPath)
+        }
+    }
+    
+    func deleteMed(indexPath: NSIndexPath) {
+        // Cancel all notifications for medication
+        medication[indexPath.row].cancelNotification()
+        
+        // Remove medication from persistent store
+        moc.deleteObject(medication[indexPath.row])
+        appDelegate.saveContext()
+        
+        // Remove medication from array
+        medication.removeAtIndex(indexPath.row)
+        
+        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
     }
     
     
@@ -149,7 +155,7 @@ class MainTVC: UITableViewController {
         let med = medication[indexPath.row]
         
         if (tableView.editing == false) {
-            let alert = UIAlertController(title: med.name, message: nil, preferredStyle: .ActionSheet)
+            let alert = UIAlertController(title: med.name, message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet)
             
             alert.addAction(UIAlertAction(title: "Take Next Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
                 // TODO: Handle false by displaying error "Medication already taken within last 5 minutes. If error, untake last dose."
@@ -177,29 +183,33 @@ class MainTVC: UITableViewController {
                 }))
             }
             
-            alert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
-                
-                // Cancel all notifications for medication
-                self.medication[indexPath.row].cancelNotification()
-                
-                // Remove medication from persistent store
-                self.moc.deleteObject(self.medication[indexPath.row])
-                self.appDelegate.saveContext()
-
-                // Remove medication from array
-                self.medication.removeAtIndex(indexPath.row)
-                
-                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            
+            alert.addAction(UIAlertAction(title: "Edit", style: .Default, handler: {(action) -> Void in
+                self.performSegueWithIdentifier("editMedication", sender: indexPath.row)
             }))
             
-            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
+            alert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
+                if let name = med.name {
+                    let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name).", preferredStyle: UIAlertControllerStyle.Alert)
+
+                    deleteAlert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
+                    
+                    deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
+                        self.deleteMed(indexPath)
+                    }))
+
+                    self.presentViewController(deleteAlert, animated: true, completion: nil)
+                }
+            }))
+            
+            alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: {(action) -> Void in
                 tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }))
-            
-            alert.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+
+            alert.view.tintColor = UIColor.grayColor()
             presentViewController(alert, animated: true, completion: nil)
         } else {
-            self.performSegueWithIdentifier("editMedication", sender: indexPath.row)
+            performSegueWithIdentifier("editMedication", sender: indexPath.row)
         }
     }
     
@@ -256,6 +266,7 @@ class MainTVC: UITableViewController {
     
     @IBAction func medicationUnwindCancel(unwindSegue: UIStoryboardSegue) {
         moc.rollback()
+        self.tableView.reloadData()
     }
     
     @IBAction func historyUnwindAdd(unwindSegue: UIStoryboardSegue) {
@@ -294,7 +305,7 @@ class MainTVC: UITableViewController {
                 if let name = med.name {
                     let message = String(format:"Time to take %g %@ of %@", med.dosage, med.dosageUnit.units(med.dosage), name)
                     
-                    let alert = UIAlertController(title: "Take \(name) \(med.lastDose?.date)", message: message, preferredStyle: .Alert)
+                    let alert = UIAlertController(title: "Take \(name)", message: message, preferredStyle: .Alert)
                     
                     alert.addAction(UIAlertAction(title: "Take Dose", style: .Default, handler: {(action) -> Void in
                         self.takeMedicationNotification(notification)

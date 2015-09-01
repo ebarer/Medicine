@@ -22,6 +22,7 @@ class HistoryTVC: UITableViewController {
     
     let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
     let dateFormatter = NSDateFormatter()
+    
     var normalButtons = [UIBarButtonItem]()
     var editButtons = [UIBarButtonItem]()
     
@@ -35,6 +36,9 @@ class HistoryTVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Modify VC
+        self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+        self.navigationController?.toolbar.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
         self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
         // Configure toolbar buttons
@@ -129,13 +133,28 @@ class HistoryTVC: UITableViewController {
         return cell
     }
     
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        let sectionDate = getSectionDate(indexPath.section)
+        
+        if let logItems = log[sectionDate] {
+            if logItems[indexPath.row] == med.lastDose {
+                med.untakeLastDose(moc)
+            } else {
+                moc.deleteObject(logItems[indexPath.row])
+            }
+            
+            log[sectionDate]?.removeAtIndex(indexPath.row)
+            appDelegate.saveContext()
+            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+        }
+    }
+    
     
     // MARK: - Table view delegate
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         updateDeleteButtonLabel()
     }
-    
     
     override func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
         updateDeleteButtonLabel()
@@ -164,8 +183,8 @@ class HistoryTVC: UITableViewController {
         }
     }
     
-    func addNewDose() {
-        performSegueWithIdentifier("addNewDose", sender: self)
+    func addDose() {
+        performSegueWithIdentifier("addDose", sender: self)
     }
     
     func deleteDoses() {
@@ -184,7 +203,7 @@ class HistoryTVC: UITableViewController {
                 }
             }
             
-            // appDelegate.saveContext()
+            appDelegate.saveContext()
             
             tableView.deleteRowsAtIndexPaths(selectedRowIndexes, withRowAnimation: .Fade)
             

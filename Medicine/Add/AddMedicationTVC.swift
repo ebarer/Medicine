@@ -8,34 +8,44 @@
 
 import UIKit
 
-class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
+class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDelegate, UIPickerViewDelegate {
     
     weak var med: Medicine?
     
     
+    // MARK: - Helper variables
+    
+    let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+    let dateFormatter = NSDateFormatter()
+    
+    
     // MARK: - Outlets
     
+    @IBOutlet var saveButton: UIBarButtonItem!
     @IBOutlet var medicationName: UITextField!
-    @IBOutlet var dosageUnit: UITextField!
-    @IBOutlet var dosage: UITextField!
-    @IBOutlet var intervalUnit: UITextField!
-    @IBOutlet var interval: UITextField!
-    @IBOutlet var timeStart: UITextField!
-    @IBOutlet var timeEnd: UITextField!
-
+    @IBOutlet var dosageLabel: UILabel!
+    @IBOutlet var intervalLabel: UILabel!
+    
     
     // MARK: - View methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        medicationName.text = med?.name
+        if let medicine = med {
+            medicationName.text = medicine.name
+            
+            // Disable save button
+            if medicine.name?.isEmpty == true {
+                saveButton.enabled = false
+            }
 
-        dosageUnit.text = med?.dosageUnit.units(med?.dosage)
-        dosage.text = med?.dosage.description
-        
-        intervalUnit.text = med?.intervalUnit.units(med?.interval)
-        interval.text = med?.interval.description
+            // Set dosage label
+            dosageLabel.text = String(format:"%g %@", medicine.dosage, medicine.dosageUnit.units(medicine.dosage))
+            
+            // Set interval label
+            intervalLabel.text = String(format:"Every %g %@", medicine.interval, medicine.intervalUnit.units(medicine.interval))
+        }
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -66,25 +76,60 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     }
     
     
+    // MARK: - Picker delegate/data source
+    
+//    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+//        if (pickerView == dosagePicker) {
+//            return 3
+//        }
+//        
+//        return 1
+//    }
+//    
+//    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+//        if (pickerView == dosagePicker) {
+//            switch(component) {
+//            case 0:
+//                return 20
+//            case 1:
+//                return 10
+//            case 2:
+//                return 3
+//            default:
+//                return 1
+//            }
+//        }
+//        
+//        return 1
+//    }
+//    
+//    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+//        if (pickerView == dosagePicker) {
+//            switch(component) {
+//            case 0:
+//                return String(row)
+//            case 1:
+//                return String(row)
+//            case 2:
+//                return Doses(rawValue: Int16(row))?.description
+//            default:
+//                return nil
+//            }
+//        }
+//        
+//        return nil
+//    }
+    
+    
     // MARK: - Set medicine values
     
     @IBAction func updateName(sender: UITextField) {
         med?.name = sender.text
-    }
-    
-    @IBAction func updateDosageUnit(sender: UITextField) {
-        if let text = sender.text {
-            if let raw = Int16(text) {
-                if raw < Doses.count {
-                    med?.dosageUnit = Doses(rawValue: raw)!
-                }
-            }
-        }
-    }
-    
-    @IBAction func updateDose(sender: UITextField) {
-        if let text = sender.text {
-            med?.dosage = (text as NSString).floatValue
+        
+        if med?.name?.isEmpty == true {
+            saveButton.enabled = false
+        } else {
+            saveButton.enabled = true
         }
     }
     

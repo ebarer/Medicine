@@ -16,8 +16,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Set global tint colour
-        window?.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
         
         // Pass managed object context to MainTVC
         let rvc = self.window?.rootViewController as! UINavigationController
