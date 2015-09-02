@@ -8,15 +8,10 @@
 
 import UIKit
 
-class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDelegate, UIPickerViewDelegate {
+class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
     
     weak var med: Medicine?
-    
-    
-    // MARK: - Helper variables
-    
-    let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-    let dateFormatter = NSDateFormatter()
+    var editMode: Bool = false
     
     
     // MARK: - Outlets
@@ -27,19 +22,57 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     @IBOutlet var intervalLabel: UILabel!
     
     
+    // MARK: - Helper variables
+    
+    let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+    let dateFormatter = NSDateFormatter()
+    
+    
     // MARK: - View methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        if let medicine = med {
+            if medicine.name == nil || medicine.name?.isEmpty == true {
+                medicationName.becomeFirstResponder()
+            }
+        }
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        if let index = tableView.indexPathForSelectedRow {
+            tableView.deselectRowAtIndexPath(index, animated: animated)
+        }
         
+        updateLabels()
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        medicationName.resignFirstResponder()
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        print("AddMedicationTVC")
+    }
+    
+    func updateLabels() {
         if let medicine = med {
             medicationName.text = medicine.name
             
-            // Disable save button
-            if medicine.name?.isEmpty == true {
+            // If medication has no name, disable save button
+            if medicine.name == nil || medicine.name?.isEmpty == true {
                 saveButton.enabled = false
+                self.navigationItem.backBarButtonItem?.title = "Back"
+            } else {
+                saveButton.enabled = true
+                self.navigationItem.backBarButtonItem?.title = med?.name
             }
-
+            
             // Set dosage label
             dosageLabel.text = String(format:"%g %@", medicine.dosage, medicine.dosageUnit.units(medicine.dosage))
             
@@ -48,23 +81,18 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         }
     }
     
-    override func viewDidAppear(animated: Bool) {
-        if medicationName.text!.isEmpty {
-            medicationName.becomeFirstResponder()
-        }
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        print("AddMedicationTVC")
-    }
-    
     
     // MARK: - Table view delegate
     
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if section == 2 {
-            return "Take this medication every \(med!.interval) \(med!.intervalUnit.units(med!.interval)) until midnight."
+        if section == Rows.dosage.rawValue {
+            if editMode {
+                return "Changes will take effect with next dose taken."
+            }
+        }
+        
+        if section == Rows.prescription.rawValue {
+            return "Keep track of your prescription details and be alerted when you need to refill"
         }
         
         return nil
@@ -76,78 +104,32 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     }
     
     
-    // MARK: - Picker delegate/data source
-    
-//    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
-//        if (pickerView == dosagePicker) {
-//            return 3
-//        }
-//        
-//        return 1
-//    }
-//    
-//    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-//        if (pickerView == dosagePicker) {
-//            switch(component) {
-//            case 0:
-//                return 20
-//            case 1:
-//                return 10
-//            case 2:
-//                return 3
-//            default:
-//                return 1
-//            }
-//        }
-//        
-//        return 1
-//    }
-//    
-//    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-//        if (pickerView == dosagePicker) {
-//            switch(component) {
-//            case 0:
-//                return String(row)
-//            case 1:
-//                return String(row)
-//            case 2:
-//                return Doses(rawValue: Int16(row))?.description
-//            default:
-//                return nil
-//            }
-//        }
-//        
-//        return nil
-//    }
-    
-    
     // MARK: - Set medicine values
     
     @IBAction func updateName(sender: UITextField) {
         med?.name = sender.text
+        updateLabels()
+    }
+    
+    
+    // MARK: - Navigation
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if let vc = segue.destinationViewController as? AddMedicationTVC_Dosage {
+            vc.med = self.med
+        }
         
-        if med?.name?.isEmpty == true {
-            saveButton.enabled = false
-        } else {
-            saveButton.enabled = true
+        if let vc = segue.destinationViewController as? AddMedicationTVC_Interval {
+            vc.med = self.med
         }
     }
     
-    @IBAction func updateIntervalUnit(sender: UITextField) {
-        if let text = sender.text {
-            if let raw = Int16(text) {
-                if raw < Intervals.count {
-                    med?.intervalUnit = Intervals(rawValue: raw)!
-                }
-            }
-        }
-    }
-    
-    @IBAction func updateInterval(sender: UITextField) {
-        if let text = sender.text {
-            med?.interval = (text as NSString).floatValue
-        }
-    }
+}
+
+private enum Rows: Int {
+    case name = 0
+    case dosage = 1
+    case prescription = 2
 }
 
 

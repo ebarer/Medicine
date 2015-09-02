@@ -26,6 +26,7 @@ class MainTVC: UITableViewController {
         super.viewDidLoad()
         
         // Modify VC
+        self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
         self.clearsSelectionOnViewWillAppear = false
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
         
@@ -232,6 +233,7 @@ class MainTVC: UITableViewController {
             let addVC = vc.topViewController as! AddMedicationTVC
             addVC.title = "Edit Medication"
             addVC.med = medication[sender as! Int]
+            addVC.editMode = true
         }
         
         if segue.identifier == "viewMedicationDetails" {
