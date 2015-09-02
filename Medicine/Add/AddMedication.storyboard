@@ -438,34 +438,6 @@
                                         </tableViewCellContentView>
                                         <animations/>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="intervalPicker" rowHeight="216" id="aPu-wg-DAE">
-                                        <rect key="frame" x="0.0" y="555" width="600" height="216"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="aPu-wg-DAE" id="zaO-Qd-Cia">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="215.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="countDownTimer" minuteInterval="15" translatesAutoresizingMaskIntoConstraints="NO" id="k7F-Ax-SU3">
-                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="215"/>
-                                                    <animations/>
-                                                    <date key="date" timeIntervalSinceReferenceDate="462872571.72399199">
-                                                        <!--2015-09-02 07:42:51 +0000-->
-                                                    </date>
-                                                    <connections>
-                                                        <action selector="updateIntervalHours:" destination="SMH-XP-zzs" eventType="valueChanged" id="DcQ-Yp-0GK"/>
-                                                    </connections>
-                                                </datePicker>
-                                            </subviews>
-                                            <animations/>
-                                            <constraints>
-                                                <constraint firstItem="k7F-Ax-SU3" firstAttribute="top" secondItem="zaO-Qd-Cia" secondAttribute="top" id="LHp-3H-l4I"/>
-                                                <constraint firstAttribute="trailing" secondItem="k7F-Ax-SU3" secondAttribute="trailing" id="NVk-N4-jUc"/>
-                                                <constraint firstAttribute="bottom" secondItem="k7F-Ax-SU3" secondAttribute="bottom" id="udL-bt-Pra"/>
-                                                <constraint firstItem="k7F-Ax-SU3" firstAttribute="leading" secondItem="zaO-Qd-Cia" secondAttribute="leading" id="usq-aE-B7Y"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                        <animations/>
-                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                         </sections>
@@ -476,9 +448,8 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Interval" id="9Nv-3W-LgW"/>
                     <connections>
-                        <outlet property="intervalLabel" destination="1fB-Pe-KW2" id="ym0-ve-u4T"/>
+                        <outlet property="intervalLabel" destination="zng-kv-B8h" id="JSP-mr-bDg"/>
                         <outlet property="intervalPicker" destination="VJa-iX-2R8" id="vYW-JF-3YV"/>
-                        <outlet property="intervalPickerHours" destination="k7F-Ax-SU3" id="9OZ-P1-WCp"/>
                         <outlet property="intervalUnitLabel" destination="h1K-Fe-IsN" id="gxn-Rc-mmf"/>
                         <outlet property="intervalUnitPicker" destination="Wsc-Wr-KOA" id="oO6-of-sAk"/>
                     </connections>

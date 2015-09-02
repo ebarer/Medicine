@@ -77,7 +77,19 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             dosageLabel.text = String(format:"%g %@", medicine.dosage, medicine.dosageUnit.units(medicine.dosage))
             
             // Set interval label
-            intervalLabel.text = String(format:"Every %g %@", medicine.interval, medicine.intervalUnit.units(medicine.interval))
+            let hr = Int(medicine.interval)
+            let min = Int(60 * (medicine.interval % 1))
+            let hrUnit = medicine.intervalUnit.units(medicine.interval)
+            
+            if (hr == 1 && min == 0) {
+                intervalLabel.text = String(format:"Every %@", hrUnit.capitalizedString)
+            } else if (min == 0) {
+                intervalLabel.text = String(format:"Every %d %@", hr, hrUnit)
+            } else if (hr == 0) {
+                intervalLabel.text = String(format:"Every %d min", min)
+            } else {
+                intervalLabel.text = String(format:"Every %d %@ %d min", hr, hrUnit, min)
+            }
         }
     }
     

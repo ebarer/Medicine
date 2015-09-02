@@ -232,13 +232,18 @@ class HistoryTVC: UITableViewController {
                     }
                     
                     log[sectionDate]?.removeAtIndex(index.row)
+                    
+                    if logItems.count == 1 {
+                        let label = tableView.cellForRowAtIndexPath(index)?.textLabel
+                        label?.text = "No doses logged"
+                        label?.textColor = UIColor.lightGrayColor()
+                    } else {
+                        tableView.deleteRowsAtIndexPaths([index], withRowAnimation: .Fade)
+                    }
                 }
             }
             
             appDelegate.saveContext()
-            
-            tableView.deleteRowsAtIndexPaths(selectedRowIndexes, withRowAnimation: .Fade)
-            
             updateDeleteButtonLabel()
             setEditing(false, animated: true)
         }

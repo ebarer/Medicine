@@ -18,7 +18,7 @@ class AddDoseTVC: UITableViewController {
         super.viewDidLoad()
         
         // Set picker min/max values
-        picker.minimumDate = cal.dateByAddingUnit(NSCalendarUnit.Day, value: -6, toDate: cal.startOfDayForDate(NSDate()), options: [])
+        //picker.minimumDate = cal.dateByAddingUnit(NSCalendarUnit.Day, value: -6, toDate: cal.startOfDayForDate(NSDate()), options: [])
         picker.maximumDate = NSDate()
     }
     

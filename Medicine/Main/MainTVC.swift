@@ -19,6 +19,9 @@ class MainTVC: UITableViewController {
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var moc: NSManagedObjectContext!
     
+    let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+    let dateFormatter = NSDateFormatter()
+    
     
     // MARK: - View methods
     
@@ -99,18 +102,34 @@ class MainTVC: UITableViewController {
         
         // Set medication subtitle to next dosage date
         if let date = med.nextDose {
-            let dateFormatter = NSDateFormatter()
-            // dateFormatter.dateFormat = "MMM d, h:mm a"
-            dateFormatter.dateFormat = "h:mm a"
+
+            var dateString = String()
+
+            if cal.isDate(date, inSameDayAsDate: NSDate()) {
+                // If date is today
+                dateFormatter.dateFormat = "h:mm a"
+                dateString = dateFormatter.stringFromDate(date)
+            } else if cal.isDateInTomorrow(date) {
+                // If date is tomorrow
+                dateFormatter.dateFormat = "h:mm a"
+                dateString = "Tomorrow, " + dateFormatter.stringFromDate(date)
+            } else if date.compare(cal.dateByAddingUnit(NSCalendarUnit.WeekOfYear, value: 1, toDate: cal.startOfDayForDate(NSDate()), options: [])!) == .OrderedAscending {
+                // If date is within current week
+                dateFormatter.dateFormat = "EEEE, h:mm a"
+                dateString = dateFormatter.stringFromDate(date)
+            } else {
+                dateFormatter.dateFormat = "MMM d, h:mm a"
+                dateString = dateFormatter.stringFromDate(date)
+            }
             
             let subtitle = NSMutableAttributedString()
 
-            if (med.isOverdue) {
-                subtitle.appendAttributedString(NSAttributedString(string: "Overdue: \(dateFormatter.stringFromDate(date))"))
+            if med.isOverdue {
+                subtitle.appendAttributedString(NSAttributedString(string: "Overdue: \(dateString)"))
                 subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, subtitle.length))
                 subtitle.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(15.0), range: NSMakeRange(0, 8))
             } else {
-                subtitle.appendAttributedString(NSAttributedString(string: "Next dose: \(dateFormatter.stringFromDate(date))"))
+                subtitle.appendAttributedString(NSAttributedString(string: "Next dose: \(dateString)"))
                 subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
             }
             

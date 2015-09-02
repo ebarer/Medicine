@@ -220,9 +220,9 @@ enum Doses: Int16, CustomStringConvertible {
         switch self {
         case .Pills:
             if (amount != nil && amount == 1.0) {
-                return "Pill"
+                return "pill"
             } else {
-                return "Pills"
+                return "pills"
             }
         case .Milligrams: return "mg"
         case .Millilitres: return "ml"
@@ -253,9 +253,9 @@ enum Intervals: Int16, CustomStringConvertible {
         var string = ""
         
         switch self {
-        case .Hourly: string = "Hour"
-        case .Daily: string = "Day"
-        case .Weekly: string = "Week"
+        case .Hourly: string = "hour"
+        case .Daily: string = "day"
+        case .Weekly: string = "week"
         }
         
         if (amount != 1) {
