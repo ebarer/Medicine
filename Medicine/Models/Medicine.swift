@@ -200,7 +200,7 @@ class Medicine: NSManagedObject {
 
 // MARK: - Units Enum
 enum Doses: Int16, CustomStringConvertible {
-    case Pills = 0
+    case Pills
     case Milligrams
     case Millilitres
     
@@ -233,7 +233,7 @@ enum Doses: Int16, CustomStringConvertible {
 
 // MARK: - Frequencies Enum
 enum Intervals: Int16, CustomStringConvertible {
-    case Hourly = 0
+    case Hourly
     case Daily
     case Weekly
     

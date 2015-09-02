@@ -125,8 +125,10 @@ class MainTVC: UITableViewController {
             let subtitle = NSMutableAttributedString()
 
             if med.isOverdue {
+                cell.textLabel?.textColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+                
                 subtitle.appendAttributedString(NSAttributedString(string: "Overdue: \(dateString)"))
-                subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, subtitle.length))
+                subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0), range: NSMakeRange(0, subtitle.length))
                 subtitle.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(15.0), range: NSMakeRange(0, 8))
             } else {
                 subtitle.appendAttributedString(NSAttributedString(string: "Next dose: \(dateString)"))

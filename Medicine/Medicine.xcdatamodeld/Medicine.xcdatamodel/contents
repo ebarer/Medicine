@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="8193.2" systemVersion="15A263e" minimumToolsVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="8193.2" systemVersion="15A279b" minimumToolsVersion="Automatic">
     <entity name="History" representedClassName=".History" syncable="YES">
         <attribute name="date" attributeType="Date" syncable="YES"/>
         <relationship name="medicine" maxCount="1" deletionRule="Nullify" destinationEntity="Medicine" inverseName="history" inverseEntity="Medicine" syncable="YES"/>
