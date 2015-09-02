@@ -12,7 +12,7 @@ import CoreData
 class HistoryTVC: UITableViewController {
     
     weak var med:Medicine!
-    var log = [NSDate:[History]]()
+    var log = [NSDate: [History]]()
     
     
     // MARK: - Helper variables
@@ -90,13 +90,19 @@ class HistoryTVC: UITableViewController {
     
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {        
         return 7
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let sectionDate = getSectionDate(section)
+        
         if let count = log[sectionDate]?.count {
+            // Handle dates with no logged items
+            if count == 0 {
+                return 1
+            }
+            
             return count
         }
         
@@ -106,7 +112,7 @@ class HistoryTVC: UITableViewController {
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let sectionDate = getSectionDate(section)
         
-        // Special header for today/yesterday
+        // Special headers for today/yesterday
         if (section == 0) {
             dateFormatter.timeStyle = NSDateFormatterStyle.NoStyle;
             dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle;
@@ -124,13 +130,42 @@ class HistoryTVC: UITableViewController {
         let sectionDate = getSectionDate(indexPath.section)
 
         if let history = log[sectionDate] {
-            dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
-            dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle;
+            if history.count == 0 {
+                cell.textLabel?.text = "No doses logged"
+                cell.textLabel?.textColor = UIColor.lightGrayColor()
+            } else {
+                dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
+                dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle;
                 
-            cell.textLabel?.text = dateFormatter.stringFromDate(history[indexPath.row].date)
+                cell.textLabel?.text = dateFormatter.stringFromDate(history[indexPath.row].date)
+                cell.textLabel?.textColor = UIColor.blackColor()
+            }
         }
 
         return cell
+    }
+    
+    
+    // MARK: - Table view delegate
+    
+    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        let sectionDate = getSectionDate(indexPath.section)
+        
+        if log[sectionDate]?.count == 0 {
+            return false
+        }
+        
+        return true
+    }
+    
+    override func tableView(tableView: UITableView, shouldHighlightRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        let sectionDate = getSectionDate(indexPath.section)
+        
+        if log[sectionDate]?.count == 0 {
+            return false
+        }
+        
+        return true
     }
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
@@ -148,9 +183,6 @@ class HistoryTVC: UITableViewController {
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         }
     }
-    
-    
-    // MARK: - Table view delegate
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         updateDeleteButtonLabel()

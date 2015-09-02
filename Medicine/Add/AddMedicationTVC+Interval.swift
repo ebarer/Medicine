@@ -15,7 +15,16 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
     
     // MARK: - Outlets
     
+    @IBOutlet var intervalUnitLabel: UILabel!
     @IBOutlet var intervalUnitPicker: UIPickerView!
+    @IBOutlet var intervalLabel: UIView!
+    @IBOutlet var intervalPicker: UIPickerView!
+    @IBOutlet var intervalPickerHours: UIDatePicker!
+    
+    
+    // MARK: - Helper variables
+    
+    private var minutes = ["0","15","30","45"]
     
     
     // MARK: - View methods
@@ -39,40 +48,78 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
     
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
         if (pickerView == intervalUnitPicker) {
-            return 3
+            return 1
         }
         
-        return 1
+        if (pickerView == intervalPicker) {
+            if (med?.intervalUnit == Intervals.Hourly) {
+                return 4
+            } else {
+                return 2
+            }
+        }
+        
+        return 0
     }
     
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         if (pickerView == intervalUnitPicker) {
-            switch(component) {
-            case 0:
-                return 20
-            case 1:
-                return 10
-            case 2:
-                return 3
-            default:
-                return 1
+            return Intervals.count
+        }
+        
+        if (pickerView == intervalPicker) {
+            if (med?.intervalUnit == Intervals.Hourly) {
+                switch(component) {
+                case 0:
+                    return 24
+                case 2:
+                    return 999
+                default:
+                    return 1
+                }
+            } else {
+                switch(component) {
+                case 0:
+                    return 999
+                default:
+                    return 1
+                }
             }
         }
         
-        return 1
+        return 0
     }
     
-    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+    func pickerView(pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
         if (pickerView == intervalUnitPicker) {
-            switch(component) {
-            case 0:
-                return String(row)
-            case 1:
-                return String(row)
-            case 2:
-                return Doses(rawValue: Int16(row))?.description
-            default:
-                return nil
+            if let unit = Intervals(rawValue: Int16(row))?.description {
+                return NSAttributedString(string: unit)
+            }
+        }
+        
+        if (pickerView == intervalPicker) {
+            if (med?.intervalUnit == Intervals.Hourly) {
+                switch(component) {
+                case 0:
+                    return NSAttributedString(string: "\(row)")
+                case 1:
+                    return NSAttributedString(string: "hours")
+                case 2:
+                    return NSAttributedString(string: minutes[row % 4])
+                case 3:
+                    return NSAttributedString(string: "min")
+                default:
+                    return nil
+                }
+            } else {
+                switch(component) {
+                case 0:
+                    return NSAttributedString(string: "\(row+1)")
+                default:
+                    if let unit = med?.intervalUnit.units(med?.interval) {
+                        return NSAttributedString(string: unit)
+                    }
+                }
             }
         }
         
@@ -90,4 +137,8 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
 
     }
 
+    @IBAction func updateIntervalHours(sender: UIDatePicker) {
+        print(sender.date)
+    }
+    
 }

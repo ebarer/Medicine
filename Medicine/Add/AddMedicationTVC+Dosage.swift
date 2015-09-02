@@ -55,7 +55,7 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
     }
     
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return 3
+        return Doses.count
     }
     
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {

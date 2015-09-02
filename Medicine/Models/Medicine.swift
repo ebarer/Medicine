@@ -204,7 +204,7 @@ enum Doses: Int16, CustomStringConvertible {
     case Milligrams
     case Millilitres
     
-    static var count: Int16 {
+    static var count: Int {
         return 3
     }
     
@@ -237,7 +237,7 @@ enum Intervals: Int16, CustomStringConvertible {
     case Daily
     case Weekly
     
-    static var count: Int16 {
+    static var count: Int {
         return 3
     }
     
