@@ -75,8 +75,10 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
 
                 alarmPicker.date = alarm
             } else {
-                alarmLabel.text = "Midnight"
-                alarmPicker.date = cal.startOfDayForDate(NSDate())
+                if let date = cal.dateBySettingUnit(NSCalendarUnit.Minute, value: 0, ofDate: NSDate(), options: []) {
+                    alarmPicker.date = date
+                    alarmLabel.text = dateFormatter.stringFromDate(date)
+                }
             }
         }
     }
@@ -292,6 +294,9 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
                 
                 if (med?.intervalUnit == .Hourly) {
                     intervalPicker.selectRow(1, inComponent: 0, animated: false)
+                    
+                    // Remove alarm time
+                    med?.intervalAlarm = nil
                 } else {
                     intervalPicker.selectRow(0, inComponent: 0, animated: false)
                 }
