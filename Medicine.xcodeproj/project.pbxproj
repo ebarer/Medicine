@@ -18,6 +18,7 @@
 		CE6E551E1B9040C900805397 /* Medicine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551A1B9040C900805397 /* Medicine.swift */; };
 		CE6E551F1B9040C900805397 /* History+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551B1B9040C900805397 /* History+CoreDataProperties.swift */; };
 		CE6E55201B9040C900805397 /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551C1B9040C900805397 /* History.swift */; };
+		CE9A36C71B98FDCB00B90EDB /* MedicineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9A36C61B98FDCB00B90EDB /* MedicineTests.swift */; };
 		CEA250E91B90396C00BBE466 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA250E81B90396C00BBE466 /* AppDelegate.swift */; };
 		CEA250EE1B90396C00BBE466 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEA250EC1B90396C00BBE466 /* Main.storyboard */; };
 		CEA250F31B90396C00BBE466 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CEA250F21B90396C00BBE466 /* Assets.xcassets */; };
@@ -29,6 +30,16 @@
 		CEDE1B221B950F1500DFD7B0 /* AddDose.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE5DE78E1B950E4100168B1E /* AddDose.storyboard */; };
 		CEDE1B231B950F1800DFD7B0 /* AddMedication.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE38AF261B950989000D00AD /* AddMedication.storyboard */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		CE9A36C91B98FDCB00B90EDB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CEA250DD1B90396C00BBE466 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CEA250E41B90396C00BBE466;
+			remoteInfo = Medicine;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		CE247B8E1B96618100E4EB5F /* AddMedicationTVC+Dosage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "AddMedicationTVC+Dosage.swift"; path = "Add/AddMedicationTVC+Dosage.swift"; sourceTree = "<group>"; };
@@ -45,6 +56,9 @@
 		CE6E551A1B9040C900805397 /* Medicine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Medicine.swift; path = Medicine/Models/Medicine.swift; sourceTree = "<group>"; };
 		CE6E551B1B9040C900805397 /* History+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "History+CoreDataProperties.swift"; path = "Medicine/Models/History+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		CE6E551C1B9040C900805397 /* History.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = History.swift; path = Medicine/Models/History.swift; sourceTree = "<group>"; };
+		CE9A36C41B98FDCB00B90EDB /* MedicineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MedicineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE9A36C61B98FDCB00B90EDB /* MedicineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineTests.swift; sourceTree = "<group>"; };
+		CE9A36C81B98FDCB00B90EDB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CEA250E51B90396C00BBE466 /* Medicine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Medicine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEA250E81B90396C00BBE466 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CEA250ED1B90396C00BBE466 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -58,6 +72,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		CE9A36C11B98FDCB00B90EDB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CEA250E21B90396C00BBE466 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -81,11 +102,20 @@
 			path = ..;
 			sourceTree = "<group>";
 		};
+		CE9A36C51B98FDCB00B90EDB /* MedicineTests */ = {
+			isa = PBXGroup;
+			children = (
+				CE9A36C61B98FDCB00B90EDB /* MedicineTests.swift */,
+				CE9A36C81B98FDCB00B90EDB /* Info.plist */,
+			);
+			path = MedicineTests;
+			sourceTree = "<group>";
+		};
 		CEA250DC1B90396C00BBE466 = {
 			isa = PBXGroup;
 			children = (
 				CEA250E71B90396C00BBE466 /* Medicine */,
-				CEE25F771B98F7E700B2337B /* Tests */,
+				CE9A36C51B98FDCB00B90EDB /* MedicineTests */,
 				CEA250E61B90396C00BBE466 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -94,6 +124,7 @@
 			isa = PBXGroup;
 			children = (
 				CEA250E51B90396C00BBE466 /* Medicine.app */,
+				CE9A36C41B98FDCB00B90EDB /* MedicineTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -145,13 +176,6 @@
 			name = Main;
 			sourceTree = "<group>";
 		};
-		CEE25F771B98F7E700B2337B /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Tests;
-			sourceTree = "<group>";
-		};
 		CEE25F781B98F80100B2337B /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -173,6 +197,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		CE9A36C31B98FDCB00B90EDB /* MedicineTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CE9A36CD1B98FDCB00B90EDB /* Build configuration list for PBXNativeTarget "MedicineTests" */;
+			buildPhases = (
+				CE9A36C01B98FDCB00B90EDB /* Sources */,
+				CE9A36C11B98FDCB00B90EDB /* Frameworks */,
+				CE9A36C21B98FDCB00B90EDB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CE9A36CA1B98FDCB00B90EDB /* PBXTargetDependency */,
+			);
+			name = MedicineTests;
+			productName = MedicineTests;
+			productReference = CE9A36C41B98FDCB00B90EDB /* MedicineTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		CEA250E41B90396C00BBE466 /* Medicine */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CEA250FA1B90396C00BBE466 /* Build configuration list for PBXNativeTarget "Medicine" */;
@@ -199,6 +241,10 @@
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Elliot Barer";
 				TargetAttributes = {
+					CE9A36C31B98FDCB00B90EDB = {
+						CreatedOnToolsVersion = 7.0;
+						TestTargetID = CEA250E41B90396C00BBE466;
+					};
 					CEA250E41B90396C00BBE466 = {
 						CreatedOnToolsVersion = 7.0;
 						DevelopmentTeam = 5ZJB9DN7AQ;
@@ -219,11 +265,19 @@
 			projectRoot = "";
 			targets = (
 				CEA250E41B90396C00BBE466 /* Medicine */,
+				CE9A36C31B98FDCB00B90EDB /* MedicineTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		CE9A36C21B98FDCB00B90EDB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CEA250E31B90396C00BBE466 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -240,6 +294,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		CE9A36C01B98FDCB00B90EDB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE9A36C71B98FDCB00B90EDB /* MedicineTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CEA250E11B90396C00BBE466 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -264,6 +326,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		CE9A36CA1B98FDCB00B90EDB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CEA250E41B90396C00BBE466 /* Medicine */;
+			targetProxy = CE9A36C91B98FDCB00B90EDB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		CEA250EC1B90396C00BBE466 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
@@ -284,6 +354,30 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		CE9A36CB1B98FDCB00B90EDB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = MedicineTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.MedicineTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Medicine.app/Medicine";
+			};
+			name = Debug;
+		};
+		CE9A36CC1B98FDCB00B90EDB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = MedicineTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.MedicineTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Medicine.app/Medicine";
+			};
+			name = Release;
+		};
 		CEA250F81B90396C00BBE466 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -396,6 +490,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		CE9A36CD1B98FDCB00B90EDB /* Build configuration list for PBXNativeTarget "MedicineTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE9A36CB1B98FDCB00B90EDB /* Debug */,
+				CE9A36CC1B98FDCB00B90EDB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		CEA250E01B90396C00BBE466 /* Build configuration list for PBXProject "Medicine" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
