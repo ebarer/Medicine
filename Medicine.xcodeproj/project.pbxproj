@@ -104,6 +104,7 @@
 			children = (
 				CEA250E81B90396C00BBE466 /* AppDelegate.swift */,
 				CEA251031B903BE900BBE466 /* Main */,
+				CEF845391B9881A0000F223C /* Details */,
 				CEA251001B903BC900BBE466 /* Add */,
 				CE6E55211B9040E700805397 /* Models */,
 				CEA250FD1B9039E600BBE466 /* Other */,
@@ -137,13 +138,20 @@
 		CEA251031B903BE900BBE466 /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				CE63264E1B9149C80009F9AE /* MainUINC.swift */,
 				CEA250EC1B90396C00BBE466 /* Main.storyboard */,
+				CE63264E1B9149C80009F9AE /* MainUINC.swift */,
 				CEA89F961B9802DF0063606A /* MainEmptyView.xib */,
 				CEA251011B903BE400BBE466 /* MainTVC.swift */,
-				CE38AF241B95051E000D00AD /* HistoryTVC.swift */,
 			);
 			name = Main;
+			sourceTree = "<group>";
+		};
+		CEF845391B9881A0000F223C /* Details */ = {
+			isa = PBXGroup;
+			children = (
+				CE38AF241B95051E000D00AD /* HistoryTVC.swift */,
+			);
+			name = Details;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

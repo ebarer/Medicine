@@ -318,6 +318,7 @@ class MainTVC: UITableViewController {
                 let newIndex = NSIndexPath(forRow: medication.count, inSection: 0)
                 
                 addMed.sortOrder = Int16(newIndex.row)
+                addMed.scheduleNotification(NSDate())
                 medication.append(addMed)
                 appDelegate.saveContext()
                 
