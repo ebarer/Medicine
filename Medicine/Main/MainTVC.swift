@@ -362,6 +362,8 @@ class MainTVC: UITableViewController {
     // MARK: - Local Notifications
     
     func internalNotification(notification: NSNotification) {
+        print(UIApplication.sharedApplication().scheduledLocalNotifications)
+        
         if let id = notification.userInfo!["id"] as? String {
             let medQuery = medication.filter{ $0.medicineID == id }.first
             if let med = medQuery {
