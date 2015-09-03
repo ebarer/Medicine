@@ -81,14 +81,27 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             let min = Int(60 * (medicine.interval % 1))
             let hrUnit = medicine.intervalUnit.units(medicine.interval)
             
-            if (hr == 1 && min == 0) {
+            if hr == 1 && min == 0 {
                 intervalLabel.text = String(format:"Every %@", hrUnit.capitalizedString)
-            } else if (min == 0) {
+            } else if min == 0 {
                 intervalLabel.text = String(format:"Every %d %@", hr, hrUnit)
-            } else if (hr == 0) {
+            } else if hr == 0 {
                 intervalLabel.text = String(format:"Every %d min", min)
             } else {
                 intervalLabel.text = String(format:"Every %d %@ %d min", hr, hrUnit, min)
+            }
+            
+            // Append alarm time for daily interval
+            if medicine.intervalUnit == .Daily {
+                if let alarm = medicine.intervalAlarm {
+                    if medicine.isMidnight() {
+                        intervalLabel.text?.appendContentsOf(" at Midnight")
+                    } else {
+                        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+                        dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
+                        intervalLabel.text?.appendContentsOf(String(format:" at %@", dateFormatter.stringFromDate(alarm)))
+                    }
+                }
             }
         }
     }

@@ -19,11 +19,16 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
     @IBOutlet var intervalUnitPicker: UIPickerView!
     @IBOutlet var intervalLabel: UILabel!
     @IBOutlet var intervalPicker: UIPickerView!
+    @IBOutlet var alarmLabel: UILabel!
+    @IBOutlet var alarmPicker: UIDatePicker!
     
     
     // MARK: - Helper variables
+    
     private var selectedRow = Rows.intervalUnitLabel
     private var minutes = ["0","15","30","45"]
+    let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+    let dateFormatter = NSDateFormatter()
     
     
     // MARK: - View methods
@@ -34,13 +39,18 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         // Modify VC
         self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
         
+        // Setup date formatter
+        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+        dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
+        
         // Set values
         if let medicine = med {
+            // Set interval unit
             intervalUnitLabel.text = medicine.intervalUnit.description
-            updateIntervalLabel()
-            
             intervalUnitPicker.selectRow(Int(medicine.intervalUnit.rawValue), inComponent: 0, animated: false)
             
+            // Set interval
+            updateIntervalLabel()
             if (med?.intervalUnit == Intervals.Hourly) {
                 let hr = Int(medicine.interval)
                 let min = String(Int(60 * (medicine.interval % 1)))
@@ -54,6 +64,19 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
                 }
             } else {
                 intervalPicker.selectRow(Int(medicine.interval) - 1, inComponent: 0, animated: false)
+            }
+            
+            if let alarm = medicine.intervalAlarm {
+                if medicine.isMidnight() {
+                    alarmLabel.text = "Midnight"
+                } else {
+                    alarmLabel.text = dateFormatter.stringFromDate(alarm)
+                }
+
+                alarmPicker.date = alarm
+            } else {
+                alarmLabel.text = "Midnight"
+                alarmPicker.date = cal.startOfDayForDate(NSDate())
             }
         }
     }
@@ -77,6 +100,14 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
             if selectedRow == Rows.intervalLabel {
                 return 162
             }
+        case Rows.alarmLabel:
+            if med?.intervalUnit == Intervals.Daily {
+                return tableView.rowHeight
+            }
+        case Rows.alarmPicker:
+            if selectedRow == Rows.alarmLabel {
+                return 216
+            }
         default:
             return tableView.rowHeight
         }
@@ -88,7 +119,8 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         let row = Rows(index: indexPath)
         
         cell.preservesSuperviewLayoutMargins = false
-        cell.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 0)
+        cell.layoutMargins = UIEdgeInsetsZero
+        cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
         
         if selectedRow == Rows(index: indexPath) {
             cell.detailTextLabel?.textColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
@@ -98,10 +130,12 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         
         switch(row) {
         case Rows.intervalLabel:
-            if selectedRow == Rows.intervalUnitLabel {
+            if row != selectedRow {
                 cell.separatorInset = UIEdgeInsetsZero
-            } else {
-                cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
+            }
+        case Rows.alarmLabel:
+            if row != selectedRow {
+                cell.separatorInset = UIEdgeInsetsZero
             }
         default: break
         }
@@ -112,7 +146,12 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         selectedRow = Rows(index: indexPath)
-        tableView.reloadRowsAtIndexPaths([Rows.intervalLabel.index(), Rows.intervalUnitLabel.index()], withRowAnimation: .None)
+        
+        // Reload labels
+        let labels = [Rows.intervalLabel.index(), Rows.intervalUnitLabel.index(), Rows.alarmLabel.index()]
+        tableView.reloadRowsAtIndexPaths(labels, withRowAnimation: .None)
+        
+        // Reload table
         tableView.beginUpdates()
         tableView.endUpdates()
     }
@@ -257,6 +296,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
                     intervalPicker.selectRow(0, inComponent: 0, animated: false)
                 }
                 
+                // Reload interval picker to account for changed units
                 intervalPicker.reloadAllComponents()
             }
         }
@@ -279,6 +319,10 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
             
             updateIntervalLabel()
         }
+        
+        // Reload table view
+        tableView.beginUpdates()
+        tableView.endUpdates()
     }
     
     
@@ -301,6 +345,18 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
             }
         }
     }
+    
+    @IBAction func updateAlert(sender: UIDatePicker) {
+        if let medicine = med {
+            medicine.intervalAlarm = sender.date
+            
+            if medicine.isMidnight() {
+                alarmLabel.text = "Midnight"
+            } else {
+                alarmLabel.text = dateFormatter.stringFromDate(sender.date)
+            }
+        }
+    }
 
 }
 
@@ -310,6 +366,8 @@ private enum Rows: Int {
     case intervalUnitPicker
     case intervalLabel
     case intervalPicker
+    case alarmLabel
+    case alarmPicker
     
     init(index: NSIndexPath) {
         var row = Rows.none
@@ -323,6 +381,10 @@ private enum Rows: Int {
             row = Rows.intervalLabel
         case (0, 3):
             row = Rows.intervalPicker
+        case (1, 0):
+            row = Rows.alarmLabel
+        case (1, 1):
+            row = Rows.alarmPicker
         default:
             row = Rows.none
         }
@@ -340,6 +402,10 @@ private enum Rows: Int {
             return NSIndexPath(forRow: 2, inSection: 0)
         case .intervalPicker:
             return NSIndexPath(forRow: 3, inSection: 0)
+        case .alarmLabel:
+            return NSIndexPath(forRow: 0, inSection: 1)
+        case .alarmPicker:
+            return NSIndexPath(forRow: 1, inSection: 1)
         default:
             return NSIndexPath(forRow: 0, inSection: 0)
         }
