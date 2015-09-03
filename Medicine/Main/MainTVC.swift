@@ -40,8 +40,9 @@ class MainTVC: UITableViewController {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "internalNotification:", name: "medNotification", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "takeMedicationNotification:", name: "takeDoseNotification", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "snoozeReminderNotification:", name: "snoozeReminderNotification", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
         
-        // Cancel all notifications
+        // Cancel all existing notifications
         UIApplication.sharedApplication().cancelAllLocalNotifications()
         
         // Load medications
@@ -141,6 +142,7 @@ class MainTVC: UITableViewController {
                 subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0), range: NSMakeRange(0, subtitle.length))
                 subtitle.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(15.0), range: NSMakeRange(0, 8))
             } else {
+                cell.textLabel?.textColor = UIColor.blackColor()
                 subtitle.appendAttributedString(NSAttributedString(string: "Next dose: \(dateString)"))
                 subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
             }
@@ -164,6 +166,23 @@ class MainTVC: UITableViewController {
         if editingStyle == .Delete {
             if let name = medication[indexPath.row].name {
                 self.presentDeleteAlert(name, indexPath: indexPath)
+            }
+        }
+    }
+    
+    func refreshTableAndNotifications() {
+        clearOldNotifications()
+        tableView.reloadData()
+    }
+    
+    func clearOldNotifications() {
+        let currentDate = NSDate()
+        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
+        for notification in notifications {
+            if let date = notification.fireDate {
+                if date.compare(currentDate) == .OrderedAscending {
+                    UIApplication.sharedApplication().cancelLocalNotification(notification)
+                }
             }
         }
     }
@@ -318,7 +337,12 @@ class MainTVC: UITableViewController {
                 let newIndex = NSIndexPath(forRow: medication.count, inSection: 0)
                 
                 addMed.sortOrder = Int16(newIndex.row)
-                addMed.scheduleNotification(NSDate())
+                
+                // Schedule notification to remind user if they don't immediately take dose
+                if let date = addMed.calculateInterval(NSDate()) {
+                    addMed.scheduleNotification(date)
+                }
+                
                 medication.append(addMed)
                 appDelegate.saveContext()
                 

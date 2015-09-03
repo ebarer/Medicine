@@ -27,7 +27,13 @@ class HistoryTVC: UITableViewController {
     var editButtons = [UIBarButtonItem]()
     
     func getSectionDate(section: Int) -> NSDate {
-        return cal.dateByAddingUnit(NSCalendarUnit.Day, value: -1 * section, toDate: cal.startOfDayForDate(NSDate()), options: [])!
+        var unit = NSCalendarUnit.Day
+        
+        if med.intervalUnit == Intervals.Weekly {
+            unit = NSCalendarUnit.WeekOfYear
+        }
+        
+        return cal.dateByAddingUnit(unit, value: -1 * section, toDate: cal.startOfDayForDate(NSDate()), options: [])!
     }
     
     
@@ -117,12 +123,19 @@ class HistoryTVC: UITableViewController {
             dateFormatter.timeStyle = NSDateFormatterStyle.NoStyle;
             dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle;
             return "Today, \(dateFormatter.stringFromDate(sectionDate))"
-        } else if (section == 1) {
-            return "Yesterday"
         }
         
-        dateFormatter.dateFormat = "EEEE"
-        return dateFormatter.stringFromDate(sectionDate)
+        if sectionDate.compare(cal.dateByAddingUnit(NSCalendarUnit.WeekOfYear, value: -1, toDate: NSDate(), options: [])!) == .OrderedDescending {
+            if (section == 1) {
+                return "Yesterday"
+            }
+            
+            dateFormatter.dateFormat = "EEEE"
+            return dateFormatter.stringFromDate(sectionDate)
+        } else {
+            dateFormatter.dateFormat = "MMM d"
+            return dateFormatter.stringFromDate(sectionDate)
+        }
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
