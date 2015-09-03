@@ -19,6 +19,7 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
     @IBOutlet var dosageUnitLabel: UILabel!
     @IBOutlet var dosageUnitPicker: UIPickerView!
     
+    
     // MARK: - View methods
     
     override func viewDidLoad() {
@@ -48,7 +49,7 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
     }
     
     
-    // MARK: - Picker delegate/data source
+    // MARK: - Picker data source
     
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
         return 1
@@ -58,9 +59,16 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
         return Doses.count
     }
     
+    func pickerView(pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
+        return 30.0
+    }
+    
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return Doses(rawValue: Int16(row))?.description
     }
+    
+    
+    // MARK: - Picker delegate
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if let unit = Doses(rawValue: Int16(row)) {

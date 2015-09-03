@@ -2,7 +2,7 @@
 //  Medicine+CoreDataProperties.swift
 //  Medicine
 //
-//  Created by Elliot Barer on 2015-08-28.
+//  Created by Elliot Barer on 2015-09-03.
 //  Copyright © 2015 Elliot Barer. All rights reserved.
 //
 //  Choose "Create NSManagedObject Subclass…" from the Core Data editor menu
@@ -14,19 +14,20 @@ import CoreData
 
 extension Medicine {
 
+    @NSManaged var name: String?
     @NSManaged var medicineID: String
     @NSManaged var sortOrder: Int16
-    @NSManaged var name: String?
     
     @NSManaged var dosage: Float
     @NSManaged var dosageUnitInt: Int16
-    
+
     @NSManaged var interval: Float
     @NSManaged var intervalUnitInt: Int16
-    
-    @NSManaged var timeEnd: NSTimeInterval
-    @NSManaged var timeStart: NSTimeInterval
+    @NSManaged var intervalAlarm: NSDate?
     
     @NSManaged var history: NSOrderedSet?
-
+    
+    @NSManaged var quantity: Int16
+    @NSManaged var prescription: NSOrderedSet?
+    
 }

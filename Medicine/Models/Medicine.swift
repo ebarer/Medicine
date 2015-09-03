@@ -16,12 +16,11 @@ class Medicine: NSManagedObject {
         self.medicineID = NSUUID().UUIDString
     }
     
-    
     // MARK: - Dose methods
     func calculateInterval(modDate: NSDate?) -> NSDate? {
         var returnDate: NSDate? = nil
         
-        if let date = modDate {
+        if var date = modDate {
             switch (intervalUnit) {
             case .Hourly:
                 let hr = Int(interval)
@@ -30,6 +29,12 @@ class Medicine: NSManagedObject {
                 returnDate = cal.dateByAddingUnit(NSCalendarUnit.Hour, value: hr, toDate: date, options: [])
                 returnDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: min, toDate: returnDate!, options: [])
             case .Daily:
+                // Get alarm hour and minute components if set
+                if let alarm = intervalAlarm {
+                    let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
+                    date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: NSDate(), options: [])!
+                }
+                
                 returnDate = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])
             case .Weekly:
                 returnDate = cal.dateByAddingUnit(NSCalendarUnit.WeekOfYear, value: Int(interval), toDate: date, options: [])
@@ -43,18 +48,7 @@ class Medicine: NSManagedObject {
 
         // Get time of next dose
         let currentDate = NSDate()
-        var fireDate = calculateInterval(currentDate)
-
-        // Ensure notification fire date is before final dosage time (if set)
-        if let date = fireDate {
-            if (timeEnd != 0.0) {
-                let endTime = NSDate(timeInterval: timeEnd, sinceDate: cal.startOfDayForDate(currentDate))
-                
-                if (endTime.compare(date) == .OrderedAscending) {
-                    fireDate = nil
-                }
-            }
-        }
+        let fireDate = calculateInterval(currentDate)
         
         // If no history, or no doses taken within previous 5 minutes
         let compareDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: -5, toDate: currentDate, options: [])!
@@ -188,9 +182,23 @@ class Medicine: NSManagedObject {
         return nil
     }
     
-    var isOverdue: Bool {
+    func isOverdue() -> Bool {
         if let date = nextDose {
             return (NSDate().compare(date) == .OrderedDescending)
+        }
+        
+        return false
+    }
+    
+    func isMidnight() -> Bool {
+        if let alarm = intervalAlarm {
+            let currentDate = NSDate()
+            let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
+            if let compare = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: currentDate, options: []) {
+                if (cal.isDate(compare, equalToDate: cal.startOfDayForDate(currentDate), toUnitGranularity: NSCalendarUnit.Minute)) {
+                    return true
+                }
+            }
         }
         
         return false

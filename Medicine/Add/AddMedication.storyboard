@@ -480,6 +480,68 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection id="Kz2-hN-hpe">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="alarm" textLabel="e8d-cE-gji" detailTextLabel="YBd-1T-qN2" style="IBUITableViewCellStyleValue1" id="5fW-Tq-vfA">
+                                        <rect key="frame" x="0.0" y="483" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="5fW-Tq-vfA" id="TzB-LH-Xis">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Alarm" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="e8d-cE-gji">
+                                                    <rect key="frame" x="15" y="12" width="42.5" height="19.5"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <animations/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="YBd-1T-qN2">
+                                                    <rect key="frame" x="543.5" y="12" width="41.5" height="19.5"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <animations/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <animations/>
+                                        </tableViewCellContentView>
+                                        <animations/>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="alarmPicker" rowHeight="216" id="30X-gc-DXu">
+                                        <rect key="frame" x="0.0" y="527" width="600" height="216"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="30X-gc-DXu" id="b54-OP-GU4">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="215.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="IYY-Jr-iMZ">
+                                                    <rect key="frame" x="0.0" y="-0.5" width="600" height="216.5"/>
+                                                    <animations/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="216" id="f6R-e2-lc6"/>
+                                                    </constraints>
+                                                    <date key="date" timeIntervalSinceReferenceDate="462967786.68094701">
+                                                        <!--2015-09-03 10:09:46 +0000-->
+                                                    </date>
+                                                    <connections>
+                                                        <action selector="updateAlert:" destination="SMH-XP-zzs" eventType="valueChanged" id="9wn-WS-yPD"/>
+                                                    </connections>
+                                                </datePicker>
+                                            </subviews>
+                                            <animations/>
+                                            <constraints>
+                                                <constraint firstItem="IYY-Jr-iMZ" firstAttribute="leading" secondItem="b54-OP-GU4" secondAttribute="leading" id="83b-Ra-D6y"/>
+                                                <constraint firstAttribute="trailing" secondItem="IYY-Jr-iMZ" secondAttribute="trailing" id="Qcm-aD-983"/>
+                                                <constraint firstItem="IYY-Jr-iMZ" firstAttribute="centerY" secondItem="b54-OP-GU4" secondAttribute="centerY" id="h84-Qi-qGf"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <animations/>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                         </sections>
                         <connections>
                             <outlet property="dataSource" destination="SMH-XP-zzs" id="Z2T-xS-xHO"/>
@@ -488,6 +550,8 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Set Interval" id="9Nv-3W-LgW"/>
                     <connections>
+                        <outlet property="alarmLabel" destination="YBd-1T-qN2" id="qCx-Fi-SaY"/>
+                        <outlet property="alarmPicker" destination="IYY-Jr-iMZ" id="WFx-91-ZcW"/>
                         <outlet property="intervalLabel" destination="zng-kv-B8h" id="JSP-mr-bDg"/>
                         <outlet property="intervalPicker" destination="VJa-iX-2R8" id="vYW-JF-3YV"/>
                         <outlet property="intervalUnitLabel" destination="h1K-Fe-IsN" id="gxn-Rc-mmf"/>

@@ -109,26 +109,30 @@ class MainTVC: UITableViewController {
 
             var dateString = String()
 
-            if cal.isDate(date, inSameDayAsDate: NSDate()) {
-                // If date is today
-                dateFormatter.dateFormat = "h:mm a"
-                dateString = dateFormatter.stringFromDate(date)
-            } else if cal.isDateInTomorrow(date) {
+            // Set label date
+            if cal.isDateInTomorrow(date) {
                 // If date is tomorrow
-                dateFormatter.dateFormat = "h:mm a"
-                dateString = "Tomorrow, " + dateFormatter.stringFromDate(date)
+                dateString = "Tomorrow, "
             } else if date.compare(cal.dateByAddingUnit(NSCalendarUnit.WeekOfYear, value: 1, toDate: cal.startOfDayForDate(NSDate()), options: [])!) == .OrderedAscending {
                 // If date is within current week
-                dateFormatter.dateFormat = "EEEE, h:mm a"
+                dateFormatter.dateFormat = "EEEE, "
                 dateString = dateFormatter.stringFromDate(date)
             } else {
-                dateFormatter.dateFormat = "MMM d, h:mm a"
+                dateFormatter.dateFormat = "MMM d, "
                 dateString = dateFormatter.stringFromDate(date)
+            }
+            
+            // Set label time
+            if med.isMidnight() {
+                dateString.appendContentsOf("Midnight")
+            } else {
+                dateFormatter.dateFormat = "h:mm a"
+                dateString.appendContentsOf(dateFormatter.stringFromDate(date))
             }
             
             let subtitle = NSMutableAttributedString()
 
-            if med.isOverdue {
+            if med.isOverdue() {
                 cell.textLabel?.textColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
                 
                 subtitle.appendAttributedString(NSAttributedString(string: "Overdue: \(dateString)"))
