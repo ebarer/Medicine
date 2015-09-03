@@ -72,11 +72,9 @@
 			isa = PBXGroup;
 			children = (
 				CEA2510A1B903E7D00BBE466 /* Medicine.xcdatamodeld */,
-				CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */,
+				CEE25F781B98F80100B2337B /* Extensions */,
 				CE6E551A1B9040C900805397 /* Medicine.swift */,
-				CE6E551B1B9040C900805397 /* History+CoreDataProperties.swift */,
 				CE6E551C1B9040C900805397 /* History.swift */,
-				CE30D1541B9856D1007805DB /* Prescription+CoreDataProperties.swift */,
 				CE30D1551B9856D1007805DB /* Prescription.swift */,
 			);
 			name = Models;
@@ -87,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				CEA250E71B90396C00BBE466 /* Medicine */,
+				CEE25F771B98F7E700B2337B /* Tests */,
 				CEA250E61B90396C00BBE466 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -144,6 +143,23 @@
 				CEA251011B903BE400BBE466 /* MainTVC.swift */,
 			);
 			name = Main;
+			sourceTree = "<group>";
+		};
+		CEE25F771B98F7E700B2337B /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Tests;
+			sourceTree = "<group>";
+		};
+		CEE25F781B98F80100B2337B /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */,
+				CE6E551B1B9040C900805397 /* History+CoreDataProperties.swift */,
+				CE30D1541B9856D1007805DB /* Prescription+CoreDataProperties.swift */,
+			);
+			name = Extensions;
 			sourceTree = "<group>";
 		};
 		CEF845391B9881A0000F223C /* Details */ = {

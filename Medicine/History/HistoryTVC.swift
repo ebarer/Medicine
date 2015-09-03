@@ -63,6 +63,7 @@ class HistoryTVC: UITableViewController {
         // Sort history
         if let historySet = med.history {
             let history = historySet.array as! [History]
+            
             for index in 0...6 {
                 let sectionDate = getSectionDate(index)
                 
@@ -86,6 +87,7 @@ class HistoryTVC: UITableViewController {
         super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(false, animated: true)
         self.navigationController?.toolbar.translucent = true
+        tableView.reloadData()
     }
 
     override func didReceiveMemoryWarning() {
