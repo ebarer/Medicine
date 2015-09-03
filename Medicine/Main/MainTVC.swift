@@ -110,7 +110,9 @@ class MainTVC: UITableViewController {
             var dateString = String()
 
             // Set label date
-            if cal.isDateInTomorrow(date) {
+            if cal.isDateInToday(date) {
+                // If date is today
+            } else if cal.isDateInTomorrow(date) {
                 // If date is tomorrow
                 dateString = "Tomorrow, "
             } else if date.compare(cal.dateByAddingUnit(NSCalendarUnit.WeekOfYear, value: 1, toDate: cal.startOfDayForDate(NSDate()), options: [])!) == .OrderedAscending {
