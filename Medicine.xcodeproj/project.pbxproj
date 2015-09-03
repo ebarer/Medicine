@@ -23,6 +23,7 @@
 		CEA250FF1B903BC200BBE466 /* AddMedicationTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA250FE1B903BC200BBE466 /* AddMedicationTVC.swift */; };
 		CEA251021B903BE400BBE466 /* MainTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA251011B903BE400BBE466 /* MainTVC.swift */; };
 		CEA2510C1B903E7D00BBE466 /* Medicine.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CEA2510A1B903E7D00BBE466 /* Medicine.xcdatamodeld */; };
+		CEA89F971B9802DF0063606A /* MainEmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEA89F961B9802DF0063606A /* MainEmptyView.xib */; settings = {ASSET_TAGS = (); }; };
 		CEDE1B221B950F1500DFD7B0 /* AddDose.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE5DE78E1B950E4100168B1E /* AddDose.storyboard */; };
 		CEDE1B231B950F1800DFD7B0 /* AddMedication.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE38AF261B950989000D00AD /* AddMedication.storyboard */; };
 /* End PBXBuildFile section */
@@ -49,6 +50,7 @@
 		CEA250FE1B903BC200BBE466 /* AddMedicationTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddMedicationTVC.swift; path = Add/AddMedicationTVC.swift; sourceTree = "<group>"; };
 		CEA251011B903BE400BBE466 /* MainTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainTVC.swift; path = Main/MainTVC.swift; sourceTree = "<group>"; };
 		CEA2510B1B903E7D00BBE466 /* Medicine.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Medicine.xcdatamodel; sourceTree = "<group>"; };
+		CEA89F961B9802DF0063606A /* MainEmptyView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MainEmptyView.xib; path = Main/MainEmptyView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,7 +97,6 @@
 			isa = PBXGroup;
 			children = (
 				CEA250E81B90396C00BBE466 /* AppDelegate.swift */,
-				CEA250F41B90396C00BBE466 /* LaunchScreen.storyboard */,
 				CEA251031B903BE900BBE466 /* Main */,
 				CEA251001B903BC900BBE466 /* Add */,
 				CE6E55211B9040E700805397 /* Models */,
@@ -108,6 +109,7 @@
 			isa = PBXGroup;
 			children = (
 				CEA250F71B90396C00BBE466 /* Info.plist */,
+				CEA250F41B90396C00BBE466 /* LaunchScreen.storyboard */,
 				CEA250F21B90396C00BBE466 /* Assets.xcassets */,
 			);
 			name = Other;
@@ -131,6 +133,7 @@
 			children = (
 				CE63264E1B9149C80009F9AE /* MainUINC.swift */,
 				CEA250EC1B90396C00BBE466 /* Main.storyboard */,
+				CEA89F961B9802DF0063606A /* MainEmptyView.xib */,
 				CEA251011B903BE400BBE466 /* MainTVC.swift */,
 				CE38AF241B95051E000D00AD /* HistoryTVC.swift */,
 			);
@@ -200,6 +203,7 @@
 				CEDE1B231B950F1800DFD7B0 /* AddMedication.storyboard in Resources */,
 				CEDE1B221B950F1500DFD7B0 /* AddDose.storyboard in Resources */,
 				CEA250F31B90396C00BBE466 /* Assets.xcassets in Resources */,
+				CEA89F971B9802DF0063606A /* MainEmptyView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

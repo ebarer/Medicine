@@ -104,7 +104,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         }
         
         if section == Rows.prescription.rawValue {
-            return "Keep track of your prescription details and be alerted when you need to refill"
+            return "Keep track of your prescription levels, and be reminded to refill when running low."
         }
         
         return nil

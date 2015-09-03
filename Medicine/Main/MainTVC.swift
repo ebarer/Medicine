@@ -67,6 +67,10 @@ class MainTVC: UITableViewController {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(true, animated: true)
+        
+        // If no medications, display empty message
+        displayEmptyView()
+        
         self.tableView.reloadData()
     }
     
@@ -152,22 +156,10 @@ class MainTVC: UITableViewController {
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
-            deleteMed(indexPath)
+            if let name = medication[indexPath.row].name {
+                self.presentDeleteAlert(name, indexPath: indexPath)
+            }
         }
-    }
-    
-    func deleteMed(indexPath: NSIndexPath) {
-        // Cancel all notifications for medication
-        medication[indexPath.row].cancelNotification()
-        
-        // Remove medication from persistent store
-        moc.deleteObject(medication[indexPath.row])
-        appDelegate.saveContext()
-        
-        // Remove medication from array
-        medication.removeAtIndex(indexPath.row)
-        
-        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
     }
     
     
@@ -212,15 +204,7 @@ class MainTVC: UITableViewController {
             
             alert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
                 if let name = med.name {
-                    let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name).", preferredStyle: UIAlertControllerStyle.Alert)
-
-                    deleteAlert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
-                    
-                    deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
-                        self.deleteMed(indexPath)
-                    }))
-
-                    self.presentViewController(deleteAlert, animated: true, completion: nil)
+                    self.presentDeleteAlert(name, indexPath: indexPath)
                 }
             }))
             
@@ -232,6 +216,56 @@ class MainTVC: UITableViewController {
             presentViewController(alert, animated: true, completion: nil)
         } else {
             performSegueWithIdentifier("editMedication", sender: indexPath.row)
+        }
+    }
+    
+    
+    // MARK: - Delete functions
+    
+    func presentDeleteAlert(name: String, indexPath: NSIndexPath) {
+        let deleteAlert = UIAlertController(title: "Delete \"\(name)\"?", message: "This will permanently delete the \"\(name)\" medication and all of its history.", preferredStyle: UIAlertControllerStyle.Alert)
+        
+        deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
+            self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        }))
+        
+        deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
+            self.deleteMed(indexPath)
+        }))
+        
+        self.presentViewController(deleteAlert, animated: true, completion: nil)
+    }
+    
+    func deleteMed(indexPath: NSIndexPath) {
+        // Cancel all notifications for medication
+        medication[indexPath.row].cancelNotification()
+        
+        // Remove medication from persistent store
+        moc.deleteObject(medication[indexPath.row])
+        appDelegate.saveContext()
+        
+        // Remove medication from array
+        medication.removeAtIndex(indexPath.row)
+        
+        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+        tableView.editing = false
+        
+        displayEmptyView()
+    }
+    
+    func displayEmptyView() {
+        if medication.count == 0 {
+            self.navigationItem.leftBarButtonItem?.enabled = false
+            
+            // Create empty message
+            let nib = UINib(nibName: "MainEmptyView", bundle: nil)
+            let emptyView = nib.instantiateWithOwner(self, options: nil)[0] as! UIView
+            
+            // Display message
+            self.tableView.backgroundView = emptyView
+        } else {
+            self.navigationItem.leftBarButtonItem?.enabled = true
+            self.tableView.backgroundView = nil
         }
     }
     

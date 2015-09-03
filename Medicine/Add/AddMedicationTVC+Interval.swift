@@ -19,7 +19,6 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
     @IBOutlet var intervalUnitPicker: UIPickerView!
     @IBOutlet var intervalLabel: UILabel!
     @IBOutlet var intervalPicker: UIPickerView!
-    @IBOutlet var intervalPickerHours: UIDatePicker!
     
     
     // MARK: - Helper variables
@@ -230,13 +229,13 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
             let hrUnit = medicine.intervalUnit.units(medicine.interval)
             
             if (hr == 1 && min == 0) {
-                intervalLabel.text = String(format:"Every %@", hrUnit.capitalizedString)
+                intervalLabel.text = String(format:"%@", hrUnit.capitalizedString)
             } else if (min == 0) {
-                intervalLabel.text = String(format:"Every %d %@", hr, hrUnit)
+                intervalLabel.text = String(format:"%d %@", hr, hrUnit)
             } else if (hr == 0) {
-                intervalLabel.text = String(format:"Every %d min", min)
+                intervalLabel.text = String(format:"%d min", min)
             } else {
-                intervalLabel.text = String(format:"Every %d %@ %d min", hr, hrUnit, min)
+                intervalLabel.text = String(format:"%d %@ %d min", hr, hrUnit, min)
             }
         }
     }
