@@ -250,7 +250,7 @@ enum Intervals: Int16, CustomStringConvertible {
     case Weekly
     
     static var count: Int {
-        return 3
+        return 2
     }
     
     var description: String {

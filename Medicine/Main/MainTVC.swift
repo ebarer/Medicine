@@ -338,9 +338,9 @@ class MainTVC: UITableViewController {
                 
                 addMed.sortOrder = Int16(newIndex.row)
                 
-                // Schedule notification to remind user if they don't immediately take dose
-                if let date = addMed.calculateInterval(NSDate()) {
-                    addMed.scheduleNotification(date)
+                // If medication has specified alert time, schedule first dose
+                if addMed.intervalUnit == Intervals.Daily && addMed.intervalAlarm != nil {
+                    addMed.scheduleNotification(NSDate())
                 }
                 
                 medication.append(addMed)
