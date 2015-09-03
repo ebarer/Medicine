@@ -258,11 +258,10 @@ class MainTVC: UITableViewController {
             self.navigationItem.leftBarButtonItem?.enabled = false
             
             // Create empty message
-            let nib = UINib(nibName: "MainEmptyView", bundle: nil)
-            let emptyView = nib.instantiateWithOwner(self, options: nil)[0] as! UIView
-            
-            // Display message
-            self.tableView.backgroundView = emptyView
+            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                // Display message
+                self.tableView.backgroundView = emptyView
+            }
         } else {
             self.navigationItem.leftBarButtonItem?.enabled = true
             self.tableView.backgroundView = nil

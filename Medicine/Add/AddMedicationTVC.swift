@@ -97,13 +97,13 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     // MARK: - Table view delegate
     
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if section == Rows.dosage.rawValue {
+        if section == Rows.dosage.index().section {
             if editMode {
                 return "Changes will take effect with next dose taken."
             }
         }
         
-        if section == Rows.prescription.rawValue {
+        if section == Rows.prescription.index().section {
             return "Keep track of your prescription levels, and be reminded to refill when running low."
         }
         
@@ -139,12 +139,48 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
 }
 
 private enum Rows: Int {
-    case name = 0
-    case dosage = 1
-    case prescription = 2
+    case none = -1
+    case name
+    case dosage
+    case interval
+    case scheduleSelect
+    case prescription
+    
+    init(index: NSIndexPath) {
+        var row = Rows.none
+        
+        switch (index.section, index.row) {
+        case (0, 0):
+            row = Rows.name
+        case (1, 0):
+            row = Rows.dosage
+        case (1, 1):
+            row = Rows.interval
+        case (2, 0):
+            row = Rows.scheduleSelect
+        case (2, 1):
+            row = Rows.prescription
+        default:
+            row = Rows.none
+        }
+        
+        self = row
+    }
+    
+    func index() -> NSIndexPath {
+        switch self {
+        case .name:
+            return NSIndexPath(forRow: 0, inSection: 0)
+        case .dosage:
+            return NSIndexPath(forRow: 0, inSection: 1)
+        case .interval:
+            return NSIndexPath(forRow: 1, inSection: 1)
+        case .scheduleSelect:
+            return NSIndexPath(forRow: 0, inSection: 2)
+        case .prescription:
+            return NSIndexPath(forRow: 1, inSection: 2)
+        default:
+            return NSIndexPath(forRow: 0, inSection: 0)
+        }
+    }
 }
-
-
-
-
-

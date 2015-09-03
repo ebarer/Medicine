@@ -309,15 +309,15 @@
                                         </tableViewCellContentView>
                                         <animations/>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="dosageUnitPicker" rowHeight="216" id="nr3-Yf-vC8">
-                                        <rect key="frame" x="0.0" y="123" width="600" height="216"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="dosageUnitPicker" rowHeight="162" id="nr3-Yf-vC8">
+                                        <rect key="frame" x="0.0" y="123" width="600" height="162"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="nr3-Yf-vC8" id="I9i-mC-SRY">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="215.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="161.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hqb-nG-HAy">
-                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="215"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="161.5"/>
                                                     <animations/>
                                                     <connections>
                                                         <outlet property="dataSource" destination="kZ7-qR-OR1" id="w9U-Tp-3UN"/>
@@ -394,16 +394,19 @@
                                         </tableViewCellContentView>
                                         <animations/>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="intervalUnitPicker" rowHeight="216" id="IpC-vw-ZPP">
-                                        <rect key="frame" x="0.0" y="79" width="600" height="216"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="intervalUnitPicker" rowHeight="162" id="IpC-vw-ZPP">
+                                        <rect key="frame" x="0.0" y="79" width="600" height="162"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="IpC-vw-ZPP" id="rpu-lH-hWj">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="215.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="161.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Wsc-Wr-KOA">
-                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="216"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="161.5"/>
                                                     <animations/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="162" id="Bnv-yV-vLU"/>
+                                                    </constraints>
                                                     <connections>
                                                         <outlet property="dataSource" destination="SMH-XP-zzs" id="aN8-uw-j1w"/>
                                                         <outlet property="delegate" destination="SMH-XP-zzs" id="M85-cp-Oj6"/>
@@ -412,16 +415,15 @@
                                             </subviews>
                                             <animations/>
                                             <constraints>
-                                                <constraint firstAttribute="trailing" secondItem="Wsc-Wr-KOA" secondAttribute="trailing" id="1OB-h4-4Sl"/>
-                                                <constraint firstItem="Wsc-Wr-KOA" firstAttribute="top" secondItem="rpu-lH-hWj" secondAttribute="top" id="9zC-1K-f12"/>
-                                                <constraint firstAttribute="bottom" secondItem="Wsc-Wr-KOA" secondAttribute="bottom" id="XsJ-wE-PkE"/>
-                                                <constraint firstItem="Wsc-Wr-KOA" firstAttribute="leading" secondItem="rpu-lH-hWj" secondAttribute="leading" id="lle-UB-wuh"/>
+                                                <constraint firstAttribute="trailing" secondItem="Wsc-Wr-KOA" secondAttribute="trailing" id="JDU-i8-76t"/>
+                                                <constraint firstItem="Wsc-Wr-KOA" firstAttribute="centerY" secondItem="rpu-lH-hWj" secondAttribute="centerY" id="fDl-TW-IZ4"/>
+                                                <constraint firstItem="Wsc-Wr-KOA" firstAttribute="leading" secondItem="rpu-lH-hWj" secondAttribute="leading" id="yyF-6R-o7v"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <animations/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="interval" textLabel="rI0-Fl-Wfa" detailTextLabel="zng-kv-B8h" style="IBUITableViewCellStyleValue1" id="GO1-1n-CX9">
-                                        <rect key="frame" x="0.0" y="295" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="241" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="GO1-1n-CX9" id="1fB-Pe-KW2">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
@@ -448,16 +450,19 @@
                                         </tableViewCellContentView>
                                         <animations/>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="intervalPicker" rowHeight="216" id="cNA-Fc-oDo">
-                                        <rect key="frame" x="0.0" y="339" width="600" height="216"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="intervalPicker" rowHeight="162" id="cNA-Fc-oDo">
+                                        <rect key="frame" x="0.0" y="285" width="600" height="162"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="cNA-Fc-oDo" id="z3y-Ii-aPj">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="215.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="161.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VJa-iX-2R8">
-                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="216"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="161.5"/>
                                                     <animations/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="162" id="MRo-db-54t"/>
+                                                    </constraints>
                                                     <connections>
                                                         <outlet property="dataSource" destination="SMH-XP-zzs" id="eLF-DO-HCS"/>
                                                         <outlet property="delegate" destination="SMH-XP-zzs" id="xlf-eD-nGt"/>
@@ -466,10 +471,9 @@
                                             </subviews>
                                             <animations/>
                                             <constraints>
-                                                <constraint firstAttribute="bottom" secondItem="VJa-iX-2R8" secondAttribute="bottom" id="EyD-rX-gby"/>
-                                                <constraint firstItem="VJa-iX-2R8" firstAttribute="leading" secondItem="z3y-Ii-aPj" secondAttribute="leading" id="j87-1o-RZ7"/>
-                                                <constraint firstAttribute="trailing" secondItem="VJa-iX-2R8" secondAttribute="trailing" id="qMF-Ub-Sbl"/>
-                                                <constraint firstItem="VJa-iX-2R8" firstAttribute="top" secondItem="z3y-Ii-aPj" secondAttribute="top" id="sGo-GX-fbg"/>
+                                                <constraint firstItem="VJa-iX-2R8" firstAttribute="leading" secondItem="z3y-Ii-aPj" secondAttribute="leading" id="DTI-gr-CA3"/>
+                                                <constraint firstAttribute="trailing" secondItem="VJa-iX-2R8" secondAttribute="trailing" id="SJM-rp-fy2"/>
+                                                <constraint firstItem="VJa-iX-2R8" firstAttribute="centerY" secondItem="z3y-Ii-aPj" secondAttribute="centerY" id="fYW-eu-UIW"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <animations/>

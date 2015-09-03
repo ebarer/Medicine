@@ -22,7 +22,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
     
     
     // MARK: - Helper variables
-    
+    private var selectedRow = Rows.intervalUnitLabel
     private var minutes = ["0","15","30","45"]
     
     
@@ -63,7 +63,62 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
     }
     
     
-    // MARK: - Picker delegate/data source
+    // MARK: - Table view data source
+    
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        let row = Rows(index: indexPath)
+        
+        switch(row) {
+        case Rows.intervalUnitPicker:
+            if selectedRow == Rows.intervalUnitLabel {
+                return 162
+            }
+        case Rows.intervalPicker:
+            if selectedRow == Rows.intervalLabel {
+                return 162
+            }
+        default:
+            return tableView.rowHeight
+        }
+        
+        return 0
+    }
+
+    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        let row = Rows(index: indexPath)
+        
+        cell.preservesSuperviewLayoutMargins = false
+        cell.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 0)
+        
+        if selectedRow == Rows(index: indexPath) {
+            cell.detailTextLabel?.textColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+        } else {
+            cell.detailTextLabel?.textColor = UIColor.grayColor()
+        }
+        
+        switch(row) {
+        case Rows.intervalLabel:
+            if selectedRow == Rows.intervalUnitLabel {
+                cell.separatorInset = UIEdgeInsetsZero
+            } else {
+                cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
+            }
+        default: break
+        }
+    }
+    
+    
+    // MARK: - Table view delegate
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        selectedRow = Rows(index: indexPath)
+        tableView.reloadRowsAtIndexPaths([Rows.intervalLabel.index(), Rows.intervalUnitLabel.index()], withRowAnimation: .None)
+        tableView.beginUpdates()
+        tableView.endUpdates()
+    }
+    
+    
+    // MARK: - Picker data source
     
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
         if (pickerView == intervalUnitPicker) {
@@ -92,7 +147,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
                 case 0:
                     return 24
                 case 2:
-                    return 999
+                    return 4
                 default:
                     return 1
                 }
@@ -137,6 +192,10 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         return 0.0
     }
     
+    func pickerView(pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
+        return 30.0
+    }
+    
     func pickerView(pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
         if (pickerView == intervalUnitPicker) {
             if let unit = Intervals(rawValue: Int16(row))?.description {
@@ -179,6 +238,9 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         
         return nil
     }
+    
+    
+    // MARK: - Picker delegate
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if (pickerView == intervalUnitPicker) {
@@ -240,4 +302,46 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         }
     }
 
+}
+
+private enum Rows: Int {
+    case none = -1
+    case intervalUnitLabel
+    case intervalUnitPicker
+    case intervalLabel
+    case intervalPicker
+    
+    init(index: NSIndexPath) {
+        var row = Rows.none
+        
+        switch (index.section, index.row) {
+        case (0, 0):
+            row = Rows.intervalUnitLabel
+        case (0, 1):
+            row = Rows.intervalUnitPicker
+        case (0, 2):
+            row = Rows.intervalLabel
+        case (0, 3):
+            row = Rows.intervalPicker
+        default:
+            row = Rows.none
+        }
+
+        self = row
+    }
+    
+    func index() -> NSIndexPath {
+        switch self {
+        case .intervalUnitLabel:
+            return NSIndexPath(forRow: 0, inSection: 0)
+        case .intervalUnitPicker:
+            return NSIndexPath(forRow: 1, inSection: 0)
+        case .intervalLabel:
+            return NSIndexPath(forRow: 2, inSection: 0)
+        case .intervalPicker:
+            return NSIndexPath(forRow: 3, inSection: 0)
+        default:
+            return NSIndexPath(forRow: 0, inSection: 0)
+        }
+    }
 }
