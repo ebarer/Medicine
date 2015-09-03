@@ -1,1 +1,1 @@
-# Medicine
+Medicine Manager
