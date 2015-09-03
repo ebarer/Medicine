@@ -2,6 +2,7 @@
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="8193.2" systemVersion="15A279b" minimumToolsVersion="Automatic">
     <entity name="History" representedClassName=".History" syncable="YES">
         <attribute name="date" attributeType="Date" syncable="YES"/>
+        <attribute name="next" optional="YES" attributeType="Date" syncable="YES"/>
         <relationship name="medicine" maxCount="1" deletionRule="Nullify" destinationEntity="Medicine" inverseName="history" inverseEntity="Medicine" syncable="YES"/>
     </entity>
     <entity name="Medicine" representedClassName=".Medicine" syncable="YES">
@@ -24,7 +25,7 @@
         <relationship name="medicine" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Medicine" inverseName="prescription" inverseEntity="Medicine" syncable="YES"/>
     </entity>
     <elements>
-        <element name="History" positionX="-92" positionY="51" width="128" height="75"/>
+        <element name="History" positionX="-92" positionY="51" width="128" height="90"/>
         <element name="Medicine" positionX="-263" positionY="-142" width="128" height="210"/>
         <element name="Prescription" positionX="-180" positionY="-27" width="128" height="105"/>
     </elements>

@@ -105,7 +105,7 @@ class MainTVC: UITableViewController {
         cell.textLabel?.text = med.name
         
         // Set medication subtitle to next dosage date
-        if let date = med.nextDose {
+        if let date = med.printNext() {
 
             var dateString = String()
 
@@ -340,6 +340,7 @@ class MainTVC: UITableViewController {
             let med = medication[selectedIndex.row]
             newDose.medicine = med
             newDose.date = svc.date
+            newDose.next = med.calculateInterval(svc.date)
             appDelegate.saveContext()
             
             // Reschedule notification if newest addition

@@ -48,7 +48,6 @@ class Medicine: NSManagedObject {
 
         // Get time of next dose
         let currentDate = NSDate()
-        let fireDate = calculateInterval(currentDate)
         
         // If no history, or no doses taken within previous 5 minutes
         let compareDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: -5, toDate: currentDate, options: [])!
@@ -58,12 +57,13 @@ class Medicine: NSManagedObject {
             let newDose = History(entity: entity!, insertIntoManagedObjectContext: moc)
             newDose.medicine = self
             newDose.date = currentDate
+            newDose.next = calculateInterval(currentDate)
             
             // Cancel previous notification
             cancelNotification()
             
             // Schedule new notification
-            if let date = fireDate {
+            if let date = newDose.next {
                 scheduleNotification(date)
                 return true
             }
@@ -182,8 +182,12 @@ class Medicine: NSManagedObject {
         return nil
     }
     
+    func printNext() -> NSDate? {
+        return lastDose?.next
+    }
+    
     func isOverdue() -> Bool {
-        if let date = nextDose {
+        if let date = printNext() {
             return (NSDate().compare(date) == .OrderedDescending)
         }
         

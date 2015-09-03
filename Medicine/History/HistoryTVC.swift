@@ -270,6 +270,7 @@ class HistoryTVC: UITableViewController {
         let newDose = History(entity: entity!, insertIntoManagedObjectContext: moc)
         newDose.medicine = med
         newDose.date = svc.date
+        newDose.next = med.calculateInterval(svc.date)
         appDelegate.saveContext()
         
         // Add to log

@@ -15,6 +15,7 @@ import CoreData
 extension History {
 
     @NSManaged var date: NSDate
+    @NSManaged var next: NSDate?
     @NSManaged var medicine: Medicine?
 
 }
