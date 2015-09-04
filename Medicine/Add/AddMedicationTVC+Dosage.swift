@@ -29,11 +29,12 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
         self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
         
         // Set values
-        if let dosage = med?.dosage {
-            dosageInput.text = String(format:"%g", dosage)
+        if let medicine = med {
+            dosageInput.text = String(format:"%g", medicine.dosage)
+
+            dosageUnitLabel.text = medicine.dosageUnit.units(medicine.dosage)
+            dosageUnitPicker.selectRow(Int(medicine.dosageUnitInt), inComponent: 0, animated: false)
         }
-        
-        dosageUnitLabel.text = med?.dosageUnit.units(med?.dosage)
     }
     
     override func viewDidAppear(animated: Bool) {

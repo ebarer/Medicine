@@ -94,7 +94,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             // Append alarm time for daily interval
             if medicine.intervalUnit == .Daily {
                 if let alarm = medicine.intervalAlarm {
-                    if medicine.isMidnight() {
+                    if alarm.isMidnight() {
                         intervalLabel.text?.appendContentsOf(" at Midnight")
                     } else {
                         dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle

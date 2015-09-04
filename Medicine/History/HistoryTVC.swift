@@ -124,11 +124,11 @@ class HistoryTVC: UITableViewController {
         if (section == 0) {
             dateFormatter.timeStyle = NSDateFormatterStyle.NoStyle;
             dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle;
-            return "Today, \(dateFormatter.stringFromDate(sectionDate))"
+            return "Today (\(dateFormatter.stringFromDate(sectionDate)))"
         }
         
-        if sectionDate.compare(cal.dateByAddingUnit(NSCalendarUnit.WeekOfYear, value: -1, toDate: NSDate(), options: [])!) == .OrderedDescending {
-            if (section == 1) {
+        if sectionDate.isDateInLastWeek() {
+            if cal.isDateInYesterday(sectionDate) {
                 return "Yesterday"
             }
             

@@ -95,6 +95,18 @@ class Medicine: NSManagedObject {
         return false
     }
     
+    func printNext() -> NSDate? {
+        return lastDose?.next
+    }
+    
+    func isOverdue() -> Bool {
+        if let date = printNext() {
+            return (NSDate().compare(date) == .OrderedDescending)
+        }
+        
+        return false
+    }
+    
     
     // MARK: - Notification methods
     func setNotification() {
@@ -156,10 +168,6 @@ class Medicine: NSManagedObject {
         set { self.intervalUnitInt = newValue.rawValue }
     }
     
-    
-    // MARK: - Helper variables
-    let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-    
     var nextDose: NSDate? {
         return calculateInterval(lastDose?.date)
     }
@@ -181,34 +189,57 @@ class Medicine: NSManagedObject {
         
         return nil
     }
+
+    private let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
     
-    func printNext() -> NSDate? {
-        return lastDose?.next
-    }
-    
-    func isOverdue() -> Bool {
-        if let date = printNext() {
-            return (NSDate().compare(date) == .OrderedDescending)
-        }
-        
-        return false
-    }
-    
+}
+
+extension NSDate {
+
+    // Determines if time is set to midnight
     func isMidnight() -> Bool {
-        if let alarm = intervalAlarm {
-            let currentDate = NSDate()
-            let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
-            if let compare = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: currentDate, options: []) {
-                if (cal.isDate(compare, equalToDate: cal.startOfDayForDate(currentDate), toUnitGranularity: NSCalendarUnit.Minute)) {
-                    return true
-                }
+        let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+        let currentDate = NSDate()
+        let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: self)
+        
+        if let compare = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: currentDate, options: []) {
+            if (cal.isDate(compare, equalToDate: cal.startOfDayForDate(currentDate), toUnitGranularity: NSCalendarUnit.Minute)) {
+                return true
             }
         }
         
         return false
     }
-}
+    
+    func isDateInLastWeek() -> Bool {
+        let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+        let currentDate = NSDate()
+        var val = false
+        
+        if self.compare(cal.dateByAddingUnit(NSCalendarUnit.WeekOfYear, value: -1, toDate: cal.startOfDayForDate(currentDate), options: [])!) == .OrderedDescending {
+            if self.compare(currentDate) == .OrderedAscending {
+                val = true
+            }
+        }
+        
+        return val
+    }
+    
+    func isDateInWeek() -> Bool {
+        let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+        let currentDate = NSDate()
+        var val = false
+        
+        if self.compare(cal.dateByAddingUnit(NSCalendarUnit.WeekOfYear, value: 1, toDate: cal.startOfDayForDate(currentDate), options: [])!) == .OrderedAscending {
+            if self.compare(cal.dateByAddingUnit(NSCalendarUnit.Day, value: -1, toDate: cal.startOfDayForDate(currentDate), options: [])!) == .OrderedDescending {
+                val = true
+            }
+        }
 
+        return val
+    }
+    
+}
 
 // MARK: - Units Enum
 enum Doses: Int16, CustomStringConvertible {

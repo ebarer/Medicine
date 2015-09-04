@@ -497,6 +497,7 @@
 				CE9A36CC1B98FDCB00B90EDB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		CEA250E01B90396C00BBE466 /* Build configuration list for PBXProject "Medicine" */ = {
 			isa = XCConfigurationList;

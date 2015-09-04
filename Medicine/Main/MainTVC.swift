@@ -110,23 +110,24 @@ class MainTVC: UITableViewController {
 
             var dateString = String()
 
-            // Set label date
-            if cal.isDateInToday(date) {
-                // If date is today
-            } else if cal.isDateInTomorrow(date) {
-                // If date is tomorrow
-                dateString = "Tomorrow, "
-            } else if date.compare(cal.dateByAddingUnit(NSCalendarUnit.WeekOfYear, value: 1, toDate: cal.startOfDayForDate(NSDate()), options: [])!) == .OrderedAscending {
-                // If date is within current week
-                dateFormatter.dateFormat = "EEEE, "
-                dateString = dateFormatter.stringFromDate(date)
-            } else {
-                dateFormatter.dateFormat = "MMM d, "
-                dateString = dateFormatter.stringFromDate(date)
+            // Set label date, skip if date is today
+            if !cal.isDateInToday(date) {
+                if cal.isDateInYesterday(date) {
+                    dateString = "Yesterday, "
+                } else if cal.isDateInTomorrow(date) {
+                    dateString = "Tomorrow, "
+                } else if date.isDateInWeek() {
+                    dateFormatter.dateFormat = "EEEE, "
+                    dateString = dateFormatter.stringFromDate(date)
+                } else {
+                    // Default case
+                    dateFormatter.dateFormat = "MMM d, "
+                    dateString = dateFormatter.stringFromDate(date)
+                }
             }
             
             // Set label time
-            if med.isMidnight() {
+            if date.isMidnight() {
                 dateString.appendContentsOf("Midnight")
             } else {
                 dateFormatter.dateFormat = "h:mm a"
@@ -340,7 +341,9 @@ class MainTVC: UITableViewController {
                 
                 // If medication has specified alert time, schedule first dose
                 if addMed.intervalUnit == Intervals.Daily && addMed.intervalAlarm != nil {
-                    addMed.scheduleNotification(NSDate())
+                    if let date = addMed.calculateInterval(NSDate()) {
+                        addMed.scheduleNotification(date)
+                    }
                 }
                 
                 medication.append(addMed)
