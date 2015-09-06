@@ -168,7 +168,7 @@ class MainTVC: UITableViewController {
             self.performSegueWithIdentifier("editMedication", sender: indexPath.row)
             self.tableView.selectRowAtIndexPath(indexPath, animated: false, scrollPosition: UITableViewScrollPosition.None)
         }
-        editAction.backgroundColor = UIColor.lightGrayColor()
+        editAction.backgroundColor = UIColor(white: 0.78, alpha: 1.0)
         
         let deleteAction = UITableViewRowAction(style: .Destructive, title: "Delete") { (action, indexPath) -> Void in
             if let name = self.medication[indexPath.row].name {
