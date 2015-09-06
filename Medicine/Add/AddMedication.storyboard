@@ -53,7 +53,7 @@
                                                     <rect key="frame" x="15" y="8" width="577" height="28"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                    <textInputTraits key="textInputTraits"/>
+                                                    <textInputTraits key="textInputTraits" autocapitalizationType="words"/>
                                                     <connections>
                                                         <action selector="updateName:" destination="p2V-uz-hw7" eventType="editingChanged" id="aHQ-Lc-Y3u"/>
                                                     </connections>

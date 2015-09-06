@@ -301,7 +301,7 @@ enum Intervals: Int16, CustomStringConvertible {
         case .Weekly: string = "week"
         }
         
-        if (amount != 1) {
+        if (amount < 1 || amount >= 2) {
             string += "s"
         }
         

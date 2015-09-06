@@ -250,10 +250,11 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
                 case 0:
                     return NSAttributedString(string: "\(row)")
                 case 1:
-                    let label = NSMutableAttributedString(string: "hours")
-                    label.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, label.length))
-                    
-                    return label
+                    if let unit = med?.intervalUnit.units(med?.interval) {
+                        let label = NSMutableAttributedString(string: unit)
+                        label.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, label.length))
+                        return label
+                    }
                 case 2:
                     return NSAttributedString(string: minutes[row % 4])
                 case 3:
@@ -325,6 +326,9 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
                 }
                 
                 updateIntervalLabel()
+                
+                // Reload interval picker to account for changed units
+                intervalPicker.reloadAllComponents()
             }
             
             // Reload table view

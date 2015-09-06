@@ -163,12 +163,20 @@ class MainTVC: UITableViewController {
         appDelegate.saveContext()
     }
     
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
-            if let name = medication[indexPath.row].name {
+    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+        let editAction = UITableViewRowAction(style: .Default, title: "Edit") { (action, indexPath) -> Void in
+            self.performSegueWithIdentifier("editMedication", sender: indexPath.row)
+            self.tableView.selectRowAtIndexPath(indexPath, animated: false, scrollPosition: UITableViewScrollPosition.None)
+        }
+        editAction.backgroundColor = UIColor.lightGrayColor()
+        
+        let deleteAction = UITableViewRowAction(style: .Destructive, title: "Delete") { (action, indexPath) -> Void in
+            if let name = self.medication[indexPath.row].name {
                 self.presentDeleteAlert(name, indexPath: indexPath)
             }
         }
+        
+        return [deleteAction, editAction]
     }
     
     func refreshTableAndNotifications() {
