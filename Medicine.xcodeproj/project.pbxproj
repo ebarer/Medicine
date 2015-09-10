@@ -13,6 +13,8 @@
 		CE30D1581B9856D1007805DB /* Prescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE30D1551B9856D1007805DB /* Prescription.swift */; settings = {ASSET_TAGS = (); }; };
 		CE38AF231B950517000D00AD /* AddDoseTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE38AF221B950517000D00AD /* AddDoseTVC.swift */; settings = {ASSET_TAGS = (); }; };
 		CE38AF251B95051E000D00AD /* HistoryTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE38AF241B95051E000D00AD /* HistoryTVC.swift */; settings = {ASSET_TAGS = (); }; };
+		CE6325C81BA1624A00BAD562 /* Upgrade.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE6325C71BA1624A00BAD562 /* Upgrade.storyboard */; settings = {ASSET_TAGS = (); }; };
+		CE6325CA1BA1661C00BAD562 /* UpgradeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6325C91BA1661C00BAD562 /* UpgradeVC.swift */; settings = {ASSET_TAGS = (); }; };
 		CE63264F1B9149C80009F9AE /* MainUINC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE63264E1B9149C80009F9AE /* MainUINC.swift */; };
 		CE6E551D1B9040C900805397 /* Medicine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */; };
 		CE6E551E1B9040C900805397 /* Medicine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551A1B9040C900805397 /* Medicine.swift */; };
@@ -29,6 +31,7 @@
 		CEA89F971B9802DF0063606A /* MainEmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEA89F961B9802DF0063606A /* MainEmptyView.xib */; settings = {ASSET_TAGS = (); }; };
 		CEDE1B221B950F1500DFD7B0 /* AddDose.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE5DE78E1B950E4100168B1E /* AddDose.storyboard */; };
 		CEDE1B231B950F1800DFD7B0 /* AddMedication.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE38AF261B950989000D00AD /* AddMedication.storyboard */; };
+		CEF5483C1B9CEA7100C344B4 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +54,8 @@
 		CE38AF261B950989000D00AD /* AddMedication.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = AddMedication.storyboard; path = Add/AddMedication.storyboard; sourceTree = "<group>"; };
 		CE48157B1B971A5700F1FA0C /* Medicine - 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2.xcdatamodel"; sourceTree = "<group>"; };
 		CE5DE78E1B950E4100168B1E /* AddDose.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = AddDose.storyboard; path = Add/AddDose.storyboard; sourceTree = "<group>"; };
+		CE6325C71BA1624A00BAD562 /* Upgrade.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Upgrade.storyboard; path = Main/Upgrade.storyboard; sourceTree = "<group>"; };
+		CE6325C91BA1661C00BAD562 /* UpgradeVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UpgradeVC.swift; path = Main/UpgradeVC.swift; sourceTree = "<group>"; };
 		CE63264E1B9149C80009F9AE /* MainUINC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainUINC.swift; path = Main/MainUINC.swift; sourceTree = "<group>"; };
 		CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Medicine+CoreDataProperties.swift"; path = "Medicine/Models/Medicine+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		CE6E551A1B9040C900805397 /* Medicine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Medicine.swift; path = Medicine/Models/Medicine.swift; sourceTree = "<group>"; };
@@ -69,6 +74,8 @@
 		CEA251011B903BE400BBE466 /* MainTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainTVC.swift; path = Main/MainTVC.swift; sourceTree = "<group>"; };
 		CEA2510B1B903E7D00BBE466 /* Medicine.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Medicine.xcdatamodel; sourceTree = "<group>"; };
 		CEA89F961B9802DF0063606A /* MainEmptyView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MainEmptyView.xib; path = Main/MainEmptyView.xib; sourceTree = "<group>"; };
+		CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		CEF5483E1B9CEA8200C344B4 /* Medicine.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Medicine.entitlements; path = Medicine/Medicine.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEF5483C1B9CEA7100C344B4 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,6 +124,7 @@
 			children = (
 				CEA250E71B90396C00BBE466 /* Medicine */,
 				CE9A36C51B98FDCB00B90EDB /* MedicineTests */,
+				CEF5483D1B9CEA7A00C344B4 /* Frameworks */,
 				CEA250E61B90396C00BBE466 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -168,10 +177,12 @@
 		CEA251031B903BE900BBE466 /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				CEA250EC1B90396C00BBE466 /* Main.storyboard */,
 				CE63264E1B9149C80009F9AE /* MainUINC.swift */,
+				CEA250EC1B90396C00BBE466 /* Main.storyboard */,
 				CEA89F961B9802DF0063606A /* MainEmptyView.xib */,
 				CEA251011B903BE400BBE466 /* MainTVC.swift */,
+				CE6325C71BA1624A00BAD562 /* Upgrade.storyboard */,
+				CE6325C91BA1661C00BAD562 /* UpgradeVC.swift */,
 			);
 			name = Main;
 			sourceTree = "<group>";
@@ -184,6 +195,15 @@
 				CE30D1541B9856D1007805DB /* Prescription+CoreDataProperties.swift */,
 			);
 			name = Extensions;
+			sourceTree = "<group>";
+		};
+		CEF5483D1B9CEA7A00C344B4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CEF5483E1B9CEA8200C344B4 /* Medicine.entitlements */,
+				CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		CEF845391B9881A0000F223C /* Details */ = {
@@ -248,6 +268,14 @@
 					CEA250E41B90396C00BBE466 = {
 						CreatedOnToolsVersion = 7.0;
 						DevelopmentTeam = 5ZJB9DN7AQ;
+						SystemCapabilities = {
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -282,11 +310,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEA250F31B90396C00BBE466 /* Assets.xcassets in Resources */,
 				CEA250F61B90396C00BBE466 /* LaunchScreen.storyboard in Resources */,
 				CEA250EE1B90396C00BBE466 /* Main.storyboard in Resources */,
 				CEDE1B231B950F1800DFD7B0 /* AddMedication.storyboard in Resources */,
+				CE6325C81BA1624A00BAD562 /* Upgrade.storyboard in Resources */,
 				CEDE1B221B950F1500DFD7B0 /* AddDose.storyboard in Resources */,
-				CEA250F31B90396C00BBE466 /* Assets.xcassets in Resources */,
 				CEA89F971B9802DF0063606A /* MainEmptyView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -306,21 +335,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE30D1581B9856D1007805DB /* Prescription.swift in Sources */,
 				CEA2510C1B903E7D00BBE466 /* Medicine.xcdatamodeld in Sources */,
-				CE6E551D1B9040C900805397 /* Medicine+CoreDataProperties.swift in Sources */,
 				CE6E551E1B9040C900805397 /* Medicine.swift in Sources */,
+				CE6E551D1B9040C900805397 /* Medicine+CoreDataProperties.swift in Sources */,
 				CE6E55201B9040C900805397 /* History.swift in Sources */,
 				CE6E551F1B9040C900805397 /* History+CoreDataProperties.swift in Sources */,
-				CE247B8F1B96618100E4EB5F /* AddMedicationTVC+Dosage.swift in Sources */,
-				CE247B911B96619B00E4EB5F /* AddMedicationTVC+Interval.swift in Sources */,
+				CE30D1581B9856D1007805DB /* Prescription.swift in Sources */,
+				CE30D1571B9856D1007805DB /* Prescription+CoreDataProperties.swift in Sources */,
 				CEA250E91B90396C00BBE466 /* AppDelegate.swift in Sources */,
 				CE63264F1B9149C80009F9AE /* MainUINC.swift in Sources */,
 				CEA251021B903BE400BBE466 /* MainTVC.swift in Sources */,
-				CE38AF251B95051E000D00AD /* HistoryTVC.swift in Sources */,
-				CE30D1571B9856D1007805DB /* Prescription+CoreDataProperties.swift in Sources */,
-				CE38AF231B950517000D00AD /* AddDoseTVC.swift in Sources */,
 				CEA250FF1B903BC200BBE466 /* AddMedicationTVC.swift in Sources */,
+				CE6325CA1BA1661C00BAD562 /* UpgradeVC.swift in Sources */,
+				CE247B8F1B96618100E4EB5F /* AddMedicationTVC+Dosage.swift in Sources */,
+				CE247B911B96619B00E4EB5F /* AddMedicationTVC+Interval.swift in Sources */,
+				CE38AF251B95051E000D00AD /* HistoryTVC.swift in Sources */,
+				CE38AF231B950517000D00AD /* AddDoseTVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -465,12 +495,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Medicine/Medicine.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Medicine/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -478,12 +511,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Medicine/Medicine.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Medicine/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

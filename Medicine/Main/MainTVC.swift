@@ -14,6 +14,11 @@ class MainTVC: UITableViewController {
     var medication = [Medicine]()
     
     
+    // MARK: - Outlets
+    
+    @IBOutlet var addMedicationButton: UIBarButtonItem!
+    
+    
     // MARK: - Helper variables
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -23,10 +28,18 @@ class MainTVC: UITableViewController {
     let dateFormatter = NSDateFormatter()
     
     
+    // MARK: - IAP variables
+
+    var productLock = true
+    
+    
     // MARK: - View methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Setup IAP
+        productLock = true
         
         // Modify VC
         self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
@@ -303,7 +316,32 @@ class MainTVC: UITableViewController {
     }
     
     
+    // MARK: - IAP functions
+    
+    func productLocked() -> Bool {
+        if medication.count >= 2 {
+            if productLock == true {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    func unlockFullVersion() {
+        productLock = false
+    }
+    
+    
     // MARK: - Navigation
+    
+    @IBAction func addMedication(sender: UIBarButtonItem) {
+        if productLocked() {
+            performSegueWithIdentifier("upgrade", sender: self)
+        } else {
+            performSegueWithIdentifier("addMedication", sender: self)
+        }
+    }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "addMedication" {
@@ -334,7 +372,7 @@ class MainTVC: UITableViewController {
     }
     
     
-    // MARK: - Unwind methods
+    // MARK: - Unwind functions
     
     @IBAction func medicationUnwindAdd(unwindSegue: UIStoryboardSegue) {
         if let svc = unwindSegue.sourceViewController as? AddMedicationTVC, addMed = svc.med {

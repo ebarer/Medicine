@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import StoreKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -21,6 +22,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let rvc = self.window?.rootViewController as! UINavigationController
         let tvc = rvc.topViewController as! MainTVC
         tvc.moc = self.managedObjectContext
+        
+        // Setup observer for in-app purchases
+        // SKPaymentQueue.defaultQueue().addTransactionObserver(tvc)
         
         // Register for notifications and actions
         let notificationType: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
@@ -63,6 +67,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
         self.saveContext()
+        
+        // Remove observer for in-app purchases
+        let rvc = self.window?.rootViewController as! UINavigationController
+        let tvc = rvc.topViewController as! MainTVC
+        //SKPaymentQueue.defaultQueue().removeTransactionObserver(tvc)
     }
     
     

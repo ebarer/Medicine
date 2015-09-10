@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8187.4" systemVersion="15A279b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="WH0-Wl-VP6">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8191" systemVersion="15A282b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="WH0-Wl-VP6">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8151.3"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
     </dependencies>
     <scenes>
+        <!--Upgrade-->
+        <scene sceneID="hvi-ea-T1d">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Upgrade" id="l1N-4I-mqi" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="jlM-d8-EFB" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1390" y="978"/>
+        </scene>
         <!--Medicine-->
         <scene sceneID="DrC-QF-zXV">
             <objects>
@@ -55,13 +63,16 @@
                     <navigationItem key="navigationItem" title="Medicine" id="tjA-8s-Bdr">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="njk-aJ-XdY">
                             <connections>
-                                <segue destination="KKX-VQ-lBK" kind="presentation" identifier="addMedication" id="lTw-3x-mfN"/>
+                                <action selector="addMedication:" destination="Opo-0h-aD1" id="acw-2t-Sr1"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="addMedicationButton" destination="njk-aJ-XdY" id="Zg5-v7-Nxh"/>
                         <segue destination="KKX-VQ-lBK" kind="presentation" identifier="editMedication" id="tHn-tf-kiw"/>
                         <segue destination="bZR-7Y-tt8" kind="presentation" identifier="addDose" id="tQz-wz-X6o"/>
+                        <segue destination="KKX-VQ-lBK" kind="presentation" identifier="addMedication" id="5Gy-on-iGP"/>
+                        <segue destination="l1N-4I-mqi" kind="presentation" identifier="upgrade" id="6jJ-Gd-VPL"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x4v-fN-eJ1" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -155,7 +166,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="lTw-3x-mfN"/>
+        <segue reference="tHn-tf-kiw"/>
         <segue reference="tQz-wz-X6o"/>
     </inferredMetricsTieBreakers>
 </document>

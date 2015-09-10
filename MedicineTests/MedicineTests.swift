@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import StoreKit
 
 class MedicineTests: XCTestCase {
     

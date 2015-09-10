@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8191" systemVersion="15A282b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Kbg-Ff-MZ0">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+    </dependencies>
+    <scenes>
+        <!--Upgrade-->
+        <scene sceneID="9qX-gK-V9I">
+            <objects>
+                <viewController id="02U-hZ-tkT" customClass="UpgradeVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="bXK-DI-Jt3"/>
+                        <viewControllerLayoutGuide type="bottom" id="Tnw-P7-VS2"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="weE-tT-Mjn">
+                        <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="Xj4-IQ-T6A">
+                                <rect key="frame" x="241" y="125" width="119" height="100"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="119" id="EKj-5Z-KUA"/>
+                                    <constraint firstAttribute="height" constant="100" id="pz9-2C-CJc"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unlock Medicine Manager" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HE1-Xq-4gx">
+                                <rect key="frame" x="151" y="269" width="305.5" height="32.5"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unlocking Medicine Manager allows you to track all your medications." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wTx-hC-YOF">
+                                <rect key="frame" x="151" y="345.5" width="305.5" height="36"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="305.5" id="hCL-Ts-FXE">
+                                        <variation key="widthClass=compact" constant="250"/>
+                                    </constraint>
+                                </constraints>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
+                                <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LTF-LQ-0kf">
+                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                <animations/>
+                                <state key="normal" title="Purchase"/>
+                            </button>
+                        </subviews>
+                        <animations/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Xj4-IQ-T6A" firstAttribute="top" secondItem="bXK-DI-Jt3" secondAttribute="bottom" constant="125" id="B1u-Jg-6iA"/>
+                            <constraint firstItem="Xj4-IQ-T6A" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" id="D6T-H3-moj"/>
+                            <constraint firstItem="wTx-hC-YOF" firstAttribute="top" secondItem="HE1-Xq-4gx" secondAttribute="bottom" constant="44" id="H41-Pe-Nvc">
+                                <variation key="widthClass=compact" constant="22"/>
+                            </constraint>
+                            <constraint firstItem="wTx-hC-YOF" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" constant="3.75" id="Kcf-5S-UhV"/>
+                            <constraint firstItem="HE1-Xq-4gx" firstAttribute="top" secondItem="Xj4-IQ-T6A" secondAttribute="bottom" constant="44" id="QMh-l1-AZ1"/>
+                            <constraint firstItem="LTF-LQ-0kf" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" id="c1q-oa-fwG"/>
+                            <constraint firstItem="HE1-Xq-4gx" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" constant="4" id="jk5-no-UuO"/>
+                            <constraint firstItem="LTF-LQ-0kf" firstAttribute="top" secondItem="wTx-hC-YOF" secondAttribute="bottom" constant="18.5" id="ocL-v4-iMj">
+                                <variation key="widthClass=compact" constant="22"/>
+                            </constraint>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="LTF-LQ-0kf"/>
+                            </mask>
+                            <mask key="constraints">
+                                <exclude reference="c1q-oa-fwG"/>
+                                <exclude reference="ocL-v4-iMj"/>
+                            </mask>
+                        </variation>
+                        <variation key="widthClass=compact">
+                            <mask key="subviews">
+                                <include reference="LTF-LQ-0kf"/>
+                            </mask>
+                            <mask key="constraints">
+                                <include reference="c1q-oa-fwG"/>
+                                <include reference="ocL-v4-iMj"/>
+                            </mask>
+                        </variation>
+                    </view>
+                    <navigationItem key="navigationItem" title="Upgrade" id="7Vk-Nc-CZn">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="LPk-Rw-m9u">
+                            <connections>
+                                <action selector="cancel:" destination="02U-hZ-tkT" id="Hx0-XG-VKQ"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="d3B-Ve-KxK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1233" y="413"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="fP2-0M-Hhq">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Kbg-Ff-MZ0" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="XY1-W8-BUq">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <animations/>
+                        <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="barTintColor" red="0.98431372549999996" green="0.0" blue="0.17254901959999999" alpha="1" colorSpace="calibratedRGB"/>
+                        <textAttributes key="titleTextAttributes">
+                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        </textAttributes>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="02U-hZ-tkT" kind="relationship" relationship="rootViewController" id="CYc-dn-G0z"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7o4-0X-GiA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="422" y="413"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="Logo" width="665" height="520"/>
+    </resources>
+</document>
