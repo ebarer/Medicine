@@ -8,8 +8,9 @@
 
 import UIKit
 import CoreData
+import StoreKit
 
-class MainTVC: UITableViewController {
+class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     var medication = [Medicine]()
     
@@ -20,6 +21,9 @@ class MainTVC: UITableViewController {
     
     
     // MARK: - Helper variables
+    
+    let defaults = NSUserDefaults.standardUserDefaults()
+    let productID = "com.ebarer.Medicine.Unlock"
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var moc: NSManagedObjectContext!
@@ -39,7 +43,11 @@ class MainTVC: UITableViewController {
         super.viewDidLoad()
         
         // Setup IAP
-        productLock = true
+        if defaults.boolForKey("managerUnlocked") {
+            productLock = false
+        } else {
+            productLock = true
+        }
         
         // Modify VC
         self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
@@ -318,7 +326,40 @@ class MainTVC: UITableViewController {
     
     // MARK: - IAP functions
     
-    func productLocked() -> Bool {
+    func paymentQueue(queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
+        for transaction in transactions {
+            switch (transaction.transactionState) {
+            case SKPaymentTransactionState.Restored: fallthrough
+            case SKPaymentTransactionState.Purchased:
+                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
+                unlockManager()
+                
+            case SKPaymentTransactionState.Failed:
+                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
+
+            default: break
+            }
+        }
+    }
+    
+    func paymentQueueRestoreCompletedTransactionsFinished(queue: SKPaymentQueue) {
+        for transaction in queue.transactions {
+            let pID = transaction.payment.productIdentifier
+            
+            if pID == productID {
+                unlockManager()
+            }
+        }
+    }
+    
+    func unlockManager() {
+        defaults.setBool(true, forKey: "managerUnlocked")
+        defaults.synchronize()
+        productLock = false
+        continueToAdd()
+    }
+    
+    func getLockStatus() -> Bool {
         if medication.count >= 2 {
             if productLock == true {
                 return true
@@ -328,18 +369,20 @@ class MainTVC: UITableViewController {
         return false
     }
     
-    func unlockFullVersion() {
-        productLock = false
+    func continueToAdd() {
+        dismissViewControllerAnimated(true) { () -> Void in
+            self.performSegueWithIdentifier("addMedication", sender: self)
+        }
     }
     
     
     // MARK: - Navigation
     
     @IBAction func addMedication(sender: UIBarButtonItem) {
-        if productLocked() {
-            performSegueWithIdentifier("upgrade", sender: self)
-        } else {
+        if getLockStatus() == false {
             performSegueWithIdentifier("addMedication", sender: self)
+        } else {
+            performSegueWithIdentifier("upgrade", sender: self)
         }
     }
     

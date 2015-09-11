@@ -9,12 +9,15 @@
 import UIKit
 import StoreKit
 
-class UpgradeVC: UIViewController, SKProductsRequestDelegate, SKPaymentTransactionObserver {
-    
-    // MARK: - IAP variables
-    
+class UpgradeVC: UIViewController, SKProductsRequestDelegate {
+
+    let productID = "com.ebarer.Medicine.Unlock"
     var products = [SKProduct]()
-    var transacting = false
+    
+    
+    // MARK: - Outlets
+    
+    @IBOutlet var purchaseButton: UIButton!
 
     
     // MARK: - View methods
@@ -22,7 +25,6 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate, SKPaymentTransacti
     override func viewDidLoad() {
         super.viewDidLoad()
         requestProductInfo()
-        //requestReceipt()
     }
 
     override func didReceiveMemoryWarning() {
@@ -41,7 +43,7 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate, SKPaymentTransacti
     
     func requestProductInfo() {
         if SKPaymentQueue.canMakePayments() {
-            let productRequest = SKProductsRequest(productIdentifiers: Set(["com.ebarer.Medicine.Unlock"]))
+            let productRequest = SKProductsRequest(productIdentifiers: Set([productID]))
             productRequest.delegate = self
             productRequest.start()
         } else {
@@ -49,34 +51,25 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate, SKPaymentTransacti
         }
     }
     
+    
+    // Mark: - Purchase methods
+    
     func productsRequest(request: SKProductsRequest, didReceiveResponse response: SKProductsResponse) {
         products = response.products
-        print(products[0].localizedTitle)
+
+        let upgrade = products[0]
+        print("Title: \(upgrade.localizedTitle)")
+        print("Description: \(upgrade.localizedDescription)")
+        print("Price: \(upgrade.price)")
+        print("ID: \(upgrade.productIdentifier)")
     }
     
-    func requestReceipt() {
-        let request = SKReceiptRefreshRequest()
-        request.delegate = self
-        request.start()
-    }
-    
-    func purchaseFullVersion() {
-        if !transacting && self.products[0].productIdentifier == "com.ebarer.Medicine.Unlock" {
+    @IBAction func purchaseFullVersion() {
+        if self.products[0].productIdentifier == productID {
+            purchaseButton.enabled = false
+            purchaseButton.titleLabel?.text = "Purchasing..."
             SKPaymentQueue.defaultQueue().addPayment(SKPayment(product: self.products[0]))
-            transacting = true
-        }
-    }
-    
-    func paymentQueue(queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
-        for transaction in transactions {
-            if transaction.transactionState == SKPaymentTransactionState.Purchased {
-                // unlockFullVersion()
-                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
-            }
-
-            transacting = false
         }
     }
 
-    
 }

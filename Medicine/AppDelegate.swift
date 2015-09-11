@@ -18,13 +18,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
-        // Pass managed object context to MainTVC
-        let rvc = self.window?.rootViewController as! UINavigationController
-        let tvc = rvc.topViewController as! MainTVC
-        tvc.moc = self.managedObjectContext
+        // Get view controllers and setup IAP observers
+        if let viewControllers = self.window?.rootViewController?.childViewControllers {
+            for viewController in viewControllers {
+                if viewController.isKindOfClass(MainTVC) {
+                    let vc = viewController as! MainTVC
+                    SKPaymentQueue.defaultQueue().addTransactionObserver(vc)
+                    
+                    // Pass managed object context
+                    vc.moc = self.managedObjectContext
+                }
+            }
+        }
         
-        // Setup observer for in-app purchases
-        // SKPaymentQueue.defaultQueue().addTransactionObserver(tvc)
+        // Verify IAP purchases
+        SKPaymentQueue.defaultQueue().restoreCompletedTransactions()
         
         // Register for notifications and actions
         let notificationType: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
@@ -68,10 +76,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Saves changes in the application's managed object context before the application terminates.
         self.saveContext()
         
-        // Remove observer for in-app purchases
-        let rvc = self.window?.rootViewController as! UINavigationController
-        let tvc = rvc.topViewController as! MainTVC
-        //SKPaymentQueue.defaultQueue().removeTransactionObserver(tvc)
+        // Remove IAP observers
+        if let viewControllers = self.window?.rootViewController?.childViewControllers {
+            for viewController in viewControllers {
+                if viewController.isKindOfClass(MainTVC) {
+                    let vc = viewController as! MainTVC
+                    SKPaymentQueue.defaultQueue().removeTransactionObserver(vc)
+                }
+            }
+        }
     }
     
     

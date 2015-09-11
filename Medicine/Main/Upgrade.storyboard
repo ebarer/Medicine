@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8191" systemVersion="15A282b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Kbg-Ff-MZ0">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9046" systemVersion="15A282b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Kbg-Ff-MZ0">
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9035"/>
     </dependencies>
     <scenes>
-        <!--Upgrade-->
+        <!--Full Version-->
         <scene sceneID="9qX-gK-V9I">
             <objects>
                 <viewController id="02U-hZ-tkT" customClass="UpgradeVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
@@ -32,7 +31,7 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unlocking Medicine Manager allows you to track all your medications." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wTx-hC-YOF">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="With a one time purchase you can unlock Medicine Manager to begin tracking all of your medication!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wTx-hC-YOF">
                                 <rect key="frame" x="151" y="345.5" width="305.5" height="36"/>
                                 <animations/>
                                 <constraints>
@@ -44,35 +43,38 @@
                                 <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LTF-LQ-0kf">
-                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LTF-LQ-0kf">
+                                <rect key="frame" x="0.0" y="0.0" width="64" height="30"/>
                                 <animations/>
                                 <state key="normal" title="Purchase"/>
+                                <connections>
+                                    <action selector="purchaseFullVersion" destination="02U-hZ-tkT" eventType="touchUpInside" id="95d-k3-eFi"/>
+                                </connections>
                             </button>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="LTF-LQ-0kf" firstAttribute="top" secondItem="wTx-hC-YOF" secondAttribute="bottom" constant="22" id="9Gg-OF-mmZ"/>
                             <constraint firstItem="Xj4-IQ-T6A" firstAttribute="top" secondItem="bXK-DI-Jt3" secondAttribute="bottom" constant="125" id="B1u-Jg-6iA"/>
                             <constraint firstItem="Xj4-IQ-T6A" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" id="D6T-H3-moj"/>
                             <constraint firstItem="wTx-hC-YOF" firstAttribute="top" secondItem="HE1-Xq-4gx" secondAttribute="bottom" constant="44" id="H41-Pe-Nvc">
                                 <variation key="widthClass=compact" constant="22"/>
                             </constraint>
-                            <constraint firstItem="wTx-hC-YOF" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" constant="3.75" id="Kcf-5S-UhV"/>
-                            <constraint firstItem="HE1-Xq-4gx" firstAttribute="top" secondItem="Xj4-IQ-T6A" secondAttribute="bottom" constant="44" id="QMh-l1-AZ1"/>
-                            <constraint firstItem="LTF-LQ-0kf" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" id="c1q-oa-fwG"/>
-                            <constraint firstItem="HE1-Xq-4gx" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" constant="4" id="jk5-no-UuO"/>
-                            <constraint firstItem="LTF-LQ-0kf" firstAttribute="top" secondItem="wTx-hC-YOF" secondAttribute="bottom" constant="18.5" id="ocL-v4-iMj">
-                                <variation key="widthClass=compact" constant="22"/>
+                            <constraint firstItem="wTx-hC-YOF" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" constant="3.75" id="Kcf-5S-UhV">
+                                <variation key="widthClass=compact" constant="0.0"/>
                             </constraint>
+                            <constraint firstItem="HE1-Xq-4gx" firstAttribute="top" secondItem="Xj4-IQ-T6A" secondAttribute="bottom" constant="44" id="QMh-l1-AZ1"/>
+                            <constraint firstItem="LTF-LQ-0kf" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" id="bEO-Ay-IBJ"/>
+                            <constraint firstItem="HE1-Xq-4gx" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" constant="4" id="jk5-no-UuO"/>
                         </constraints>
                         <variation key="default">
                             <mask key="subviews">
                                 <exclude reference="LTF-LQ-0kf"/>
                             </mask>
                             <mask key="constraints">
-                                <exclude reference="c1q-oa-fwG"/>
-                                <exclude reference="ocL-v4-iMj"/>
+                                <exclude reference="9Gg-OF-mmZ"/>
+                                <exclude reference="bEO-Ay-IBJ"/>
                             </mask>
                         </variation>
                         <variation key="widthClass=compact">
@@ -80,18 +82,21 @@
                                 <include reference="LTF-LQ-0kf"/>
                             </mask>
                             <mask key="constraints">
-                                <include reference="c1q-oa-fwG"/>
-                                <include reference="ocL-v4-iMj"/>
+                                <include reference="9Gg-OF-mmZ"/>
+                                <include reference="bEO-Ay-IBJ"/>
                             </mask>
                         </variation>
                     </view>
-                    <navigationItem key="navigationItem" title="Upgrade" id="7Vk-Nc-CZn">
+                    <navigationItem key="navigationItem" title="Full Version" id="7Vk-Nc-CZn">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="LPk-Rw-m9u">
                             <connections>
                                 <action selector="cancel:" destination="02U-hZ-tkT" id="Hx0-XG-VKQ"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="purchaseButton" destination="LTF-LQ-0kf" id="Rju-kV-Qpb"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d3B-Ve-KxK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
