@@ -12,6 +12,7 @@ import CoreData
 class HistoryTVC: UITableViewController {
     
     weak var med:Medicine!
+    var count = 0
     var log = [NSDate: [History]]()
     
     
@@ -80,6 +81,8 @@ class HistoryTVC: UITableViewController {
                 // Sort each log date
                 log[sectionDate]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
             }
+            
+            count = history.count
         }
     }
     
@@ -87,6 +90,9 @@ class HistoryTVC: UITableViewController {
         super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(false, animated: true)
         self.navigationController?.toolbar.translucent = true
+
+        updateEditButton()
+        
         tableView.reloadData()
     }
 
@@ -194,6 +200,7 @@ class HistoryTVC: UITableViewController {
             }
             
             log[sectionDate]?.removeAtIndex(indexPath.row)
+            count--
             
             
             if logItems.count == 1 {
@@ -229,6 +236,16 @@ class HistoryTVC: UITableViewController {
         } else {
             setToolbarItems(normalButtons, animated: true)
         }
+        
+        updateEditButton()
+    }
+    
+    func updateEditButton() {
+        if count == 0 {
+            self.navigationItem.rightBarButtonItem?.enabled = false
+        } else {
+            self.navigationItem.rightBarButtonItem?.enabled = true
+        }
     }
     
     func updateDeleteButtonLabel() {
@@ -258,6 +275,7 @@ class HistoryTVC: UITableViewController {
                     }
                     
                     log[sectionDate]?.removeAtIndex(index.row)
+                    count--
                     
                     if logItems.count == 1 {
                         let label = tableView.cellForRowAtIndexPath(index)?.textLabel
@@ -292,6 +310,7 @@ class HistoryTVC: UITableViewController {
         let index = cal.startOfDayForDate(svc.date)
         log[index]?.insert(newDose, atIndex: 0)
         log[index]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
+        count++
         
         // Reschedule notification if newest addition
         if let date = med.lastDose?.date {
