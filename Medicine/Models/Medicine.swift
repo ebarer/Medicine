@@ -16,6 +16,19 @@ class Medicine: NSManagedObject {
         self.medicineID = NSUUID().UUIDString
     }
     
+    
+    // MARK: - Class method
+    class func getMedicine(arr meds: [Medicine], id: String) -> Medicine? {
+        for med in meds {
+            if med.medicineID == id {
+                return med
+            }
+        }
+        
+        return nil
+    }
+    
+    
     // MARK: - Dose methods
     func calculateInterval(modDate: NSDate?) -> NSDate? {
         var returnDate: NSDate? = nil
@@ -44,29 +57,33 @@ class Medicine: NSManagedObject {
         return returnDate
     }
 
-    func takeNextDose(moc: NSManagedObjectContext) -> Bool {
-
-        // Get time of next dose
-        let currentDate = NSDate()
+    func takeDose(moc: NSManagedObjectContext, date doseDate: NSDate) -> Bool {
         
         // If no history, or no doses taken within previous 5 minutes
-        let compareDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: -5, toDate: currentDate, options: [])!
+        let compareDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: -5, toDate: doseDate, options: [])!
         if (lastDose == nil || lastDose!.date.compare(compareDate) == .OrderedAscending) {
             // Log current dosage as new history element
             let entity = NSEntityDescription.entityForName("History", inManagedObjectContext: moc)
             let newDose = History(entity: entity!, insertIntoManagedObjectContext: moc)
             newDose.medicine = self
-            newDose.date = currentDate
-            newDose.next = calculateInterval(currentDate)
-            
-            // Cancel previous notification
-            cancelNotification()
-            
-            // Schedule new notification
-            if let date = newDose.next {
-                scheduleNotification(date)
-                return true
+            newDose.date = doseDate
+
+            // Reschedule notification if newest addition
+            if let next = calculateInterval(doseDate) {
+                newDose.next = next
+
+                if let date = lastDose?.date {
+                    if (newDose.date.compare(date) == .OrderedDescending || newDose.date.compare(date) == .OrderedSame) {
+                        // Cancel previous notification
+                        cancelNotification()
+                        
+                        // Schedule new notification
+                        scheduleNotification(next)
+                    }
+                }
             }
+            
+            return true
         }
         
         // Otherwise do not reschedule next dose
@@ -77,15 +94,20 @@ class Medicine: NSManagedObject {
         if let previous = lastDose {
             // Delete previous dose
             moc.deleteObject(previous)
+            
+            // Commit changes
+            let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+            appDelegate.saveContext()
         
             // Cancel previous notification
             cancelNotification()
-        
-            // Schedule new notification based on previous dose
-            let fireDate = calculateInterval(lastDose?.date)
-            if let date = fireDate {
-                if date.compare(NSDate()) == .OrderedDescending {
-                    scheduleNotification(date)
+            
+            // Reschedule notification based on previouse dose
+            if let date = lastDose {
+                if let next = date.next {
+                    if next.compare(NSDate()) == .OrderedDescending {
+                        scheduleNotification(next)
+                    }
                 }
                 
                 return true
@@ -96,7 +118,18 @@ class Medicine: NSManagedObject {
     }
     
     func printNext() -> NSDate? {
-        return lastDose?.next
+        if let date = lastDose {
+            return date.next
+        } else if var alarm = intervalAlarm {
+            // If interval alarm set and no previous doses taken
+            if alarm.compare(NSDate()) == .OrderedAscending {
+                alarm = calculateInterval(alarm)!
+            }
+            
+            return alarm
+        }
+        
+        return nil
     }
     
     func isOverdue() -> Bool {
@@ -109,14 +142,6 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Notification methods
-    func setNotification() {
-        if let date = nextDose {
-            if date.compare(NSDate()) == .OrderedDescending {
-                scheduleNotification(date)
-            }
-        }
-    }
-    
     func scheduleNotification(date: NSDate) {
         if let medName = name {
             let notification = UILocalNotification()
@@ -131,6 +156,23 @@ class Medicine: NSManagedObject {
             notification.fireDate = date
         
             UIApplication.sharedApplication().scheduleLocalNotification(notification)
+        }
+    }
+    
+    func scheduleNextNotification() {
+        cancelNotification()
+        
+        if let date = nextDose {
+            if date.compare(NSDate()) == .OrderedDescending {
+                scheduleNotification(date)
+            }
+        } else if var alarm = intervalAlarm {
+            // If interval alarm set and no previous doses taken
+            if alarm.compare(NSDate()) == .OrderedAscending {
+                alarm = calculateInterval(alarm)!
+            }
+            
+            scheduleNotification(alarm)
         }
     }
     
@@ -151,6 +193,7 @@ class Medicine: NSManagedObject {
             if let id = notification.userInfo?["id"] as? String {
                 if (id == self.medicineID) {
                     UIApplication.sharedApplication().cancelLocalNotification(notification)
+                    break
                 }
             }
         }
@@ -168,17 +211,20 @@ class Medicine: NSManagedObject {
         set { self.intervalUnitInt = newValue.rawValue }
     }
     
+    // Return next dose based on interval from most recent dose taken
     var nextDose: NSDate? {
         return calculateInterval(lastDose?.date)
     }
     
+    // Return most recent dose taken
     var lastDose: History?{
         if let lastHistory = history {
             if let object = lastHistory.firstObject {
                 var dose = object as! History
                 
                 for next in lastHistory.array as! [History] {
-                    if (dose.date.compare(next.date) == .OrderedAscending) {
+                    // Ignore if item is set to be deleted
+                    if (!next.deleted && dose.date.compare(next.date) == .OrderedAscending) {
                         dose = next
                     }
                 }

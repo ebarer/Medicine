@@ -57,7 +57,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        print("AddMedicationTVC")
+        print("Memory Warning: AddMedicationTVC")
     }
     
     func updateLabels() {

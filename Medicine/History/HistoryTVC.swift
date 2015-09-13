@@ -98,7 +98,7 @@ class HistoryTVC: UITableViewController {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        print("HistoryVC")
+        print("Memory Warning: HistoryVC")
     }
     
     
@@ -316,7 +316,7 @@ class HistoryTVC: UITableViewController {
         if let date = med.lastDose?.date {
             if (newDose.date.compare(date) == .OrderedDescending || newDose.date.compare(date) == .OrderedSame) {
                 med.cancelNotification()
-                med.setNotification()
+                med.scheduleNextNotification()
             }
         }
         

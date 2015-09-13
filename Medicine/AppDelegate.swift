@@ -31,9 +31,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        // Verify IAP purchases
-        SKPaymentQueue.defaultQueue().restoreCompletedTransactions()
-        
         // Register for notifications and actions
         let notificationType: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
         

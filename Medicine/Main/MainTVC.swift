@@ -78,7 +78,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 
                 // Schedule all notifications
                 for med in medication {
-                    med.setNotification()
+                    med.scheduleNextNotification()
                 }
             }
         } catch {
@@ -93,12 +93,15 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         // If no medications, display empty message
         displayEmptyView()
         
+        // Print all scheduled notifications
+        printNotifications()
+        
         self.tableView.reloadData()
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        print("MainTVC")
+        print("Memory Warning: MainTVC")
     }
 
     
@@ -189,6 +192,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             self.performSegueWithIdentifier("editMedication", sender: indexPath.row)
             self.tableView.selectRowAtIndexPath(indexPath, animated: false, scrollPosition: UITableViewScrollPosition.None)
         }
+        
         editAction.backgroundColor = UIColor(white: 0.78, alpha: 1.0)
         
         let deleteAction = UITableViewRowAction(style: .Destructive, title: "Delete") { (action, indexPath) -> Void in
@@ -226,17 +230,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         if (tableView.editing == false) {
             let alert = UIAlertController(title: med.name, message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet)
             
-            alert.addAction(UIAlertAction(title: "Take Next Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-                // TODO: Handle false by displaying error "Medication already taken within last 5 minutes. If error, untake last dose."
-                if (med.takeNextDose(self.moc)) {
-                    self.appDelegate.saveContext()
-                    tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
-                } else {
-                    tableView.deselectRowAtIndexPath(indexPath, animated: true)
-                }
-            }))
-            
-            alert.addAction(UIAlertAction(title: "Log Previous Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+            alert.addAction(UIAlertAction(title: "Take Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
                 self.performSegueWithIdentifier("addDose", sender: self)
             }))
             
@@ -275,7 +269,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     
-    // MARK: - Delete functions
+    // MARK: - Delete methods
     
     func presentDeleteAlert(name: String, indexPath: NSIndexPath) {
         let deleteAlert = UIAlertController(title: "Delete \"\(name)\"?", message: "This will permanently delete the \"\(name)\" medication and all of its history.", preferredStyle: UIAlertControllerStyle.Alert)
@@ -303,7 +297,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         medication.removeAtIndex(indexPath.row)
         
         tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        tableView.editing = false
         
         displayEmptyView()
     }
@@ -324,7 +317,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     
-    // MARK: - IAP functions
+    // MARK: - IAP methods
     
     func paymentQueue(queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         for transaction in transactions {
@@ -376,7 +369,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     
-    // MARK: - Navigation
+    // MARK: - Navigation methods
     
     @IBAction func addMedication(sender: UIBarButtonItem) {
         if getLockStatus() == false {
@@ -415,30 +408,25 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     
-    // MARK: - Unwind functions
+    // MARK: - Unwind methods
     
     @IBAction func medicationUnwindAdd(unwindSegue: UIStoryboardSegue) {
         if let svc = unwindSegue.sourceViewController as? AddMedicationTVC, addMed = svc.med {
             if let selectedIndex = tableView.indexPathForSelectedRow {
                 appDelegate.saveContext()
-                
                 tableView.reloadRowsAtIndexPaths([selectedIndex], withRowAnimation: .None)
             } else {
                 let newIndex = NSIndexPath(forRow: medication.count, inSection: 0)
-                
                 addMed.sortOrder = Int16(newIndex.row)
-                
-                // If medication has specified alert time, schedule first dose
-                if addMed.intervalUnit == Intervals.Daily && addMed.intervalAlarm != nil {
-                    if let date = addMed.calculateInterval(NSDate()) {
-                        addMed.scheduleNotification(date)
-                    }
-                }
-                
                 medication.append(addMed)
-                appDelegate.saveContext()
                 
+                appDelegate.saveContext()
                 tableView.insertRowsAtIndexPaths([newIndex], withRowAnimation: .Bottom)
+            }
+            
+            // If medication has specified alert time, schedule first dose
+            if addMed.intervalUnit == Intervals.Daily && addMed.intervalAlarm != nil {
+                addMed.scheduleNextNotification()
             }
         }
     }
@@ -450,23 +438,11 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     @IBAction func historyUnwindAdd(unwindSegue: UIStoryboardSegue) {
         if let selectedIndex = tableView.indexPathForSelectedRow {
-            // Log dose
             let svc = unwindSegue.sourceViewController as! AddDoseTVC
-            let entity = NSEntityDescription.entityForName("History", inManagedObjectContext: moc)
-            let newDose = History(entity: entity!, insertIntoManagedObjectContext: moc)
             let med = medication[selectedIndex.row]
-            newDose.medicine = med
-            newDose.date = svc.date
-            newDose.next = med.calculateInterval(svc.date)
+            med.takeDose(moc, date: svc.date)
+
             appDelegate.saveContext()
-            
-            // Reschedule notification if newest addition
-            if let date = med.lastDose?.date {
-                if (newDose.date.compare(date) == .OrderedDescending || newDose.date.compare(date) == .OrderedSame) {
-                    med.cancelNotification()
-                    med.setNotification()
-                }
-            }
             
             // Reload table
             self.tableView.reloadData()
@@ -476,11 +452,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     @IBAction func historyUnwindCancel(unwindSegue: UIStoryboardSegue) {}
     
     
-    // MARK: - Local Notifications
+    // MARK: - Local notifications
     
     func internalNotification(notification: NSNotification) {
-        print(UIApplication.sharedApplication().scheduledLocalNotifications)
-        
         if let id = notification.userInfo!["id"] as? String {
             let medQuery = medication.filter{ $0.medicineID == id }.first
             if let med = medQuery {
@@ -510,7 +484,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         if let id = notification.userInfo!["id"] as? String {
             let medQuery = medication.filter{ $0.medicineID == id }.first
             if let med = medQuery {
-                if (med.takeNextDose(self.moc)) {
+                if (med.takeDose(self.moc, date: NSDate())) {
                     self.appDelegate.saveContext()
                     self.tableView.reloadData()
                 }
@@ -526,6 +500,27 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                     med.snoozeNotification()
                     appDelegate.saveContext()
                     self.tableView.reloadData()
+                }
+            }
+        }
+    }
+    
+    
+    // MARK: - Helper methods
+    
+    func printNotifications() {
+        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
+        
+        if notifications.count != 0 {
+            print("\nScheduled Notifications:")
+        
+            for notification in notifications {
+                if let id = notification.userInfo?["id"] {
+                    if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
+                        dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
+                        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+                        print("\(med.name!): \(dateFormatter.stringFromDate(notification.fireDate!)) [\(id)]")
+                    }
                 }
             }
         }
