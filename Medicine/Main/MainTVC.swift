@@ -18,6 +18,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     // MARK: - Outlets
     
     @IBOutlet var addMedicationButton: UIBarButtonItem!
+    @IBOutlet var summaryHeader: UIView!
     
     
     // MARK: - Helper variables
@@ -113,30 +114,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         return 1
     }
     
-        // Create summary header
-    
-    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        // Setup summary header
-        if section == 0 {
-            if medication.count == 0 {
-                return 0.0
-            } else {
-                return 150.0
-            }
-        }
-        
-        return 0.0
-    }
-    
-    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let view = UIView(frame: CGRectMake(0.0, 0.0, tableView.frame.width, 150.0))
-        view.backgroundColor = UIColor.grayColor()
-        
-        return view
-    }
-    
-    
-        // Create medication rows
+    // Create summary header
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return medication.count
@@ -230,7 +208,23 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         return [deleteAction, editAction]
     }
-
+    
+    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        // Setup summary header
+        if section == 0 {
+            if medication.count == 0 {
+                return 0.0
+            } else {
+                return 150.0
+            }
+        }
+        
+        return 0.0
+    }
+    
+    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return summaryHeader
+    }
     
     func refreshTableAndNotifications() {
         clearOldNotifications()
@@ -331,17 +325,19 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     func displayEmptyView() {
         if medication.count == 0 {
-            self.navigationItem.leftBarButtonItem?.enabled = false
+            navigationItem.leftBarButtonItem?.enabled = false
             
             // Create empty message
             if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
                 // Display message
-                self.tableView.backgroundView = emptyView
+                tableView.backgroundView = emptyView
             }
         } else {
-            self.navigationItem.leftBarButtonItem?.enabled = true
-            self.tableView.backgroundView = nil
+            navigationItem.leftBarButtonItem?.enabled = true
+            tableView.backgroundView = nil
         }
+        
+        tableView.reloadData()
     }
     
     
