@@ -24,6 +24,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     let defaults = NSUserDefaults.standardUserDefaults()
     let productID = "com.ebarer.Medicine.Unlock"
+    var mvc: UpgradeVC?
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var moc: NSManagedObjectContext!
@@ -34,6 +35,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     // MARK: - IAP variables
 
+    let trialLimit = 2
     var productLock = true
     
     
@@ -49,12 +51,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             productLock = true
         }
         
-        // Modify VC
+        // Modify VC tint and Navigation Item
         self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
         self.clearsSelectionOnViewWillAppear = false
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
         
-        // Modify table
+        // Remove tableView gap
         tableView.tableHeaderView = UIView(frame: CGRectMake(0.0, 0.0, tableView.bounds.size.width, 0.01))
         
         // Add observeres for notifications
@@ -110,6 +112,31 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
+    
+        // Create summary header
+    
+    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        // Setup summary header
+        if section == 0 {
+            if medication.count == 0 {
+                return 0.0
+            } else {
+                return 150.0
+            }
+        }
+        
+        return 0.0
+    }
+    
+    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView(frame: CGRectMake(0.0, 0.0, tableView.frame.width, 150.0))
+        view.backgroundColor = UIColor.grayColor()
+        
+        return view
+    }
+    
+    
+        // Create medication rows
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return medication.count
@@ -203,6 +230,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         return [deleteAction, editAction]
     }
+
     
     func refreshTableAndNotifications() {
         clearOldNotifications()
@@ -326,10 +354,13 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             case SKPaymentTransactionState.Purchased:
                 SKPaymentQueue.defaultQueue().finishTransaction(transaction)
                 unlockManager()
-                
             case SKPaymentTransactionState.Failed:
                 SKPaymentQueue.defaultQueue().finishTransaction(transaction)
-
+                mvc?.purchaseButton.enabled = true
+                mvc?.restoreButton.enabled = true
+                mvc?.purchaseIndicator.stopAnimating()
+                
+                presentPurchaseFailureAlert()
             default: break
             }
         }
@@ -345,6 +376,27 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
     }
     
+    func paymentQueue(queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: NSError) {
+        mvc?.restoreButton.setTitle("Restore", forState: UIControlState.Normal)
+        mvc?.restoreButton.enabled = true
+        mvc?.purchaseButton.enabled = true
+        mvc?.purchaseIndicator.stopAnimating()
+
+        presentRestoreFailureAlert()
+    }
+
+    func presentPurchaseFailureAlert() {
+        let failAlert = UIAlertController(title: "Purchase Failed", message: "Please try again later.", preferredStyle: UIAlertControllerStyle.Alert)
+        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+        mvc?.presentViewController(failAlert, animated: true, completion: nil)
+    }
+    
+    func presentRestoreFailureAlert() {
+        let failAlert = UIAlertController(title: "Failed to Restore Purchases", message: "Please try again later. If the problem persists, you may not have purchased the product. To do so, use the purchase button above.", preferredStyle: UIAlertControllerStyle.Alert)
+        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+        mvc?.presentViewController(failAlert, animated: true, completion: nil)
+    }
+    
     func unlockManager() {
         defaults.setBool(true, forKey: "managerUnlocked")
         defaults.synchronize()
@@ -353,7 +405,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     func getLockStatus() -> Bool {
-        if medication.count >= 2 {
+        if medication.count >= trialLimit {
             if productLock == true {
                 return true
             }
@@ -403,6 +455,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
                 vc.med = medication[index.row]
                 vc.moc = self.moc
+            }
+        }
+        
+        if segue.identifier == "upgrade" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? UpgradeVC {
+                mvc = vc
             }
         }
     }

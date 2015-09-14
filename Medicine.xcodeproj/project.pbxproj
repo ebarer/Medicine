@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE1CA16A1BA6489E009505C6 /* MainSummaryView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE1CA1691BA6489E009505C6 /* MainSummaryView.xib */; };
 		CE247B8F1B96618100E4EB5F /* AddMedicationTVC+Dosage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE247B8E1B96618100E4EB5F /* AddMedicationTVC+Dosage.swift */; };
 		CE247B911B96619B00E4EB5F /* AddMedicationTVC+Interval.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE247B901B96619B00E4EB5F /* AddMedicationTVC+Interval.swift */; };
 		CE30D1571B9856D1007805DB /* Prescription+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE30D1541B9856D1007805DB /* Prescription+CoreDataProperties.swift */; };
@@ -45,6 +46,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CE1CA1691BA6489E009505C6 /* MainSummaryView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MainSummaryView.xib; path = Main/MainSummaryView.xib; sourceTree = "<group>"; };
 		CE247B8E1B96618100E4EB5F /* AddMedicationTVC+Dosage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "AddMedicationTVC+Dosage.swift"; path = "Add/AddMedicationTVC+Dosage.swift"; sourceTree = "<group>"; };
 		CE247B901B96619B00E4EB5F /* AddMedicationTVC+Interval.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "AddMedicationTVC+Interval.swift"; path = "Add/AddMedicationTVC+Interval.swift"; sourceTree = "<group>"; };
 		CE30D1541B9856D1007805DB /* Prescription+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Prescription+CoreDataProperties.swift"; path = "Medicine/Models/Prescription+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -179,6 +181,7 @@
 			children = (
 				CE63264E1B9149C80009F9AE /* MainUINC.swift */,
 				CEA250EC1B90396C00BBE466 /* Main.storyboard */,
+				CE1CA1691BA6489E009505C6 /* MainSummaryView.xib */,
 				CEA89F961B9802DF0063606A /* MainEmptyView.xib */,
 				CEA251011B903BE400BBE466 /* MainTVC.swift */,
 				CE6325C71BA1624A00BAD562 /* Upgrade.storyboard */,
@@ -313,6 +316,7 @@
 			files = (
 				CEA250F31B90396C00BBE466 /* Assets.xcassets in Resources */,
 				CEA250F61B90396C00BBE466 /* LaunchScreen.storyboard in Resources */,
+				CE1CA16A1BA6489E009505C6 /* MainSummaryView.xib in Resources */,
 				CEA250EE1B90396C00BBE466 /* Main.storyboard in Resources */,
 				CEDE1B231B950F1800DFD7B0 /* AddMedication.storyboard in Resources */,
 				CE6325C81BA1624A00BAD562 /* Upgrade.storyboard in Resources */,
