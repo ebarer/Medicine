@@ -69,17 +69,15 @@ class Medicine: NSManagedObject {
             newDose.date = doseDate
 
             // Reschedule notification if newest addition
-            if let next = calculateInterval(doseDate) {
-                newDose.next = next
+            if let date = calculateInterval(doseDate) {
+                newDose.next = date
 
-                if let date = lastDose?.date {
-                    if (newDose.date.compare(date) == .OrderedDescending || newDose.date.compare(date) == .OrderedSame) {
-                        // Cancel previous notification
-                        cancelNotification()
-                        
-                        // Schedule new notification
-                        scheduleNotification(next)
-                    }
+                if (date.compare(NSDate()) == .OrderedDescending) {
+                    // Cancel previous notification
+                    cancelNotification()
+                    
+                    // Schedule new notification
+                    scheduleNotification(date)
                 }
             }
             
@@ -109,9 +107,9 @@ class Medicine: NSManagedObject {
                         scheduleNotification(next)
                     }
                 }
-                
-                return true
             }
+            
+            return true
         }
         
         return false
@@ -193,7 +191,6 @@ class Medicine: NSManagedObject {
             if let id = notification.userInfo?["id"] as? String {
                 if (id == self.medicineID) {
                     UIApplication.sharedApplication().cancelLocalNotification(notification)
-                    break
                 }
             }
         }

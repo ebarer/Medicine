@@ -28,51 +28,43 @@
                             <rect key="frame" x="0.0" y="0.0" width="600" height="150"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Next dose in" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UTe-OV-yHG">
-                                    <rect key="frame" x="250" y="8" width="100" height="21"/>
-                                    <animations/>
-                                    <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
-                                    <color key="textColor" red="0.96862745100000003" green="0.96862745100000003" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Plavix: 1 pill at 7:36 AM" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fQg-vE-8sD">
-                                    <rect key="frame" x="183" y="116" width="234" height="26"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tylenol: 1 pill" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fQg-vE-8sD">
+                                    <rect key="frame" x="251.5" y="123" width="98" height="20"/>
                                     <animations/>
                                     <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                     <color key="textColor" red="0.96862745100000003" green="0.96862745100000003" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="5" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Jv-9h-QwG">
-                                    <rect key="frame" x="239" y="46" width="48" height="58"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Next dose:" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UTe-OV-yHG">
+                                    <rect key="frame" x="266" y="8" width="69.5" height="17"/>
                                     <animations/>
-                                    <constraints>
-                                        <constraint firstAttribute="height" constant="58" id="Rfv-aW-RiD"/>
-                                    </constraints>
-                                    <fontDescription key="fontDescription" type="system" weight="thin" pointSize="48"/>
+                                    <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                                     <color key="textColor" red="0.96862745100000003" green="0.96862745100000003" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="hours" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="15a-BC-UL6">
-                                    <rect key="frame" x="261" y="64" width="100" height="21"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Jv-9h-QwG">
+                                    <rect key="frame" x="207" y="46" width="187.5" height="57"/>
                                     <animations/>
-                                    <constraints>
-                                        <constraint firstAttribute="width" constant="100" id="U1t-8R-nAp"/>
-                                        <constraint firstAttribute="height" constant="21" id="v9A-RE-fbm"/>
-                                    </constraints>
-                                    <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
-                                    <color key="textColor" red="0.96862745100000003" green="0.96862745100000003" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
+                                    <attributedString key="attributedText">
+                                        <fragment content="7:36 ">
+                                            <attributes>
+                                                <color key="NSColor" red="0.96862745100000003" green="0.96862745100000003" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
+                                                <font key="NSFont" size="65" name="HelveticaNeue-Thin"/>
+                                                <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                            </attributes>
+                                        </fragment>
+                                    </attributedString>
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
                             <animations/>
-                            <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
+                            <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
-                                <constraint firstItem="8Jv-9h-QwG" firstAttribute="centerY" secondItem="Jr9-96-6nB" secondAttribute="centerY" id="FvY-26-V1F"/>
+                                <constraint firstItem="8Jv-9h-QwG" firstAttribute="centerX" secondItem="Jr9-96-6nB" secondAttribute="centerX" id="LMO-nJ-lH0"/>
                                 <constraint firstItem="UTe-OV-yHG" firstAttribute="centerX" secondItem="Jr9-96-6nB" secondAttribute="centerX" id="S2O-oy-T7N"/>
-                                <constraint firstItem="15a-BC-UL6" firstAttribute="centerY" secondItem="Jr9-96-6nB" secondAttribute="centerY" id="jl2-Ib-qmb"/>
+                                <constraint firstItem="8Jv-9h-QwG" firstAttribute="centerY" secondItem="Jr9-96-6nB" secondAttribute="centerY" id="k6z-Vx-TNm"/>
                                 <constraint firstItem="fQg-vE-8sD" firstAttribute="centerX" secondItem="Jr9-96-6nB" secondAttribute="centerX" id="kOk-C2-ITb"/>
                                 <constraint firstItem="fQg-vE-8sD" firstAttribute="bottom" secondItem="Jr9-96-6nB" secondAttribute="bottomMargin" id="rzz-OL-eWh"/>
-                                <constraint firstItem="15a-BC-UL6" firstAttribute="leading" secondItem="8Jv-9h-QwG" secondAttribute="trailing" constant="-26" id="wFS-UH-z2b"/>
                                 <constraint firstItem="UTe-OV-yHG" firstAttribute="top" secondItem="Jr9-96-6nB" secondAttribute="topMargin" id="zjc-gF-Fc2"/>
                             </constraints>
                         </view>
@@ -123,6 +115,9 @@
                     </navigationItem>
                     <connections>
                         <outlet property="addMedicationButton" destination="njk-aJ-XdY" id="Zg5-v7-Nxh"/>
+                        <outlet property="headerCounterLabel" destination="8Jv-9h-QwG" id="Hhg-uB-2Oq"/>
+                        <outlet property="headerDescriptionLabel" destination="UTe-OV-yHG" id="o9P-d9-0do"/>
+                        <outlet property="headerMedLabel" destination="fQg-vE-8sD" id="TdA-hf-PcM"/>
                         <outlet property="summaryHeader" destination="Jr9-96-6nB" id="n1F-sN-KcX"/>
                         <segue destination="KKX-VQ-lBK" kind="presentation" identifier="editMedication" id="tHn-tf-kiw"/>
                         <segue destination="bZR-7Y-tt8" kind="presentation" identifier="addDose" id="tQz-wz-X6o"/>
@@ -221,7 +216,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="5Gy-on-iGP"/>
         <segue reference="tQz-wz-X6o"/>
+        <segue reference="5Gy-on-iGP"/>
     </inferredMetricsTieBreakers>
 </document>

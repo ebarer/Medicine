@@ -19,7 +19,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     @IBOutlet var addMedicationButton: UIBarButtonItem!
     @IBOutlet var summaryHeader: UIView!
-    
+    @IBOutlet var headerDescriptionLabel: UILabel!
+    @IBOutlet var headerCounterLabel: UILabel!
+    @IBOutlet var headerMedLabel: UILabel!
     
     // MARK: - Helper variables
     
@@ -114,6 +116,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         return 1
     }
     
+    
     // Create summary header
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -179,6 +182,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             
             cell.detailTextLabel?.attributedText = subtitle
         } else {
+            cell.textLabel?.textColor = UIColor.blackColor()
             cell.detailTextLabel?.attributedText = NSAttributedString(string: "Tap to take next dose", attributes: [NSForegroundColorAttributeName: UIColor.lightGrayColor()])
         }
         
@@ -223,6 +227,52 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        // Create background gradient
+        let colorTop = UIColor(red: 62.0/255.0, green: 18/255, blue: 18.0/255, alpha: 1.0).CGColor
+        let colorBottom = UIColor(red: 118.0/255, green: 34.0/255, blue: 34/255, alpha: 1.0).CGColor
+        
+        let gl = CAGradientLayer()
+        gl.colors = [colorTop, colorBottom]
+        gl.frame = summaryHeader.bounds
+            
+        summaryHeader.layer.insertSublayer(gl, atIndex: 0)
+        
+        // Setup summary labels
+        var string = NSMutableAttributedString(string: "No more doses today")
+        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+        headerCounterLabel.attributedText = string
+        headerDescriptionLabel.text = nil
+        headerMedLabel.text = nil
+        
+        // If we have an upcoming scheduled dose or overdue items, modify labels
+        if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
+            if let id = nextDose.userInfo?["id"] {
+                if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
+                    headerDescriptionLabel.text = "Next dose:"
+                    
+                    // let dif = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: NSDate(), toDate: nextDose.fireDate!, options: [])
+                    dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
+                    dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+                    
+                    string = NSMutableAttributedString(string: dateFormatter.stringFromDate(nextDose.fireDate!))
+                    let len = string.length
+                    string.addAttribute(NSForegroundColorAttributeName, value: UIColor.grayColor(), range: NSMakeRange(len-2, 2))
+                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, len-3))
+                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(len-2, 2))
+                    headerCounterLabel.attributedText = string
+
+                    let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
+                    headerMedLabel.text = "\(med.name!): \(dose)"
+                }
+            }
+        } else if medication.filter({$0.isOverdue()}).count != 0 {
+            // If we have overdue items, print out
+            
+            string = NSMutableAttributedString(string: "Overdue doses")
+            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+            headerCounterLabel.attributedText = string
+        }
+        
         return summaryHeader
     }
     
@@ -261,13 +311,13 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 alert.addAction(UIAlertAction(title: "Undo Last Dose", style: .Destructive, handler: {(action) -> Void in
                     if (med.untakeLastDose(self.moc)) {
                         self.appDelegate.saveContext()
-                        tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+                        self.tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: UITableViewRowAnimation.None)
+                        self.printNotifications()
                     } else {
-                        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                        self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
                     }
                 }))
             }
-            
             
             alert.addAction(UIAlertAction(title: "Edit", style: .Default, handler: {(action) -> Void in
                 self.performSegueWithIdentifier("editMedication", sender: indexPath.row)
@@ -280,7 +330,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             }))
             
             alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: {(action) -> Void in
-                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }))
 
             alert.view.tintColor = UIColor.grayColor()
@@ -317,10 +367,15 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         // Remove medication from array
         medication.removeAtIndex(indexPath.row)
+
+        if medication.count == 0 {
+            displayEmptyView()
+        } else {
+//            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+            tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Automatic)
+        }
         
-        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        
-        displayEmptyView()
+        printNotifications()
     }
     
     func displayEmptyView() {
