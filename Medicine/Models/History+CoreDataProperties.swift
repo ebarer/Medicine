@@ -17,5 +17,8 @@ extension History {
     @NSManaged var date: NSDate
     @NSManaged var next: NSDate?
     @NSManaged var medicine: Medicine?
+    
+    @NSManaged var dosage: Float
+    @NSManaged var dosageUnitInt: Int16
 
 }

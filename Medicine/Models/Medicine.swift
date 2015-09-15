@@ -62,30 +62,38 @@ class Medicine: NSManagedObject {
         // If no history, or no doses taken within previous 5 minutes
         let compareDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: -5, toDate: doseDate, options: [])!
         if (lastDose == nil || lastDose!.date.compare(compareDate) == .OrderedAscending) {
-            // Log current dosage as new history element
-            let entity = NSEntityDescription.entityForName("History", inManagedObjectContext: moc)
-            let newDose = History(entity: entity!, insertIntoManagedObjectContext: moc)
-            newDose.medicine = self
-            newDose.date = doseDate
-
-            // Reschedule notification if newest addition
-            if let date = calculateInterval(doseDate) {
-                newDose.next = date
-
-                if (date.compare(NSDate()) == .OrderedDescending) {
-                    // Cancel previous notification
-                    cancelNotification()
-                    
-                    // Schedule new notification
-                    scheduleNotification(date)
-                }
-            }
+            addDose(moc, date: doseDate)
             
             return true
         }
         
         // Otherwise do not reschedule next dose
         return false
+    }
+    
+    func addDose(moc: NSManagedObjectContext, date doseDate: NSDate) -> History {
+        // Log current dosage as new history element
+        let entity = NSEntityDescription.entityForName("History", inManagedObjectContext: moc)
+        let newDose = History(entity: entity!, insertIntoManagedObjectContext: moc)
+        newDose.medicine = self
+        newDose.dosage = self.dosage
+        newDose.dosageUnitInt = self.dosageUnitInt
+        newDose.date = doseDate
+        
+        // Reschedule notification if newest addition
+        if let date = calculateInterval(doseDate) {
+            newDose.next = date
+            
+            if (date.compare(NSDate()) == .OrderedDescending) {
+                // Cancel previous notification
+                cancelNotification()
+                
+                // Schedule new notification
+                scheduleNotification(date)
+            }
+        }
+        
+        return newDose
     }
     
     func untakeLastDose(moc: NSManagedObjectContext) -> Bool {

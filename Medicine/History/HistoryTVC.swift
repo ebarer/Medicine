@@ -299,26 +299,15 @@ class HistoryTVC: UITableViewController {
     @IBAction func historyUnwindAdd(unwindSegue: UIStoryboardSegue) {
         // Log dose
         let svc = unwindSegue.sourceViewController as! AddDoseTVC
-        let entity = NSEntityDescription.entityForName("History", inManagedObjectContext: moc)
-        let newDose = History(entity: entity!, insertIntoManagedObjectContext: moc)
-        newDose.medicine = med
-        newDose.date = svc.date
-        newDose.next = med.calculateInterval(svc.date)
+        let dose = med.addDose(moc, date: svc.date)
+        
         appDelegate.saveContext()
         
         // Add to log
         let index = cal.startOfDayForDate(svc.date)
-        log[index]?.insert(newDose, atIndex: 0)
+        log[index]?.insert(dose, atIndex: 0)
         log[index]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
         count++
-        
-        // Reschedule notification if newest addition
-        if let date = med.lastDose?.date {
-            if (newDose.date.compare(date) == .OrderedDescending || newDose.date.compare(date) == .OrderedSame) {
-                med.cancelNotification()
-                med.scheduleNextNotification()
-            }
-        }
         
         // Reload table
         self.tableView.reloadData()
