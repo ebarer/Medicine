@@ -228,11 +228,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         // Create background gradient
-        let colorTop = UIColor(red: 62.0/255.0, green: 18/255, blue: 18.0/255, alpha: 1.0).CGColor
-        let colorBottom = UIColor(red: 118.0/255, green: 34.0/255, blue: 34/255, alpha: 1.0).CGColor
+        let colorTop = UIColor(red: 62.0/255.0, green: 18/255, blue: 18.0/255, alpha: 1.0).CGColor      // Dark
+        let colorBottom = UIColor(red: 118.0/255, green: 34.0/255, blue: 34/255, alpha: 1.0).CGColor    // Light
         
         let gl = CAGradientLayer()
         gl.colors = [colorTop, colorBottom]
+        gl.locations = [0.25, 1.0]
         gl.frame = summaryHeader.bounds
             
         summaryHeader.layer.insertSublayer(gl, atIndex: 0)
@@ -251,13 +252,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                     headerDescriptionLabel.text = "Next dose:"
                     
                     // let dif = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: NSDate(), toDate: nextDose.fireDate!, options: [])
-                    dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
-                    dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+                    dateFormatter.dateFormat = "h:mma"
                     
                     string = NSMutableAttributedString(string: dateFormatter.stringFromDate(nextDose.fireDate!))
                     let len = string.length
-                    string.addAttribute(NSForegroundColorAttributeName, value: UIColor.grayColor(), range: NSMakeRange(len-2, 2))
-                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, len-3))
+                    // string.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0), range: NSMakeRange(0, 2))
+                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, len-2))
                     string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(len-2, 2))
                     headerCounterLabel.attributedText = string
 
@@ -266,8 +266,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 }
             }
         } else if medication.filter({$0.isOverdue()}).count != 0 {
-            // If we have overdue items, print out
-            
+            // If we have overdue items, verbose
             string = NSMutableAttributedString(string: "Overdue doses")
             string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
             headerCounterLabel.attributedText = string
