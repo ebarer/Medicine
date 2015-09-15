@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9048" systemVersion="15A282b" minimumToolsVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="8195" systemVersion="15A282b" minimumToolsVersion="Automatic">
     <entity name="History" representedClassName=".History" syncable="YES">
         <attribute name="date" attributeType="Date" syncable="YES"/>
-        <attribute name="dosage" attributeType="Float" defaultValueString="1" syncable="YES"/>
-        <attribute name="dosageUnitInt" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="next" optional="YES" attributeType="Date" syncable="YES"/>
         <relationship name="medicine" maxCount="1" deletionRule="Nullify" destinationEntity="Medicine" inverseName="history" inverseEntity="Medicine" syncable="YES"/>
     </entity>
@@ -27,7 +25,7 @@
         <relationship name="medicine" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Medicine" inverseName="prescription" inverseEntity="Medicine" syncable="YES"/>
     </entity>
     <elements>
-        <element name="History" positionX="-92" positionY="51" width="128" height="120"/>
+        <element name="History" positionX="-92" positionY="51" width="128" height="90"/>
         <element name="Medicine" positionX="-263" positionY="-142" width="128" height="210"/>
         <element name="Prescription" positionX="-180" positionY="-27" width="128" height="105"/>
     </elements>

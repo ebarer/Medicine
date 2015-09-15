@@ -74,6 +74,7 @@
 		CEA251011B903BE400BBE466 /* MainTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainTVC.swift; path = Main/MainTVC.swift; sourceTree = "<group>"; };
 		CEA2510B1B903E7D00BBE466 /* Medicine.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Medicine.xcdatamodel; sourceTree = "<group>"; };
 		CEA89F961B9802DF0063606A /* MainEmptyView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MainEmptyView.xib; path = Main/MainEmptyView.xib; sourceTree = "<group>"; };
+		CEA9CA0D1BA87317001395BF /* Medicine - 2.1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2.1.xcdatamodel"; sourceTree = "<group>"; };
 		CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		CEF5483E1B9CEA8200C344B4 /* Medicine.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Medicine.entitlements; path = Medicine/Medicine.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -560,10 +561,11 @@
 		CEA2510A1B903E7D00BBE466 /* Medicine.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				CEA9CA0D1BA87317001395BF /* Medicine - 2.1.xcdatamodel */,
 				CE48157B1B971A5700F1FA0C /* Medicine - 2.xcdatamodel */,
 				CEA2510B1B903E7D00BBE466 /* Medicine.xcdatamodel */,
 			);
-			currentVersion = CE48157B1B971A5700F1FA0C /* Medicine - 2.xcdatamodel */;
+			currentVersion = CEA9CA0D1BA87317001395BF /* Medicine - 2.1.xcdatamodel */;
 			name = Medicine.xcdatamodeld;
 			path = Medicine/Medicine.xcdatamodeld;
 			sourceTree = "<group>";
