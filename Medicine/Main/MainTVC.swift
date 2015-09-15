@@ -371,7 +371,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         if medication.count == 0 {
             displayEmptyView()
         } else {
-//            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+            // tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
             tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Automatic)
         }
         
@@ -418,6 +418,10 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     func paymentQueueRestoreCompletedTransactionsFinished(queue: SKPaymentQueue) {
+        if queue.transactions.count == 0 {
+            presentRestoreFailureAlert()
+        }
+        
         for transaction in queue.transactions {
             let pID = transaction.payment.productIdentifier
             
@@ -428,15 +432,15 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     func paymentQueue(queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: NSError) {
-        mvc?.restoreButton.setTitle("Restore", forState: UIControlState.Normal)
-        mvc?.restoreButton.enabled = true
-        mvc?.purchaseButton.enabled = true
-        mvc?.purchaseIndicator.stopAnimating()
-
         presentRestoreFailureAlert()
     }
 
     func presentPurchaseFailureAlert() {
+        mvc?.restoreButton.setTitle("Restore", forState: UIControlState.Normal)
+        mvc?.restoreButton.enabled = true
+        mvc?.purchaseButton.enabled = true
+        mvc?.purchaseIndicator.stopAnimating()
+        
         let failAlert = UIAlertController(title: "Purchase Failed", message: "Please try again later.", preferredStyle: UIAlertControllerStyle.Alert)
         failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
         mvc?.presentViewController(failAlert, animated: true, completion: nil)
