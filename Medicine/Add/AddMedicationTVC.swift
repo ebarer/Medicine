@@ -21,6 +21,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     @IBOutlet var dosageLabel: UILabel!
     @IBOutlet var reminderToggle: UISwitch!
     @IBOutlet var intervalLabel: UILabel!
+    @IBOutlet var intervalCell: UITableViewCell!
     
     
     // MARK: - Helper variables
@@ -83,6 +84,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             }
             
             // Set interval label
+            // Change interval label if reminders disabled
             let hr = Int(medicine.interval)
             let min = Int(60 * (medicine.interval % 1))
             let hrUnit = medicine.intervalUnit.units(medicine.interval)
@@ -109,6 +111,40 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
                     }
                 }
             }
+        }
+    }
+    
+    
+    // MARK: - Table view data source
+    
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        let row = Rows(index: indexPath)
+        
+        switch(row) {
+        case Rows.interval:
+            if reminderToggle.on {
+                return tableView.rowHeight
+            }
+        default:
+            return tableView.rowHeight
+        }
+        
+        return 0
+    }
+    
+    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        let row = Rows(index: indexPath)
+        
+        cell.preservesSuperviewLayoutMargins = false
+        cell.layoutMargins = UIEdgeInsetsZero
+        cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
+        
+        switch(row) {
+        case Rows.reminderEnable:
+            if reminderToggle.on == false {
+                cell.separatorInset = UIEdgeInsetsZero
+            }
+        default: break
         }
     }
     
@@ -144,6 +180,11 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     @IBAction func toggleReminder(sender: UISwitch) {
         med?.reminderEnabled = sender.on
+        tableView.reloadRowsAtIndexPaths([Rows.reminderEnable.index()], withRowAnimation: .None)
+        
+        // Reload table
+        tableView.beginUpdates()
+        tableView.endUpdates()
     }
     
     // MARK: - Navigation
@@ -164,8 +205,8 @@ private enum Rows: Int {
     case none = -1
     case name
     case dosage
+    case reminderEnable
     case interval
-    case scheduleSelect
     case prescription
     
     init(index: NSIndexPath) {
@@ -174,13 +215,13 @@ private enum Rows: Int {
         switch (index.section, index.row) {
         case (0, 0):
             row = Rows.name
-        case (1, 0):
+        case (0, 1):
             row = Rows.dosage
+        case (1, 0):
+            row = Rows.reminderEnable
         case (1, 1):
             row = Rows.interval
         case (2, 0):
-            row = Rows.scheduleSelect
-        case (2, 1):
             row = Rows.prescription
         default:
             row = Rows.none
@@ -194,13 +235,13 @@ private enum Rows: Int {
         case .name:
             return NSIndexPath(forRow: 0, inSection: 0)
         case .dosage:
+            return NSIndexPath(forRow: 1, inSection: 0)
+        case .reminderEnable:
             return NSIndexPath(forRow: 0, inSection: 1)
         case .interval:
             return NSIndexPath(forRow: 1, inSection: 1)
-        case .scheduleSelect:
-            return NSIndexPath(forRow: 0, inSection: 2)
         case .prescription:
-            return NSIndexPath(forRow: 1, inSection: 2)
+            return NSIndexPath(forRow: 0, inSection: 2)
         default:
             return NSIndexPath(forRow: 0, inSection: 0)
         }

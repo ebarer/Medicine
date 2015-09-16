@@ -50,7 +50,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Medicine Name" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="vij-F6-HGc">
-                                                    <rect key="frame" x="15" y="8" width="577" height="28"/>
+                                                    <rect key="frame" x="16" y="8" width="576" height="28"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <textInputTraits key="textInputTraits" autocapitalizationType="words"/>
@@ -62,7 +62,7 @@
                                             <animations/>
                                             <constraints>
                                                 <constraint firstItem="vij-F6-HGc" firstAttribute="trailing" secondItem="qZ2-FO-WPK" secondAttribute="trailingMargin" id="66I-Op-C04"/>
-                                                <constraint firstItem="vij-F6-HGc" firstAttribute="leading" secondItem="qZ2-FO-WPK" secondAttribute="leadingMargin" constant="7" id="MIS-qV-nvb"/>
+                                                <constraint firstItem="vij-F6-HGc" firstAttribute="leading" secondItem="qZ2-FO-WPK" secondAttribute="leadingMargin" constant="8" id="MIS-qV-nvb"/>
                                                 <constraint firstItem="vij-F6-HGc" firstAttribute="top" secondItem="qZ2-FO-WPK" secondAttribute="topMargin" id="ewY-V5-xql"/>
                                                 <constraint firstItem="vij-F6-HGc" firstAttribute="centerY" secondItem="qZ2-FO-WPK" secondAttribute="centerY" id="u3e-SM-lbs"/>
                                             </constraints>
@@ -102,7 +102,7 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Reminders" footerTitle="" id="AQS-yx-aE0">
+                            <tableViewSection headerTitle="Notifications" footerTitle="" id="AQS-yx-aE0">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="intervalCell" id="Bg3-O8-LLY">
                                         <rect key="frame" x="0.0" y="165" width="600" height="44"/>
@@ -119,9 +119,13 @@
                                                         <action selector="toggleReminder:" destination="p2V-uz-hw7" eventType="valueChanged" id="OaO-bF-puV"/>
                                                     </connections>
                                                 </switch>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" fixedFrame="YES" text="Remind me" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dAX-jF-zKQ">
-                                                    <rect key="frame" x="15" y="12" width="214.5" height="20"/>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Remind me to take medication" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dAX-jF-zKQ">
+                                                    <rect key="frame" x="16" y="12" width="225" height="20"/>
                                                     <animations/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="20" id="Q6B-qL-sh1"/>
+                                                        <constraint firstAttribute="width" constant="225" id="t3p-SQ-bm2"/>
+                                                    </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -129,8 +133,10 @@
                                             </subviews>
                                             <animations/>
                                             <constraints>
+                                                <constraint firstItem="dAX-jF-zKQ" firstAttribute="leading" secondItem="CwE-V5-0ie" secondAttribute="leadingMargin" constant="8" id="2jj-fS-4p9"/>
                                                 <constraint firstItem="2XB-DH-Mdu" firstAttribute="centerY" secondItem="CwE-V5-0ie" secondAttribute="centerY" id="Fbe-q3-H5I"/>
                                                 <constraint firstItem="2XB-DH-Mdu" firstAttribute="top" secondItem="CwE-V5-0ie" secondAttribute="topMargin" constant="2" id="Lah-ip-Rcf"/>
+                                                <constraint firstItem="dAX-jF-zKQ" firstAttribute="top" secondItem="CwE-V5-0ie" secondAttribute="topMargin" constant="4" id="PVu-GF-FcO"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="2XB-DH-Mdu" secondAttribute="bottom" constant="1.5" id="ULv-WA-4hC"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="2XB-DH-Mdu" secondAttribute="trailing" constant="8" id="bln-pv-p1E"/>
                                             </constraints>
@@ -197,6 +203,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="dosageLabel" destination="e2V-0V-ulo" id="iLl-rF-i7D"/>
+                        <outlet property="intervalCell" destination="CbC-ka-hPl" id="T3b-Wj-kL1"/>
                         <outlet property="intervalLabel" destination="wh6-YK-ufF" id="9Ea-t7-xwX"/>
                         <outlet property="medicationName" destination="vij-F6-HGc" id="zd2-9O-azE"/>
                         <outlet property="reminderToggle" destination="2XB-DH-Mdu" id="pMb-4D-8tY"/>
