@@ -122,7 +122,6 @@ class Medicine: NSManagedObject {
                 scheduleNotification(alarm)
             }
             
-            
             return true
         }
         
@@ -145,8 +144,11 @@ class Medicine: NSManagedObject {
     }
     
     func isOverdue() -> Bool {
-        if let date = lastDose?.next {
-            return (NSDate().compare(date) == .OrderedDescending)
+        // Medicine can't be overdue if reminders are disabled
+        if reminderEnabled {
+            if let date = lastDose?.next {
+                return (NSDate().compare(date) == .OrderedDescending)
+            }
         }
         
         return false

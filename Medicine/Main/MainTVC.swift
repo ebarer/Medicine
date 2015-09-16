@@ -150,9 +150,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         
         // If reminders aren't enabled for medication, set subtitle to last dose taken
-        if let date = med.lastDose?.date {
-            if med.reminderEnabled == false {
-                let subtitle = NSMutableAttributedString(string: "Last dose: \(cellDateString(date))")
+        if med.reminderEnabled == false {
+            if let date = med.lastDose?.next {
+                let subtitle = NSMutableAttributedString(string: "Earliest next dose: \(cellDateString(date))")
                 subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
                 cell.detailTextLabel?.attributedText = subtitle
                 return cell

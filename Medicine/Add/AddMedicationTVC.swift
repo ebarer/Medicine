@@ -117,37 +117,6 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     // MARK: - Table view data source
     
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        let row = Rows(index: indexPath)
-        
-        switch(row) {
-        case Rows.interval:
-            if reminderToggle.on {
-                return tableView.rowHeight
-            }
-        default:
-            return tableView.rowHeight
-        }
-        
-        return 0
-    }
-    
-    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        let row = Rows(index: indexPath)
-        
-        cell.preservesSuperviewLayoutMargins = false
-        cell.layoutMargins = UIEdgeInsetsZero
-        cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
-        
-        switch(row) {
-        case Rows.reminderEnable:
-            if reminderToggle.on == false {
-                cell.separatorInset = UIEdgeInsetsZero
-            }
-        default: break
-        }
-    }
-    
     
     // MARK: - Table view delegate
     
