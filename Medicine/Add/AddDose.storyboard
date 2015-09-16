@@ -55,7 +55,7 @@
                     <navigationItem key="navigationItem" title="Log Dose" id="yNv-pI-UX8">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="oyO-59-MWx">
                             <connections>
-                                <segue destination="xOG-E7-LlZ" kind="unwind" unwindAction="historyUnwindCancel:" id="F0m-vk-ift"/>
+                                <segue destination="xOG-E7-LlZ" kind="unwind" unwindAction="unwindCancel:" id="NPz-RX-qnh"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="irm-aw-TcC">
@@ -82,10 +82,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <animations/>
-                        <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="barTintColor" red="0.98431372549999996" green="0.0" blue="0.17254901959999999" alpha="1" colorSpace="calibratedRGB"/>
                         <textAttributes key="titleTextAttributes">
-                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>

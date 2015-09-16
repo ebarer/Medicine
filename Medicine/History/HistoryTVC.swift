@@ -313,6 +313,6 @@ class HistoryTVC: UITableViewController {
         self.tableView.reloadData()
     }
     
-    @IBAction func historyUnwindCancel(unwindSegue: UIStoryboardSegue) {}
+    @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {}
 
 }

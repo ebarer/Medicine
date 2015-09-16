@@ -30,6 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
+        
         // Register for notifications and actions
         let notificationType: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
         

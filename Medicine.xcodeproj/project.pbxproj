@@ -31,6 +31,8 @@
 		CEA89F971B9802DF0063606A /* MainEmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEA89F961B9802DF0063606A /* MainEmptyView.xib */; };
 		CEDE1B221B950F1500DFD7B0 /* AddDose.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE5DE78E1B950E4100168B1E /* AddDose.storyboard */; };
 		CEDE1B231B950F1800DFD7B0 /* AddMedication.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE38AF261B950989000D00AD /* AddMedication.storyboard */; };
+		CEE7FC671BA944A30036DFA5 /* Tutorial.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEE7FC661BA944A30036DFA5 /* Tutorial.storyboard */; };
+		CEE7FC691BA944B60036DFA5 /* TutorialTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE7FC681BA944B60036DFA5 /* TutorialTVC.swift */; };
 		CEF5483C1B9CEA7100C344B4 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -76,6 +78,8 @@
 		CEA2510B1B903E7D00BBE466 /* Medicine.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Medicine.xcdatamodel; sourceTree = "<group>"; };
 		CEA89F961B9802DF0063606A /* MainEmptyView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MainEmptyView.xib; path = Main/MainEmptyView.xib; sourceTree = "<group>"; };
 		CEA9CA0D1BA87317001395BF /* Medicine - 2.1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2.1.xcdatamodel"; sourceTree = "<group>"; };
+		CEE7FC661BA944A30036DFA5 /* Tutorial.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Tutorial.storyboard; path = Tutorial/Tutorial.storyboard; sourceTree = "<group>"; };
+		CEE7FC681BA944B60036DFA5 /* TutorialTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TutorialTVC.swift; path = Tutorial/TutorialTVC.swift; sourceTree = "<group>"; };
 		CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		CEF5483E1B9CEA8200C344B4 /* Medicine.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Medicine.entitlements; path = Medicine/Medicine.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -145,8 +149,8 @@
 			children = (
 				CEA250E81B90396C00BBE466 /* AppDelegate.swift */,
 				CEA251031B903BE900BBE466 /* Main */,
-				CEF845391B9881A0000F223C /* Details */,
 				CEA251001B903BC900BBE466 /* Add */,
+				CEE7FC651BA944710036DFA5 /* Tutorial */,
 				CE6E55211B9040E700805397 /* Models */,
 				CEA250FD1B9039E600BBE466 /* Other */,
 			);
@@ -183,6 +187,7 @@
 				CEA250EC1B90396C00BBE466 /* Main.storyboard */,
 				CEA89F961B9802DF0063606A /* MainEmptyView.xib */,
 				CEA251011B903BE400BBE466 /* MainTVC.swift */,
+				CE38AF241B95051E000D00AD /* HistoryTVC.swift */,
 				CE6325C71BA1624A00BAD562 /* Upgrade.storyboard */,
 				CE6325C91BA1661C00BAD562 /* UpgradeVC.swift */,
 			);
@@ -199,6 +204,15 @@
 			name = Extensions;
 			sourceTree = "<group>";
 		};
+		CEE7FC651BA944710036DFA5 /* Tutorial */ = {
+			isa = PBXGroup;
+			children = (
+				CEE7FC661BA944A30036DFA5 /* Tutorial.storyboard */,
+				CEE7FC681BA944B60036DFA5 /* TutorialTVC.swift */,
+			);
+			name = Tutorial;
+			sourceTree = "<group>";
+		};
 		CEF5483D1B9CEA7A00C344B4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -206,14 +220,6 @@
 				CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		CEF845391B9881A0000F223C /* Details */ = {
-			isa = PBXGroup;
-			children = (
-				CE38AF241B95051E000D00AD /* HistoryTVC.swift */,
-			);
-			name = Details;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -260,6 +266,9 @@
 		CEA250DD1B90396C00BBE466 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				KnownAssetTags = (
+					"com.apple.gamecenter.Dashboard Image",
+				);
 				LastSwiftUpdateCheck = 0710;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Elliot Barer";
@@ -319,6 +328,7 @@
 				CEDE1B231B950F1800DFD7B0 /* AddMedication.storyboard in Resources */,
 				CE6325C81BA1624A00BAD562 /* Upgrade.storyboard in Resources */,
 				CEDE1B221B950F1500DFD7B0 /* AddDose.storyboard in Resources */,
+				CEE7FC671BA944A30036DFA5 /* Tutorial.storyboard in Resources */,
 				CEA89F971B9802DF0063606A /* MainEmptyView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -352,6 +362,7 @@
 				CE6325CA1BA1661C00BAD562 /* UpgradeVC.swift in Sources */,
 				CE247B8F1B96618100E4EB5F /* AddMedicationTVC+Dosage.swift in Sources */,
 				CE247B911B96619B00E4EB5F /* AddMedicationTVC+Interval.swift in Sources */,
+				CEE7FC691BA944B60036DFA5 /* TutorialTVC.swift in Sources */,
 				CE38AF251B95051E000D00AD /* HistoryTVC.swift in Sources */,
 				CE38AF231B950517000D00AD /* AddDoseTVC.swift in Sources */,
 			);

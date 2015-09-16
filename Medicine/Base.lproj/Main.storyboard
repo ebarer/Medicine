@@ -12,7 +12,15 @@
                 <viewControllerPlaceholder storyboardName="Upgrade" id="l1N-4I-mqi" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jlM-d8-EFB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1390" y="978"/>
+            <point key="canvasLocation" x="1390" y="1048"/>
+        </scene>
+        <!--Tutorial-->
+        <scene sceneID="Zcl-f9-SFb">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Tutorial" id="liu-tY-aX7" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="pf3-Ja-Cog" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1129.5" y="887"/>
         </scene>
         <!--Medicine-->
         <scene sceneID="DrC-QF-zXV">
@@ -123,6 +131,7 @@
                         <segue destination="bZR-7Y-tt8" kind="presentation" identifier="addDose" id="tQz-wz-X6o"/>
                         <segue destination="KKX-VQ-lBK" kind="presentation" identifier="addMedication" id="5Gy-on-iGP"/>
                         <segue destination="l1N-4I-mqi" kind="presentation" identifier="upgrade" id="6jJ-Gd-VPL"/>
+                        <segue destination="liu-tY-aX7" kind="presentation" identifier="tutorial" animates="NO" id="rtF-JG-WOZ"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x4v-fN-eJ1" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -138,10 +147,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <animations/>
-                        <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="barTintColor" red="0.98431372549999996" green="0.0" blue="0.17254901959999999" alpha="1" colorSpace="calibratedRGB"/>
                         <textAttributes key="titleTextAttributes">
-                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -204,7 +213,7 @@
                 <viewControllerPlaceholder storyboardName="AddMedication" id="KKX-VQ-lBK" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iW6-yh-2SF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1152" y="893"/>
+            <point key="canvasLocation" x="1390" y="968"/>
         </scene>
         <!--AddDose-->
         <scene sceneID="V2c-5F-wuu">
@@ -212,11 +221,11 @@
                 <viewControllerPlaceholder storyboardName="AddDose" id="bZR-7Y-tt8" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2P2-5h-dae" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1765.5" y="893"/>
+            <point key="canvasLocation" x="1765.5" y="887"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="tQz-wz-X6o"/>
+        <segue reference="0Oe-mX-irt"/>
         <segue reference="5Gy-on-iGP"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -152,7 +152,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     // MARK: - Table view delegate
     
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if section == Rows.dosage.index().section {
+        if section == Rows.interval.index().section {
             if editMode {
                 return "Changes will take effect with next dose taken."
             }

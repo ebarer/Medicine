@@ -89,6 +89,17 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         } catch {
             print("Could not fetch medication.")
         }
+        
+        // Display tutorial on first launch
+        if !defaults.boolForKey("firstLaunch") {
+            defaults.setBool(true, forKey: "firstLaunch")
+            defaults.synchronize()
+            
+            performSegueWithIdentifier("tutorial", sender: self)
+        }
+        
+        // ## Debug
+        performSegueWithIdentifier("tutorial", sender: self)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -600,7 +611,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
     }
     
-    @IBAction func historyUnwindCancel(unwindSegue: UIStoryboardSegue) {}
+    @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {}
     
     
     // MARK: - Local notifications
@@ -691,6 +702,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     func printNotifications() {
+        // ## Debug
         let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
         
         if notifications.count != 0 {
