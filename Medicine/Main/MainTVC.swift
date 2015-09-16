@@ -196,6 +196,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         appDelegate.saveContext()
     }
     
+    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {}
+    
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
         let editAction = UITableViewRowAction(style: .Default, title: "Edit") { (action, indexPath) -> Void in
             self.performSegueWithIdentifier("editMedication", sender: indexPath.row)
@@ -228,12 +234,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         // Create background gradient
-        let colorTop = UIColor(red: 62.0/255.0, green: 18/255, blue: 18.0/255, alpha: 1.0).CGColor      // Dark
-        let colorBottom = UIColor(red: 118.0/255, green: 34.0/255, blue: 34/255, alpha: 1.0).CGColor    // Light
+        let colorTop = UIColor(white: 0.25, alpha: 1.0)
+        let colorBottom = UIColor(red: 86.0/255, green: 32.0/255, blue: 34.0/255, alpha: 1.0).CGColor    // Light
         
         let gl = CAGradientLayer()
         gl.colors = [colorTop, colorBottom]
-        gl.locations = [0.25, 1.0]
+        gl.locations = [0.0, 1.0]
         gl.frame = summaryHeader.bounds
             
         summaryHeader.layer.insertSublayer(gl, atIndex: 0)
@@ -245,33 +251,42 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         headerDescriptionLabel.text = nil
         headerMedLabel.text = nil
         
-        // If we have an upcoming scheduled dose or overdue items, modify labels
-        if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
-            if let id = nextDose.userInfo?["id"] {
-                if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
-                    headerDescriptionLabel.text = "Next dose:"
-                    
-                    // let dif = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: NSDate(), toDate: nextDose.fireDate!, options: [])
-                    dateFormatter.dateFormat = "h:mma"
-                    
-                    string = NSMutableAttributedString(string: dateFormatter.stringFromDate(nextDose.fireDate!))
-                    let len = string.length
-                    // string.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0), range: NSMakeRange(0, 2))
-                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, len-2))
-                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(len-2, 2))
-                    headerCounterLabel.attributedText = string
+        // If we have overdue doses or an upcoming scheduled dose today, modify labels
+        let overdueItems = medication.filter({$0.isOverdue()}).count
+        if overdueItems > 0  {
+            var text = "Overdue dose"
 
-                    let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
-                    headerMedLabel.text = "\(med.name!): \(dose)"
-                }
+            // Pluralize string if multiple overdue doses
+            if overdueItems > 1 {
+                text += "s"
             }
-        } else if medication.filter({$0.isOverdue()}).count != 0 {
-            // If we have overdue items, verbose
-            string = NSMutableAttributedString(string: "Overdue doses")
+            
+            string = NSMutableAttributedString(string: text)
             string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
             headerCounterLabel.attributedText = string
+        } else if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
+            if cal.isDateInToday(nextDose.fireDate!) {
+                if let id = nextDose.userInfo?["id"] {
+                    if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
+                        headerDescriptionLabel.text = "Next Dose"
+                        
+                        // let dif = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: NSDate(), toDate: nextDose.fireDate!, options: [])
+                        dateFormatter.dateFormat = "h:mma"
+                        
+                        string = NSMutableAttributedString(string: dateFormatter.stringFromDate(nextDose.fireDate!))
+                        let len = string.length
+                        // string.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0), range: NSMakeRange(0, 2))
+                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, len-2))
+                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(len-2, 2))
+                        headerCounterLabel.attributedText = string
+                        
+                        let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
+                        headerMedLabel.text = "\(dose) of \(med.name!)"
+                    }
+                }
+            }
         }
-        
+    
         return summaryHeader
     }
     
@@ -624,17 +639,21 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
         
         if notifications.count != 0 {
-            print("\nScheduled Notifications:")
+            print("Scheduled notifications:")
         
-            for notification in notifications {
+            for (index, notification) in notifications.enumerate() {
                 if let id = notification.userInfo?["id"] {
                     if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
                         dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
                         dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-                        print("\(med.name!): \(dateFormatter.stringFromDate(notification.fireDate!)) [\(id)]")
+                        print("\t\(index): [\(id)] \t \(med.name!): \(dateFormatter.stringFromDate(notification.fireDate!))")
                     }
                 }
             }
+            
+            print("\n")
+        } else {
+            print("No scheduled notifications.\n")
         }
     }
     

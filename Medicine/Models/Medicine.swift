@@ -116,6 +116,12 @@ class Medicine: NSManagedObject {
                     }
                 }
             }
+            // If no previous dose (no notification scheduled)
+            // and dosage has alarm, schedule notification based on alarm
+            else if let alarm = intervalAlarm {
+                scheduleNotification(alarm)
+            }
+            
             
             return true
         }
@@ -124,8 +130,8 @@ class Medicine: NSManagedObject {
     }
     
     func printNext() -> NSDate? {
-        if let date = lastDose {
-            return date.next
+        if let date = scheduledNotification?.fireDate {
+            return date
         } else if var alarm = intervalAlarm {
             // If interval alarm set and no previous doses taken
             if alarm.compare(NSDate()) == .OrderedAscending {
@@ -162,6 +168,8 @@ class Medicine: NSManagedObject {
             notification.fireDate = date
         
             UIApplication.sharedApplication().scheduleLocalNotification(notification)
+            
+            scheduledNotification = notification
         }
     }
     
@@ -202,10 +210,14 @@ class Medicine: NSManagedObject {
                 }
             }
         }
+        
+        scheduledNotification = nil
     }
     
     
     // MARK: - Member variables
+    var scheduledNotification: UILocalNotification?
+    
     var dosageUnit: Doses {
         get { return Doses(rawValue: self.dosageUnitInt)! }
         set { self.dosageUnitInt = newValue.rawValue }

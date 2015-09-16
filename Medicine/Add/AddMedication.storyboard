@@ -402,7 +402,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Wsc-Wr-KOA">
-                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="161.5"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="162"/>
                                                     <animations/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="162" id="Bnv-yV-vLU"/>
@@ -458,7 +458,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VJa-iX-2R8">
-                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="161.5"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="162"/>
                                                     <animations/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="162" id="MRo-db-54t"/>
@@ -510,15 +510,15 @@
                                         </tableViewCellContentView>
                                         <animations/>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="alarmPicker" rowHeight="216" id="30X-gc-DXu">
-                                        <rect key="frame" x="0.0" y="527" width="600" height="216"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="alarmPicker" rowHeight="180" id="30X-gc-DXu">
+                                        <rect key="frame" x="0.0" y="527" width="600" height="180"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="30X-gc-DXu" id="b54-OP-GU4">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="215.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="179.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="IYY-Jr-iMZ">
-                                                    <rect key="frame" x="0.0" y="-0.5" width="600" height="216.5"/>
+                                                    <rect key="frame" x="0.0" y="-18.5" width="600" height="216"/>
                                                     <animations/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="216" id="f6R-e2-lc6"/>

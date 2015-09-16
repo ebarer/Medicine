@@ -28,32 +28,32 @@
                             <rect key="frame" x="0.0" y="0.0" width="600" height="150"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tylenol: 1 pill" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fQg-vE-8sD">
-                                    <rect key="frame" x="252" y="122.5" width="97.5" height="19.5"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1 pill of Tylenol" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fQg-vE-8sD">
+                                    <rect key="frame" x="248" y="118" width="106" height="18"/>
                                     <animations/>
-                                    <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
                                     <color key="textColor" red="0.96862745100000003" green="0.96862745100000003" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Next dose:" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UTe-OV-yHG">
-                                    <rect key="frame" x="266" y="8" width="69.5" height="17"/>
-                                    <animations/>
-                                    <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
-                                    <color key="textColor" red="0.98431372549999996" green="0.0" blue="0.17254901959999999" alpha="1" colorSpace="calibratedRGB"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Jv-9h-QwG">
-                                    <rect key="frame" x="227.5" y="36" width="145" height="77"/>
+                                    <rect key="frame" x="222" y="33" width="156" height="83"/>
                                     <animations/>
                                     <attributedString key="attributedText">
                                         <fragment content="7:36 ">
                                             <attributes>
                                                 <color key="NSColor" red="0.96862745100000003" green="0.96862745100000003" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
-                                                <font key="NSFont" size="65" name="HelveticaNeue-Thin"/>
+                                                <font key="NSFont" size="70" name="HelveticaNeue-Thin"/>
                                                 <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                             </attributes>
                                         </fragment>
                                     </attributedString>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Next Dose" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UTe-OV-yHG">
+                                    <rect key="frame" x="264.5" y="14" width="71.5" height="18"/>
+                                    <animations/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                    <color key="textColor" red="0.98431372549999996" green="0.0" blue="0.17254901959999999" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
@@ -63,9 +63,9 @@
                                 <constraint firstItem="8Jv-9h-QwG" firstAttribute="centerX" secondItem="Jr9-96-6nB" secondAttribute="centerX" id="LMO-nJ-lH0"/>
                                 <constraint firstItem="UTe-OV-yHG" firstAttribute="centerX" secondItem="Jr9-96-6nB" secondAttribute="centerX" id="S2O-oy-T7N"/>
                                 <constraint firstItem="8Jv-9h-QwG" firstAttribute="centerY" secondItem="Jr9-96-6nB" secondAttribute="centerY" id="k6z-Vx-TNm"/>
-                                <constraint firstItem="fQg-vE-8sD" firstAttribute="centerX" secondItem="Jr9-96-6nB" secondAttribute="centerX" id="kOk-C2-ITb"/>
-                                <constraint firstItem="fQg-vE-8sD" firstAttribute="bottom" secondItem="Jr9-96-6nB" secondAttribute="bottomMargin" id="rzz-OL-eWh"/>
-                                <constraint firstItem="UTe-OV-yHG" firstAttribute="top" secondItem="Jr9-96-6nB" secondAttribute="topMargin" id="zjc-gF-Fc2"/>
+                                <constraint firstItem="fQg-vE-8sD" firstAttribute="centerX" secondItem="Jr9-96-6nB" secondAttribute="centerX" constant="1" id="kOk-C2-ITb"/>
+                                <constraint firstItem="fQg-vE-8sD" firstAttribute="bottom" secondItem="Jr9-96-6nB" secondAttribute="bottomMargin" constant="-6" id="rzz-OL-eWh"/>
+                                <constraint firstItem="UTe-OV-yHG" firstAttribute="top" secondItem="Jr9-96-6nB" secondAttribute="topMargin" constant="6" id="zjc-gF-Fc2"/>
                             </constraints>
                         </view>
                         <prototypes>
