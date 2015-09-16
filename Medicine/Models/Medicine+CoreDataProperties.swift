@@ -21,6 +21,7 @@ extension Medicine {
     @NSManaged var dosage: Float
     @NSManaged var dosageUnitInt: Int16
 
+    @NSManaged var reminderEnabled: Bool
     @NSManaged var interval: Float
     @NSManaged var intervalUnitInt: Int16
     @NSManaged var intervalAlarm: NSDate?

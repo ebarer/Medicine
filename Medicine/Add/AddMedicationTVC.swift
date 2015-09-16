@@ -19,6 +19,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     @IBOutlet var saveButton: UIBarButtonItem!
     @IBOutlet var medicationName: UITextField!
     @IBOutlet var dosageLabel: UILabel!
+    @IBOutlet var reminderToggle: UISwitch!
     @IBOutlet var intervalLabel: UILabel!
     
     
@@ -75,6 +76,11 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             
             // Set dosage label
             dosageLabel.text = String(format:"%g %@", medicine.dosage, medicine.dosageUnit.units(medicine.dosage))
+            
+            // Set reminder toggle
+            if let enabled = med?.reminderEnabled {
+                reminderToggle.on = enabled
+            }
             
             // Set interval label
             let hr = Int(medicine.interval)
@@ -136,6 +142,9 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         updateLabels()
     }
     
+    @IBAction func toggleReminder(sender: UISwitch) {
+        med?.reminderEnabled = sender.on
+    }
     
     // MARK: - Navigation
     

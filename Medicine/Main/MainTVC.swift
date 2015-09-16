@@ -137,56 +137,45 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         // Set medication name
         cell.textLabel?.text = med.name
         
-        // Set medication subtitle to next dosage date
-        if let date = med.printNext() {
-
-            var dateString = String()
-
-            // Set label date, skip if date is today
-            if !cal.isDateInToday(date) {
-                if cal.isDateInYesterday(date) {
-                    dateString = "Yesterday, "
-                } else if cal.isDateInTomorrow(date) {
-                    dateString = "Tomorrow, "
-                } else if date.isDateInWeek() {
-                    dateFormatter.dateFormat = "EEEE, "
-                    dateString = dateFormatter.stringFromDate(date)
-                } else {
-                    // Default case
-                    dateFormatter.dateFormat = "MMM d, "
-                    dateString = dateFormatter.stringFromDate(date)
-                }
-            }
-            
-            // Set label time
-            if date.isMidnight() {
-                dateString.appendContentsOf("Midnight")
-            } else {
-                dateFormatter.dateFormat = "h:mm a"
-                dateString.appendContentsOf(dateFormatter.stringFromDate(date))
-            }
-            
-            let subtitle = NSMutableAttributedString()
-
-            if med.isOverdue() {
-                cell.textLabel?.textColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
-                
-                subtitle.appendAttributedString(NSAttributedString(string: "Overdue: \(dateString)"))
-                subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0), range: NSMakeRange(0, subtitle.length))
-                subtitle.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(15.0), range: NSMakeRange(0, 8))
-            } else {
-                cell.textLabel?.textColor = UIColor.blackColor()
-                subtitle.appendAttributedString(NSAttributedString(string: "Next dose: \(dateString)"))
+        
+        // If reminders aren't enabled for medication, set subtitle to last dose taken
+        if let date = med.lastDose?.date {
+            if med.reminderEnabled == false {
+                let subtitle = NSMutableAttributedString(string: "Last dose: \(cellDateString(date))")
                 subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
+                cell.detailTextLabel?.attributedText = subtitle
+                return cell
             }
-            
-            cell.detailTextLabel?.attributedText = subtitle
-        } else {
-            cell.textLabel?.textColor = UIColor.blackColor()
-            cell.detailTextLabel?.attributedText = NSAttributedString(string: "Tap to take next dose", attributes: [NSForegroundColorAttributeName: UIColor.lightGrayColor()])
         }
         
-        return cell
+        // If medication is overdue, set subtitle to next dosage date and tint red
+        if med.isOverdue() {
+            if let date = med.lastDose?.next {
+                cell.textLabel?.textColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+                
+                let subtitle = NSMutableAttributedString(string: "Overdue: \(cellDateString(date))")
+                subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0), range: NSMakeRange(0, subtitle.length))
+                subtitle.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(15.0), range: NSMakeRange(0, 8))
+                cell.detailTextLabel?.attributedText = subtitle
+                return cell
+            }
+        }
+        
+        // Set subtitle to next dosage date
+        if let date = med.printNext() {
+            cell.textLabel?.textColor = UIColor.blackColor()
+            let subtitle = NSMutableAttributedString(string: "Next dose: \(cellDateString(date))")
+            subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
+            cell.detailTextLabel?.attributedText = subtitle
+            return cell
+        }
+        
+        // If no doses taken, or other conditions met, instruct user on how to take dose
+        else  {
+            cell.textLabel?.textColor = UIColor.blackColor()
+            cell.detailTextLabel?.attributedText = NSAttributedString(string: "Tap to take next dose", attributes: [NSForegroundColorAttributeName: UIColor.lightGrayColor()])
+            return cell
+        }
     }
     
     override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
@@ -319,27 +308,29 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             
             // Format string for previous dose
             if let date = med.lastDose?.date {
-                dateString = "Last Dose: "
-                
-                // Set label date, skip if date is today
-                if cal.isDateInToday(date) {
-                    dateString?.appendContentsOf("Today, ")
-                } else if cal.isDateInYesterday(date) {
-                    dateString?.appendContentsOf("Yesterday, ")
-                } else if date.isDateInWeek() {
-                    dateFormatter.dateFormat = "EEEE, "
-                    dateString?.appendContentsOf(dateFormatter.stringFromDate(date))
-                } else {
-                    dateFormatter.dateFormat = "MMM d, "
-                    dateString?.appendContentsOf(dateFormatter.stringFromDate(date))
-                }
-                
-                // Set label time
-                if date.isMidnight() {
-                    dateString?.appendContentsOf("Midnight")
-                } else {
-                    dateFormatter.dateFormat = "h:mm a"
-                    dateString?.appendContentsOf(dateFormatter.stringFromDate(date))
+                if med.reminderEnabled {
+                    dateString = "Last Dose: "
+                    
+                    // Set label date, skip if date is today
+                    if cal.isDateInToday(date) {
+                        dateString?.appendContentsOf("Today, ")
+                    } else if cal.isDateInYesterday(date) {
+                        dateString?.appendContentsOf("Yesterday, ")
+                    } else if date.isDateInWeek() {
+                        dateFormatter.dateFormat = "EEEE, "
+                        dateString?.appendContentsOf(dateFormatter.stringFromDate(date))
+                    } else {
+                        dateFormatter.dateFormat = "MMM d, "
+                        dateString?.appendContentsOf(dateFormatter.stringFromDate(date))
+                    }
+                    
+                    // Set label time
+                    if date.isMidnight() {
+                        dateString?.appendContentsOf("Midnight")
+                    } else {
+                        dateFormatter.dateFormat = "h:mm a"
+                        dateString?.appendContentsOf(dateFormatter.stringFromDate(date))
+                    }
                 }
             }
             
@@ -668,6 +659,36 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     
     // MARK: - Helper methods
+    
+    func cellDateString(date: NSDate) -> String {
+        var dateString = String()
+        
+        // Set label date, skip if date is today
+        if !cal.isDateInToday(date) {
+            if cal.isDateInYesterday(date) {
+                dateString = "Yesterday, "
+            } else if cal.isDateInTomorrow(date) {
+                dateString = "Tomorrow, "
+            } else if date.isDateInWeek() {
+                dateFormatter.dateFormat = "EEEE, "
+                dateString = dateFormatter.stringFromDate(date)
+            } else {
+                // Default case
+                dateFormatter.dateFormat = "MMM d, "
+                dateString = dateFormatter.stringFromDate(date)
+            }
+        }
+        
+        // Set label time
+        if date.isMidnight() {
+            dateString.appendContentsOf("Midnight")
+        } else {
+            dateFormatter.dateFormat = "h:mm a"
+            dateString.appendContentsOf(dateFormatter.stringFromDate(date))
+        }
+        
+        return dateString
+    }
     
     func printNotifications() {
         let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!

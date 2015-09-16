@@ -53,6 +53,7 @@
 		CE38AF241B95051E000D00AD /* HistoryTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HistoryTVC.swift; path = History/HistoryTVC.swift; sourceTree = "<group>"; };
 		CE38AF261B950989000D00AD /* AddMedication.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = AddMedication.storyboard; path = Add/AddMedication.storyboard; sourceTree = "<group>"; };
 		CE48157B1B971A5700F1FA0C /* Medicine - 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2.xcdatamodel"; sourceTree = "<group>"; };
+		CE587A151BA9244400821D18 /* Medicine - 2. 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2. 2.xcdatamodel"; sourceTree = "<group>"; };
 		CE5DE78E1B950E4100168B1E /* AddDose.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = AddDose.storyboard; path = Add/AddDose.storyboard; sourceTree = "<group>"; };
 		CE6325C71BA1624A00BAD562 /* Upgrade.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Upgrade.storyboard; path = Main/Upgrade.storyboard; sourceTree = "<group>"; };
 		CE6325C91BA1661C00BAD562 /* UpgradeVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UpgradeVC.swift; path = Main/UpgradeVC.swift; sourceTree = "<group>"; };
@@ -561,11 +562,12 @@
 		CEA2510A1B903E7D00BBE466 /* Medicine.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				CE587A151BA9244400821D18 /* Medicine - 2. 2.xcdatamodel */,
 				CEA9CA0D1BA87317001395BF /* Medicine - 2.1.xcdatamodel */,
 				CE48157B1B971A5700F1FA0C /* Medicine - 2.xcdatamodel */,
 				CEA2510B1B903E7D00BBE466 /* Medicine.xcdatamodel */,
 			);
-			currentVersion = CEA9CA0D1BA87317001395BF /* Medicine - 2.1.xcdatamodel */;
+			currentVersion = CE587A151BA9244400821D18 /* Medicine - 2. 2.xcdatamodel */;
 			name = Medicine.xcdatamodeld;
 			path = Medicine/Medicine.xcdatamodeld;
 			sourceTree = "<group>";

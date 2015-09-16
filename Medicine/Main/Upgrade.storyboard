@@ -46,7 +46,7 @@
                                         <variation key="widthClass=compact" constant="125"/>
                                     </constraint>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
                                 <state key="normal" title="Buy"/>
                                 <connections>
                                     <action selector="purchaseFullVersion" destination="02U-hZ-tkT" eventType="touchUpInside" id="1oB-gB-ivy"/>

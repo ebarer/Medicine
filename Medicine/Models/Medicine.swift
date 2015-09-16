@@ -145,7 +145,7 @@ class Medicine: NSManagedObject {
     }
     
     func isOverdue() -> Bool {
-        if let date = printNext() {
+        if let date = lastDose?.next {
             return (NSDate().compare(date) == .OrderedDescending)
         }
         
@@ -155,21 +155,23 @@ class Medicine: NSManagedObject {
     
     // MARK: - Notification methods
     func scheduleNotification(date: NSDate) {
-        if let medName = name {
-            let notification = UILocalNotification()
+        if reminderEnabled {
+            if let medName = name {
+                let notification = UILocalNotification()
+                
+                notification.alertAction = "View Dose"
+                notification.alertTitle = "Take \(medName)"
+                notification.alertBody = String(format:"Time to take %g %@ of %@", dosage, dosageUnit.units(dosage), medName)
+                notification.soundName = UILocalNotificationDefaultSoundName
+                notification.category = "Reminder"
+                notification.userInfo = ["id": self.medicineID]
             
-            notification.alertAction = "View Dose"
-            notification.alertTitle = "Take \(medName)"
-            notification.alertBody = String(format:"Time to take %g %@ of %@", dosage, dosageUnit.units(dosage), medName)
-            notification.soundName = UILocalNotificationDefaultSoundName
-            notification.category = "Reminder"
-            notification.userInfo = ["id": self.medicineID]
-        
-            notification.fireDate = date
-        
-            UIApplication.sharedApplication().scheduleLocalNotification(notification)
+                notification.fireDate = date
             
-            scheduledNotification = notification
+                UIApplication.sharedApplication().scheduleLocalNotification(notification)
+                
+                scheduledNotification = notification
+            }
         }
     }
     
