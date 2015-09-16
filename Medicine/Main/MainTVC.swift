@@ -200,6 +200,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         return true
     }
     
+    // Empty implementation required for backwards compatibility (iOS 8.x)
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {}
     
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
@@ -314,7 +315,35 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         let med = medication[indexPath.row]
         
         if (tableView.editing == false) {
-            let alert = UIAlertController(title: med.name, message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet)
+            var dateString:String? = nil
+            
+            // Format string for previous dose
+            if let date = med.lastDose?.date {
+                dateString = "Last Dose: "
+                
+                // Set label date, skip if date is today
+                if cal.isDateInToday(date) {
+                    dateString?.appendContentsOf("Today, ")
+                } else if cal.isDateInYesterday(date) {
+                    dateString?.appendContentsOf("Yesterday, ")
+                } else if date.isDateInWeek() {
+                    dateFormatter.dateFormat = "EEEE, "
+                    dateString?.appendContentsOf(dateFormatter.stringFromDate(date))
+                } else {
+                    dateFormatter.dateFormat = "MMM d, "
+                    dateString?.appendContentsOf(dateFormatter.stringFromDate(date))
+                }
+                
+                // Set label time
+                if date.isMidnight() {
+                    dateString?.appendContentsOf("Midnight")
+                } else {
+                    dateFormatter.dateFormat = "h:mm a"
+                    dateString?.appendContentsOf(dateFormatter.stringFromDate(date))
+                }
+            }
+            
+            let alert = UIAlertController(title: med.name, message: dateString, preferredStyle: UIAlertControllerStyle.ActionSheet)
             
             alert.addAction(UIAlertAction(title: "Take Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
                 self.performSegueWithIdentifier("addDose", sender: self)
@@ -333,9 +362,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 }))
             }
             
-            alert.addAction(UIAlertAction(title: "Edit", style: .Default, handler: {(action) -> Void in
-                self.performSegueWithIdentifier("editMedication", sender: indexPath.row)
-            }))
+//            alert.addAction(UIAlertAction(title: "Edit", style: .Default, handler: {(action) -> Void in
+//                self.performSegueWithIdentifier("editMedication", sender: indexPath.row)
+//            }))
             
             alert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
                 if let name = med.name {
@@ -567,12 +596,16 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         if let selectedIndex = tableView.indexPathForSelectedRow {
             let svc = unwindSegue.sourceViewController as! AddDoseTVC
             let med = medication[selectedIndex.row]
-            med.takeDose(moc, date: svc.date)
-
-            appDelegate.saveContext()
             
-            // Reload table
-            self.tableView.reloadData()
+            do {
+                try med.takeDose(moc, date: svc.date)
+                appDelegate.saveContext()
+                self.tableView.reloadData()
+            } catch {
+                dismissViewControllerAnimated(true, completion: { () -> Void in
+                    self.presentDoseAlert(med, date: svc.date)
+                })
+            }
         }
     }
     
@@ -611,10 +644,11 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         if let id = notification.userInfo!["id"] as? String {
             let medQuery = medication.filter{ $0.medicineID == id }.first
             if let med = medQuery {
-                if (med.takeDose(self.moc, date: NSDate())) {
-                    self.appDelegate.saveContext()
+                do {
+                    try med.takeDose(moc, date: NSDate())
+                    appDelegate.saveContext()
                     self.tableView.reloadData()
-                }
+                } catch {}
             }
         }
     }
@@ -655,6 +689,18 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         } else {
             print("No scheduled notifications.\n")
         }
+    }
+    
+    func presentDoseAlert(med: Medicine, date: NSDate) {
+        let doseAlert = UIAlertController(title: "Repeat Dose?", message: "You have logged a dose for \(med.name!) within the passed 5 minutes, do you wish to log another dose?", preferredStyle: UIAlertControllerStyle.Alert)
+        
+        doseAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
+
+        doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+            med.addDose(moc, date: date)
+        }))
+        
+        self.presentViewController(doseAlert, animated: true, completion: nil)
     }
     
 }

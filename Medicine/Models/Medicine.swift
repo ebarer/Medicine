@@ -57,18 +57,18 @@ class Medicine: NSManagedObject {
         return returnDate
     }
 
-    func takeDose(moc: NSManagedObjectContext, date doseDate: NSDate) -> Bool {
-        
-        // If no history, or no doses taken within previous 5 minutes
+    func takeDose(moc: NSManagedObjectContext, date doseDate: NSDate) throws -> Bool {
+        // Throw error if another dose has been taken within the previous 5 minutes
         let compareDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: -5, toDate: doseDate, options: [])!
-        if (lastDose == nil || lastDose!.date.compare(compareDate) == .OrderedAscending) {
-            addDose(moc, date: doseDate)
-            
-            return true
-        }
         
-        // Otherwise do not reschedule next dose
-        return false
+        if lastDose != nil {
+            guard lastDose!.date.compare(compareDate) == .OrderedAscending else {
+                throw MedicineError.TooSoon
+            }
+        }
+
+        addDose(moc, date: doseDate)
+        return true
     }
     
     func addDose(moc: NSManagedObjectContext, date doseDate: NSDate) -> History {
@@ -303,6 +303,13 @@ extension NSDate {
     }
     
 }
+
+
+// MARK: - Errors Enum
+enum MedicineError: ErrorType {
+    case TooSoon
+}
+
 
 // MARK: - Units Enum
 enum Doses: Int16, CustomStringConvertible {
