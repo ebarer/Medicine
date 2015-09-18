@@ -47,6 +47,17 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Display tutorial on first launch
+        if !defaults.boolForKey("firstLaunch") {
+            defaults.setBool(true, forKey: "firstLaunch")
+            defaults.synchronize()
+            
+            performSegueWithIdentifier("tutorial", sender: self)
+        }
+        
+        // ## Debug
+        //performSegueWithIdentifier("tutorial", sender: self)
+        
         // Setup IAP
         if defaults.boolForKey("managerUnlocked") {
             productLock = false
@@ -58,6 +69,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
         self.clearsSelectionOnViewWillAppear = false
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
+        
+        // Add logo to navigation bar
+        self.navigationItem.titleView = UIImageView(image: UIImage(named: "Logo-Nav"))
         
         // Remove tableView gap
         tableView.tableHeaderView = UIView(frame: CGRectMake(0.0, 0.0, tableView.bounds.size.width, 0.01))
@@ -89,17 +103,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         } catch {
             print("Could not fetch medication.")
         }
-        
-        // Display tutorial on first launch
-        if !defaults.boolForKey("firstLaunch") {
-            defaults.setBool(true, forKey: "firstLaunch")
-            defaults.synchronize()
-            
-            performSegueWithIdentifier("tutorial", sender: self)
-        }
-        
-        // ## Debug
-        performSegueWithIdentifier("tutorial", sender: self)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -153,7 +156,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         if med.reminderEnabled == false {
             if let date = med.lastDose?.next {
                 let subtitle = NSMutableAttributedString(string: "Earliest next dose: \(cellDateString(date))")
-                subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
+                subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 20))
                 cell.detailTextLabel?.attributedText = subtitle
                 return cell
             }
@@ -234,16 +237,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        // Create background gradient
-        let colorTop = UIColor(white: 0.25, alpha: 1.0)
-        let colorBottom = UIColor(red: 86.0/255, green: 32.0/255, blue: 34.0/255, alpha: 1.0).CGColor    // Light
-        
-        let gl = CAGradientLayer()
-        gl.colors = [colorTop, colorBottom]
-        gl.locations = [0.0, 1.0]
-        gl.frame = summaryHeader.bounds
-            
-        summaryHeader.layer.insertSublayer(gl, atIndex: 0)
         
         // Setup summary labels
         var string = NSMutableAttributedString(string: "No more doses today")
@@ -289,6 +282,18 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
     
         return summaryHeader
+    }
+    
+    func generateGradient() {
+        let colorTop = UIColor(white: 0.25, alpha: 1.0)
+        let colorBottom = UIColor(red: 86.0/255, green: 32.0/255, blue: 34.0/255, alpha: 1.0).CGColor    // Light
+        
+        let gl = CAGradientLayer()
+        gl.colors = [colorTop, colorBottom]
+        gl.locations = [0.0, 1.0]
+        gl.frame = summaryHeader.bounds
+        
+        summaryHeader.layer.insertSublayer(gl, atIndex: 0)
     }
     
     func refreshTableAndNotifications() {
@@ -492,6 +497,11 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     func presentRestoreFailureAlert() {
+        mvc?.restoreButton.setTitle("Restore", forState: UIControlState.Normal)
+        mvc?.restoreButton.enabled = true
+        mvc?.purchaseButton.enabled = true
+        mvc?.purchaseIndicator.stopAnimating()
+        
         let failAlert = UIAlertController(title: "Failed to Restore Purchases", message: "Please try again later. If the problem persists, you may not have purchased the product. To do so, use the purchase button above.", preferredStyle: UIAlertControllerStyle.Alert)
         failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
         mvc?.presentViewController(failAlert, animated: true, completion: nil)

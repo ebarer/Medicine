@@ -1,58 +1,56 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9046" systemVersion="15A282b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" initialViewController="JGe-Mp-tK0">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9046" systemVersion="15A282b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" initialViewController="Vcp-bg-VkN">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9035"/>
     </dependencies>
     <scenes>
-        <!--Medicine-->
-        <scene sceneID="EHf-IW-A2E">
+        <!--View Controller-->
+        <scene sceneID="Slj-qr-VSP">
             <objects>
-                <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                <viewController id="Vcp-bg-VkN" sceneMemberID="viewController">
                     <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Llm-lL-Icb"/>
-                        <viewControllerLayoutGuide type="bottom" id="xb3-aO-Qok"/>
+                        <viewControllerLayoutGuide type="top" id="VQq-jw-6Ue"/>
+                        <viewControllerLayoutGuide type="bottom" id="oIY-NU-Pcb"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                    <view key="view" contentMode="scaleToFill" id="7zW-bh-rw8">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo-White" translatesAutoresizingMaskIntoConstraints="NO" id="gLp-nu-22W">
+                                <rect key="frame" x="240.5" y="131" width="119" height="100"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="Oc2-1x-Ycn"/>
+                                    <constraint firstAttribute="width" constant="119" id="Ycw-gY-LjF"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Medicine Manager" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gnI-HC-dwC">
+                                <rect key="frame" x="191.5" y="283" width="217.5" height="32.5"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="27"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
                         <animations/>
-                        <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.98431372549999996" green="0.0" blue="0.17254901959999999" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="gLp-nu-22W" firstAttribute="centerX" secondItem="7zW-bh-rw8" secondAttribute="centerX" id="5yz-Q0-4az"/>
+                            <constraint firstItem="gnI-HC-dwC" firstAttribute="centerY" secondItem="7zW-bh-rw8" secondAttribute="centerY" id="7pz-Yd-qFc"/>
+                            <constraint firstItem="gLp-nu-22W" firstAttribute="centerX" secondItem="7zW-bh-rw8" secondAttribute="centerX" id="dV4-oX-YcE"/>
+                            <constraint firstItem="gnI-HC-dwC" firstAttribute="centerX" secondItem="7zW-bh-rw8" secondAttribute="centerX" id="kqA-Ta-Tec"/>
+                            <constraint firstItem="gLp-nu-22W" firstAttribute="top" secondItem="VQq-jw-6Ue" secondAttribute="bottom" constant="111" id="yDI-Yj-EXe"/>
+                        </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Medicine" id="ijK-Ll-lEV">
-                        <barButtonItem key="leftBarButtonItem" enabled="NO" systemItem="edit" id="egw-PQ-E4f"/>
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="v35-3o-wf4"/>
-                    </navigationItem>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="BzY-Fn-rle" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="865" y="375"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="cP9-RT-cpL">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="JGe-Mp-tK0" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="Wuf-2q-QFP">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
-                        <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                        <color key="barTintColor" red="0.98431372549999996" green="0.0" blue="0.17254901959999999" alpha="1" colorSpace="calibratedRGB"/>
-                        <textAttributes key="titleTextAttributes">
-                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                        </textAttributes>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="01J-lp-oVM" kind="relationship" relationship="rootViewController" id="tUz-i1-aZh"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="cTs-Yo-g9b" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="53" y="375"/>
+            <point key="canvasLocation" x="341" y="541"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="Logo-White" width="500" height="425"/>
+    </resources>
 </document>

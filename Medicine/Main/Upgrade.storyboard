@@ -147,6 +147,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Logo" width="665" height="520"/>
+        <image name="Logo" width="500" height="425"/>
     </resources>
 </document>

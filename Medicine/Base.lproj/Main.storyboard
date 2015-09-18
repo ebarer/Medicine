@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9046" systemVersion="15A282b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="WH0-Wl-VP6">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9046" systemVersion="15B17c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="WH0-Wl-VP6">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9035"/>
@@ -22,15 +22,15 @@
             </objects>
             <point key="canvasLocation" x="1129.5" y="887"/>
         </scene>
-        <!--Medicine-->
+        <!--Medicine Manager-->
         <scene sceneID="DrC-QF-zXV">
             <objects>
                 <tableViewController id="Opo-0h-aD1" customClass="MainTVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="XNe-sj-IWf">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" sectionIndexMinimumDisplayRowCount="1" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="XNe-sj-IWf">
                         <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <animations/>
-                        <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <color key="tintColor" red="0.98431372549999996" green="0.0" blue="0.17254901959999999" alpha="1" colorSpace="calibratedRGB"/>
                         <view key="tableHeaderView" contentMode="scaleToFill" id="Jr9-96-6nB">
                             <rect key="frame" x="0.0" y="0.0" width="600" height="150"/>
@@ -66,7 +66,7 @@
                                 </label>
                             </subviews>
                             <animations/>
-                            <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" red="0.20000000300000001" green="0.20000000300000001" blue="0.20000000300000001" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
                                 <constraint firstItem="8Jv-9h-QwG" firstAttribute="centerX" secondItem="Jr9-96-6nB" secondAttribute="centerX" id="LMO-nJ-lH0"/>
                                 <constraint firstItem="UTe-OV-yHG" firstAttribute="centerX" secondItem="Jr9-96-6nB" secondAttribute="centerX" id="S2O-oy-T7N"/>
@@ -114,7 +114,8 @@
                             <outlet property="delegate" destination="Opo-0h-aD1" id="zGv-rg-0Ne"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Medicine" id="tjA-8s-Bdr">
+                    <navigationItem key="navigationItem" title="Medicine Manager" id="tjA-8s-Bdr">
+                        <barButtonItem key="backBarButtonItem" title="Medicine" id="yaI-JV-Mio"/>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="njk-aJ-XdY">
                             <connections>
                                 <action selector="addMedication:" destination="Opo-0h-aD1" id="acw-2t-Sr1"/>
@@ -138,10 +139,10 @@
             </objects>
             <point key="canvasLocation" x="1390" y="413"/>
         </scene>
-        <!--MainUINC-->
+        <!--Navigation Controller-->
         <scene sceneID="Je1-oK-fKE">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="WH0-Wl-VP6" customClass="MainUINC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="WH0-Wl-VP6" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="0Eg-jE-EZT">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -150,12 +151,12 @@
                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="barTintColor" red="0.98431372549999996" green="0.0" blue="0.17254901959999999" alpha="1" colorSpace="calibratedRGB"/>
                         <textAttributes key="titleTextAttributes">
-                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="Opo-0h-aD1" kind="relationship" relationship="rootViewController" id="owL-pv-B5e"/>
+                        <segue destination="Opo-0h-aD1" kind="relationship" relationship="rootViewController" id="Bq3-UK-p5a"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zNh-Fi-739" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -170,7 +171,7 @@
                         <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <animations/>
-                        <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="historyCell" textLabel="Wer-MF-Qyn" style="IBUITableViewCellStyleDefault" id="VGS-jB-4Z9">
                                 <rect key="frame" x="0.0" y="49.5" width="600" height="44"/>
@@ -225,7 +226,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="0Oe-mX-irt"/>
         <segue reference="5Gy-on-iGP"/>
+        <segue reference="tQz-wz-X6o"/>
     </inferredMetricsTieBreakers>
 </document>

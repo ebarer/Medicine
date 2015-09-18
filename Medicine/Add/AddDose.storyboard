@@ -15,10 +15,10 @@
                         <animations/>
                         <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                         <sections>
-                            <tableViewSection headerTitle="Specify the time you took the dose" id="vYK-IY-uRx">
+                            <tableViewSection id="vYK-IY-uRx">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="216" id="Gl3-hQ-Hvr">
-                                        <rect key="frame" x="0.0" y="49.5" width="600" height="216"/>
+                                        <rect key="frame" x="0.0" y="35" width="600" height="216"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Gl3-hQ-Hvr" id="zGE-IY-4vr">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="215.5"/>
@@ -73,10 +73,10 @@
             </objects>
             <point key="canvasLocation" x="1720" y="773"/>
         </scene>
-        <!--MainUINC-->
+        <!--Navigation Controller-->
         <scene sceneID="gwP-Gm-4yk">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="0VT-Kq-zHt" customClass="MainUINC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="0VT-Kq-zHt" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="7UU-GL-78A">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>

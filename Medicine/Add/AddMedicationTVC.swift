@@ -115,9 +115,6 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     }
     
     
-    // MARK: - Table view data source
-    
-    
     // MARK: - Table view delegate
     
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
@@ -173,8 +170,8 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
 private enum Rows: Int {
     case none = -1
     case name
-    case dosage
     case reminderEnable
+    case dosage
     case interval
     case prescription
     
@@ -185,9 +182,9 @@ private enum Rows: Int {
         case (0, 0):
             row = Rows.name
         case (0, 1):
-            row = Rows.dosage
-        case (1, 0):
             row = Rows.reminderEnable
+        case (1, 0):
+            row = Rows.dosage
         case (1, 1):
             row = Rows.interval
         case (2, 0):
@@ -203,9 +200,9 @@ private enum Rows: Int {
         switch self {
         case .name:
             return NSIndexPath(forRow: 0, inSection: 0)
-        case .dosage:
-            return NSIndexPath(forRow: 1, inSection: 0)
         case .reminderEnable:
+            return NSIndexPath(forRow: 1, inSection: 0)
+        case .dosage:
             return NSIndexPath(forRow: 0, inSection: 1)
         case .interval:
             return NSIndexPath(forRow: 1, inSection: 1)

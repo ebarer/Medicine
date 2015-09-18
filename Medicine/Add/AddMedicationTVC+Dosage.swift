@@ -50,6 +50,13 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
     }
     
     
+    // MARK: - Table view data source
+    
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    
     // MARK: - Picker data source
     
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
@@ -83,7 +90,8 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
     
     @IBAction func updateDosage(sender: UITextField) {
         if let value = sender.text {
-            med?.dosage = (value as NSString).floatValue
+            let val = (value as NSString).floatValue            
+            med?.dosage = val
             dosageUnitLabel.text = med?.dosageUnit.units(med?.dosage)
         }
     }
