@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9046" systemVersion="15A282b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" initialViewController="Vcp-bg-VkN">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9046" systemVersion="15B17c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" initialViewController="Vcp-bg-VkN">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9035"/>
@@ -40,7 +40,7 @@
                             <constraint firstItem="gnI-HC-dwC" firstAttribute="centerY" secondItem="7zW-bh-rw8" secondAttribute="centerY" id="7pz-Yd-qFc"/>
                             <constraint firstItem="gLp-nu-22W" firstAttribute="centerX" secondItem="7zW-bh-rw8" secondAttribute="centerX" id="dV4-oX-YcE"/>
                             <constraint firstItem="gnI-HC-dwC" firstAttribute="centerX" secondItem="7zW-bh-rw8" secondAttribute="centerX" id="kqA-Ta-Tec"/>
-                            <constraint firstItem="gLp-nu-22W" firstAttribute="top" secondItem="VQq-jw-6Ue" secondAttribute="bottom" constant="111" id="yDI-Yj-EXe"/>
+                            <constraint firstItem="gnI-HC-dwC" firstAttribute="top" secondItem="gLp-nu-22W" secondAttribute="bottom" constant="52" id="sPo-Fq-MbQ"/>
                         </constraints>
                     </view>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>

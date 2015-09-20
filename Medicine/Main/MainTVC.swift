@@ -23,6 +23,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     @IBOutlet var headerCounterLabel: UILabel!
     @IBOutlet var headerMedLabel: UILabel!
     
+    
     // MARK: - Helper variables
     
     let defaults = NSUserDefaults.standardUserDefaults()
@@ -56,7 +57,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         // ## Debug
-        //performSegueWithIdentifier("tutorial", sender: self)
+        performSegueWithIdentifier("tutorial", sender: self)
         
         // Setup IAP
         if defaults.boolForKey("managerUnlocked") {
@@ -203,8 +204,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         return true
     }
     
-    // Empty implementation required for backwards compatibility (iOS 8.x)
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {}
+        // Empty implementation required for backwards compatibility (iOS 8.x)
+        override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {}
     
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
         let editAction = UITableViewRowAction(style: .Default, title: "Edit") { (action, indexPath) -> Void in
@@ -384,6 +385,14 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             }))
 
             alert.view.tintColor = UIColor.grayColor()
+            
+            // Set popover for iPad
+            if let view = tableView.cellForRowAtIndexPath(indexPath)?.textLabel {
+                alert.popoverPresentationController?.sourceView = view
+                alert.popoverPresentationController?.sourceRect = view.bounds
+                alert.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.Left
+            }
+            
             presentViewController(alert, animated: true, completion: nil)
         } else {
             performSegueWithIdentifier("editMedication", sender: indexPath.row)

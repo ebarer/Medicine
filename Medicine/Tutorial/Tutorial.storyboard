@@ -80,10 +80,10 @@
                             <constraint firstItem="hrj-xC-lL3" firstAttribute="centerX" secondItem="U4x-DD-et4" secondAttribute="centerX" id="4rh-9r-0fR"/>
                             <constraint firstItem="DR0-NF-Ekp" firstAttribute="centerX" secondItem="U4x-DD-et4" secondAttribute="centerX" id="NTj-3c-H0N"/>
                             <constraint firstItem="hrj-xC-lL3" firstAttribute="centerX" secondItem="U4x-DD-et4" secondAttribute="centerX" id="cVM-dS-P4F"/>
+                            <constraint firstItem="qbw-wE-XpR" firstAttribute="top" secondItem="DR0-NF-Ekp" secondAttribute="bottom" constant="36" id="f0a-3v-8Nz"/>
                             <constraint firstItem="DR0-NF-Ekp" firstAttribute="centerX" secondItem="U4x-DD-et4" secondAttribute="centerX" id="kw2-Pq-m4T"/>
                             <constraint firstItem="Smf-rU-Yaj" firstAttribute="top" secondItem="hrj-xC-lL3" secondAttribute="bottom" constant="98" id="oaA-LT-BrI"/>
                             <constraint firstItem="qbw-wE-XpR" firstAttribute="centerY" secondItem="U4x-DD-et4" secondAttribute="centerY" id="qgl-G9-IjE"/>
-                            <constraint firstItem="DR0-NF-Ekp" firstAttribute="top" secondItem="8Rf-em-UbX" secondAttribute="bottom" constant="111" id="y29-EB-7VT"/>
                         </constraints>
                     </view>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
