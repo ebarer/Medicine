@@ -18,14 +18,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
         // Get view controllers and setup IAP observers
-        if let viewControllers = self.window?.rootViewController?.childViewControllers {
-            for viewController in viewControllers {
-                if viewController.isKindOfClass(MainTVC) {
-                    let vc = viewController as! MainTVC
-                    SKPaymentQueue.defaultQueue().addTransactionObserver(vc)
-                    
-                    // Pass managed object context
-                    vc.moc = self.managedObjectContext
+        if let tabViewControllers = self.window?.rootViewController?.childViewControllers {
+            for viewControllers in tabViewControllers {
+                let navViewControllers = viewControllers.childViewControllers
+                for viewController in navViewControllers {
+                    if viewController.isKindOfClass(MainTVC) {
+                        let vc = viewController as! MainTVC
+                        SKPaymentQueue.defaultQueue().addTransactionObserver(vc)
+                        
+                        // Pass managed object context
+                        vc.moc = self.managedObjectContext
+                    }
                 }
             }
         }

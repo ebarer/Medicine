@@ -57,7 +57,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         // ## Debug
-        performSegueWithIdentifier("tutorial", sender: self)
+        //performSegueWithIdentifier("tutorial", sender: self)
         
         // Setup IAP
         if defaults.boolForKey("managerUnlocked") {
@@ -354,7 +354,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             let alert = UIAlertController(title: med.name, message: dateString, preferredStyle: UIAlertControllerStyle.ActionSheet)
             
             alert.addAction(UIAlertAction(title: "Take Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-                self.performSegueWithIdentifier("addDose", sender: self)
+                self.performSegueWithIdentifier("addDose", sender: med)
             }))
             
             // If next dosage is set, allow user to clear notification
@@ -570,7 +570,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         if segue.identifier == "viewMedicationDetails" {
-            let vc = segue.destinationViewController as! HistoryTVC
+            let vc = segue.destinationViewController as! MedicineDetailsTVC
             if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
                 vc.med = medication[index.row]
                 vc.moc = self.moc
@@ -580,6 +580,14 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         if segue.identifier == "upgrade" {
             if let vc = segue.destinationViewController.childViewControllers[0] as? UpgradeVC {
                 mvc = vc
+            }
+        }
+        
+        if segue.identifier == "addDose" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
+                if let med = sender as? Medicine {
+                    vc.med = med
+                }
             }
         }
     }
