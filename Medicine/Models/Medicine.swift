@@ -195,14 +195,22 @@ class Medicine: NSManagedObject {
     }
     
     func snoozeNotification() {
-        // Set snooze delay to 5 minutes
-        let snoozeDelay = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: 5, toDate: NSDate(), options: [])!
+        let defaults = NSUserDefaults.standardUserDefaults()
+        var snoozeLength = NSDate()
+        
+        // Set snooze delay to user selection or 5 minutes
+        if defaults.valueForKey("snoozeLength") != nil {
+            let val = defaults.valueForKey("snoozeLength") as! Int
+            snoozeLength = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: val, toDate: NSDate(), options: [])!
+        } else {
+            snoozeLength = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: 5, toDate: NSDate(), options: [])!
+        }
         
         // Cancel previous notification
         cancelNotification()
         
         // Schedule new notification
-        scheduleNotification(snoozeDelay)
+        scheduleNotification(snoozeLength)
     }
 
     func cancelNotification() {

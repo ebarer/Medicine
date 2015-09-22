@@ -28,6 +28,9 @@
 		CE6E551E1B9040C900805397 /* Medicine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551A1B9040C900805397 /* Medicine.swift */; };
 		CE6E551F1B9040C900805397 /* History+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551B1B9040C900805397 /* History+CoreDataProperties.swift */; };
 		CE6E55201B9040C900805397 /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551C1B9040C900805397 /* History.swift */; };
+		CE7519761BB00CA9000A2879 /* SettingsTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7519751BB00CA9000A2879 /* SettingsTVC.swift */; };
+		CE7519781BB00CB5000A2879 /* SettingsTVC+Sort.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7519771BB00CB5000A2879 /* SettingsTVC+Sort.swift */; };
+		CE75197A1BB00CFE000A2879 /* SettingsTVC+Snooze.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7519791BB00CFE000A2879 /* SettingsTVC+Snooze.swift */; };
 		CE9A36C71B98FDCB00B90EDB /* MedicineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9A36C61B98FDCB00B90EDB /* MedicineTests.swift */; };
 		CEA250E91B90396C00BBE466 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA250E81B90396C00BBE466 /* AppDelegate.swift */; };
 		CEA250EE1B90396C00BBE466 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEA250EC1B90396C00BBE466 /* Main.storyboard */; };
@@ -73,6 +76,9 @@
 		CE6E551A1B9040C900805397 /* Medicine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Medicine.swift; path = Medicine/Models/Medicine.swift; sourceTree = "<group>"; };
 		CE6E551B1B9040C900805397 /* History+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "History+CoreDataProperties.swift"; path = "Medicine/Models/History+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		CE6E551C1B9040C900805397 /* History.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = History.swift; path = Medicine/Models/History.swift; sourceTree = "<group>"; };
+		CE7519751BB00CA9000A2879 /* SettingsTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsTVC.swift; path = Settings/SettingsTVC.swift; sourceTree = "<group>"; };
+		CE7519771BB00CB5000A2879 /* SettingsTVC+Sort.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Sort.swift"; path = "Settings/SettingsTVC+Sort.swift"; sourceTree = "<group>"; };
+		CE7519791BB00CFE000A2879 /* SettingsTVC+Snooze.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Snooze.swift"; path = "Settings/SettingsTVC+Snooze.swift"; sourceTree = "<group>"; };
 		CE9A36C41B98FDCB00B90EDB /* MedicineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MedicineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9A36C61B98FDCB00B90EDB /* MedicineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineTests.swift; sourceTree = "<group>"; };
 		CE9A36C81B98FDCB00B90EDB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -112,6 +118,9 @@
 		CE0EA1921BAFDB6A00F48A09 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				CE7519751BB00CA9000A2879 /* SettingsTVC.swift */,
+				CE7519771BB00CB5000A2879 /* SettingsTVC+Sort.swift */,
+				CE7519791BB00CFE000A2879 /* SettingsTVC+Snooze.swift */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -395,8 +404,11 @@
 				CEA251021B903BE400BBE466 /* MainTVC.swift in Sources */,
 				CEA250FF1B903BC200BBE466 /* AddMedicationTVC.swift in Sources */,
 				CE6325CA1BA1661C00BAD562 /* UpgradeVC.swift in Sources */,
+				CE75197A1BB00CFE000A2879 /* SettingsTVC+Snooze.swift in Sources */,
+				CE7519781BB00CB5000A2879 /* SettingsTVC+Sort.swift in Sources */,
 				CE247B8F1B96618100E4EB5F /* AddMedicationTVC+Dosage.swift in Sources */,
 				CE247B911B96619B00E4EB5F /* AddMedicationTVC+Interval.swift in Sources */,
+				CE7519761BB00CA9000A2879 /* SettingsTVC.swift in Sources */,
 				CE38AF231B950517000D00AD /* AddDoseTVC.swift in Sources */,
 				CE0EA1951BAFE28200F48A09 /* HistoryTVC.swift in Sources */,
 				CE0EA1971BAFE2B800F48A09 /* MedicineDetailsTVC.swift in Sources */,

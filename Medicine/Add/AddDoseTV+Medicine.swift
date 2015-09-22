@@ -22,7 +22,7 @@ class AddDoseTV_Medicine: UITableViewController {
         
         // Load medications
         let request = NSFetchRequest(entityName:"Medicine")
-        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         
         do {
             let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]

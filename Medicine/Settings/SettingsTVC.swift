@@ -1,0 +1,129 @@
+//
+//  SettingsTVC.swift
+//  Medicine
+//
+//  Created by Elliot Barer on 2015-09-21.
+//  Copyright © 2015 Elliot Barer. All rights reserved.
+//
+
+import UIKit
+import CoreData
+
+class SettingsTVC: UITableViewController {
+
+    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    let defaults = NSUserDefaults.standardUserDefaults()
+    
+    
+    // MARK: - Outlets
+    
+    @IBOutlet var sortLabel: UILabel!
+    @IBOutlet var snoozeLabel: UILabel!
+    @IBOutlet var versionString: UILabel!
+
+    
+    // MARK: - View methods
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Set sort label
+        switch(defaults.integerForKey("sortOrder")) {
+        case 0:
+            sortLabel.text = "Manually"
+        case 1:
+            sortLabel.text = "Next Dosage"
+        default: break
+        }
+        
+        // Set snooze label
+        let amount = defaults.integerForKey("snoozeLength")
+        var string = "\(amount) minute"
+        if (amount < 1 || amount >= 2) { string += "s" }
+        snoozeLabel.text = string
+        
+        // Set version string
+        let dictionary = NSBundle.mainBundle().infoDictionary!
+        let version = dictionary["CFBundleShortVersionString"] as! String
+        let build = dictionary["CFBundleVersion"] as! String
+        versionString.text = "Medicine Manager \(version) (\(build))"
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        if let index = tableView.indexPathForSelectedRow {
+            self.tableView.deselectRowAtIndexPath(index, animated: animated)
+        }
+    }
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    
+    // MARK: - Table view delegate
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if indexPath == NSIndexPath(forRow: 0, inSection: 2) {
+            let deleteAlert = UIAlertController(title: "Reset Data and Settings?", message: "This will permanently delete all medication, history, and preferences.", preferredStyle: UIAlertControllerStyle.Alert)
+            
+            deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
+                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            }))
+            
+            deleteAlert.addAction(UIAlertAction(title: "Reset Data and Settings", style: .Destructive, handler: {(action) -> Void in
+                self.deleteAll()
+            }))
+            
+            self.presentViewController(deleteAlert, animated: true, completion: nil)
+        }
+    }
+    
+    
+    // MARK: - Helper methods
+    
+    func deleteAll() {
+        let moc = appDelegate.managedObjectContext
+        let request = NSFetchRequest(entityName:"Medicine")
+        
+        do {
+            let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
+            
+            // Delete all medications and corresponding history
+            if let results = fetchedResults {
+                for med in results {
+                    moc.deleteObject(med)
+                }
+            }
+            
+            appDelegate.saveContext()
+            
+            // Reset preferences
+            defaults.setBool(false, forKey: "firstLaunch")
+            defaults.setInteger(0, forKey: "sortOrder")
+            defaults.setInteger(5, forKey: "snoozeLength")
+            defaults.synchronize()
+            
+            // Show reset confirmation
+            let confirmationAlert = UIAlertController(title: "Reset Complete", message: "All medication, history, and preferences have been reset.", preferredStyle: UIAlertControllerStyle.Alert)
+            
+            confirmationAlert.addAction(UIAlertAction(title: "Quit", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+                exit(0)
+            }))
+            
+            self.presentViewController(confirmationAlert, animated: true, completion: nil)
+        } catch {
+            print("Could not fetch medication.")
+        }
+    }
+    
+    
+    // MARK: - Navigation
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {}
+    
+    @IBAction func settingsUndwind(unwindSegue: UIStoryboardSegue) {}
+
+}
+
+
+

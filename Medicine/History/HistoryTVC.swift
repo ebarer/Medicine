@@ -57,16 +57,12 @@ class HistoryTVC: UITableViewController {
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        
-        updateEditButton()
         loadHistory()
-        
         tableView.reloadData()
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        print("Memory Warning: HistoryVC")
     }
     
     func loadHistory() {
@@ -101,6 +97,7 @@ class HistoryTVC: UITableViewController {
                 }
                 
                 count = history.count
+                updateEditButton()
             }
         } catch {
             print("Could not fetch history.")
@@ -153,25 +150,28 @@ class HistoryTVC: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        var cell: UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("historyCell", forIndexPath: indexPath)
         let sectionDate = getSectionDate(indexPath.section)
         
         if let history = log[sectionDate] {
             if history.count > 0 {
-                cell = tableView.dequeueReusableCellWithIdentifier("historyCell", forIndexPath: indexPath)
                 
                 dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
                 dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle;
                 
-                cell.textLabel?.text = history[indexPath.row].medicine?.name
-                cell.detailTextLabel?.text = dateFormatter.stringFromDate(history[indexPath.row].date)
+                cell.textLabel?.textColor = UIColor.blackColor()
+                cell.textLabel?.text = dateFormatter.stringFromDate(history[indexPath.row].date)
+                
+                cell.detailTextLabel?.textColor = UIColor.redColor()
+                cell.detailTextLabel?.text = history[indexPath.row].medicine?.name
                 
                 return cell
             }
         }
         
-        cell = tableView.dequeueReusableCellWithIdentifier("noHistoryCell", forIndexPath: indexPath)
+        cell.textLabel?.textColor = UIColor.lightGrayColor()
         cell.textLabel?.text = "No doses logged"
+        cell.detailTextLabel?.text?.removeAll()
             
         return cell
     }
@@ -197,33 +197,6 @@ class HistoryTVC: UITableViewController {
         }
         
         return true
-    }
-    
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-//        let sectionDate = getSectionDate(indexPath.section)
-//        
-//        if let logItems = log[sectionDate] {
-//            if logItems[indexPath.row] == med.lastDose {
-//                med.untakeLastDose(moc)
-//            } else {
-//                moc.deleteObject(logItems[indexPath.row])
-//            }
-//            
-//            log[sectionDate]?.removeAtIndex(indexPath.row)
-//            count--
-//            
-//            if logItems.count == 1 {
-//                if let cell = tableView.cellForRowAtIndexPath(indexPath) {
-//                    cell.textLabel?.text = "No doses logged"
-//                    cell.textLabel?.textColor = UIColor.lightGrayColor()
-//                    tableView.editing = false
-//                }
-//            } else {
-//                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-//            }
-//            
-//            appDelegate.saveContext()
-//        }
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -272,34 +245,38 @@ class HistoryTVC: UITableViewController {
     }
     
     func deleteDoses() {
-//        if let selectedRowIndexes = tableView.indexPathsForSelectedRows {
-//            for index in selectedRowIndexes.reverse() {
-//                let sectionDate = getSectionDate(index.section)
-//                
-//                if let logItems = log[sectionDate] {
-//                    if logItems[index.row] == med.lastDose {
-//                        med.untakeLastDose(moc)
-//                    } else {
-//                        moc.deleteObject(logItems[index.row])
-//                    }
-//                    
-//                    log[sectionDate]?.removeAtIndex(index.row)
-//                    count--
-//                    
-//                    if logItems.count == 1 {
-//                        let label = tableView.cellForRowAtIndexPath(index)?.textLabel
-//                        label?.text = "No doses logged"
-//                        label?.textColor = UIColor.lightGrayColor()
-//                    } else {
-//                        tableView.deleteRowsAtIndexPaths([index], withRowAnimation: .Fade)
-//                    }
-//                }
-//            }
-//            
-//            appDelegate.saveContext()
-//            updateDeleteButtonLabel()
-//            setEditing(false, animated: true)
-//        }
+        if let selectedRowIndexes = tableView.indexPathsForSelectedRows {
+            for index in selectedRowIndexes.reverse() {
+                let sectionDate = getSectionDate(index.section)
+                
+                if let logItems = log[sectionDate] {
+                    if let med = logItems[index.row].medicine where logItems[index.row] == med.lastDose {
+                        med.untakeLastDose(moc)
+                    } else {
+                        moc.deleteObject(logItems[index.row])
+                    }
+                    
+                    log[sectionDate]?.removeAtIndex(index.row)
+                    count--
+                    
+                    if logItems.count == 1 {
+                        tableView.cellForRowAtIndexPath(index)
+                        let label = tableView.cellForRowAtIndexPath(index)?.textLabel
+                        let detail = tableView.cellForRowAtIndexPath(index)?.detailTextLabel
+                        
+                        label?.textColor = UIColor.lightGrayColor()
+                        label?.text = "No doses logged"
+                        detail?.text?.removeAll()
+                    } else {
+                        tableView.deleteRowsAtIndexPaths([index], withRowAnimation: .Fade)
+                    }
+                }
+            }
+            
+            appDelegate.saveContext()
+            updateDeleteButtonLabel()
+            setEditing(false, animated: true)
+        }
     }
     
     
@@ -317,20 +294,20 @@ class HistoryTVC: UITableViewController {
     // MARK: - Unwind methods
     
     @IBAction func historyUnwindAdd(unwindSegue: UIStoryboardSegue) {
-//        // Log dose
-//        let svc = unwindSegue.sourceViewController as! AddDoseTVC
-//        let dose = med.addDose(moc, date: svc.date)
-//        
-//        appDelegate.saveContext()
-//        
-//        // Add to log
-//        let index = cal.startOfDayForDate(svc.date)
-//        log[index]?.insert(dose, atIndex: 0)
-//        log[index]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
-//        count++
-//        
-//        // Reload table
-//        self.tableView.reloadData()
+        // Log dose
+        let svc = unwindSegue.sourceViewController as! AddDoseTVC
+        if let dose = svc.med?.addDose(moc, date: svc.date) {
+            appDelegate.saveContext()
+            
+            // Add to log
+            let index = cal.startOfDayForDate(svc.date)
+            log[index]?.insert(dose, atIndex: 0)
+            log[index]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
+            count++
+            
+            // Reload table
+            self.tableView.reloadData()
+        }
     }
     
     @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {}
