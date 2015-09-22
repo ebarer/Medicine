@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9046" systemVersion="15B17c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9035"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You have no history" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lBX-Bp-4HC">
+                    <rect key="frame" x="187" y="268" width="227.5" height="32.5"/>
+                    <animations/>
+                    <fontDescription key="fontDescription" type="system" weight="light" pointSize="27"/>
+                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="BnB-8R-wPV">
+                    <rect key="frame" x="241" y="125" width="119" height="100"/>
+                    <animations/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="119" id="EmS-NH-RDc"/>
+                        <constraint firstAttribute="height" constant="100" id="XyJ-RC-T0i"/>
+                    </constraints>
+                </imageView>
+            </subviews>
+            <animations/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="lBX-Bp-4HC" firstAttribute="top" secondItem="BnB-8R-wPV" secondAttribute="bottom" constant="43" id="CwA-ir-BDL"/>
+                <constraint firstItem="BnB-8R-wPV" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="YOE-dN-VOQ"/>
+                <constraint firstItem="lBX-Bp-4HC" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" constant="-15.75" id="a2O-TD-bEG"/>
+                <constraint firstItem="lBX-Bp-4HC" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="faj-w2-10r"/>
+            </constraints>
+            <point key="canvasLocation" x="498" y="395"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="Logo" width="500" height="425"/>
+    </resources>
+</document>
