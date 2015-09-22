@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9046" systemVersion="15A282b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Kbg-Ff-MZ0">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9035"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <scenes>
+        <!--Full Version-->
+        <scene sceneID="9qX-gK-V9I">
+            <objects>
+                <viewController id="02U-hZ-tkT" customClass="UpgradeVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="bXK-DI-Jt3"/>
+                        <viewControllerLayoutGuide type="bottom" id="Tnw-P7-VS2"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="weE-tT-Mjn">
+                        <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="With a one time purchase you can unlock Medicine Manager to begin tracking all of your medication!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lvH-D5-VDV">
+                                <rect key="frame" x="114" y="232.5" width="372" height="75"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="75" id="fnN-ci-rkL"/>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="400" id="tzW-eF-jEi"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T1w-Bc-DFr">
+                                <rect key="frame" x="239" y="382.5" width="121" height="30"/>
+                                <animations/>
+                                <state key="normal" title="Restore Purchase"/>
+                                <connections>
+                                    <action selector="restoreFullVersion:" destination="02U-hZ-tkT" eventType="touchUpInside" id="tS2-b9-GZ0"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Z6-Mw-Crr">
+                                <rect key="frame" x="250" y="332.5" width="100" height="40"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="9Cb-rb-I0H"/>
+                                    <constraint firstAttribute="width" constant="100" id="J8d-UG-HSJ">
+                                        <variation key="widthClass=compact" constant="125"/>
+                                    </constraint>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                                <state key="normal" title="Buy"/>
+                                <connections>
+                                    <action selector="purchaseFullVersion" destination="02U-hZ-tkT" eventType="touchUpInside" id="1oB-gB-ivy"/>
+                                </connections>
+                            </button>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="aP6-Dn-D2v">
+                                <rect key="frame" x="241" y="45" width="119" height="100"/>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="GXu-qf-wt4"/>
+                                    <constraint firstAttribute="width" constant="119" id="hyc-98-ohc"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Full Version" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="St7-ND-9O3">
+                                <rect key="frame" x="234" y="190" width="133.5" height="32.5"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="27"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="CGt-zO-Qk5">
+                                <rect key="frame" x="282" y="437.5" width="37" height="37"/>
+                                <animations/>
+                                <color key="color" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <animations/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="lvH-D5-VDV" firstAttribute="top" secondItem="St7-ND-9O3" secondAttribute="bottom" constant="10" id="228-GV-JUS"/>
+                            <constraint firstItem="T1w-Bc-DFr" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" id="7zm-wR-KVX"/>
+                            <constraint firstItem="aP6-Dn-D2v" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" id="LCI-l7-Sbb"/>
+                            <constraint firstItem="aP6-Dn-D2v" firstAttribute="top" secondItem="bXK-DI-Jt3" secondAttribute="bottom" constant="45" id="Tjb-n8-Zn7"/>
+                            <constraint firstItem="lvH-D5-VDV" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" id="UA4-Df-d3I"/>
+                            <constraint firstItem="St7-ND-9O3" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" id="Uta-cu-r00"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="lvH-D5-VDV" secondAttribute="trailing" constant="25" id="Yqr-1w-mo2"/>
+                            <constraint firstItem="1Z6-Mw-Crr" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" id="a5a-Dr-Pga"/>
+                            <constraint firstItem="1Z6-Mw-Crr" firstAttribute="top" secondItem="lvH-D5-VDV" secondAttribute="bottom" constant="25" id="eK1-TC-LQQ"/>
+                            <constraint firstItem="T1w-Bc-DFr" firstAttribute="top" secondItem="1Z6-Mw-Crr" secondAttribute="bottom" constant="10" id="h44-Ch-qaC"/>
+                            <constraint firstItem="lvH-D5-VDV" firstAttribute="leading" secondItem="weE-tT-Mjn" secondAttribute="leadingMargin" constant="25" id="lsh-xX-bpB"/>
+                            <constraint firstItem="CGt-zO-Qk5" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" id="mBj-sr-CqA"/>
+                            <constraint firstItem="CGt-zO-Qk5" firstAttribute="top" secondItem="T1w-Bc-DFr" secondAttribute="bottom" constant="25" id="onK-Vo-ze9"/>
+                            <constraint firstItem="St7-ND-9O3" firstAttribute="top" secondItem="aP6-Dn-D2v" secondAttribute="bottom" constant="45" id="vkj-Vr-Aft"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="Yqr-1w-mo2"/>
+                                <exclude reference="lsh-xX-bpB"/>
+                            </mask>
+                        </variation>
+                        <variation key="widthClass=compact">
+                            <mask key="constraints">
+                                <include reference="Yqr-1w-mo2"/>
+                                <include reference="lsh-xX-bpB"/>
+                            </mask>
+                        </variation>
+                    </view>
+                    <navigationItem key="navigationItem" title="Full Version" id="7Vk-Nc-CZn">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="LPk-Rw-m9u">
+                            <connections>
+                                <action selector="cancel:" destination="02U-hZ-tkT" id="Hx0-XG-VKQ"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="purchaseButton" destination="1Z6-Mw-Crr" id="zbC-Ss-hU8"/>
+                        <outlet property="purchaseIndicator" destination="CGt-zO-Qk5" id="vQA-gJ-flH"/>
+                        <outlet property="restoreButton" destination="T1w-Bc-DFr" id="qF4-uK-sFN"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="d3B-Ve-KxK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1233" y="413"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="fP2-0M-Hhq">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Kbg-Ff-MZ0" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="XY1-W8-BUq">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <animations/>
+                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="barTintColor" red="0.98431372549999996" green="0.0" blue="0.17254901959999999" alpha="1" colorSpace="calibratedRGB"/>
+                        <textAttributes key="titleTextAttributes">
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        </textAttributes>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="02U-hZ-tkT" kind="relationship" relationship="rootViewController" id="CYc-dn-G0z"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7o4-0X-GiA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="422" y="413"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="Logo" width="500" height="425"/>
+    </resources>
+</document>
