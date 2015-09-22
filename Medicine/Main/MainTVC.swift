@@ -730,21 +730,26 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     
-    // MARK: - Helper methods
+    // MARK: - Sort methods
     
     func sortByNextDose(medA: Medicine, medB: Medicine) -> Bool {
-        if medA.lastDose?.date != nil {
-            if medB.lastDose?.date != nil {
-                return medA.lastDose!.date.compare(medB.lastDose!.date) == .OrderedDescending
+        if medA.lastDose?.next != nil {
+            if medB.lastDose?.next != nil {
+                return medA.lastDose!.next!.compare(medB.lastDose!.next!) == .OrderedAscending
             }
+            
             return true
         }
+        
         return false
     }
     
     func sortByManual(medA: Medicine, medB: Medicine) -> Bool {
         return medA.sortOrder < medB.sortOrder
     }
+    
+    
+    // MARK: - Helper methods
     
     func cellDateString(date: NSDate) -> String {
         var dateString = String()
