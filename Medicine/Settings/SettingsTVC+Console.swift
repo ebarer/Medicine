@@ -75,7 +75,7 @@ class SettingsTVC_Console: UITableViewController {
         let cell = tableView.dequeueReusableCellWithIdentifier("consoleCell", forIndexPath: indexPath)
         let txt = console[indexPath.row]
 
-        let attributedString = NSMutableAttributedString(string: "\(txt.name): \(txt.date)")
+        let attributedString = NSMutableAttributedString(string: "\(txt.name) \t\t \(txt.date)")
         attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0), range: NSMakeRange(0, txt.name.characters.count))
         
         
