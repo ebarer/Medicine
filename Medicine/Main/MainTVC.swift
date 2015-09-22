@@ -48,16 +48,21 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Set mananged object context
+        moc = appDelegate.managedObjectContext
+        
         // Display tutorial on first launch
         if !defaults.boolForKey("firstLaunch") {
             defaults.setBool(true, forKey: "firstLaunch")
+            defaults.setInteger(0, forKey: "sortOrder")
+            defaults.setInteger(5, forKey: "snoozeLength")
             defaults.synchronize()
             
             performSegueWithIdentifier("tutorial", sender: self)
         }
         
         // ## Debug
-        performSegueWithIdentifier("tutorial", sender: self)
+        //performSegueWithIdentifier("tutorial", sender: self)
         
         // Setup IAP
         if defaults.boolForKey("managerUnlocked") {
@@ -82,6 +87,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "takeMedicationNotification:", name: "takeDoseNotification", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "snoozeReminderNotification:", name: "snoozeReminderNotification", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
+        defaults.addObserver(self, forKeyPath: "sortOrder", options: NSKeyValueObservingOptions.New, context: nil)
         
         // Cancel all existing notifications
         UIApplication.sharedApplication().cancelAllLocalNotifications()
@@ -100,6 +106,11 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 for med in medication {
                     med.scheduleNextNotification()
                 }
+                
+                // If selected, sort by next dosage
+                if defaults.integerForKey("sortOrder") == 1 {
+                    medication.sortInPlace(sortByNextDose)
+                }
             }
         } catch {
             print("Could not fetch medication.")
@@ -112,8 +123,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         // If no medications, display empty message
         displayEmptyView()
-        
-        // Print all scheduled notifications
+
         printNotifications()
         
         self.tableView.reloadData()
@@ -121,7 +131,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        print("Memory Warning: MainTVC")
     }
 
     
@@ -198,6 +207,14 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         medication[toIndexPath.row].sortOrder = Int16(fromIndexPath.row)
         medication.sortInPlace({ $0.sortOrder < $1.sortOrder })
         appDelegate.saveContext()
+    }
+    
+    override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        if defaults.integerForKey("sortOrder") != 1 {
+            return true
+        }
+        
+        return false
     }
     
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -354,7 +371,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             let alert = UIAlertController(title: med.name, message: dateString, preferredStyle: UIAlertControllerStyle.ActionSheet)
             
             alert.addAction(UIAlertAction(title: "Take Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-                self.performSegueWithIdentifier("addDose", sender: self)
+                self.performSegueWithIdentifier("addDose", sender: med)
             }))
             
             // If next dosage is set, allow user to clear notification
@@ -362,6 +379,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 alert.addAction(UIAlertAction(title: "Undo Last Dose", style: .Destructive, handler: {(action) -> Void in
                     if (med.untakeLastDose(self.moc)) {
                         self.appDelegate.saveContext()
+                        
+                        // If selected, sort by next dosage
+                        if self.defaults.integerForKey("sortOrder") == 1 {
+                            self.medication.sortInPlace(self.sortByNextDose)
+                        }
+                        
                         self.tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: UITableViewRowAnimation.None)
                         self.printNotifications()
                     } else {
@@ -403,13 +426,13 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     // MARK: - Delete methods
     
     func presentDeleteAlert(name: String, indexPath: NSIndexPath) {
-        let deleteAlert = UIAlertController(title: "Delete \"\(name)\"?", message: "This will permanently delete the \"\(name)\" medication and all of its history.", preferredStyle: UIAlertControllerStyle.Alert)
+        let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.Alert)
         
         deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
             self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
         }))
         
-        deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
+        deleteAlert.addAction(UIAlertAction(title: "Delete \(name)", style: .Destructive, handler: {(action) -> Void in
             self.deleteMed(indexPath)
         }))
         
@@ -570,7 +593,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         if segue.identifier == "viewMedicationDetails" {
-            let vc = segue.destinationViewController as! HistoryTVC
+            let vc = segue.destinationViewController as! MedicineDetailsTVC
             if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
                 vc.med = medication[index.row]
                 vc.moc = self.moc
@@ -580,6 +603,14 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         if segue.identifier == "upgrade" {
             if let vc = segue.destinationViewController.childViewControllers[0] as? UpgradeVC {
                 mvc = vc
+            }
+        }
+        
+        if segue.identifier == "addDose" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
+                if let med = sender as? Medicine {
+                    vc.med = med
+                }
             }
         }
     }
@@ -621,6 +652,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             do {
                 try med.takeDose(moc, date: svc.date)
                 appDelegate.saveContext()
+                
+                // If selected, sort by next dosage
+                if defaults.integerForKey("sortOrder") == 1 {
+                    medication.sortInPlace(sortByNextDose)
+                }
+                
                 self.tableView.reloadData()
             } catch {
                 dismissViewControllerAnimated(true, completion: { () -> Void in
@@ -633,7 +670,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {}
     
     
-    // MARK: - Local notifications
+    // MARK: - Observers
     
     func internalNotification(notification: NSNotification) {
         if let id = notification.userInfo!["id"] as? String {
@@ -687,8 +724,32 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
     }
     
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+        switch(defaults.integerForKey("sortOrder")) {
+        case 0: // Manually
+            medication.sortInPlace(sortByManual)
+        case 1: // Next dosage
+            medication.sortInPlace(sortByNextDose)
+        default: break
+        }
+    }
+    
     
     // MARK: - Helper methods
+    
+    func sortByNextDose(medA: Medicine, medB: Medicine) -> Bool {
+        if medA.lastDose?.date != nil {
+            if medB.lastDose?.date != nil {
+                return medA.lastDose!.date.compare(medB.lastDose!.date) == .OrderedDescending
+            }
+            return true
+        }
+        return false
+    }
+    
+    func sortByManual(medA: Medicine, medB: Medicine) -> Bool {
+        return medA.sortOrder < medB.sortOrder
+    }
     
     func cellDateString(date: NSDate) -> String {
         var dateString = String()
@@ -721,7 +782,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     func printNotifications() {
-        // ## Debug
         let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
         
         if notifications.count != 0 {

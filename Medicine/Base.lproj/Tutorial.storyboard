@@ -20,7 +20,7 @@
                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </state>
                             <connections>
-                                <segue destination="1In-Q3-DFb" kind="unwind" unwindAction="unwindCancel:" id="JEz-59-eAV"/>
+                                <segue destination="1In-Q3-DFb" kind="unwind" unwindAction="unwindCancel:" id="aHS-ya-i2K"/>
                             </connections>
                         </button>
                     </navigationItem>
@@ -69,7 +69,7 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <segue destination="mw6-Uk-GkH" kind="presentation" modalTransitionStyle="flipHorizontal" id="JN6-FF-UFv"/>
+                                    <segue destination="mw6-Uk-GkH" kind="presentation" modalPresentationStyle="currentContext" modalTransitionStyle="flipHorizontal" id="JN6-FF-UFv"/>
                                 </connections>
                             </button>
                         </subviews>

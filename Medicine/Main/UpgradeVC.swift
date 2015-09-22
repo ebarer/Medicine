@@ -62,7 +62,6 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
             productRequest.delegate = self
             productRequest.start()
         } else {
-            // ## Debug
             print("Cannot perform In App Purchases.")
         }
     }

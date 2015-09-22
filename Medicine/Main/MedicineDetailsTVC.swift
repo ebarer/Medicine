@@ -1,5 +1,5 @@
 //
-//  HistoryTVC.swift
+//  MedicineDetailsTVC.swift
 //  Medicine
 //
 //  Created by Elliot Barer on 2015-08-28.
@@ -9,10 +9,10 @@
 import UIKit
 import CoreData
 
-class HistoryTVC: UITableViewController {
+class MedicineDetailsTVC: UITableViewController {
     
+    weak var med:Medicine!
     var count = 0
-    var history = [History]()
     var log = [NSDate: [History]]()
     
     
@@ -24,10 +24,16 @@ class HistoryTVC: UITableViewController {
     let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
     let dateFormatter = NSDateFormatter()
     
+    var normalButtons = [UIBarButtonItem]()
     var editButtons = [UIBarButtonItem]()
     
     func getSectionDate(section: Int) -> NSDate {
-        let unit = NSCalendarUnit.Day
+        var unit = NSCalendarUnit.Day
+        
+        if med.intervalUnit == Intervals.Weekly {
+            unit = NSCalendarUnit.WeekOfYear
+        }
+        
         return cal.dateByAddingUnit(unit, value: -1 * section, toDate: cal.startOfDayForDate(NSDate()), options: [])!
     }
     
@@ -37,80 +43,77 @@ class HistoryTVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Assign moc
-        moc = appDelegate.managedObjectContext
-        
         // Modify VC
+        if let name = med.name {
+            self.title = "\(name) History"
+        }
+        
         self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
         self.navigationController?.toolbar.translucent = true
         self.navigationController?.toolbar.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
-        self.navigationItem.leftBarButtonItem = self.editButtonItem()
+        self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
-        // Configure edit toolbar buttons
+        // Configure toolbar buttons
+        let fixedButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
+        normalButtons.append(fixedButton)
+        
+        let addButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add, target: self, action: "addDose")
+        normalButtons.append(addButton)
+
         let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: "deleteDoses")
         deleteButton.enabled = false
         editButtons.append(deleteButton)
-        setToolbarItems(editButtons, animated: true)
+
+        setToolbarItems(normalButtons, animated: true)
         
-        loadHistory()
+        // Sort history
+        if let historySet = med.history {
+            let history = historySet.array as! [History]
+            
+            for index in 0...6 {
+                let sectionDate = getSectionDate(index)
+                
+                // Initialize date log
+                log[sectionDate] = [History]()
+                
+                // Store history in log
+                for dose in history {
+                    if (cal.isDate(dose.date, inSameDayAsDate: sectionDate)) {
+                        log[sectionDate]?.insert(dose, atIndex: 0)
+                    }
+                }
+                
+                // Sort each log date
+                log[sectionDate]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
+            }
+            
+            count = history.count
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        loadHistory()
+
+        updateEditButton()
+        
         tableView.reloadData()
     }
     
+    override func viewDidAppear(animated: Bool) {
+        self.navigationController?.setToolbarHidden(false, animated: true)
+    }
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
-    func loadHistory() {
-        let request = NSFetchRequest(entityName:"History")
-        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
-        
-        do {
-            let fetchedResults = try moc.executeFetchRequest(request) as? [History]
-            
-            if let results = fetchedResults {
-                history = results
-                
-                // Clear existing log
-                log.removeAll()
-                
-                // Sort history
-                for index in 0...6 {
-                    let sectionDate = getSectionDate(index)
-                    
-                    // Initialize date log
-                    log[sectionDate] = [History]()
-                    
-                    // Store history in log
-                    for dose in history {
-                        if (cal.isDate(dose.date, inSameDayAsDate: sectionDate)) {
-                            log[sectionDate]?.insert(dose, atIndex: 0)
-                        }
-                    }
-                    
-                    // Sort each log date
-                    log[sectionDate]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
-                }
-                
-                count = history.count
-                updateEditButton()
-            }
-        } catch {
-            print("Could not fetch history.")
-        }
-    }
-    
     
     // MARK: - Table view data source
-    
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {        
         return 7
     }
-    
+
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let sectionDate = getSectionDate(section)
         
@@ -148,31 +151,24 @@ class HistoryTVC: UITableViewController {
             return dateFormatter.stringFromDate(sectionDate)
         }
     }
-    
+
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("historyCell", forIndexPath: indexPath)
         let sectionDate = getSectionDate(indexPath.section)
-        
+
         if let history = log[sectionDate] {
-            if history.count > 0 {
-                
+            if history.count == 0 {
+                cell.textLabel?.text = "No doses logged"
+                cell.textLabel?.textColor = UIColor.lightGrayColor()
+            } else {
                 dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
                 dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle;
                 
-                cell.textLabel?.textColor = UIColor.blackColor()
                 cell.textLabel?.text = dateFormatter.stringFromDate(history[indexPath.row].date)
-                
-                cell.detailTextLabel?.textColor = UIColor.redColor()
-                cell.detailTextLabel?.text = history[indexPath.row].medicine?.name
-                
-                return cell
+                cell.textLabel?.textColor = UIColor.blackColor()
             }
         }
-        
-        cell.textLabel?.textColor = UIColor.lightGrayColor()
-        cell.textLabel?.text = "No doses logged"
-        cell.detailTextLabel?.text?.removeAll()
-            
+
         return cell
     }
     
@@ -199,6 +195,33 @@ class HistoryTVC: UITableViewController {
         return true
     }
     
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        let sectionDate = getSectionDate(indexPath.section)
+        
+        if let logItems = log[sectionDate] {
+            if logItems[indexPath.row] == med.lastDose {
+                med.untakeLastDose(moc)
+            } else {
+                moc.deleteObject(logItems[indexPath.row])
+            }
+            
+            log[sectionDate]?.removeAtIndex(indexPath.row)
+            count--
+            
+            if logItems.count == 1 {
+                if let cell = tableView.cellForRowAtIndexPath(indexPath) {
+                    cell.textLabel?.text = "No doses logged"
+                    cell.textLabel?.textColor = UIColor.lightGrayColor()
+                    tableView.editing = false
+                }
+            } else {
+                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            }
+            
+            appDelegate.saveContext()
+        }
+    }
+    
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         updateDeleteButtonLabel()
     }
@@ -214,9 +237,9 @@ class HistoryTVC: UITableViewController {
         super.setEditing(editing, animated: animated)
         
         if editing == true {
-            self.navigationController?.setToolbarHidden(false, animated: true)
+            setToolbarItems(editButtons, animated: true)
         } else {
-            self.navigationController?.setToolbarHidden(true, animated: true)
+            setToolbarItems(normalButtons, animated: true)
         }
         
         updateEditButton()
@@ -224,9 +247,9 @@ class HistoryTVC: UITableViewController {
     
     func updateEditButton() {
         if count == 0 {
-            self.navigationItem.leftBarButtonItem?.enabled = false
+            self.navigationItem.rightBarButtonItem?.enabled = false
         } else {
-            self.navigationItem.leftBarButtonItem?.enabled = true
+            self.navigationItem.rightBarButtonItem?.enabled = true
         }
     }
     
@@ -246,11 +269,11 @@ class HistoryTVC: UITableViewController {
     
     func deleteDoses() {
         if let selectedRowIndexes = tableView.indexPathsForSelectedRows {
-            for index in selectedRowIndexes.reverse() {
+            for index in selectedRowIndexes.reverse() {                
                 let sectionDate = getSectionDate(index.section)
                 
                 if let logItems = log[sectionDate] {
-                    if let med = logItems[index.row].medicine where logItems[index.row] == med.lastDose {
+                    if logItems[index.row] == med.lastDose {
                         med.untakeLastDose(moc)
                     } else {
                         moc.deleteObject(logItems[index.row])
@@ -260,13 +283,9 @@ class HistoryTVC: UITableViewController {
                     count--
                     
                     if logItems.count == 1 {
-                        tableView.cellForRowAtIndexPath(index)
                         let label = tableView.cellForRowAtIndexPath(index)?.textLabel
-                        let detail = tableView.cellForRowAtIndexPath(index)?.detailTextLabel
-                        
-                        label?.textColor = UIColor.lightGrayColor()
                         label?.text = "No doses logged"
-                        detail?.text?.removeAll()
+                        label?.textColor = UIColor.lightGrayColor()
                     } else {
                         tableView.deleteRowsAtIndexPaths([index], withRowAnimation: .Fade)
                     }
@@ -285,31 +304,31 @@ class HistoryTVC: UITableViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "addDose" {
             if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
-                vc.globalHistory = true
+                vc.med = med
             }
         }
     }
-    
+
     
     // MARK: - Unwind methods
     
     @IBAction func historyUnwindAdd(unwindSegue: UIStoryboardSegue) {
         // Log dose
         let svc = unwindSegue.sourceViewController as! AddDoseTVC
-        if let dose = svc.med?.addDose(moc, date: svc.date) {
-            appDelegate.saveContext()
-            
-            // Add to log
-            let index = cal.startOfDayForDate(svc.date)
-            log[index]?.insert(dose, atIndex: 0)
-            log[index]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
-            count++
-            
-            // Reload table
-            self.tableView.reloadData()
-        }
+        let dose = med.addDose(moc, date: svc.date)
+        
+        appDelegate.saveContext()
+        
+        // Add to log
+        let index = cal.startOfDayForDate(svc.date)
+        log[index]?.insert(dose, atIndex: 0)
+        log[index]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
+        count++
+        
+        // Reload table
+        self.tableView.reloadData()
     }
     
     @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {}
-    
+
 }
