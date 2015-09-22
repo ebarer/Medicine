@@ -106,7 +106,7 @@ class SettingsTVC: UITableViewController {
             // Show reset confirmation
             let confirmationAlert = UIAlertController(title: "Reset Complete", message: "All medication, history, and preferences have been reset.", preferredStyle: UIAlertControllerStyle.Alert)
             
-            confirmationAlert.addAction(UIAlertAction(title: "Quit", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+            confirmationAlert.addAction(UIAlertAction(title: "Quit Medicine Manager", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
                 exit(0)
             }))
             

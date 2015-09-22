@@ -10,8 +10,8 @@ import UIKit
 import CoreData
 
 class HistoryTVC: UITableViewController {
-    
-    var count = 0
+
+    var gblCount = 0
     var history = [History]()
     var log = [NSDate: [History]]()
     
@@ -95,9 +95,9 @@ class HistoryTVC: UITableViewController {
                     // Sort each log date
                     log[sectionDate]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
                 }
-                
-                count = history.count
-                updateEditButton()
+
+                gblCount = history.count
+                displayEmptyView()
             }
         } catch {
             print("Could not fetch history.")
@@ -108,6 +108,10 @@ class HistoryTVC: UITableViewController {
     // MARK: - Table view data source
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        if gblCount == 0 {
+            return 0
+        }
+        
         return 7
     }
     
@@ -154,25 +158,18 @@ class HistoryTVC: UITableViewController {
         let sectionDate = getSectionDate(indexPath.section)
         
         if let history = log[sectionDate] {
-            if history.count > 0 {
-                
+            if history.count == 0 {
+                cell.textLabel?.text = "No doses logged"
+                cell.textLabel?.textColor = UIColor.lightGrayColor()
+            } else {
                 dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
                 dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle;
                 
-                cell.textLabel?.textColor = UIColor.blackColor()
                 cell.textLabel?.text = dateFormatter.stringFromDate(history[indexPath.row].date)
-                
-                cell.detailTextLabel?.textColor = UIColor.redColor()
-                cell.detailTextLabel?.text = history[indexPath.row].medicine?.name
-                
-                return cell
+                cell.textLabel?.textColor = UIColor.blackColor()
             }
         }
         
-        cell.textLabel?.textColor = UIColor.lightGrayColor()
-        cell.textLabel?.text = "No doses logged"
-        cell.detailTextLabel?.text?.removeAll()
-            
         return cell
     }
     
@@ -218,16 +215,6 @@ class HistoryTVC: UITableViewController {
         } else {
             self.navigationController?.setToolbarHidden(true, animated: true)
         }
-        
-        updateEditButton()
-    }
-    
-    func updateEditButton() {
-        if count == 0 {
-            self.navigationItem.leftBarButtonItem?.enabled = false
-        } else {
-            self.navigationItem.leftBarButtonItem?.enabled = true
-        }
     }
     
     func updateDeleteButtonLabel() {
@@ -250,14 +237,18 @@ class HistoryTVC: UITableViewController {
                 let sectionDate = getSectionDate(index.section)
                 
                 if let logItems = log[sectionDate] {
-                    if let med = logItems[index.row].medicine where logItems[index.row] == med.lastDose {
-                        med.untakeLastDose(moc)
+                    if let med = logItems[index.row].medicine {
+                        if med.lastDose == logItems[index.row] {
+                            med.untakeLastDose(moc)
+                        } else {
+                            moc.deleteObject(logItems[index.row])
+                        }
                     } else {
                         moc.deleteObject(logItems[index.row])
                     }
                     
                     log[sectionDate]?.removeAtIndex(index.row)
-                    count--
+                    gblCount--
                     
                     if logItems.count == 1 {
                         tableView.cellForRowAtIndexPath(index)
@@ -276,7 +267,28 @@ class HistoryTVC: UITableViewController {
             appDelegate.saveContext()
             updateDeleteButtonLabel()
             setEditing(false, animated: true)
+            
+            if gblCount == 0 {
+                displayEmptyView()
+            }
         }
+    }
+    
+    func displayEmptyView() {
+        if gblCount == 0 {
+            navigationItem.leftBarButtonItem?.enabled = false
+            
+            // Create empty message
+            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                // Display message
+                tableView.backgroundView = emptyView
+            }
+        } else {
+            navigationItem.leftBarButtonItem?.enabled = true
+            tableView.backgroundView = nil
+        }
+        
+        tableView.reloadData()
     }
     
     
@@ -299,11 +311,12 @@ class HistoryTVC: UITableViewController {
         if let dose = svc.med?.addDose(moc, date: svc.date) {
             appDelegate.saveContext()
             
+            gblCount++
+            
             // Add to log
             let index = cal.startOfDayForDate(svc.date)
             log[index]?.insert(dose, atIndex: 0)
             log[index]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
-            count++
             
             // Reload table
             self.tableView.reloadData()

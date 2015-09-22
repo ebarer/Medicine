@@ -123,8 +123,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         // If no medications, display empty message
         displayEmptyView()
-
-        printNotifications()
         
         self.tableView.reloadData()
     }
@@ -386,7 +384,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                         }
                         
                         self.tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: UITableViewRowAnimation.None)
-                        self.printNotifications()
                     } else {
                         self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
                     }
@@ -456,8 +453,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             // tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
             tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Automatic)
         }
-        
-        printNotifications()
     }
     
     func displayEmptyView() {
@@ -779,28 +774,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         return dateString
-    }
-    
-    func printNotifications() {
-        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
-        
-        if notifications.count != 0 {
-            print("Scheduled notifications:")
-        
-            for (index, notification) in notifications.enumerate() {
-                if let id = notification.userInfo?["id"] {
-                    if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
-                        dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
-                        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-                        print("\t\(index): [\(id)] \t \(med.name!): \(dateFormatter.stringFromDate(notification.fireDate!))")
-                    }
-                }
-            }
-            
-            print("\n")
-        } else {
-            print("No scheduled notifications.\n")
-        }
     }
     
     func presentDoseAlert(med: Medicine, date: NSDate) {
