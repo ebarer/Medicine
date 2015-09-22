@@ -35,7 +35,7 @@
                 <constraint firstItem="lBX-Bp-4HC" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" constant="-14.75" id="a2O-TD-bEG"/>
                 <constraint firstItem="lBX-Bp-4HC" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="faj-w2-10r"/>
             </constraints>
-            <point key="canvasLocation" x="498" y="395"/>
+            <point key="canvasLocation" x="261" y="158"/>
         </view>
     </objects>
     <resources>

@@ -37,7 +37,12 @@ class SettingsTVC: UITableViewController {
         }
         
         // Set snooze label
-        let amount = defaults.integerForKey("snoozeLength")
+        var amount = defaults.integerForKey("snoozeLength")
+        
+        if amount == 0 {
+            amount = 5
+        }
+        
         var string = "\(amount) minute"
         if (amount < 1 || amount >= 2) { string += "s" }
         snoozeLabel.text = string

@@ -157,18 +157,22 @@ class HistoryTVC: UITableViewController {
         let cell = tableView.dequeueReusableCellWithIdentifier("historyCell", forIndexPath: indexPath)
         let sectionDate = getSectionDate(indexPath.section)
         
-        if let history = log[sectionDate] {
-            if history.count == 0 {
-                cell.textLabel?.text = "No doses logged"
-                cell.textLabel?.textColor = UIColor.lightGrayColor()
-            } else {
-                dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
-                dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle;
-                
-                cell.textLabel?.text = dateFormatter.stringFromDate(history[indexPath.row].date)
-                cell.textLabel?.textColor = UIColor.blackColor()
-            }
+        if let history = log[sectionDate] where history.count > 0 {
+            dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
+            dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle;
+            
+            cell.textLabel?.textColor = UIColor.blackColor()
+            cell.textLabel?.text = dateFormatter.stringFromDate(history[indexPath.row].date)
+            
+            cell.detailTextLabel?.textColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+            cell.detailTextLabel?.text = history[indexPath.row].medicine?.name
+            
+            return cell
         }
+        
+        cell.textLabel?.textColor = UIColor.lightGrayColor()
+        cell.textLabel?.text = "No doses logged"
+        cell.detailTextLabel?.text?.removeAll()
         
         return cell
     }
@@ -279,7 +283,7 @@ class HistoryTVC: UITableViewController {
             navigationItem.leftBarButtonItem?.enabled = false
             
             // Create empty message
-            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+            if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
                 // Display message
                 tableView.backgroundView = emptyView
             }
