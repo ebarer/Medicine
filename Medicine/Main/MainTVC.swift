@@ -787,7 +787,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         doseAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
 
         doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-            med.addDose(moc, date: date)
+            med.addDose(self.moc, date: date)
         }))
         
         self.presentViewController(doseAlert, animated: true, completion: nil)

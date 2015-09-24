@@ -12,6 +12,7 @@ import CoreData
 class HistoryTVC: UITableViewController {
 
     var gblCount = 0
+    var medication = [Medicine]()
     var history = [History]()
     var log = [NSDate: [History]]()
     
@@ -52,11 +53,13 @@ class HistoryTVC: UITableViewController {
         editButtons.append(deleteButton)
         setToolbarItems(editButtons, animated: true)
         
+        loadMedication()
         loadHistory()
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        loadMedication()
         loadHistory()
         tableView.reloadData()
     }
@@ -101,6 +104,21 @@ class HistoryTVC: UITableViewController {
             }
         } catch {
             print("Could not fetch history.")
+        }
+    }
+    
+    func loadMedication() {
+        let request = NSFetchRequest(entityName:"Medicine")
+        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+        
+        do {
+            let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
+            
+            if let results = fetchedResults {
+                medication = results
+            }
+        } catch {
+            print("Could not fetch medication.")
         }
     }
     
@@ -283,13 +301,24 @@ class HistoryTVC: UITableViewController {
             navigationItem.leftBarButtonItem?.enabled = false
             
             // Create empty message
-            if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
-                // Display message
-                tableView.backgroundView = emptyView
+            if medication.count == 0 {
+                if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                    tableView.backgroundView = emptyView
+                }
+            } else {
+                if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                    tableView.backgroundView = emptyView
+                }
             }
         } else {
             navigationItem.leftBarButtonItem?.enabled = true
             tableView.backgroundView = nil
+        }
+        
+        if medication.count == 0 {
+            navigationItem.rightBarButtonItem?.enabled = false
+        } else {
+            navigationItem.rightBarButtonItem?.enabled = true
         }
         
         tableView.reloadData()
