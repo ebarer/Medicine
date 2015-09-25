@@ -265,7 +265,7 @@ class Medicine: NSManagedObject {
         return nil
     }
 
-    private let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+    private let cal = NSCalendar.currentCalendar()
     
 }
 
@@ -273,7 +273,7 @@ extension NSDate {
 
     // Determines if time is set to midnight
     func isMidnight() -> Bool {
-        let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+        let cal = NSCalendar.currentCalendar()
         let currentDate = NSDate()
         let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: self)
         
@@ -287,7 +287,7 @@ extension NSDate {
     }
     
     func isDateInLastWeek() -> Bool {
-        let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+        let cal = NSCalendar.currentCalendar()
         let currentDate = NSDate()
         var val = false
         
@@ -301,7 +301,7 @@ extension NSDate {
     }
     
     func isDateInWeek() -> Bool {
-        let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+        let cal = NSCalendar.currentCalendar()
         let currentDate = NSDate()
         var val = false
         

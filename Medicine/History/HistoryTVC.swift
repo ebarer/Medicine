@@ -22,7 +22,7 @@ class HistoryTVC: UITableViewController {
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var moc: NSManagedObjectContext!
     
-    let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+    let cal = NSCalendar.currentCalendar()
     let dateFormatter = NSDateFormatter()
     
     var editButtons = [UIBarButtonItem]()

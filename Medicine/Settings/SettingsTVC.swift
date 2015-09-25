@@ -20,6 +20,7 @@ class SettingsTVC: UITableViewController {
     @IBOutlet var sortLabel: UILabel!
     @IBOutlet var snoozeLabel: UILabel!
     @IBOutlet var versionString: UILabel!
+    @IBOutlet var copyrightString: UILabel!
 
     
     // MARK: - View methods
@@ -52,6 +53,13 @@ class SettingsTVC: UITableViewController {
         let version = dictionary["CFBundleShortVersionString"] as! String
         let build = dictionary["CFBundleVersion"] as! String
         versionString.text = "Medicine Manager \(version) (\(build))"
+        
+        // Set copyright string
+        if let year = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)?.component(NSCalendarUnit.Year, fromDate: NSDate()) {
+            copyrightString.text = "Elliot Barer © \(year)"
+        } else {
+            copyrightString.text = "© Elliot Barer"
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -69,7 +77,7 @@ class SettingsTVC: UITableViewController {
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // Hide console and help buttons
-        return 2
+        return 3
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {

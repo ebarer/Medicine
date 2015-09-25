@@ -27,7 +27,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
     
     private var selectedRow = Rows.intervalUnitLabel
     private var minutes = ["0","15","30","45"]
-    let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+    let cal = NSCalendar.currentCalendar()
     let dateFormatter = NSDateFormatter()
     
     

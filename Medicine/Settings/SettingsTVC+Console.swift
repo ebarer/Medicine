@@ -12,7 +12,7 @@ import CoreData
 class SettingsTVC_Console: UITableViewController {
 
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-    let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+    let cal = NSCalendar.currentCalendar()
     let dateFormatter = NSDateFormatter()
 
     let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!

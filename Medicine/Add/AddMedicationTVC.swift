@@ -26,7 +26,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     // MARK: - Helper variables
     
-    let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+    let cal = NSCalendar.currentCalendar()
     let dateFormatter = NSDateFormatter()
     
     

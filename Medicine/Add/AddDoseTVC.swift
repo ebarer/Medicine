@@ -14,7 +14,7 @@ class AddDoseTVC: UITableViewController {
     var med:Medicine?
     var globalHistory: Bool = false
     var date = NSDate()
-    let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+    let cal = NSCalendar.currentCalendar()
     
     // MARK: - Outlets
     

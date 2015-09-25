@@ -33,7 +33,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var moc: NSManagedObjectContext!
     
-    let cal = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+    let cal = NSCalendar.currentCalendar()
     let dateFormatter = NSDateFormatter()
     
     
@@ -54,7 +54,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         // Display tutorial on first launch
         if !defaults.boolForKey("firstLaunch") {
             defaults.setBool(true, forKey: "firstLaunch")
-            defaults.setInteger(0, forKey: "sortOrder")
+            defaults.setInteger(1, forKey: "sortOrder")
             defaults.setInteger(5, forKey: "snoozeLength")
             defaults.synchronize()
             
@@ -537,7 +537,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         mvc?.purchaseButton.enabled = true
         mvc?.purchaseIndicator.stopAnimating()
         
-        let failAlert = UIAlertController(title: "Failed to Restore Purchases", message: "Please try again later. If the problem persists, you may not have purchased the product. To do so, use the purchase button above.", preferredStyle: UIAlertControllerStyle.Alert)
+        let failAlert = UIAlertController(title: "Restore Failed", message: "Please try again later. If the problem persists, use the purchase button above.", preferredStyle: UIAlertControllerStyle.Alert)
         failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
         failAlert.view.tintColor = UIColor.grayColor()
         mvc?.presentViewController(failAlert, animated: true, completion: nil)

@@ -529,6 +529,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Settings" id="aFG-vU-ODg"/>
                     <connections>
+                        <outlet property="copyrightString" destination="tCa-vB-l39" id="XSR-FO-NOm"/>
                         <outlet property="snoozeLabel" destination="Ckw-nF-9DT" id="utm-lS-6pt"/>
                         <outlet property="sortLabel" destination="LcK-PF-iJF" id="rlT-Vf-bd4"/>
                         <outlet property="versionString" destination="dOy-d4-XE1" id="BiF-Se-ua4"/>
