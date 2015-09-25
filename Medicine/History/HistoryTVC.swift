@@ -171,9 +171,22 @@ class HistoryTVC: UITableViewController {
         }
     }
     
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        let sectionDate = getSectionDate(indexPath.section)
+        
+        if let history = log[sectionDate] where history.count > 0 {
+            return 55.0
+        }
+        
+        return tableView.rowHeight
+    }
+    
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("historyCell", forIndexPath: indexPath)
         let sectionDate = getSectionDate(indexPath.section)
+        
+        // Specify selection color
+        cell.selectedBackgroundView = UIView()
         
         if let history = log[sectionDate] where history.count > 0 {
             dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
@@ -233,9 +246,15 @@ class HistoryTVC: UITableViewController {
         super.setEditing(editing, animated: animated)
         
         if editing == true {
-            self.navigationController?.setToolbarHidden(false, animated: true)
+            if let tBC = self.tabBarController {
+                tBC.setTabBarVisible(false, animated: true)
+                self.navigationController?.setToolbarHidden(false, animated: true)
+            }
         } else {
-            self.navigationController?.setToolbarHidden(true, animated: true)
+            if let tBC = self.tabBarController {
+                self.navigationController?.setToolbarHidden(true, animated: true)
+                tBC.setTabBarVisible(true, animated: true)
+            }
         }
     }
     

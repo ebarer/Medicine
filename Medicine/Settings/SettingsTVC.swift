@@ -67,8 +67,13 @@ class SettingsTVC: UITableViewController {
     
     // MARK: - Table view delegate
     
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        // Hide console and help buttons
+        return 2
+    }
+    
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if indexPath == NSIndexPath(forRow: 0, inSection: 2) {
+        if indexPath == NSIndexPath(forRow: 0, inSection: 1) {
             let deleteAlert = UIAlertController(title: "Reset Data and Settings?", message: "This will permanently delete all medication, history, and preferences.", preferredStyle: UIAlertControllerStyle.Alert)
             
             deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
@@ -79,6 +84,7 @@ class SettingsTVC: UITableViewController {
                 self.deleteAll()
             }))
             
+            deleteAlert.view.tintColor = UIColor.grayColor()
             self.presentViewController(deleteAlert, animated: true, completion: nil)
         }
     }
@@ -115,6 +121,7 @@ class SettingsTVC: UITableViewController {
                 exit(0)
             }))
             
+            confirmationAlert.view.tintColor = UIColor.grayColor()
             self.presentViewController(confirmationAlert, animated: true, completion: nil)
         } catch {
             print("Could not fetch medication.")

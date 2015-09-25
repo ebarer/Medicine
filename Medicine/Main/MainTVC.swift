@@ -158,13 +158,21 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         // Set medication name
         cell.textLabel?.text = med.name
-        
+        cell.textLabel?.textColor = UIColor.blackColor()
         
         // If reminders aren't enabled for medication, set subtitle to last dose taken
         if med.reminderEnabled == false {
             if let date = med.lastDose?.next {
-                let subtitle = NSMutableAttributedString(string: "Earliest next dose: \(cellDateString(date))")
-                subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 20))
+                var subtitle:NSMutableAttributedString!
+                
+                if date.compare(NSDate()) == .OrderedDescending {
+                    subtitle = NSMutableAttributedString(string: "Earliest next dose: \(cellDateString(date))")
+                    subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 20))
+                } else {
+                    subtitle = NSMutableAttributedString(string: "Last dose: \(cellDateString(date))")
+                    subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
+                }
+                
                 cell.detailTextLabel?.attributedText = subtitle
                 return cell
             }
@@ -185,7 +193,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         // Set subtitle to next dosage date
         if let date = med.printNext() {
-            cell.textLabel?.textColor = UIColor.blackColor()
             let subtitle = NSMutableAttributedString(string: "Next dose: \(cellDateString(date))")
             subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
             cell.detailTextLabel?.attributedText = subtitle
@@ -194,7 +201,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         // If no doses taken, or other conditions met, instruct user on how to take dose
         else  {
-            cell.textLabel?.textColor = UIColor.blackColor()
             cell.detailTextLabel?.attributedText = NSAttributedString(string: "Tap to take next dose", attributes: [NSForegroundColorAttributeName: UIColor.lightGrayColor()])
             return cell
         }
@@ -403,8 +409,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: {(action) -> Void in
                 self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }))
-
-            alert.view.tintColor = UIColor.grayColor()
             
             // Set popover for iPad
             if let view = tableView.cellForRowAtIndexPath(indexPath)?.textLabel {
@@ -413,6 +417,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 alert.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.Left
             }
             
+            alert.view.tintColor = UIColor.grayColor()
             presentViewController(alert, animated: true, completion: nil)
         } else {
             performSegueWithIdentifier("editMedication", sender: indexPath.row)
@@ -433,6 +438,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             self.deleteMed(indexPath)
         }))
         
+        deleteAlert.view.tintColor = UIColor.grayColor()
         self.presentViewController(deleteAlert, animated: true, completion: nil)
     }
     
@@ -520,6 +526,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         let failAlert = UIAlertController(title: "Purchase Failed", message: "Please try again later.", preferredStyle: UIAlertControllerStyle.Alert)
         failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+        
+        failAlert.view.tintColor = UIColor.grayColor()
         mvc?.presentViewController(failAlert, animated: true, completion: nil)
     }
     
@@ -531,6 +539,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         let failAlert = UIAlertController(title: "Failed to Restore Purchases", message: "Please try again later. If the problem persists, you may not have purchased the product. To do so, use the purchase button above.", preferredStyle: UIAlertControllerStyle.Alert)
         failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+        failAlert.view.tintColor = UIColor.grayColor()
         mvc?.presentViewController(failAlert, animated: true, completion: nil)
     }
     
@@ -669,7 +678,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     func internalNotification(notification: NSNotification) {
         if let id = notification.userInfo!["id"] as? String {
-            let medQuery = medication.filter{ $0.medicineID == id }.first
+            let medQuery = Medicine.getMedicine(arr: medication, id: id)
             if let med = medQuery {
                 if let name = med.name {
                     let message = String(format:"Time to take %g %@ of %@", med.dosage, med.dosageUnit.units(med.dosage), name)
@@ -684,9 +693,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                         self.snoozeReminderNotification(notification)
                     }))
                     
-                    alert.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
-                    
                     // TODO: Don't display if not front most VC
+                    alert.view.tintColor = UIColor.grayColor()
                     presentViewController(alert, animated: true, completion: nil)
                 }
             }
@@ -695,7 +703,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     func takeMedicationNotification(notification: NSNotification) {
         if let id = notification.userInfo!["id"] as? String {
-            let medQuery = medication.filter{ $0.medicineID == id }.first
+            let medQuery = Medicine.getMedicine(arr: medication, id: id)
             if let med = medQuery {
                 do {
                     try med.takeDose(moc, date: NSDate())
@@ -709,7 +717,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     func snoozeReminderNotification(notification: NSNotification) {
         if let info = notification.userInfo {
             if let id = info["id"] as? String {
-                let medQuery = medication.filter{ $0.medicineID == id }.first
+                let medQuery = Medicine.getMedicine(arr: medication, id: id)
                 if let med = medQuery {
                     med.snoozeNotification()
                     appDelegate.saveContext()
@@ -790,6 +798,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             med.addDose(self.moc, date: date)
         }))
         
+        doseAlert.view.tintColor = UIColor.grayColor()
         self.presentViewController(doseAlert, animated: true, completion: nil)
     }
     

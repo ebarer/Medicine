@@ -51,18 +51,18 @@ class MedicineDetailsTVC: UITableViewController {
         self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
         self.navigationController?.toolbar.translucent = true
         self.navigationController?.toolbar.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
-        self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
         // Configure toolbar buttons
         let fixedButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
-        normalButtons.append(fixedButton)
-        
-        let addButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add, target: self, action: "addDose")
-        normalButtons.append(addButton)
-
         let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: "deleteDoses")
         deleteButton.enabled = false
+        
+        normalButtons.append(fixedButton)
+        normalButtons.append(self.editButtonItem())
+        
         editButtons.append(deleteButton)
+        editButtons.append(fixedButton)
+        editButtons.append(self.editButtonItem())
 
         setToolbarItems(normalButtons, animated: true)
         
@@ -151,10 +151,23 @@ class MedicineDetailsTVC: UITableViewController {
             return dateFormatter.stringFromDate(sectionDate)
         }
     }
+    
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        let sectionDate = getSectionDate(indexPath.section)
+        
+        if let history = log[sectionDate] where history.count > 0 {
+            return 55.0
+        }
+        
+        return tableView.rowHeight
+    }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("historyCell", forIndexPath: indexPath)
         let sectionDate = getSectionDate(indexPath.section)
+        
+        // Specify selection color
+        cell.selectedBackgroundView = UIView()
 
         if let history = log[sectionDate] {
             if history.count == 0 {
@@ -263,7 +276,7 @@ class MedicineDetailsTVC: UITableViewController {
         }
     }
     
-    func addDose() {
+    @IBAction func addDose() {
         performSegueWithIdentifier("addDose", sender: self)
     }
     
