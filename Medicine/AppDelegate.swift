@@ -60,6 +60,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         application.registerUserNotificationSettings(settings)
         
+        
+        // Display tutorial on first launch
+        let defaults = NSUserDefaults.standardUserDefaults()
+        
+        if !defaults.boolForKey("firstLaunch") {
+            defaults.setBool(true, forKey: "firstLaunch")       // Set first launch bool
+            defaults.setInteger(1, forKey: "sortOrder")         // Set sort order to "next dosage"
+            defaults.setInteger(5, forKey: "snoozeLength")      // Set snooze duration to 5 minutes
+            defaults.setBool(false, forKey: "debug")             // Disable debug
+            defaults.synchronize()
+        }
+        
+        if UIDevice.currentDevice().identifierForVendor?.UUIDString == "8DA45D8A-AD89-4A07-BBBB-8C0C9CF993DC" {
+            defaults.setBool(true, forKey: "debug")      // Set snooze duration to 5 minutes
+        }
+        
         return true
     }
 

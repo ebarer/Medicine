@@ -26,7 +26,7 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
         super.viewDidLoad()
 
         // Modify VC
-        self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         
         // Set values
         if let medicine = med {

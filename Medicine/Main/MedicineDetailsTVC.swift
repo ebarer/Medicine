@@ -48,9 +48,9 @@ class MedicineDetailsTVC: UITableViewController {
             self.title = "\(name) History"
         }
         
-        self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         self.navigationController?.toolbar.translucent = true
-        self.navigationController?.toolbar.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+        self.navigationController?.toolbar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         
         // Configure toolbar buttons
         let fixedButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
@@ -260,9 +260,9 @@ class MedicineDetailsTVC: UITableViewController {
     
     func updateEditButton() {
         if count == 0 {
-            self.navigationItem.rightBarButtonItem?.enabled = false
+            self.editButtonItem().enabled = false
         } else {
-            self.navigationItem.rightBarButtonItem?.enabled = true
+            self.editButtonItem().enabled = true
         }
     }
     

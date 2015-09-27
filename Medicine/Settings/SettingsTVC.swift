@@ -28,25 +28,7 @@ class SettingsTVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Set sort label
-        switch(defaults.integerForKey("sortOrder")) {
-        case 0:
-            sortLabel.text = "Manually"
-        case 1:
-            sortLabel.text = "Next Dosage"
-        default: break
-        }
-        
-        // Set snooze label
-        var amount = defaults.integerForKey("snoozeLength")
-        
-        if amount == 0 {
-            amount = 5
-        }
-        
-        var string = "\(amount) minute"
-        if (amount < 1 || amount >= 2) { string += "s" }
-        snoozeLabel.text = string
+        setLabels()
         
         // Set version string
         let dictionary = NSBundle.mainBundle().infoDictionary!
@@ -66,18 +48,46 @@ class SettingsTVC: UITableViewController {
         if let index = tableView.indexPathForSelectedRow {
             self.tableView.deselectRowAtIndexPath(index, animated: animated)
         }
+        
+        setLabels()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
+    func setLabels() {
+        // Set sort label
+        switch(defaults.integerForKey("sortOrder")) {
+        case 0:
+            sortLabel.text = "Manually"
+        case 1:
+            sortLabel.text = "Next Dosage"
+        default: break
+        }
+        
+        // Set snooze label
+        var amount = defaults.integerForKey("snoozeLength")
+        
+        if amount == 0 {
+            amount = 5
+        }
+        
+        var string = "\(amount) minute"
+        if (amount < 1 || amount >= 2) { string += "s" }
+        snoozeLabel.text = string
+    }
+    
     
     // MARK: - Table view delegate
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // Hide console and help buttons
-        return 3
+        // Hide console and help buttons if debug disabled        
+        if defaults.boolForKey("debug") == true {
+            return 3
+        }
+        
+        return 2
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -144,6 +154,3 @@ class SettingsTVC: UITableViewController {
     @IBAction func settingsUndwind(unwindSegue: UIStoryboardSegue) {}
 
 }
-
-
-

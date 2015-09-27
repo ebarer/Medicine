@@ -23,7 +23,7 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     
     
     // MARK: - Helper variable
-    let purchaseGreen = UIColor(red: 29.0/255, green: 159.0/255, blue: 25.0/255, alpha: 1.0)
+    let purchaseColour = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
     
     
     // MARK: - View methods
@@ -34,8 +34,8 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
         // Style purchase button
         purchaseButton.layer.cornerRadius = 4
         purchaseButton.layer.borderWidth = 1
-        purchaseButton.layer.borderColor = purchaseGreen.CGColor
-        purchaseButton.tintColor = purchaseGreen
+        purchaseButton.layer.borderColor = purchaseColour.CGColor
+        purchaseButton.tintColor = purchaseColour
     }
     
     override func viewWillAppear(animated: Bool) {

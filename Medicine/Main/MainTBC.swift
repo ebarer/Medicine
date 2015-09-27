@@ -8,16 +8,27 @@
 
 import UIKit
 
-class MainTBC: UITabBarController {
+class MainTBC: UITabBarController, UITabBarControllerDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.tabBar.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+        self.tabBar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        self.delegate = self
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+    
+    func tabBarController(tabBarController: UITabBarController, didSelectViewController viewController: UIViewController) {
+        for vc in viewController.childViewControllers {
+            if vc.isKindOfClass(SettingsTVC_Console) {
+                let svc = vc as! SettingsTVC_Console
+                svc.reloadView()
+            }
+        }
+    }
+    
 
 }
 

@@ -31,26 +31,45 @@ class SettingsTVC_Console: UITableViewController {
             
             if let results = fetchedResults {
                 medication = results
-                
-                if notifications.count != 0 {
-                    for (_, notification) in notifications.enumerate() {
-                        if let id = notification.userInfo?["id"] {
-                            if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
-                                dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
-                                dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-                                console.append((med.name!, dateFormatter.stringFromDate(notification.fireDate!), id as! String))
-                            }
-                        }
-                    }
-                }
+                loadNotifications()
             }
         } catch {
             print("Could not fetch medication.")
         }
     }
+    
+    override func viewDidAppear(animated: Bool) {
+        loadNotifications()
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    func reloadView() {
+        if loadNotifications() {
+            tableView.reloadData()
+        }
+    }
+    
+    func loadNotifications() -> Bool {
+        if notifications.count != 0 {
+            console.removeAll()
+            
+            for (_, notification) in notifications.enumerate() {
+                if let id = notification.userInfo?["id"] {
+                    if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
+                        dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
+                        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+                        console.append((med.name!, dateFormatter.stringFromDate(notification.fireDate!), id as! String))
+                    }
+                }
+            }
+            
+            return true
+        }
+        
+        return false
     }
 
     // MARK: - Table view data source
@@ -76,7 +95,7 @@ class SettingsTVC_Console: UITableViewController {
         let txt = console[indexPath.row]
 
         let attributedString = NSMutableAttributedString(string: "\(txt.name) \t\t \(txt.date)")
-        attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0), range: NSMakeRange(0, txt.name.characters.count))
+        attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, txt.name.characters.count))
         
         
         cell.textLabel?.attributedText = attributedString

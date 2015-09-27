@@ -209,8 +209,8 @@
 			isa = PBXGroup;
 			children = (
 				CEA250F71B90396C00BBE466 /* Info.plist */,
-				CEA250F41B90396C00BBE466 /* LaunchScreen.storyboard */,
 				CEA250F21B90396C00BBE466 /* Assets.xcassets */,
+				CEA250F41B90396C00BBE466 /* LaunchScreen.storyboard */,
 			);
 			name = Other;
 			sourceTree = "<group>";
@@ -314,9 +314,6 @@
 		CEA250DD1B90396C00BBE466 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				KnownAssetTags = (
-					"com.apple.gamecenter.Dashboard Image",
-				);
 				LastSwiftUpdateCheck = 0710;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Elliot Barer";

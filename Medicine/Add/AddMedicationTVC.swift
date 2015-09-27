@@ -34,7 +34,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -117,11 +117,11 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     // MARK: - Table view delegate
     
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if section == Rows.interval.index().section {
-            if editMode {
-                return "Changes will take effect with next dose taken."
-            }
-        }
+//        if section == Rows.interval.index().section {
+//            if editMode {
+//                return "Changes will take effect with next dose taken."
+//            }
+//        }
         
         if section == Rows.prescription.index().section {
             return "Keep track of your prescription levels, and be reminded to refill when running low."

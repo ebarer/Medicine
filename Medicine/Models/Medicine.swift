@@ -28,6 +28,14 @@ class Medicine: NSManagedObject {
         return nil
     }
     
+    class func printNotifications() {
+        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
+        for (index, notification) in notifications.enumerate() {
+            let id = notification.userInfo!["id"]
+            print("\(index): \(id) - \(notification.fireDate)")
+        }
+    }
+    
     
     // MARK: - Dose methods
     func calculateInterval(modDate: NSDate?) -> NSDate? {
@@ -62,7 +70,7 @@ class Medicine: NSManagedObject {
         let compareDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: -5, toDate: doseDate, options: [])!
         
         if lastDose != nil {
-            guard lastDose!.date.compare(compareDate) == .OrderedAscending else {
+            guard lastDose?.date.compare(compareDate) == .OrderedAscending else {
                 throw MedicineError.TooSoon
             }
         }
@@ -143,12 +151,22 @@ class Medicine: NSManagedObject {
         return nil
     }
     
-    func isOverdue() -> Bool {
+    func isOverdue() -> NSDate? {
         // Medicine can't be overdue if reminders are disabled
         if reminderEnabled {
             if let date = lastDose?.next {
-                return (NSDate().compare(date) == .OrderedDescending)
+                if NSDate().compare(date) == .OrderedDescending {
+                    return date
+                }
             }
+        }
+        
+        return nil
+    }
+    
+    func overdueSort() -> Bool {
+        if isOverdue() != nil {
+            return true
         }
         
         return false
@@ -156,6 +174,27 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Notification methods
+    func scheduleNextNotification() {
+        cancelNotification()
+        
+        // Schedule daily interval based on alarm
+        if var alarm = intervalAlarm {
+            // If interval alarm set
+            if alarm.compare(NSDate()) == .OrderedAscending {
+                alarm = calculateInterval(alarm)!
+            }
+            
+            scheduleNotification(alarm)
+        }
+        
+        // Schedule other interval types
+        else if let date = nextDose {
+            if date.compare(NSDate()) == .OrderedDescending {
+                scheduleNotification(date)
+            }
+        }
+    }
+    
     func scheduleNotification(date: NSDate) {
         if reminderEnabled {
             if let medName = name {
@@ -167,30 +206,14 @@ class Medicine: NSManagedObject {
                 notification.soundName = UILocalNotificationDefaultSoundName
                 notification.category = "Reminder"
                 notification.userInfo = ["id": self.medicineID]
-            
+                
                 notification.fireDate = date
             
                 UIApplication.sharedApplication().scheduleLocalNotification(notification)
                 
                 scheduledNotification = notification
+                Medicine.printNotifications()
             }
-        }
-    }
-    
-    func scheduleNextNotification() {
-        cancelNotification()
-        
-        if let date = nextDose {
-            if date.compare(NSDate()) == .OrderedDescending {
-                scheduleNotification(date)
-            }
-        } else if var alarm = intervalAlarm {
-            // If interval alarm set and no previous doses taken
-            if alarm.compare(NSDate()) == .OrderedAscending {
-                alarm = calculateInterval(alarm)!
-            }
-            
-            scheduleNotification(alarm)
         }
     }
     
@@ -205,9 +228,6 @@ class Medicine: NSManagedObject {
         } else {
             snoozeLength = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: 5, toDate: NSDate(), options: [])!
         }
-        
-        // Cancel previous notification
-        cancelNotification()
         
         // Schedule new notification
         scheduleNotification(snoozeLength)

@@ -37,7 +37,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         super.viewDidLoad()
         
         // Modify VC
-        self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         
         // Setup date formatter
         dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
@@ -73,7 +73,8 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
                     alarmLabel.text = dateFormatter.stringFromDate(alarm)
                 }
 
-                alarmPicker.date = alarm
+                let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
+                alarmPicker.date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: NSDate(), options: [])!
             } else {
                 if let date = cal.dateBySettingUnit(NSCalendarUnit.Minute, value: 0, ofDate: NSDate(), options: []) {
                     alarmPicker.date = date
@@ -125,7 +126,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
         
         if selectedRow == Rows(index: indexPath) {
-            cell.detailTextLabel?.textColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+            cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         } else {
             cell.detailTextLabel?.textColor = UIColor.grayColor()
         }

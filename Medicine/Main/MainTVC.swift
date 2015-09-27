@@ -48,21 +48,15 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Set mananged object context
-        moc = appDelegate.managedObjectContext
-        
-        // Display tutorial on first launch
-        if !defaults.boolForKey("firstLaunch") {
-            defaults.setBool(true, forKey: "firstLaunch")
-            defaults.setInteger(1, forKey: "sortOrder")
-            defaults.setInteger(5, forKey: "snoozeLength")
-            defaults.synchronize()
-            
+        if !defaults.boolForKey("firstLaunch") {            
             performSegueWithIdentifier("tutorial", sender: self)
         }
         
         // ## Debug
         //performSegueWithIdentifier("tutorial", sender: self)
+        
+        // Set mananged object context
+        moc = appDelegate.managedObjectContext
         
         // Setup IAP
         if defaults.boolForKey("managerUnlocked") {
@@ -72,7 +66,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         // Modify VC tint and Navigation Item
-        self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         self.clearsSelectionOnViewWillAppear = false
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
         
@@ -154,7 +148,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         let med = medication[indexPath.row]
         
         // Set cell tint
-        cell.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+        cell.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         
         // Set medication name
         cell.textLabel?.text = med.name
@@ -179,16 +173,14 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         // If medication is overdue, set subtitle to next dosage date and tint red
-        if med.isOverdue() {
-            if let date = med.lastDose?.next {
-                cell.textLabel?.textColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
-                
-                let subtitle = NSMutableAttributedString(string: "Overdue: \(cellDateString(date))")
-                subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0), range: NSMakeRange(0, subtitle.length))
-                subtitle.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(15.0), range: NSMakeRange(0, 8))
-                cell.detailTextLabel?.attributedText = subtitle
-                return cell
-            }
+        if let date = med.isOverdue() {
+            cell.textLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+            
+            let subtitle = NSMutableAttributedString(string: "Overdue: \(cellDateString(date))")
+            subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, subtitle.length))
+            subtitle.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(15.0), range: NSMakeRange(0, 8))
+            cell.detailTextLabel?.attributedText = subtitle
+            return cell
         }
         
         // Set subtitle to next dosage date
@@ -206,19 +198,19 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
     }
     
+    override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return true
+    }
+    
     override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
         medication[fromIndexPath.row].sortOrder = Int16(toIndexPath.row)
         medication[toIndexPath.row].sortOrder = Int16(fromIndexPath.row)
         medication.sortInPlace({ $0.sortOrder < $1.sortOrder })
         appDelegate.saveContext()
-    }
-    
-    override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        if defaults.integerForKey("sortOrder") != 1 {
-            return true
-        }
         
-        return false
+        // Set sort order to "manually"
+        defaults.setInteger(0, forKey: "sortOrder")
+        defaults.synchronize()
     }
     
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -268,7 +260,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         headerMedLabel.text = nil
         
         // If we have overdue doses or an upcoming scheduled dose today, modify labels
-        let overdueItems = medication.filter({$0.isOverdue()}).count
+        let overdueItems = medication.filter({$0.overdueSort()}).count
         if overdueItems > 0  {
             var text = "Overdue dose"
 
@@ -291,7 +283,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                         
                         string = NSMutableAttributedString(string: dateFormatter.stringFromDate(nextDose.fireDate!))
                         let len = string.length
-                        // string.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0), range: NSMakeRange(0, 2))
                         string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, len-2))
                         string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(len-2, 2))
                         headerCounterLabel.attributedText = string
@@ -304,18 +295,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
     
         return summaryHeader
-    }
-    
-    func generateGradient() {
-        let colorTop = UIColor(white: 0.25, alpha: 1.0)
-        let colorBottom = UIColor(red: 86.0/255, green: 32.0/255, blue: 34.0/255, alpha: 1.0).CGColor    // Light
-        
-        let gl = CAGradientLayer()
-        gl.colors = [colorTop, colorBottom]
-        gl.locations = [0.0, 1.0]
-        gl.frame = summaryHeader.bounds
-        
-        summaryHeader.layer.insertSublayer(gl, atIndex: 0)
     }
     
     func refreshTableAndNotifications() {
@@ -380,7 +359,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             
             // If next dosage is set, allow user to clear notification
             if (med.nextDose != nil) {
-                alert.addAction(UIAlertAction(title: "Undo Last Dose", style: .Destructive, handler: {(action) -> Void in
+                alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
                     if (med.untakeLastDose(self.moc)) {
                         self.appDelegate.saveContext()
                         
@@ -400,13 +379,13 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
 //                self.performSegueWithIdentifier("editMedication", sender: indexPath.row)
 //            }))
             
-            alert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
+            alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
                 if let name = med.name {
                     self.presentDeleteAlert(name, indexPath: indexPath)
                 }
             }))
             
-            alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: {(action) -> Void in
+            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
                 self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }))
             
@@ -685,11 +664,11 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                     
                     let alert = UIAlertController(title: "Take \(name)", message: message, preferredStyle: .Alert)
                     
-                    alert.addAction(UIAlertAction(title: "Take Dose", style: .Default, handler: {(action) -> Void in
+                    alert.addAction(UIAlertAction(title: "Take Dose", style:  UIAlertActionStyle.Destructive, handler: {(action) -> Void in
                         self.takeMedicationNotification(notification)
                     }))
                     
-                    alert.addAction(UIAlertAction(title: "Snooze", style: .Cancel, handler: {(action) -> Void in
+                    alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
                         self.snoozeReminderNotification(notification)
                     }))
                     
@@ -741,6 +720,16 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     // MARK: - Sort methods
     
     func sortByNextDose(medA: Medicine, medB: Medicine) -> Bool {
+        // Unscheduled medications should be at the bottom
+        if medA.reminderEnabled == false {
+            return false
+        }
+        
+        if medB.reminderEnabled == false {
+            return true
+        }
+        
+        // Determine order based on next dosage (and whether it's set)
         if medA.lastDose?.next != nil {
             if medB.lastDose?.next != nil {
                 return medA.lastDose!.next!.compare(medB.lastDose!.next!) == .OrderedAscending
@@ -794,8 +783,16 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         doseAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
 
-        doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+        doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
             med.addDose(self.moc, date: date)
+            self.appDelegate.saveContext()
+            
+            // If selected, sort by next dosage
+            if self.defaults.integerForKey("sortOrder") == 1 {
+                self.medication.sortInPlace(self.sortByNextDose)
+            }
+            
+            self.tableView.reloadData()
         }))
         
         doseAlert.view.tintColor = UIColor.grayColor()

@@ -42,9 +42,9 @@ class HistoryTVC: UITableViewController {
         moc = appDelegate.managedObjectContext
         
         // Modify VC
-        self.view.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         self.navigationController?.toolbar.translucent = true
-        self.navigationController?.toolbar.tintColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+        self.navigationController?.toolbar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
         
         // Configure edit toolbar buttons
@@ -52,6 +52,9 @@ class HistoryTVC: UITableViewController {
         deleteButton.enabled = false
         editButtons.append(deleteButton)
         setToolbarItems(editButtons, animated: true)
+        
+        // Add observeres for notifications
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
         
         loadMedication()
         loadHistory()
@@ -195,7 +198,7 @@ class HistoryTVC: UITableViewController {
             cell.textLabel?.textColor = UIColor.blackColor()
             cell.textLabel?.text = dateFormatter.stringFromDate(history[indexPath.row].date)
             
-            cell.detailTextLabel?.textColor = UIColor(red: 251/255, green: 0/255, blue: 44/255, alpha: 1.0)
+            cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
             cell.detailTextLabel?.text = history[indexPath.row].medicine?.name
             
             return cell
@@ -206,6 +209,23 @@ class HistoryTVC: UITableViewController {
         cell.detailTextLabel?.text?.removeAll()
         
         return cell
+    }
+    
+    func refreshTableAndNotifications() {
+        clearOldNotifications()
+        tableView.reloadData()
+    }
+    
+    func clearOldNotifications() {
+        let currentDate = NSDate()
+        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
+        for notification in notifications {
+            if let date = notification.fireDate {
+                if date.compare(currentDate) == .OrderedAscending {
+                    UIApplication.sharedApplication().cancelLocalNotification(notification)
+                }
+            }
+        }
     }
     
     
