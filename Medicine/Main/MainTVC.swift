@@ -735,6 +735,22 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 return medA.lastDose!.next!.compare(medB.lastDose!.next!) == .OrderedAscending
             }
             
+            if medB.intervalAlarm != nil {
+                return medA.lastDose!.next!.compare(medB.intervalAlarm!) == .OrderedAscending
+            }
+            
+            return true
+        }
+        
+        if medA.intervalAlarm != nil {
+            if medB.lastDose?.next != nil {
+                return medA.intervalAlarm!.compare(medB.lastDose!.next!) == .OrderedAscending
+            }
+            
+            if medB.intervalAlarm != nil {
+                return medA.intervalAlarm!.compare(medB.intervalAlarm!) == .OrderedAscending
+            }
+            
             return true
         }
         
