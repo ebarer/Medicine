@@ -135,8 +135,8 @@ class SettingsTVC: UITableViewController {
             // Show reset confirmation
             let confirmationAlert = UIAlertController(title: "Reset Complete", message: "All medication, history, and preferences have been reset.", preferredStyle: UIAlertControllerStyle.Alert)
             
-            confirmationAlert.addAction(UIAlertAction(title: "Quit Medicine Manager", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-                exit(0)
+            confirmationAlert.addAction(UIAlertAction(title: "Restart", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
+                self.performSegueWithIdentifier("reset", sender: self)
             }))
             
             confirmationAlert.view.tintColor = UIColor.grayColor()

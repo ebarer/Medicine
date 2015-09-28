@@ -90,7 +90,26 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         // Cancel all existing notifications
         UIApplication.sharedApplication().cancelAllLocalNotifications()
         
-        // Load medications
+        loadMedication()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.setToolbarHidden(true, animated: true)
+        
+        loadMedication()
+        
+        // If no medications, display empty message
+        displayEmptyView()
+        
+        self.tableView.reloadData()
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    func loadMedication() {
         let request = NSFetchRequest(entityName:"Medicine")
         request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
         
@@ -113,20 +132,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         } catch {
             print("Could not fetch medication.")
         }
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationController?.setToolbarHidden(true, animated: true)
-        
-        // If no medications, display empty message
-        displayEmptyView()
-        
-        self.tableView.reloadData()
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
     }
 
     

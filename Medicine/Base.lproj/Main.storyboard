@@ -510,11 +510,20 @@
                         <outlet property="snoozeLabel" destination="Ckw-nF-9DT" id="utm-lS-6pt"/>
                         <outlet property="sortLabel" destination="LcK-PF-iJF" id="rlT-Vf-bd4"/>
                         <outlet property="versionString" destination="dOy-d4-XE1" id="BiF-Se-ua4"/>
+                        <segue destination="Rfe-rG-seV" kind="presentation" identifier="reset" id="8FT-V8-8uE"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gId-aS-ZUY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1110" y="2128"/>
+        </scene>
+        <!--Tutorial-->
+        <scene sceneID="faB-Xg-ayT">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Tutorial" id="Rfe-rG-seV" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Jm5-Vy-6dt" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1110.5" y="2564"/>
         </scene>
         <!--Settings-->
         <scene sceneID="jFp-9x-dGI">
