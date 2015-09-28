@@ -145,6 +145,9 @@ class Medicine: NSManagedObject {
     func untakeLastDose(moc: NSManagedObjectContext) -> Bool {
         if let lastDose = lastDose {
             moc.deleteObject(lastDose)
+            let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+            delegate.saveContext()
+            
             scheduleNextNotification()
             return true
         }
@@ -181,11 +184,11 @@ class Medicine: NSManagedObject {
     }
     
     func scheduleNextNotification() -> Bool {
+        cancelNotification()
+        
         guard let date = nextDose else {
             return false
         }
-        
-        cancelNotification()
         
         do {
             try scheduleNotification(date)
@@ -217,7 +220,7 @@ class Medicine: NSManagedObject {
     }
     
     func cancelNotification() {
-        if let notification = scheduledNotification {
+        if let notification = self.scheduledNotification {
             UIApplication.sharedApplication().cancelLocalNotification(notification)
         }
     }

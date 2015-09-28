@@ -90,14 +90,35 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         // Cancel all existing notifications
         UIApplication.sharedApplication().cancelAllLocalNotifications()
         
-        loadMedication()
+        let request = NSFetchRequest(entityName:"Medicine")
+        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+        
+        do {
+            let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
+            
+            if let results = fetchedResults {
+                medication = results
+                
+                // Schedule all notifications
+                for med in medication {
+                    med.scheduleNextNotification()
+                }
+                
+                // If selected, sort by next dosage
+                if defaults.integerForKey("sortOrder") == 1 {
+                    medication.sortInPlace(sortByNextDose)
+                }
+            }
+        } catch {
+            print("Could not fetch medication.")
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(true, animated: true)
         
-        loadMedication()
+        //loadMedication()
         
         // If no medications, display empty message
         displayEmptyView()
@@ -118,11 +139,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             
             if let results = fetchedResults {
                 medication = results
-                
-                // Schedule all notifications
-                for med in medication {
-                    med.scheduleNextNotification()
-                }
                 
                 // If selected, sort by next dosage
                 if defaults.integerForKey("sortOrder") == 1 {

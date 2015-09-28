@@ -53,6 +53,7 @@ class SettingsTVC_Console: UITableViewController {
     }
     
     func loadNotifications() -> Bool {
+        print("Loading notifications...")
         notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
         
         if notifications.count != 0 {

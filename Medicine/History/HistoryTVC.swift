@@ -308,12 +308,12 @@ class HistoryTVC: UITableViewController {
                         moc.deleteObject(logItems[index.row])
                     }
                     
-                    log[sectionDate]?.removeAtIndex(index.row)
-                    gblCount--
-
                     dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
                     dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
                     print("\(logItems[index.row].medicine!.name) - \(dateFormatter.stringFromDate(logItems[index.row].date))")
+                    
+                    log[sectionDate]?.removeAtIndex(index.row)
+                    gblCount--
                     
                     if logItems.count == 1 {
                         tableView.cellForRowAtIndexPath(index)
