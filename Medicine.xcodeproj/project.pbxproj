@@ -33,6 +33,12 @@
 		CE7519781BB00CB5000A2879 /* SettingsTVC+Sort.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7519771BB00CB5000A2879 /* SettingsTVC+Sort.swift */; };
 		CE75197A1BB00CFE000A2879 /* SettingsTVC+Snooze.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7519791BB00CFE000A2879 /* SettingsTVC+Snooze.swift */; };
 		CE75197E1BB1607F000A2879 /* SettingsTVC+Console.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE75197D1BB1607F000A2879 /* SettingsTVC+Console.swift */; };
+		CE7E7A741BB8E78100C8603A /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551C1B9040C900805397 /* History.swift */; };
+		CE7E7A751BB8E78300C8603A /* Prescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE30D1551B9856D1007805DB /* Prescription.swift */; };
+		CE7E7A791BB8E94600C8603A /* Medicine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */; };
+		CE7E7A7A1BB8E94800C8603A /* History+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551B1B9040C900805397 /* History+CoreDataProperties.swift */; };
+		CE7E7A7B1BB8E94B00C8603A /* Prescription+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE30D1541B9856D1007805DB /* Prescription+CoreDataProperties.swift */; };
+		CE7E7A7C1BB8E94D00C8603A /* Medicine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551A1B9040C900805397 /* Medicine.swift */; };
 		CE9A36C71B98FDCB00B90EDB /* MedicineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9A36C61B98FDCB00B90EDB /* MedicineTests.swift */; };
 		CEA250E91B90396C00BBE466 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA250E81B90396C00BBE466 /* AppDelegate.swift */; };
 		CEA250EE1B90396C00BBE466 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEA250EC1B90396C00BBE466 /* Main.storyboard */; };
@@ -387,7 +393,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE7E7A7C1BB8E94D00C8603A /* Medicine.swift in Sources */,
+				CE7E7A751BB8E78300C8603A /* Prescription.swift in Sources */,
+				CE7E7A7B1BB8E94B00C8603A /* Prescription+CoreDataProperties.swift in Sources */,
+				CE7E7A741BB8E78100C8603A /* History.swift in Sources */,
 				CE9A36C71B98FDCB00B90EDB /* MedicineTests.swift in Sources */,
+				CE7E7A791BB8E94600C8603A /* Medicine+CoreDataProperties.swift in Sources */,
+				CE7E7A7A1BB8E94800C8603A /* History+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

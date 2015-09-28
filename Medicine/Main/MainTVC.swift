@@ -632,7 +632,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 addMed.lastDose?.dosage = addMed.dosage
                 addMed.lastDose?.dosageUnitInt = addMed.dosageUnitInt
                 addMed.lastDose?.next = try addMed.calculateNextDose(addMed.lastDose?.date)
-            } catch {}
+            } catch {
+                print("Unable to update last dose")
+            }
             
             // Reschedule next notification
             addMed.scheduleNextNotification()
@@ -705,7 +707,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                     try med.takeDose(moc, date: NSDate())
                     appDelegate.saveContext()
                     self.tableView.reloadData()
-                } catch {}
+                } catch {
+                    print("Unable to take dose")
+                }
             }
         }
     }

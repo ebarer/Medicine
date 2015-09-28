@@ -129,6 +129,8 @@ class Medicine: NSManagedObject {
             newDose.next = nil
         }
         
+        print(newDose)
+        
         // Only reschedule notification if dose is medications latest dose
         if let lastDose = self.lastDose {
             if doseDate.compare(lastDose.date) == .OrderedAscending {
@@ -163,7 +165,7 @@ class Medicine: NSManagedObject {
         }
         
         guard let name = name else {
-            throw MedicineError.InitError
+            throw MedicineError.InvalidName
         }
 
         let notification = UILocalNotification()
@@ -329,7 +331,7 @@ extension NSDate {
 
 // MARK: - Errors Enum
 enum MedicineError: ErrorType {
-    case InitError
+    case InvalidName
     case TooSoon
     case DatePassed
     case ReminderDisabled
