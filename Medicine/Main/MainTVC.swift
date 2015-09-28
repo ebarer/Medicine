@@ -48,12 +48,16 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if !defaults.boolForKey("firstLaunch") {            
+        // Display tutorial on first launch
+        if !defaults.boolForKey("firstLaunch") {
+            defaults.setBool(true, forKey: "firstLaunch")
             performSegueWithIdentifier("tutorial", sender: self)
         }
         
-        // ## Debug
-        //performSegueWithIdentifier("tutorial", sender: self)
+        // Debug tutorial screen
+        if defaults.boolForKey("debug") {
+            performSegueWithIdentifier("tutorial", sender: self)
+        }
         
         // Set mananged object context
         moc = appDelegate.managedObjectContext

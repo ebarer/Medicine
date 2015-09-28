@@ -61,14 +61,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         application.registerUserNotificationSettings(settings)
         
         
-        // Display tutorial on first launch
+        // Set user preferences
         let defaults = NSUserDefaults.standardUserDefaults()
         
         if !defaults.boolForKey("firstLaunch") {
-            defaults.setBool(true, forKey: "firstLaunch")       // Set first launch bool
             defaults.setInteger(1, forKey: "sortOrder")         // Set sort order to "next dosage"
             defaults.setInteger(5, forKey: "snoozeLength")      // Set snooze duration to 5 minutes
-            defaults.setBool(false, forKey: "debug")             // Disable debug
+            defaults.setBool(false, forKey: "debug")            // Disable debug
             defaults.synchronize()
         }
         
