@@ -87,6 +87,10 @@ class SettingsTVC_Console: UITableViewController {
     
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == 0 {
+            if console.count == 0 {
+                return "No scheduled notifications."
+            }
+            
             return "Scheduled Notifications"
         }
         
