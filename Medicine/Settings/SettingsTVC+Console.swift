@@ -15,7 +15,7 @@ class SettingsTVC_Console: UITableViewController {
     let cal = NSCalendar.currentCalendar()
     let dateFormatter = NSDateFormatter()
 
-    let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
+    var notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
     var medication = [Medicine]()
     var console = [(name: String, date: String, id: String)]()
 
@@ -53,6 +53,8 @@ class SettingsTVC_Console: UITableViewController {
     }
     
     func loadNotifications() -> Bool {
+        notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
+        
         if notifications.count != 0 {
             console.removeAll()
             
@@ -103,8 +105,5 @@ class SettingsTVC_Console: UITableViewController {
 
         return cell
     }
-    
-    
-    // MARK: - Table view delegate
 
 }

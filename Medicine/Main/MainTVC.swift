@@ -173,7 +173,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         // If medication is overdue, set subtitle to next dosage date and tint red
-        if let date = med.isOverdue() {
+        if let date = med.isOverdue().lastDose {
             cell.textLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
             
             let subtitle = NSMutableAttributedString(string: "Overdue: \(cellDateString(date))")
@@ -184,7 +184,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         // Set subtitle to next dosage date
-        if let date = med.printNext() {
+        if let date = med.nextDose {
             let subtitle = NSMutableAttributedString(string: "Next dose: \(cellDateString(date))")
             subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
             cell.detailTextLabel?.attributedText = subtitle
@@ -260,7 +260,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         headerMedLabel.text = nil
         
         // If we have overdue doses or an upcoming scheduled dose today, modify labels
-        let overdueItems = medication.filter({$0.overdueSort()}).count
+        let overdueItems = medication.filter({$0.isOverdue().flag}).count
         if overdueItems > 0  {
             var text = "Overdue dose"
 
@@ -606,6 +606,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             if let selectedIndex = tableView.indexPathForSelectedRow {
                 appDelegate.saveContext()
                 tableView.reloadRowsAtIndexPaths([selectedIndex], withRowAnimation: .None)
+                
+                // If selected, sort by next dosage
+                if defaults.integerForKey("sortOrder") == 1 {
+                    medication.sortInPlace(sortByNextDose)
+                    self.tableView.reloadData()
+                }
             } else {
                 let newIndex = NSIndexPath(forRow: medication.count, inSection: 0)
                 addMed.sortOrder = Int16(newIndex.row)
@@ -613,6 +619,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 
                 appDelegate.saveContext()
                 tableView.insertRowsAtIndexPaths([newIndex], withRowAnimation: .Bottom)
+                
+                // If selected, sort by next dosage
+                if defaults.integerForKey("sortOrder") == 1 {
+                    medication.sortInPlace(sortByNextDose)
+                    self.tableView.reloadData()
+                }
             }
             
             // If medication has specified alert time, schedule first dose
@@ -729,32 +741,15 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             return true
         }
         
-        // Determine order based on next dosage (and whether it's set)
-        if medA.lastDose?.next != nil {
-            if medB.lastDose?.next != nil {
-                return medA.lastDose!.next!.compare(medB.lastDose!.next!) == .OrderedAscending
-            }
-            
-            if medB.intervalAlarm != nil {
-                return medA.lastDose!.next!.compare(medB.intervalAlarm!) == .OrderedAscending
-            }
-            
+        guard let next1 = medA.nextDose else {
+            return false
+        }
+        
+        guard let next2 = medB.nextDose else {
             return true
         }
         
-        if medA.intervalAlarm != nil {
-            if medB.lastDose?.next != nil {
-                return medA.intervalAlarm!.compare(medB.lastDose!.next!) == .OrderedAscending
-            }
-            
-            if medB.intervalAlarm != nil {
-                return medA.intervalAlarm!.compare(medB.intervalAlarm!) == .OrderedAscending
-            }
-            
-            return true
-        }
-        
-        return false
+        return next1.compare(next2) == .OrderedAscending
     }
     
     func sortByManual(medA: Medicine, medB: Medicine) -> Bool {

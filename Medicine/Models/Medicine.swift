@@ -11,244 +11,9 @@ import CoreData
 
 class Medicine: NSManagedObject {
     
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
-        self.medicineID = NSUUID().UUIDString
-    }
     
-    
-    // MARK: - Class method
-    class func getMedicine(arr meds: [Medicine], id: String) -> Medicine? {
-        for med in meds {
-            if med.medicineID == id {
-                return med
-            }
-        }
-        
-        return nil
-    }
-    
-    class func printNotifications() {
-        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
-        for (index, notification) in notifications.enumerate() {
-            let id = notification.userInfo!["id"]
-            print("\(index): \(id) - \(notification.fireDate)")
-        }
-    }
-    
-    
-    // MARK: - Dose methods
-    func calculateInterval(modDate: NSDate?) -> NSDate? {
-        var returnDate: NSDate? = nil
-        
-        if var date = modDate {
-            switch (intervalUnit) {
-            case .Hourly:
-                let hr = Int(interval)
-                let min = Int(60 * (interval % 1))
-                
-                returnDate = cal.dateByAddingUnit(NSCalendarUnit.Hour, value: hr, toDate: date, options: [])
-                returnDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: min, toDate: returnDate!, options: [])
-            case .Daily:
-                // Get alarm hour and minute components if set
-                if let alarm = intervalAlarm {
-                    let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
-                    date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: date, options: [])!
-                }
-                
-                returnDate = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])
-            case .Weekly:
-                returnDate = cal.dateByAddingUnit(NSCalendarUnit.WeekOfYear, value: Int(interval), toDate: date, options: [])
-            }
-        }
-        
-        return returnDate
-    }
-
-    func takeDose(moc: NSManagedObjectContext, date doseDate: NSDate) throws -> Bool {
-        // Throw error if another dose has been taken within the previous 5 minutes
-        let compareDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: -5, toDate: doseDate, options: [])!
-        
-        if lastDose != nil {
-            guard lastDose?.date.compare(compareDate) == .OrderedAscending else {
-                throw MedicineError.TooSoon
-            }
-        }
-
-        addDose(moc, date: doseDate)
-        return true
-    }
-    
-    func addDose(moc: NSManagedObjectContext, date doseDate: NSDate) -> History {
-        // Log current dosage as new history element
-        let entity = NSEntityDescription.entityForName("History", inManagedObjectContext: moc)
-        let newDose = History(entity: entity!, insertIntoManagedObjectContext: moc)
-        newDose.medicine = self
-        newDose.dosage = self.dosage
-        newDose.dosageUnitInt = self.dosageUnitInt
-        newDose.date = doseDate
-        
-        // Reschedule notification if newest addition
-        if let date = calculateInterval(doseDate) {
-            newDose.next = date
-            
-            if (date.compare(NSDate()) == .OrderedDescending) {
-                // Cancel previous notification
-                cancelNotification()
-                
-                // Schedule new notification
-                scheduleNotification(date)
-            }
-        }
-        
-        return newDose
-    }
-    
-    func untakeLastDose(moc: NSManagedObjectContext) -> Bool {
-        if let previous = lastDose {
-            // Delete previous dose
-            moc.deleteObject(previous)
-            
-            // Commit changes
-            let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-            appDelegate.saveContext()
-        
-            // Cancel previous notification
-            cancelNotification()
-            
-            // Reschedule notification based on previouse dose
-            if let date = lastDose {
-                if let next = date.next {
-                    if next.compare(NSDate()) == .OrderedDescending {
-                        scheduleNotification(next)
-                    }
-                }
-            }
-            // If no previous dose (no notification scheduled)
-            // and dosage has alarm, schedule notification based on alarm
-            else if let alarm = intervalAlarm {
-                scheduleNotification(alarm)
-            }
-            
-            return true
-        }
-        
-        return false
-    }
-    
-    func printNext() -> NSDate? {
-        if let date = scheduledNotification?.fireDate {
-            return date
-        } else if var alarm = intervalAlarm {
-            // If interval alarm set and no previous doses taken
-            if alarm.compare(NSDate()) == .OrderedAscending {
-                alarm = calculateInterval(alarm)!
-            }
-            
-            return alarm
-        }
-        
-        return nil
-    }
-    
-    func isOverdue() -> NSDate? {
-        // Medicine can't be overdue if reminders are disabled
-        if reminderEnabled {
-            if let date = lastDose?.next {
-                if NSDate().compare(date) == .OrderedDescending {
-                    return date
-                }
-            }
-        }
-        
-        return nil
-    }
-    
-    func overdueSort() -> Bool {
-        if isOverdue() != nil {
-            return true
-        }
-        
-        return false
-    }
-    
-    
-    // MARK: - Notification methods
-    func scheduleNextNotification() {
-        cancelNotification()
-        
-        // Schedule daily interval based on alarm
-        if var alarm = intervalAlarm {
-            // If interval alarm set
-            if alarm.compare(NSDate()) == .OrderedAscending {
-                alarm = calculateInterval(alarm)!
-            }
-            
-            scheduleNotification(alarm)
-        }
-        
-        // Schedule other interval types
-        else if let date = nextDose {
-            if date.compare(NSDate()) == .OrderedDescending {
-                scheduleNotification(date)
-            }
-        }
-    }
-    
-    func scheduleNotification(date: NSDate) {
-        if reminderEnabled {
-            if let medName = name {
-                let notification = UILocalNotification()
-                
-                notification.alertAction = "View Dose"
-                notification.alertTitle = "Take \(medName)"
-                notification.alertBody = String(format:"Time to take %g %@ of %@", dosage, dosageUnit.units(dosage), medName)
-                notification.soundName = UILocalNotificationDefaultSoundName
-                notification.category = "Reminder"
-                notification.userInfo = ["id": self.medicineID]
-                
-                notification.fireDate = date
-            
-                UIApplication.sharedApplication().scheduleLocalNotification(notification)
-                
-                scheduledNotification = notification
-                Medicine.printNotifications()
-            }
-        }
-    }
-    
-    func snoozeNotification() {
-        let defaults = NSUserDefaults.standardUserDefaults()
-        var snoozeLength = NSDate()
-        
-        // Set snooze delay to user selection or 5 minutes
-        if defaults.valueForKey("snoozeLength") != nil {
-            let val = defaults.valueForKey("snoozeLength") as! Int
-            snoozeLength = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: val, toDate: NSDate(), options: [])!
-        } else {
-            snoozeLength = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: 5, toDate: NSDate(), options: [])!
-        }
-        
-        // Schedule new notification
-        scheduleNotification(snoozeLength)
-    }
-
-    func cancelNotification() {
-        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
-        for notification in notifications {
-            if let id = notification.userInfo?["id"] as? String {
-                if (id == self.medicineID) {
-                    UIApplication.sharedApplication().cancelLocalNotification(notification)
-                }
-            }
-        }
-        
-        scheduledNotification = nil
-    }
-    
-    
-    // MARK: - Member variables
-    var scheduledNotification: UILocalNotification?
+    // MARK: - Enum variables
+    private let cal = NSCalendar.currentCalendar()
     
     var dosageUnit: Doses {
         get { return Doses(rawValue: self.dosageUnitInt)! }
@@ -260,13 +25,17 @@ class Medicine: NSManagedObject {
         set { self.intervalUnitInt = newValue.rawValue }
     }
     
-    // Return next dose based on interval from most recent dose taken
+
+    // MARK: - Member variables
     var nextDose: NSDate? {
-        return calculateInterval(lastDose?.date)
+        do {
+            return try calculateNextDose()
+        } catch {
+            return nil
+        }
     }
-    
-    // Return most recent dose taken
-    var lastDose: History?{
+
+    var lastDose: History? {
         if let lastHistory = history {
             if let object = lastHistory.firstObject {
                 var dose = object as! History
@@ -284,10 +53,231 @@ class Medicine: NSManagedObject {
         
         return nil
     }
+    
+    var scheduledNotification: UILocalNotification? {
+        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
+        for notification in notifications {
+            if let id = notification.userInfo?["id"] as? String {
+                if (id == self.medicineID) {
+                    return notification
+                }
+            }
+        }
+        
+        return nil
+    }
+    
+    func isOverdue() -> (flag: Bool, lastDose: NSDate?) {
+        // Medicine can't be overdue if reminders are disabled
+        if let date = lastDose?.next where reminderEnabled == true {
+            if date.compare(NSDate()) == .OrderedAscending {
+                return (true, date)
+            }
+        }
 
-    private let cal = NSCalendar.currentCalendar()
+        return (false, nil)
+    }
+
+    
+    // MARK: - Class method
+    class func getMedicine(arr meds: [Medicine], id: String) -> Medicine? {
+        for med in meds {
+            if med.medicineID == id {
+                return med
+            }
+        }
+        
+        return nil
+    }
+    
+    
+    // MARK: - Initialization method
+    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertIntoManagedObjectContext: context)
+        self.medicineID = NSUUID().UUIDString
+    }
+    
+    
+    // MARK: - Action (dose) methods
+    func takeDose(moc: NSManagedObjectContext, date doseDate: NSDate) throws -> Bool {
+        // Throw error if another dose has been taken within the previous 5 minutes
+        let compareDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: -5, toDate: doseDate, options: [])!
+        
+        if lastDose != nil {
+            guard lastDose?.date.compare(compareDate) == .OrderedAscending else {
+                throw MedicineError.TooSoon
+            }
+        }
+        
+        addDose(moc, date: doseDate)
+        return true
+    }
+    
+    func addDose(moc: NSManagedObjectContext, date doseDate: NSDate) -> History {
+        // Log current dosage as new history element
+        let entity = NSEntityDescription.entityForName("History", inManagedObjectContext: moc)
+        
+        let newDose = History(entity: entity!, insertIntoManagedObjectContext: moc)
+        newDose.medicine = self
+        newDose.dosage = self.dosage
+        newDose.dosageUnitInt = self.dosageUnitInt
+        newDose.date = doseDate
+        
+        do {
+            newDose.next = try calculateNextDose(doseDate)
+        } catch {
+            newDose.next = nil
+        }
+        
+        // Only reschedule notification if dose is medications latest dose
+        if let lastDose = self.lastDose {
+            if doseDate.compare(lastDose.date) == .OrderedAscending {
+                return newDose
+            }
+        }
+        
+        scheduleNextNotification()
+        return newDose
+    }
+    
+    func untakeLastDose(moc: NSManagedObjectContext) -> Bool {
+        if let lastDose = lastDose {
+            moc.deleteObject(lastDose)
+            scheduleNextNotification()
+            return true
+        }
+        
+        return false
+    }
+    
+    
+    // MARK: - Notification methods
+    func scheduleNotification(date: NSDate) throws {
+        // Schedule if the user wants a reminder and the reminder date is in the future
+        guard date.compare(NSDate()) == .OrderedDescending else {
+            throw MedicineError.DatePassed
+        }
+        
+        guard reminderEnabled == true else {
+            throw MedicineError.ReminderDisabled
+        }
+        
+        guard let name = name else {
+            throw MedicineError.InitError
+        }
+
+        let notification = UILocalNotification()
+        notification.alertAction = "View Dose"
+        notification.alertTitle = "Take \(name)"
+        notification.alertBody = String(format:"Time to take %g %@ of %@", dosage, dosageUnit.units(dosage), name)
+        notification.soundName = UILocalNotificationDefaultSoundName
+        notification.category = "Reminder"
+        notification.userInfo = ["id": self.medicineID]
+        notification.fireDate = date
+        
+        UIApplication.sharedApplication().scheduleLocalNotification(notification)
+    }
+    
+    func scheduleNextNotification() -> Bool {
+        guard let date = nextDose else {
+            return false
+        }
+        
+        cancelNotification()
+        
+        do {
+            try scheduleNotification(date)
+            return true
+        } catch {
+            return false
+        }
+    }
+    
+    func snoozeNotification() -> Bool {
+        let defaults = NSUserDefaults.standardUserDefaults()
+        var snoozeDate = NSDate()
+        
+        // Set snooze delay to user selection or 5 minutes
+        if defaults.valueForKey("snoozeLength") != nil {
+            let val = defaults.valueForKey("snoozeLength") as! Int
+            snoozeDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: val, toDate: NSDate(), options: [])!
+        } else {
+            snoozeDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: 5, toDate: NSDate(), options: [])!
+        }
+        
+        // Schedule new notification
+        do {
+            try scheduleNotification(snoozeDate)
+            return true
+        } catch {
+            return false
+        }
+    }
+    
+    func cancelNotification() {
+        if let notification = scheduledNotification {
+            UIApplication.sharedApplication().cancelLocalNotification(notification)
+        }
+    }
+    
+    
+    // MARK: - Helper method
+    
+    func calculateNextDose(date: NSDate? = nil) throws -> NSDate? {
+        switch(intervalUnit) {
+        case .Hourly:
+            let hr = Int(interval)
+            let min = Int(60 * (interval % 1))
+            
+            // Calculate interval from date provided
+            if let date = date {
+                var next = cal.dateByAddingUnit(NSCalendarUnit.Hour, value: hr, toDate: date, options: [])!
+                next = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: min, toDate: next, options: [])!
+                return next
+            }
+            
+            // Caculate interval based on last dose
+            if let lastDose = lastDose {
+                // If overdue, return
+                if isOverdue().flag {
+                    return isOverdue().lastDose
+                } else {
+                    var next = cal.dateByAddingUnit(NSCalendarUnit.Hour, value: hr, toDate: lastDose.date, options: [])!
+                    next = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: min, toDate: next, options: [])!
+                    return next
+                }
+            }
+        case .Daily:
+            guard let alarm = intervalAlarm else {
+                throw MedicineError.NoAlarm
+            }
+            
+            // Calculate interval from date provided
+            if let date = date {
+                let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
+                let date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: date, options: [])!
+                return cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])
+            }
+            
+            // Caculate interval based on last dose
+            let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
+            var date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: NSDate(), options: [])!
+            
+            if date.compare(NSDate()) == .OrderedAscending {
+                date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])!
+            }
+            
+            return date
+        default: break
+        }
+        
+        return nil
+    }
     
 }
+
+
+// MARK: - NSDate extensions
 
 extension NSDate {
 
@@ -339,7 +329,11 @@ extension NSDate {
 
 // MARK: - Errors Enum
 enum MedicineError: ErrorType {
+    case InitError
     case TooSoon
+    case DatePassed
+    case ReminderDisabled
+    case NoAlarm
 }
 
 
