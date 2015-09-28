@@ -33,7 +33,7 @@
         <!--View Controller-->
         <scene sceneID="eMT-d9-JR7">
             <objects>
-                <viewController id="Dbz-0S-Ah1" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="welcomeScreen" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Dbz-0S-Ah1" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="8Rf-em-UbX"/>
                         <viewControllerLayoutGuide type="bottom" id="Smf-rU-Yaj"/>

@@ -310,7 +310,7 @@ class HistoryTVC: UITableViewController {
                     
                     dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
                     dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
-                    print("\(logItems[index.row].medicine!.name) - \(dateFormatter.stringFromDate(logItems[index.row].date))")
+                    print("\(logItems[index.row].medicine?.name) - \(dateFormatter.stringFromDate(logItems[index.row].date))")
                     
                     log[sectionDate]?.removeAtIndex(index.row)
                     gblCount--
@@ -329,7 +329,6 @@ class HistoryTVC: UITableViewController {
                 }
             }
             
-            appDelegate.saveContext()
             updateDeleteButtonLabel()
             setEditing(false, animated: true)
             

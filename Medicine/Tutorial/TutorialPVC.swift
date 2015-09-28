@@ -99,7 +99,7 @@ class TutorialPVC: UIPageViewController, UIPageViewControllerDataSource {
             })
         }
     }
-    
+
     
     // MARK: - Helper methods
     

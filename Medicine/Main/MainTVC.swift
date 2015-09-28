@@ -118,8 +118,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(true, animated: true)
         
-        //loadMedication()
-        
         // If no medications, display empty message
         displayEmptyView()
         
@@ -130,7 +128,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         super.didReceiveMemoryWarning()
     }
     
-    func loadMedication() {
+    func reloadMedication() {
         let request = NSFetchRequest(entityName:"Medicine")
         request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
         
@@ -144,6 +142,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 if defaults.integerForKey("sortOrder") == 1 {
                     medication.sortInPlace(sortByNextDose)
                 }
+                
+                self.tableView.reloadData()
             }
         } catch {
             print("Could not fetch medication.")
@@ -694,7 +694,11 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
     }
     
-    @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {}
+    @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {
+        if unwindSegue.sourceViewController.restorationIdentifier == "welcomeScreen" {
+            reloadMedication()
+        }
+    }
     
     
     // MARK: - Observers

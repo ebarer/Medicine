@@ -268,6 +268,10 @@ class Medicine: NSManagedObject {
             let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
             var date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: NSDate(), options: [])!
             
+            if let last = lastDose?.date where cal.isDateInToday(last) {
+                date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])!
+            }
+            
             if date.compare(NSDate()) == .OrderedAscending {
                 date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])!
             }
