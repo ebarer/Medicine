@@ -627,10 +627,15 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 }
             }
             
-            // If medication has specified alert time, schedule first dose
-            if addMed.intervalUnit == Intervals.Daily && addMed.intervalAlarm != nil {
-                addMed.scheduleNextNotification()
-            }
+            // Update last dose properties
+            do {
+                addMed.lastDose?.dosage = addMed.dosage
+                addMed.lastDose?.dosageUnitInt = addMed.dosageUnitInt
+                addMed.lastDose?.next = try addMed.calculateNextDose(addMed.lastDose?.date)
+            } catch {}
+            
+            // Reschedule next notification
+            addMed.scheduleNextNotification()
         }
     }
     

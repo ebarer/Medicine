@@ -310,6 +310,7 @@ class HistoryTVC: UITableViewController {
                     
                     log[sectionDate]?.removeAtIndex(index.row)
                     gblCount--
+                    print("\(logItems[index.row].medicine!.name) - \(logItems[index.row].date)")
                     
                     if logItems.count == 1 {
                         tableView.cellForRowAtIndexPath(index)

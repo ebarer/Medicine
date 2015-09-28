@@ -83,7 +83,6 @@
 		CE7519771BB00CB5000A2879 /* SettingsTVC+Sort.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Sort.swift"; path = "Settings/SettingsTVC+Sort.swift"; sourceTree = "<group>"; };
 		CE7519791BB00CFE000A2879 /* SettingsTVC+Snooze.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Snooze.swift"; path = "Settings/SettingsTVC+Snooze.swift"; sourceTree = "<group>"; };
 		CE75197D1BB1607F000A2879 /* SettingsTVC+Console.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Console.swift"; path = "Settings/SettingsTVC+Console.swift"; sourceTree = "<group>"; };
-		CE7A8E7D1BB88F97001727B9 /* temp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = temp.swift; path = ../../Desktop/temp.swift; sourceTree = "<group>"; };
 		CE7A8E7F1BB89CD1001727B9 /* Medicine - 2.3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2.3.xcdatamodel"; sourceTree = "<group>"; };
 		CE9A36C41B98FDCB00B90EDB /* MedicineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MedicineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9A36C61B98FDCB00B90EDB /* MedicineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineTests.swift; sourceTree = "<group>"; };
@@ -156,7 +155,6 @@
 				CEA2510A1B903E7D00BBE466 /* Medicine.xcdatamodeld */,
 				CEE25F781B98F80100B2337B /* Extensions */,
 				CE6E551A1B9040C900805397 /* Medicine.swift */,
-				CE7A8E7D1BB88F97001727B9 /* temp.swift */,
 				CE6E551C1B9040C900805397 /* History.swift */,
 				CE30D1551B9856D1007805DB /* Prescription.swift */,
 			);

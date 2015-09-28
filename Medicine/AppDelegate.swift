@@ -72,7 +72,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             defaults.synchronize()
         }
         
-        if UIDevice.currentDevice().identifierForVendor?.UUIDString == "8DA45D8A-AD89-4A07-BBBB-8C0C9CF993DC" {
+        if UIDevice.currentDevice().identifierForVendor?.UUIDString == "8DA45D8A-AD89-4A07-BBBB-8C0C9CF993DC" ||
+           UIDevice.currentDevice().identifierForVendor?.UUIDString == "89AED7B3-EAAB-4E5C-8CBE-CE5A48B311EE" {
             defaults.setBool(true, forKey: "debug")      // Set snooze duration to 5 minutes
         }
         
