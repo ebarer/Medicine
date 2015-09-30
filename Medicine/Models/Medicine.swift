@@ -184,13 +184,12 @@ class Medicine: NSManagedObject {
     }
     
     func scheduleNextNotification() -> Bool {
-        cancelNotification()
-        
         guard let date = nextDose else {
             return false
         }
         
         do {
+            cancelNotification()
             try scheduleNotification(date)
             return true
         } catch {
@@ -220,8 +219,13 @@ class Medicine: NSManagedObject {
     }
     
     func cancelNotification() {
-        if let notification = self.scheduledNotification {
-            UIApplication.sharedApplication().cancelLocalNotification(notification)
+        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
+        for notification in notifications {
+            if let id = notification.userInfo?["id"] as? String {
+                if (id == self.medicineID) {
+                    UIApplication.sharedApplication().cancelLocalNotification(notification)
+                }
+            }
         }
     }
     

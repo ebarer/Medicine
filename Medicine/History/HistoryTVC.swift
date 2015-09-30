@@ -294,6 +294,8 @@ class HistoryTVC: UITableViewController {
     
     func deleteDoses() {
         if let selectedRowIndexes = tableView.indexPathsForSelectedRows {
+            let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+            
             for index in selectedRowIndexes.reverse() {
                 let sectionDate = getSectionDate(index.section)
                 
@@ -311,6 +313,8 @@ class HistoryTVC: UITableViewController {
                     dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
                     dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
                     print("\(logItems[index.row].medicine?.name) - \(dateFormatter.stringFromDate(logItems[index.row].date))")
+                    
+                    delegate.saveContext()
                     
                     log[sectionDate]?.removeAtIndex(index.row)
                     gblCount--

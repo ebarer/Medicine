@@ -56,7 +56,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         // Debug tutorial screen
         if defaults.boolForKey("debug") {
-            performSegueWithIdentifier("tutorial", sender: self)
+            // performSegueWithIdentifier("tutorial", sender: self)
         }
         
         // Set mananged object context
@@ -672,25 +672,25 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     @IBAction func historyUnwindAdd(unwindSegue: UIStoryboardSegue) {
-        if let selectedIndex = tableView.indexPathForSelectedRow {
-            let svc = unwindSegue.sourceViewController as! AddDoseTVC
-            let med = medication[selectedIndex.row]
+        let svc = unwindSegue.sourceViewController as! AddDoseTVC
+        
+        do {
+            try svc.med?.takeDose(moc, date: svc.date)
+            appDelegate.saveContext()
             
-            do {
-                try med.takeDose(moc, date: svc.date)
-                appDelegate.saveContext()
-                
-                // If selected, sort by next dosage
-                if defaults.integerForKey("sortOrder") == 1 {
-                    medication.sortInPlace(sortByNextDose)
-                }
-                
-                self.tableView.reloadData()
-            } catch {
-                dismissViewControllerAnimated(true, completion: { () -> Void in
-                    self.presentDoseAlert(med, date: svc.date)
-                })
+            // If selected, sort by next dosage
+            if defaults.integerForKey("sortOrder") == 1 {
+                medication.sortInPlace(sortByNextDose)
             }
+            
+            // Reload table
+            self.tableView.reloadData()
+        } catch {
+            dismissViewControllerAnimated(true, completion: { () -> Void in
+                if let med = svc.med {
+                    self.presentDoseAlert(med, date: svc.date)
+                }
+            })
         }
     }
     
