@@ -10,7 +10,7 @@ import UIKit
 
 class SettingsTVC_Sort: UITableViewController {
 
-    let defaults = NSUserDefaults.standardUserDefaults()
+    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     
     // MARK: - View methods

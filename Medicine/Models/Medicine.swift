@@ -204,7 +204,7 @@ class Medicine: NSManagedObject {
     }
     
     func snoozeNotification() -> Bool {
-        let defaults = NSUserDefaults.standardUserDefaults()
+        let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
         var snoozeDate = NSDate()
         
         // Set snooze delay to user selection or 5 minutes

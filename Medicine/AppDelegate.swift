@@ -14,7 +14,9 @@ import StoreKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    
     var launchedShortcutItem: [NSObject: AnyObject]?
+    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
@@ -55,7 +57,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         
         // Set user preferences
-        let defaults = NSUserDefaults.standardUserDefaults()
+        guard let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine") else { fatalError("No user defaults") }
         
         if !defaults.boolForKey("firstLaunch") {
             defaults.setInteger(1, forKey: "sortOrder")         // Set sort order to "next dosage"
@@ -159,6 +161,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
         NSNotificationCenter.defaultCenter().postNotificationName("medNotification", object: nil, userInfo: notification.userInfo)
+        
+        if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
+            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
+                SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainTVC)
+                (vc as! MainTVC).updateHeader()
+            }
+        }
     }
     
     func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {

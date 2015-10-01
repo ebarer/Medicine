@@ -22,6 +22,10 @@
 		CE2497161BAA00DF00627525 /* TutorialPVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2497151BAA00DF00627525 /* TutorialPVC.swift */; };
 		CE24971B1BAA4E7400627525 /* TutorialContentVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE24971A1BAA4E7400627525 /* TutorialContentVC.swift */; };
 		CE2F6B111BBD492400707951 /* MainTVC+UIViewControllerPreviewing.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2F6B101BBD492400707951 /* MainTVC+UIViewControllerPreviewing.swift */; };
+		CE2F6B181BBD5BA800707951 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2F6B171BBD5BA800707951 /* NotificationCenter.framework */; };
+		CE2F6B1B1BBD5BA800707951 /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2F6B1A1BBD5BA800707951 /* TodayViewController.swift */; };
+		CE2F6B1E1BBD5BA800707951 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE2F6B1C1BBD5BA800707951 /* MainInterface.storyboard */; };
+		CE2F6B221BBD5BA800707951 /* MedicineTodayExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = CE2F6B161BBD5BA800707951 /* MedicineTodayExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CE30D1571B9856D1007805DB /* Prescription+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE30D1541B9856D1007805DB /* Prescription+CoreDataProperties.swift */; };
 		CE30D1581B9856D1007805DB /* Prescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE30D1551B9856D1007805DB /* Prescription.swift */; };
 		CE38AF231B950517000D00AD /* AddDoseTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE38AF221B950517000D00AD /* AddDoseTVC.swift */; };
@@ -46,6 +50,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		CE2F6B201BBD5BA800707951 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CEA250DD1B90396C00BBE466 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CE2F6B151BBD5BA800707951;
+			remoteInfo = MedicineTodayExtension;
+		};
 		CE9A36C91B98FDCB00B90EDB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CEA250DD1B90396C00BBE466 /* Project object */;
@@ -54,6 +65,20 @@
 			remoteInfo = Medicine;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		CE2F6B261BBD5BA800707951 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				CE2F6B221BBD5BA800707951 /* MedicineTodayExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		CE0EA17E1BAFDAED00F48A09 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Medicine/Base.lproj/AddDose.storyboard; sourceTree = "<group>"; };
@@ -71,6 +96,12 @@
 		CE2497151BAA00DF00627525 /* TutorialPVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TutorialPVC.swift; path = Tutorial/TutorialPVC.swift; sourceTree = "<group>"; };
 		CE24971A1BAA4E7400627525 /* TutorialContentVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TutorialContentVC.swift; path = Tutorial/TutorialContentVC.swift; sourceTree = "<group>"; };
 		CE2F6B101BBD492400707951 /* MainTVC+UIViewControllerPreviewing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "MainTVC+UIViewControllerPreviewing.swift"; path = "Main/MainTVC+UIViewControllerPreviewing.swift"; sourceTree = "<group>"; };
+		CE2F6B161BBD5BA800707951 /* MedicineTodayExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MedicineTodayExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE2F6B171BBD5BA800707951 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
+		CE2F6B1A1BBD5BA800707951 /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
+		CE2F6B1D1BBD5BA800707951 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		CE2F6B1F1BBD5BA800707951 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CE2F6B2D1BBD63F500707951 /* MedicineTodayExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = MedicineTodayExtension.entitlements; sourceTree = "<group>"; };
 		CE30D1541B9856D1007805DB /* Prescription+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Prescription+CoreDataProperties.swift"; path = "Medicine/Models/Prescription+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		CE30D1551B9856D1007805DB /* Prescription.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Prescription.swift; path = Medicine/Models/Prescription.swift; sourceTree = "<group>"; };
 		CE38AF221B950517000D00AD /* AddDoseTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddDoseTVC.swift; path = Add/AddDoseTVC.swift; sourceTree = "<group>"; };
@@ -104,6 +135,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		CE2F6B131BBD5BA800707951 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE2F6B181BBD5BA800707951 /* NotificationCenter.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE9A36C11B98FDCB00B90EDB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -151,6 +190,17 @@
 			name = Upgrade;
 			sourceTree = "<group>";
 		};
+		CE2F6B191BBD5BA800707951 /* MedicineTodayExtension */ = {
+			isa = PBXGroup;
+			children = (
+				CE2F6B2D1BBD63F500707951 /* MedicineTodayExtension.entitlements */,
+				CE2F6B1C1BBD5BA800707951 /* MainInterface.storyboard */,
+				CE2F6B1A1BBD5BA800707951 /* TodayViewController.swift */,
+				CE2F6B1F1BBD5BA800707951 /* Info.plist */,
+			);
+			path = MedicineTodayExtension;
+			sourceTree = "<group>";
+		};
 		CE6E55211B9040E700805397 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -178,6 +228,7 @@
 			children = (
 				CEA250E71B90396C00BBE466 /* Medicine */,
 				CE9A36C51B98FDCB00B90EDB /* MedicineTests */,
+				CE2F6B191BBD5BA800707951 /* MedicineTodayExtension */,
 				CEF5483D1B9CEA7A00C344B4 /* Frameworks */,
 				CEA250E61B90396C00BBE466 /* Products */,
 			);
@@ -188,6 +239,7 @@
 			children = (
 				CEA250E51B90396C00BBE466 /* Medicine.app */,
 				CE9A36C41B98FDCB00B90EDB /* MedicineTests.xctest */,
+				CE2F6B161BBD5BA800707951 /* MedicineTodayExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -270,6 +322,7 @@
 			children = (
 				CEF5483E1B9CEA8200C344B4 /* Medicine.entitlements */,
 				CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */,
+				CE2F6B171BBD5BA800707951 /* NotificationCenter.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -277,6 +330,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		CE2F6B151BBD5BA800707951 /* MedicineTodayExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CE2F6B231BBD5BA800707951 /* Build configuration list for PBXNativeTarget "MedicineTodayExtension" */;
+			buildPhases = (
+				CE2F6B121BBD5BA800707951 /* Sources */,
+				CE2F6B131BBD5BA800707951 /* Frameworks */,
+				CE2F6B141BBD5BA800707951 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MedicineTodayExtension;
+			productName = MedicineTodayExtension;
+			productReference = CE2F6B161BBD5BA800707951 /* MedicineTodayExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		CE9A36C31B98FDCB00B90EDB /* MedicineTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CE9A36CD1B98FDCB00B90EDB /* Build configuration list for PBXNativeTarget "MedicineTests" */;
@@ -302,10 +372,12 @@
 				CEA250E11B90396C00BBE466 /* Sources */,
 				CEA250E21B90396C00BBE466 /* Frameworks */,
 				CEA250E31B90396C00BBE466 /* Resources */,
+				CE2F6B261BBD5BA800707951 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				CE2F6B211BBD5BA800707951 /* PBXTargetDependency */,
 			);
 			name = Medicine;
 			productName = Medicine;
@@ -322,6 +394,15 @@
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Elliot Barer";
 				TargetAttributes = {
+					CE2F6B151BBD5BA800707951 = {
+						CreatedOnToolsVersion = 7.1;
+						DevelopmentTeam = 5ZJB9DN7AQ;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
+					};
 					CE9A36C31B98FDCB00B90EDB = {
 						CreatedOnToolsVersion = 7.0;
 						TestTargetID = CEA250E41B90396C00BBE466;
@@ -330,6 +411,9 @@
 						CreatedOnToolsVersion = 7.0;
 						DevelopmentTeam = 5ZJB9DN7AQ;
 						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
 							com.apple.InAppPurchase = {
 								enabled = 1;
 							};
@@ -354,12 +438,21 @@
 			projectRoot = "";
 			targets = (
 				CEA250E41B90396C00BBE466 /* Medicine */,
+				CE2F6B151BBD5BA800707951 /* MedicineTodayExtension */,
 				CE9A36C31B98FDCB00B90EDB /* MedicineTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		CE2F6B141BBD5BA800707951 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE2F6B1E1BBD5BA800707951 /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE9A36C21B98FDCB00B90EDB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -386,6 +479,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		CE2F6B121BBD5BA800707951 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE2F6B1B1BBD5BA800707951 /* TodayViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE9A36C01B98FDCB00B90EDB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -429,6 +530,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		CE2F6B211BBD5BA800707951 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CE2F6B151BBD5BA800707951 /* MedicineTodayExtension */;
+			targetProxy = CE2F6B201BBD5BA800707951 /* PBXContainerItemProxy */;
+		};
 		CE9A36CA1B98FDCB00B90EDB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = CEA250E41B90396C00BBE466 /* Medicine */;
@@ -490,6 +596,14 @@
 			name = HistoryEmptyView.xib;
 			sourceTree = "<group>";
 		};
+		CE2F6B1C1BBD5BA800707951 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CE2F6B1D1BBD5BA800707951 /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
 		CEA250EC1B90396C00BBE466 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -509,6 +623,38 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		CE2F6B241BBD5BA800707951 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MedicineTodayExtension/MedicineTodayExtension.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				INFOPLIST_FILE = MedicineTodayExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine.MedicineTodayExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		CE2F6B251BBD5BA800707951 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MedicineTodayExtension/MedicineTodayExtension.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				INFOPLIST_FILE = MedicineTodayExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine.MedicineTodayExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 		CE9A36CB1B98FDCB00B90EDB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -623,6 +769,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medicine/Medicine.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = Medicine/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -639,6 +786,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medicine/Medicine.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = Medicine/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -651,6 +799,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		CE2F6B231BBD5BA800707951 /* Build configuration list for PBXNativeTarget "MedicineTodayExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE2F6B241BBD5BA800707951 /* Debug */,
+				CE2F6B251BBD5BA800707951 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		CE9A36CD1B98FDCB00B90EDB /* Build configuration list for PBXNativeTarget "MedicineTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

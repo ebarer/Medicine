@@ -26,7 +26,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     // MARK: - Helper variables
     
-    let defaults = NSUserDefaults.standardUserDefaults()
+    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
     let productID = "com.ebarer.Medicine.Unlock"
     var mvc: UpgradeVC?
     
@@ -55,12 +55,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         // Display tutorial on first launch
         if !defaults.boolForKey("firstLaunch") {
             defaults.setBool(true, forKey: "firstLaunch")
-            performSegueWithIdentifier("tutorial", sender: self)
-        }
-        
-        // Debug tutorial screen
-        if defaults.boolForKey("debug") {
-            // performSegueWithIdentifier("tutorial", sender: self)
+            appDelegate.window!.rootViewController?.performSegueWithIdentifier("tutorial", sender: self)
         }
         
         // Setup IAP
@@ -118,6 +113,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                     medication.sortInPlace(sortByNextDose)
                 }
                 
+                updateHeader()
                 setDynamicShortcuts()
             }
         } catch {
@@ -221,7 +217,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             headerCounterLabel.attributedText = string
         }
             
-            // Show next scheduled dose
+        // Show next scheduled dose
         else if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
             if cal.isDateInToday(nextDose.fireDate!) {
                 if let id = nextDose.userInfo?["id"] {
@@ -250,6 +246,10 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
             headerCounterLabel.attributedText = string
         }
+
+        defaults.setObject(headerMedLabel.text, forKey: "dose")
+        defaults.setObject(headerCounterLabel.text, forKey: "doseDate")
+        defaults.synchronize()
         
         return summaryHeader
     }
@@ -439,6 +439,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                         }
                         
                         self.tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: UITableViewRowAnimation.None)
+                        
+                        self.updateHeader()
+                        self.setDynamicShortcuts()
                     } else {
                         self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
                     }
@@ -700,6 +703,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             // Reschedule next notification
             addMed.scheduleNextNotification()
             
+            updateHeader()
             setDynamicShortcuts()
             
             setEditing(false, animated: true)
@@ -727,11 +731,11 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             // Reload table
             if let index = self.tableView.indexPathForSelectedRow {
                 self.tableView.reloadRowsAtIndexPaths([index], withRowAnimation: .Automatic)
-                updateHeader()
             } else {
                 self.tableView.reloadData()
             }
             
+            updateHeader()
             setDynamicShortcuts()
         } catch {
             dismissViewControllerAnimated(true, completion: { () -> Void in
@@ -852,7 +856,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     // MARK: - Helper methods
     
-    func cellDateString(date: NSDate) -> String {
+    func cellDateString(date: NSDate?) -> String {
+        guard let date = date else { return "" }
+        
         var dateString = String()
         
         // Set label date, skip if date is today
@@ -898,6 +904,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             
             self.tableView.reloadData()
             
+            self.updateHeader()
             self.setDynamicShortcuts()
         }))
         
@@ -906,24 +913,39 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     func setDynamicShortcuts() {
-        print("Updating dynamic shortcuts")
-        
         if #available(iOS 9.0, *) {
             if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
                 if let id = nextDose.userInfo?["id"] {
                     guard let med = Medicine.getMedicine(arr: medication, id: id as! String) else { return }
                     let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
-                    let subtitle = "\(dose) of \(med.name!)"
+                    let subtitle = "\(dose) of \(med.name!) at \(cellDateString(med.lastDose?.next))"
                     
                     let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
-                                                                 localizedTitle: "Take next dose", localizedSubtitle: subtitle,
+                                                                 localizedTitle: "Take Next Dose", localizedSubtitle: subtitle,
                                                                  icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
                                                                  userInfo: ["action":"takeDose", "medID":med.medicineID])
                     
                     UIApplication.sharedApplication().shortcutItems = [shortcutItem]
                 }
             } else {
-                UIApplication.sharedApplication().shortcutItems = []
+                let overdueItems = medication.filter({$0.isOverdue().flag}).count
+                if overdueItems > 0  {
+                    var text = "Overdue Dose"
+                    
+                    // Pluralize string if multiple overdue doses
+                    if overdueItems > 1 {
+                        text += "s"
+                    }
+                    
+                    let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.overdue",
+                                                                 localizedTitle: text, localizedSubtitle: nil,
+                                                                 icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
+                                                                 userInfo: nil)
+                    
+                    UIApplication.sharedApplication().shortcutItems = [shortcutItem]
+                } else {
+                    UIApplication.sharedApplication().shortcutItems = []
+                }
             }
         }
     }

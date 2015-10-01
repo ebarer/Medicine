@@ -9,9 +9,19 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>MedicineTodayExtension.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>CE2F6B151BBD5BA800707951</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>CE9A36C31B98FDCB00B90EDB</key>
 		<dict>
 			<key>primary</key>

@@ -12,7 +12,7 @@ import CoreData
 class SettingsTVC: UITableViewController {
 
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-    let defaults = NSUserDefaults.standardUserDefaults()
+    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     
     // MARK: - Outlets
@@ -121,6 +121,9 @@ class SettingsTVC: UITableViewController {
             }
             
             appDelegate.saveContext()
+            
+            // Clear scheduled notifications
+            UIApplication.sharedApplication().cancelAllLocalNotifications()
             
             // Reset preferences
             defaults.setBool(false, forKey: "firstLaunch")

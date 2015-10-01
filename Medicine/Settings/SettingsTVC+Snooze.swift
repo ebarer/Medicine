@@ -10,7 +10,7 @@ import UIKit
 
 class SettingsTVC_Snooze: UITableViewController {
     
-    let defaults = NSUserDefaults.standardUserDefaults()
+    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
     let snoozeArray: [Int] = [ 1, 2, 5, 10, 15, 30 ]
 
     
