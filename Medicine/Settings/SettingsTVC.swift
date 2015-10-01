@@ -84,14 +84,14 @@ class SettingsTVC: UITableViewController {
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // Hide console and help buttons if debug disabled        
         if defaults.boolForKey("debug") == true {
-            return 3
+            return 4
         }
         
-        return 2
+        return 3
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if indexPath == NSIndexPath(forRow: 0, inSection: 1) {
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {        
+        if tableView.cellForRowAtIndexPath(indexPath)?.reuseIdentifier == "resetCell" {
             let deleteAlert = UIAlertController(title: "Reset Data and Settings?", message: "This will permanently delete all medication, history, and preferences.", preferredStyle: UIAlertControllerStyle.Alert)
             
             deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in

@@ -74,7 +74,15 @@ class Medicine: NSManagedObject {
                 return (true, date)
             }
         }
-
+        
+        if intervalUnit == Intervals.Daily && reminderEnabled == true {
+            if let date = scheduledNotification?.fireDate where lastDose == nil {
+                if cal.isDateInToday(date) == false {
+                    return (true, nil)
+                }
+            }
+        }
+        
         return (false, nil)
     }
 
@@ -211,6 +219,7 @@ class Medicine: NSManagedObject {
         
         // Schedule new notification
         do {
+            cancelNotification()
             try scheduleNotification(snoozeDate)
             return true
         } catch {
@@ -268,14 +277,16 @@ class Medicine: NSManagedObject {
                 return cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])
             }
             
-            // Caculate interval based on last dose
+            // Calculate interval based on last dose
             let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
             var date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: NSDate(), options: [])!
             
+            // If last dose was today, schedule for next interval
             if let last = lastDose?.date where cal.isDateInToday(last) {
                 date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])!
             }
             
+            // If scheduled dose is in the past, schedule for next interval
             if date.compare(NSDate()) == .OrderedAscending {
                 date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])!
             }

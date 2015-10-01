@@ -151,14 +151,84 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
 
     
+    // Create banner
+    
+    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        // Setup summary header
+        if section == 0 {
+            if medication.count == 0 {
+                return 0.0
+            } else {
+                return 150.0
+            }
+        }
+        
+        return 0.0
+    }
+    
+    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        
+        // Setup summary labels
+        var string = NSMutableAttributedString(string: "No more doses today")
+        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+        headerCounterLabel.attributedText = string
+        headerDescriptionLabel.text = nil
+        headerMedLabel.text = nil
+        
+        // Warn of overdue doses
+        let overdueItems = medication.filter({$0.isOverdue().flag}).count
+        if overdueItems > 0  {
+            var text = "Overdue dose"
+            
+            // Pluralize string if multiple overdue doses
+            if overdueItems > 1 {
+                text += "s"
+            }
+            
+            string = NSMutableAttributedString(string: text)
+            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+            headerCounterLabel.attributedText = string
+        }
+        
+        // Show next scheduled dose
+        else if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
+            if cal.isDateInToday(nextDose.fireDate!) {
+                if let id = nextDose.userInfo?["id"] {
+                    if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
+                        headerDescriptionLabel.text = "Next Dose"
+                        
+                        // let dif = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: NSDate(), toDate: nextDose.fireDate!, options: [])
+                        dateFormatter.dateFormat = "h:mma"
+                        
+                        string = NSMutableAttributedString(string: dateFormatter.stringFromDate(nextDose.fireDate!))
+                        let len = string.length
+                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, len-2))
+                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(len-2, 2))
+                        headerCounterLabel.attributedText = string
+                        
+                        let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
+                        headerMedLabel.text = "\(dose) of \(med.name!)"
+                    }
+                }
+            }
+        }
+        
+        // Prompt to take first dose
+        else if medication.count > 0 {
+            string = NSMutableAttributedString(string: "Take first dose")
+            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+            headerCounterLabel.attributedText = string
+        }
+        
+        return summaryHeader
+    }
+    
+    
     // MARK: - Table view data source
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
-    
-    
-    // Create summary header
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return medication.count
@@ -198,12 +268,16 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         // If medication is overdue, set subtitle to next dosage date and tint red
-        if let date = med.isOverdue().lastDose {
+        if med.isOverdue().flag {
             cell.textLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+            var subtitle = NSMutableAttributedString(string: "Overdue")
             
-            let subtitle = NSMutableAttributedString(string: "Overdue: \(cellDateString(date))")
+            if let date = med.isOverdue().lastDose {
+                subtitle = NSMutableAttributedString(string: "Overdue: \(cellDateString(date))")
+            }
+            
             subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, subtitle.length))
-            subtitle.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(15.0), range: NSMakeRange(0, 8))
+            subtitle.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(15.0), range: NSMakeRange(0, 7))
             cell.detailTextLabel?.attributedText = subtitle
             return cell
         }
@@ -218,7 +292,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         // If no doses taken, or other conditions met, instruct user on how to take dose
         else  {
-            cell.detailTextLabel?.attributedText = NSAttributedString(string: "Tap to take next dose", attributes: [NSForegroundColorAttributeName: UIColor.lightGrayColor()])
+            cell.detailTextLabel?.attributedText = NSAttributedString(string: "Tap to take first dose", attributes: [NSForegroundColorAttributeName: UIColor.lightGrayColor()])
             return cell
         }
     }
@@ -242,8 +316,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         return true
     }
     
-        // Empty implementation required for backwards compatibility (iOS 8.x)
-        override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {}
+    // Empty implementation required for backwards compatibility (iOS 8.x)
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {}
     
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
         let editAction = UITableViewRowAction(style: .Default, title: "Edit") { (action, indexPath) -> Void in
@@ -260,66 +334,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         return [deleteAction, editAction]
-    }
-    
-    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        // Setup summary header
-        if section == 0 {
-            if medication.count == 0 {
-                return 0.0
-            } else {
-                return 150.0
-            }
-        }
-        
-        return 0.0
-    }
-    
-    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        
-        // Setup summary labels
-        var string = NSMutableAttributedString(string: "No more doses today")
-        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
-        headerCounterLabel.attributedText = string
-        headerDescriptionLabel.text = nil
-        headerMedLabel.text = nil
-        
-        // If we have overdue doses or an upcoming scheduled dose today, modify labels
-        let overdueItems = medication.filter({$0.isOverdue().flag}).count
-        if overdueItems > 0  {
-            var text = "Overdue dose"
-
-            // Pluralize string if multiple overdue doses
-            if overdueItems > 1 {
-                text += "s"
-            }
-            
-            string = NSMutableAttributedString(string: text)
-            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
-            headerCounterLabel.attributedText = string
-        } else if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
-            if cal.isDateInToday(nextDose.fireDate!) {
-                if let id = nextDose.userInfo?["id"] {
-                    if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
-                        headerDescriptionLabel.text = "Next Dose"
-                        
-                        // let dif = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: NSDate(), toDate: nextDose.fireDate!, options: [])
-                        dateFormatter.dateFormat = "h:mma"
-                        
-                        string = NSMutableAttributedString(string: dateFormatter.stringFromDate(nextDose.fireDate!))
-                        let len = string.length
-                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, len-2))
-                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(len-2, 2))
-                        headerCounterLabel.attributedText = string
-                        
-                        let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
-                        headerMedLabel.text = "\(dose) of \(med.name!)"
-                    }
-                }
-            }
-        }
-    
-        return summaryHeader
     }
     
     func refreshTableAndNotifications() {
@@ -344,6 +358,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let med = medication[indexPath.row]
+        
+        print(med.isOverdue())
         
         if (tableView.editing == false) {
             var dateString:String? = nil
@@ -438,7 +454,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
         }))
         
-        deleteAlert.addAction(UIAlertAction(title: "Delete \(name)", style: .Destructive, handler: {(action) -> Void in
+        deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
             self.deleteMed(indexPath)
         }))
         
@@ -730,14 +746,22 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     func takeMedicationNotification(notification: NSNotification) {
         if let id = notification.userInfo!["id"] as? String {
-            let medQuery = Medicine.getMedicine(arr: medication, id: id)
-            if let med = medQuery {
+            if let med = Medicine.getMedicine(arr: medication, id: id) {
                 do {
                     try med.takeDose(moc, date: NSDate())
                     appDelegate.saveContext()
+                    
+                    // If selected, sort by next dosage
+                    if defaults.integerForKey("sortOrder") == 1 {
+                        medication.sortInPlace(sortByNextDose)
+                    }
+                    
+                    // Reload table
                     self.tableView.reloadData()
                 } catch {
-                    print("Unable to take dose")
+                    dismissViewControllerAnimated(true, completion: { () -> Void in
+                        self.presentDoseAlert(med, date: NSDate())
+                    })
                 }
             }
         }
