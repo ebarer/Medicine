@@ -64,7 +64,7 @@ class MedicineDetailsTVC: UITableViewController {
         editButtons.append(fixedButton)
         editButtons.append(self.editButtonItem())
 
-        setToolbarItems(normalButtons, animated: true)
+        setToolbarItems(normalButtons, animated: false)
         
         // Sort history
         if let historySet = med.history {

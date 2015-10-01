@@ -14,22 +14,15 @@ import StoreKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    var launchedShortcutItem: [NSObject: AnyObject]?
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
         // Get view controllers and setup IAP observers
-        if let tabViewControllers = self.window?.rootViewController?.childViewControllers {
-            for viewControllers in tabViewControllers {
-                let navViewControllers = viewControllers.childViewControllers
-                for viewController in navViewControllers {
-                    if viewController.isKindOfClass(MainTVC) {
-                        let vc = viewController as! MainTVC
-                        SKPaymentQueue.defaultQueue().addTransactionObserver(vc)
-                        
-                        // Pass managed object context
-                        vc.moc = self.managedObjectContext
-                    }
-                }
+        if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
+            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
+                SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainTVC)
+                (vc as! MainTVC).moc = self.managedObjectContext
             }
         }
         
@@ -76,6 +69,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             defaults.setBool(true, forKey: "debug")      // Set snooze duration to 5 minutes
         }
         
+        
+        // Handle application shortcut
+        if #available(iOS 9.0, *) {
+            if let _ = launchOptions?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
+                launchedShortcutItem = launchOptions
+                return false
+            }
+        }
+        
         return true
     }
 
@@ -85,7 +87,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationWillEnterForeground(application: UIApplication) {}
     
-    func applicationDidBecomeActive(application: UIApplication) {}
+    func applicationDidBecomeActive(application: UIApplication) {
+        if #available(iOS 9.0, *) {
+            if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
+                handleShortcut(shortcutItem)
+            }
+            
+            launchedShortcutItem = nil
+            return
+        }
+        
+        return
+    }
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
@@ -101,6 +114,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
         }
+    }
+    
+    
+    // MARK: - Application shortcut stack
+    
+    @available(iOS 9.0, *)
+    func application(application: UIApplication, performActionForShortcutItem shortcutItem: UIApplicationShortcutItem, completionHandler: (Bool) -> Void) {
+        completionHandler(handleShortcut(shortcutItem))
+    }
+    
+    @available(iOS 9.0, *)
+    func handleShortcut(shortcutItem: UIApplicationShortcutItem) -> Bool {
+        guard let action = shortcutItem.userInfo?["action"] else { return false }
+        
+        if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
+            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
+                if vc.isViewLoaded() {
+                    switch(String(action)) {
+                    case "addMedication":
+                        vc.performSegueWithIdentifier("addMedication", sender: self)
+                    case "takeDose":
+                        vc.performSegueWithIdentifier("addDose", sender: self)
+                    default: break
+                    }
+
+                    launchedShortcutItem = nil
+                    return true
+                } else {
+                    (vc as! MainTVC).launchedShortcutItem = self.launchedShortcutItem
+                }
+            }
+        }
+        
+        return false
     }
     
     

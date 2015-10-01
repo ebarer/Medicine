@@ -19,7 +19,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>90</string>
+	<string>91</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -45,5 +45,21 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemIconType</key>
+			<string>UIApplicationShortcutIconTypeAdd</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>New Medication</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>com.ebarer.Medicine.newMedication</string>
+			<key>UIApplicationShortcutItemUserInfo</key>
+			<dict>
+				<key>action</key>
+				<string>newMedication</string>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>

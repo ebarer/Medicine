@@ -27,8 +27,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 svc.reloadView()
             }
         }
-    }
-    
+    }    
 
 }
 

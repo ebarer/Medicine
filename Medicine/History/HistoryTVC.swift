@@ -310,10 +310,6 @@ class HistoryTVC: UITableViewController {
                         moc.deleteObject(logItems[index.row])
                     }
                     
-                    dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
-                    dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
-                    print("\(logItems[index.row].medicine?.name) - \(dateFormatter.stringFromDate(logItems[index.row].date))")
-                    
                     delegate.saveContext()
                     
                     log[sectionDate]?.removeAtIndex(index.row)

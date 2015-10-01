@@ -137,8 +137,6 @@ class Medicine: NSManagedObject {
             newDose.next = nil
         }
         
-        print(newDose)
-        
         // Only reschedule notification if dose is medications latest dose
         if let lastDose = self.lastDose {
             if doseDate.compare(lastDose.date) == .OrderedAscending {

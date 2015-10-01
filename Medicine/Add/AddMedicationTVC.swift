@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
     
@@ -35,6 +36,12 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        
+        if med == nil {
+            let moc = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+            let entity = NSEntityDescription.entityForName("Medicine", inManagedObjectContext: moc)
+            med = Medicine(entity: entity!, insertIntoManagedObjectContext: moc)
+        }
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -117,12 +124,6 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     // MARK: - Table view delegate
     
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-//        if section == Rows.interval.index().section {
-//            if editMode {
-//                return "Changes will take effect with next dose taken."
-//            }
-//        }
-        
         if section == Rows.prescription.index().section {
             return "Keep track of your prescription levels, and be reminded to refill when running low."
         }

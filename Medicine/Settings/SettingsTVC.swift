@@ -38,7 +38,7 @@ class SettingsTVC: UITableViewController {
         
         // Set copyright string
         if let year = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)?.component(NSCalendarUnit.Year, fromDate: NSDate()) {
-            copyrightString.text = "Elliot Barer © \(year)"
+            copyrightString.text = "\(year) © Elliot Barer"
         } else {
             copyrightString.text = "© Elliot Barer"
         }
@@ -83,11 +83,7 @@ class SettingsTVC: UITableViewController {
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // Hide console and help buttons if debug disabled        
-        if defaults.boolForKey("debug") == true {
-            return 4
-        }
-        
-        return 3
+        return defaults.boolForKey("debug") == true ? 4 : 3
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {        
