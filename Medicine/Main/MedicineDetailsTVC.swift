@@ -88,19 +88,18 @@ class MedicineDetailsTVC: UITableViewController {
             }
             
             count = history.count
+            displayEmptyView()
         }
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-
-        updateEditButton()
-        
+        displayEmptyView()
         tableView.reloadData()
     }
     
     override func viewDidAppear(animated: Bool) {
-        self.navigationController?.setToolbarHidden(false, animated: true)
+        self.navigationController?.setToolbarHidden(false, animated: false)
     }
 
     override func didReceiveMemoryWarning() {
@@ -110,7 +109,11 @@ class MedicineDetailsTVC: UITableViewController {
     
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {        
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        if count == 0 {
+            return 0
+        }
+        
         return 7
     }
 
@@ -255,15 +258,7 @@ class MedicineDetailsTVC: UITableViewController {
             setToolbarItems(normalButtons, animated: true)
         }
         
-        updateEditButton()
-    }
-    
-    func updateEditButton() {
-        if count == 0 {
-            self.editButtonItem().enabled = false
-        } else {
-            self.editButtonItem().enabled = true
-        }
+        displayEmptyView()
     }
     
     func updateDeleteButtonLabel() {
@@ -286,29 +281,55 @@ class MedicineDetailsTVC: UITableViewController {
                 let sectionDate = getSectionDate(index.section)
                 
                 if let logItems = log[sectionDate] {
-                    if logItems[index.row] == med.lastDose {
-                        med.untakeLastDose(moc)
+                    if let med = logItems[safe: index.row]?.medicine {
+                        if med.lastDose == logItems[index.row] {
+                            med.untakeLastDose(moc)
+                        } else {
+                            moc.deleteObject(logItems[index.row])
+                        }
                     } else {
                         moc.deleteObject(logItems[index.row])
                     }
+                    
+                    appDelegate.saveContext()
                     
                     log[sectionDate]?.removeAtIndex(index.row)
                     count--
                     
                     if logItems.count == 1 {
                         let label = tableView.cellForRowAtIndexPath(index)?.textLabel
-                        label?.text = "No doses logged"
+
                         label?.textColor = UIColor.lightGrayColor()
+                        label?.text = "No doses logged"
                     } else {
                         tableView.deleteRowsAtIndexPaths([index], withRowAnimation: .Fade)
                     }
                 }
             }
             
-            appDelegate.saveContext()
             updateDeleteButtonLabel()
             setEditing(false, animated: true)
+
+            if count == 0 {
+                displayEmptyView()
+            }
         }
+    }
+    
+    func displayEmptyView() {
+        if count == 0 {
+            self.editButtonItem().enabled = false
+            
+            // Create empty message
+            if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                tableView.backgroundView = emptyView
+            }
+        } else {
+            self.editButtonItem().enabled = true
+            tableView.backgroundView = nil
+        }
+        
+        tableView.reloadData()
     }
     
     
@@ -321,6 +342,28 @@ class MedicineDetailsTVC: UITableViewController {
             }
         }
     }
+    
+    
+    // MARK: - Preview actions
+    
+//    @available(iOS 9.0, *)
+//    override func previewActionItems() -> [UIPreviewActionItem] {
+//        return previewActions
+//    }
+//    
+//    @available(iOS 9.0, *)
+//    lazy var previewActions: [UIPreviewActionItem] = {
+//        func previewActionForTitle(title: String, style: UIPreviewActionStyle = .Default) -> UIPreviewAction {
+//            return UIPreviewAction(title: title, style: style) { previewAction, viewController in
+//                guard let vc = viewController as? MedicineDetailsTVC else { return }
+//                vc.performSegueWithIdentifier("addDose", sender: nil)
+//                return
+//            }
+//        }
+//        
+//        let action1 = previewActionForTitle("Take Dose")
+//        return [action1]
+//    }()
 
     
     // MARK: - Unwind methods

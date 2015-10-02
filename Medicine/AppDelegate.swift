@@ -83,7 +83,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    func applicationWillResignActive(application: UIApplication) {}
+    func applicationWillResignActive(application: UIApplication) {
+        // Remove IAP observers
+        if let viewControllers = self.window?.rootViewController?.childViewControllers {
+            for viewController in viewControllers {
+                if viewController.isKindOfClass(MainTVC) {
+                    let vc = viewController as! MainTVC
+                    SKPaymentQueue.defaultQueue().removeTransactionObserver(vc)
+                }
+            }
+        }
+    }
     
     func applicationDidEnterBackground(application: UIApplication) {}
     

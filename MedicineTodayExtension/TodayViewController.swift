@@ -17,6 +17,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     
     // MARK: - Outlets
+    @IBOutlet var doseDescriptionLabel: UILabel!
     @IBOutlet var doseCounterLabel: UILabel!
     @IBOutlet var doseMedLabel: UILabel!
     
@@ -41,7 +42,11 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     func widgetPerformUpdateWithCompletionHandler(completionHandler: ((NCUpdateResult) -> Void)) {
         completionHandler(updateLabels())
     }
-
+    
+    func widgetMarginInsetsForProposedMarginInsets(defaultMarginInsets: UIEdgeInsets) -> UIEdgeInsets {
+        return UIEdgeInsetsZero
+    }
+    
     func updateLabels() -> NCUpdateResult {
         if let todayData = defaults.valueForKey("todayData") {
             let data = todayData as! [String: AnyObject]
@@ -64,14 +69,17 @@ class TodayViewController: UIViewController, NCWidgetProviding {
                 doseMedLabel.text = nil
             }
             
+            doseDescriptionLabel.text = (data["descriptionString"] as? String)
+            
             return NCUpdateResult.NewData
         }
         
         return NCUpdateResult.Failed
     }
     
-    func widgetMarginInsetsForProposedMarginInsets(defaultMarginInsets: UIEdgeInsets) -> UIEdgeInsets {
-        return UIEdgeInsetsZero
+    @IBAction func launchApp() {
+        if let url = NSURL(string: "medicine://") {
+            self.extensionContext?.openURL(url, completionHandler: nil)
+        }
     }
-    
 }

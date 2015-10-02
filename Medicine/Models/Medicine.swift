@@ -190,12 +190,11 @@ class Medicine: NSManagedObject {
     }
     
     func scheduleNextNotification() -> Bool {
-        guard let date = nextDose else {
-            return false
-        }
+        cancelNotification()
+        
+        guard let date = nextDose else { return false }
         
         do {
-            cancelNotification()
             try scheduleNotification(date)
             return true
         } catch {

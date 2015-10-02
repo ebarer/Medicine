@@ -9,6 +9,13 @@
 import UIKit
 import CoreData
 
+// Protect against invalid arguments when deleting
+extension Array {
+    subscript (safe index: Int) -> Element? {
+        return indices ~= index ? self[index] : nil
+    }
+}
+
 class HistoryTVC: UITableViewController {
 
     var gblCount = 0
@@ -94,7 +101,7 @@ class HistoryTVC: UITableViewController {
                     // Store history in log
                     for dose in history {
                         if (cal.isDate(dose.date, inSameDayAsDate: sectionDate)) {
-                            log[sectionDate]?.insert(dose, atIndex: 0)
+                            log[sectionDate]?.append(dose)
                         }
                     }
                     
@@ -294,13 +301,11 @@ class HistoryTVC: UITableViewController {
     
     func deleteDoses() {
         if let selectedRowIndexes = tableView.indexPathsForSelectedRows {
-            let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-            
             for index in selectedRowIndexes.reverse() {
                 let sectionDate = getSectionDate(index.section)
                 
                 if let logItems = log[sectionDate] {
-                    if let med = logItems[index.row].medicine {
+                    if let med = logItems[safe: index.row]?.medicine {
                         if med.lastDose == logItems[index.row] {
                             med.untakeLastDose(moc)
                         } else {
@@ -310,13 +315,12 @@ class HistoryTVC: UITableViewController {
                         moc.deleteObject(logItems[index.row])
                     }
                     
-                    delegate.saveContext()
+                    appDelegate.saveContext()
                     
                     log[sectionDate]?.removeAtIndex(index.row)
                     gblCount--
                     
                     if logItems.count == 1 {
-                        tableView.cellForRowAtIndexPath(index)
                         let label = tableView.cellForRowAtIndexPath(index)?.textLabel
                         let detail = tableView.cellForRowAtIndexPath(index)?.detailTextLabel
                         

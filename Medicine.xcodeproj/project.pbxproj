@@ -252,8 +252,8 @@
 				CE0EA1931BAFDB7100F48A09 /* History */,
 				CE0EA1921BAFDB6A00F48A09 /* Settings */,
 				CEA251001B903BC900BBE466 /* Add */,
-				CEE7FC651BA944710036DFA5 /* Tutorial */,
 				CE1ADB911BA9EC4D0052F637 /* Upgrade */,
+				CEE7FC651BA944710036DFA5 /* Tutorial */,
 				CE6E55211B9040E700805397 /* Models */,
 				CEA250FD1B9039E600BBE466 /* Other */,
 			);
@@ -264,8 +264,8 @@
 			isa = PBXGroup;
 			children = (
 				CEA250F71B90396C00BBE466 /* Info.plist */,
-				CEA250F21B90396C00BBE466 /* Assets.xcassets */,
 				CEA250F41B90396C00BBE466 /* LaunchScreen.storyboard */,
+				CEA250F21B90396C00BBE466 /* Assets.xcassets */,
 			);
 			name = Other;
 			sourceTree = "<group>";
