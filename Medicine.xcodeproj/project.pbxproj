@@ -806,6 +806,7 @@
 				CE2F6B251BBD5BA800707951 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		CE9A36CD1B98FDCB00B90EDB /* Build configuration list for PBXNativeTarget "MedicineTests" */ = {
 			isa = XCConfigurationList;

@@ -52,6 +52,20 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         // Set mananged object context
         moc = appDelegate.managedObjectContext
         
+        // Add observeres for notifications
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "internalNotification:", name: "medNotification", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "takeMedicationNotification:", name: "takeDoseNotification", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "snoozeReminderNotification:", name: "snoozeReminderNotification", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
+        defaults.addObserver(self, forKeyPath: "sortOrder", options: NSKeyValueObservingOptions.New, context: nil)
+        
+        // Register for 3D touch if available
+        if #available(iOS 9.0, *) {
+            if traitCollection.forceTouchCapability == .Available {
+                registerForPreviewingWithDelegate(self, sourceView: view)
+            }
+        }
+        
         // Display tutorial on first launch
         if !defaults.boolForKey("firstLaunch") {
             defaults.setBool(true, forKey: "firstLaunch")
@@ -75,21 +89,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         // Remove tableView gap
         tableView.tableHeaderView = UIView(frame: CGRectMake(0.0, 0.0, tableView.bounds.size.width, 0.01))
-        
-        // Add observeres for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "internalNotification:", name: "medNotification", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "takeMedicationNotification:", name: "takeDoseNotification", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "snoozeReminderNotification:", name: "snoozeReminderNotification", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
-        defaults.addObserver(self, forKeyPath: "sortOrder", options: NSKeyValueObservingOptions.New, context: nil)
-        
-        
-        // Register for 3D touch if available
-        if #available(iOS 9.0, *) {
-            if traitCollection.forceTouchCapability == .Available {
-                registerForPreviewingWithDelegate(self, sourceView: view)
-            }
-        }
         
         // Cancel all existing notifications
         UIApplication.sharedApplication().cancelAllLocalNotifications()
@@ -201,6 +200,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         headerCounterLabel.attributedText = string
         headerDescriptionLabel.text = nil
         headerMedLabel.text = nil
+        var todayData = [String: AnyObject]()
         
         // Warn of overdue doses
         let overdueItems = medication.filter({$0.isOverdue().flag}).count
@@ -235,6 +235,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                         
                         let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
                         headerMedLabel.text = "\(dose) of \(med.name!)"
+
+                        todayData["date"] = nextDose.fireDate!
                     }
                 }
             }
@@ -246,9 +248,11 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
             headerCounterLabel.attributedText = string
         }
+        
+        todayData["dateString"] = headerCounterLabel.text
+        todayData["medString"] = headerMedLabel.text
 
-        defaults.setObject(headerMedLabel.text, forKey: "dose")
-        defaults.setObject(headerCounterLabel.text, forKey: "doseDate")
+        defaults.setObject((todayData as NSDictionary), forKey: "todayData")
         defaults.synchronize()
         
         return summaryHeader
@@ -799,6 +803,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                     })
                 }
             }
+        } else {
+            print("-E-: Cannot take next dose, no MedicineID specified")
         }
     }
     

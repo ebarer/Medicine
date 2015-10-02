@@ -43,31 +43,35 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     }
 
     func updateLabels() -> NCUpdateResult {
-        if let dose = defaults.valueForKey("dose") {
-            guard let time = defaults.valueForKey("doseDate") else { return NCUpdateResult.Failed }
+        if let todayData = defaults.valueForKey("todayData") {
+            let data = todayData as! [String: AnyObject]
             
-            let string = NSMutableAttributedString(string: time as! String)
-            let len = string.length
-            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(50.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, len-2))
-            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(len-2, 2))
-            doseCounterLabel.attributedText = string
-            doseMedLabel.text = (dose as! String)
-            
-            return NCUpdateResult.NewData
-        } else {
-            guard let text = defaults.valueForKey("doseDate") else { return NCUpdateResult.Failed }
-            
-            let string = NSMutableAttributedString(string: text as! String)
-            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
-            doseCounterLabel.attributedText = string
-            doseMedLabel.text = nil
+            if let date = data["date"] where (date as! NSDate).compare(NSDate()) == .OrderedDescending {
+                // Set main text
+                if let dateString = data["dateString"] {
+                    let string = NSMutableAttributedString(string: (dateString as! String))
+                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(50.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, string.length-2))
+                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(string.length-2, 2))
+                    doseCounterLabel.attributedText = string
+                }
+                
+                // Set description
+                doseMedLabel.text = (data["medString"] as? String)
+            } else {
+                let string = NSMutableAttributedString(string: "Overdue dose")
+                string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+                doseCounterLabel.attributedText = string
+                doseMedLabel.text = nil
+            }
             
             return NCUpdateResult.NewData
         }
+        
+        return NCUpdateResult.Failed
     }
     
     func widgetMarginInsetsForProposedMarginInsets(defaultMarginInsets: UIEdgeInsets) -> UIEdgeInsets {
-        return UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
+        return UIEdgeInsetsZero
     }
     
 }

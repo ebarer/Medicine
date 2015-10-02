@@ -133,6 +133,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
             if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
                 if vc.isViewLoaded() {
+                    
+                    vc.dismissViewControllerAnimated(false, completion: nil)
+                    
                     switch(String(action)) {
                     case "addMedication":
                         vc.performSegueWithIdentifier("addMedication", sender: self)

@@ -19,7 +19,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>93</string>
+	<string>94</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationShortcutItems</key>
@@ -34,7 +34,7 @@
 			<key>UIApplicationShortcutItemUserInfo</key>
 			<dict>
 				<key>action</key>
-				<string>newMedication</string>
+				<string>addMedication</string>
 			</dict>
 		</dict>
 	</array>
