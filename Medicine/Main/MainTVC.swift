@@ -202,7 +202,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
 
         todayData["descriptionString"] = headerDescriptionLabel.text
-        todayData["dateString"] = headerCounterLabel.text
+        todayData["counterString"] = headerCounterLabel.text
         todayData["medString"] = headerMedLabel.text
 
         defaults.setObject((todayData as NSDictionary), forKey: "todayData")

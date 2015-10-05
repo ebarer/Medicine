@@ -110,6 +110,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             doseDescriptionLabel.text = nil
             doseMainLabel.attributedText = string
             doseMedLabel.text = nil
+            doseDescriptionLabel.text = nil
             return NCUpdateResult.NewData
         }
     }
