@@ -12,8 +12,9 @@ import NotificationCenter
 
 class TodayViewController: UIViewController, NCWidgetProviding {
 
-    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
     let cal = NSCalendar.currentCalendar()
+    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    var size: CGFloat = 75.0
     
     
     // MARK: - Outlets
@@ -24,7 +25,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     // MARK: - View methods
     override func viewDidLoad() {
-        self.preferredContentSize = CGSizeMake(0, 130.0);
+        self.preferredContentSize = CGSizeMake(0, size);
         
         NSNotificationCenter.defaultCenter().addObserverForName(NSUserDefaultsDidChangeNotification, object: nil, queue: NSOperationQueue.mainQueue()) { _ in
             self.updateLabels()
@@ -50,16 +51,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     func updateLabels() -> NCUpdateResult {
         if let todayData = defaults.valueForKey("todayData") {
             let data = todayData as! [String: AnyObject]
-            
-            // If no doses taken, but medication count != 0
-//            if (data["dateString"] as? String) == "Take first dose" {
-//                let string = NSMutableAttributedString(string: "No doses scheduled")
-//                string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
-//                
-//                doseDescriptionLabel.text = nil
-//                doseMainLabel.attributedText = string
-//                doseMedLabel.text = nil
-//            }
+            size = 75.0
 
             if let date = data["date"] {
                 // Dose overdue
@@ -70,7 +62,6 @@ class TodayViewController: UIViewController, NCWidgetProviding {
                     doseDescriptionLabel.text = nil
                     doseMainLabel.attributedText = string
                     doseMedLabel.text = nil
-                    return NCUpdateResult.NewData
                 }
                 // No doses due today
                 else if !cal.isDateInToday((date as! NSDate)) {
@@ -80,7 +71,6 @@ class TodayViewController: UIViewController, NCWidgetProviding {
                     doseDescriptionLabel.text = nil
                     doseMainLabel.attributedText = string
                     doseMedLabel.text = nil
-                    return NCUpdateResult.NewData
                 }
                 // Show next dose
                 else {
@@ -93,7 +83,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
                     
                     doseDescriptionLabel.text = (data["descriptionString"] as? String)
                     doseMedLabel.text = (data["medString"] as? String)
-                    return NCUpdateResult.NewData
+                    size = 130.0
                 }
             } else {
                 let string = NSMutableAttributedString(string: "No doses scheduled")
@@ -102,7 +92,6 @@ class TodayViewController: UIViewController, NCWidgetProviding {
                 doseDescriptionLabel.text = nil
                 doseMainLabel.attributedText = string
                 doseMedLabel.text = nil
-                return NCUpdateResult.NewData
             }
         } else {
             let string = NSMutableAttributedString(string: "You have no medications")
@@ -110,9 +99,10 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             doseDescriptionLabel.text = nil
             doseMainLabel.attributedText = string
             doseMedLabel.text = nil
-            doseDescriptionLabel.text = nil
-            return NCUpdateResult.NewData
         }
+        
+        self.preferredContentSize = CGSizeMake(0, size);
+        return NCUpdateResult.NewData
     }
     
     @IBAction func launchApp() {

@@ -196,13 +196,15 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             
         // Prompt to take first dose
         else if medication.count > 0 {
-            string = NSMutableAttributedString(string: "Take first dose")
-            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
-            headerCounterLabel.attributedText = string
+            if medication.first?.lastDose == nil {
+                string = NSMutableAttributedString(string: "Take first dose")
+                string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+                headerCounterLabel.attributedText = string
+            }
         }
 
         todayData["descriptionString"] = headerDescriptionLabel.text
-        todayData["counterString"] = headerCounterLabel.text
+        todayData["dateString"] = headerCounterLabel.text
         todayData["medString"] = headerMedLabel.text
 
         defaults.setObject((todayData as NSDictionary), forKey: "todayData")
