@@ -12,6 +12,7 @@ import CoreData
 class AddDoseTVC: UITableViewController {
     
     var med:Medicine?
+    
     var globalHistory: Bool = false
     var date = NSDate()
     let cal = NSCalendar.currentCalendar()
@@ -33,24 +34,11 @@ class AddDoseTVC: UITableViewController {
             medLabel.text = med.name
             self.navigationItem.rightBarButtonItem?.enabled = true
         } else {
-            // Load medications
-            let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-            let moc = appDelegate.managedObjectContext
-            
-            let request = NSFetchRequest(entityName:"Medicine")
-            request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-            request.fetchLimit = 1
-            
-            do {
-                let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
-                
-                if let results = fetchedResults {
-                    med = results.first
-                    medLabel.text = med?.name
-                    self.navigationItem.rightBarButtonItem?.enabled = true
-                }
-            } catch {
-                print("Could not fetch medication.")
+            if let med = medication.first {
+                self.med = med
+                medLabel.text = med.name
+                self.navigationItem.rightBarButtonItem?.enabled = true
+            } else {
                 medLabel.text = "None"
                 self.navigationItem.rightBarButtonItem?.enabled = false
             }

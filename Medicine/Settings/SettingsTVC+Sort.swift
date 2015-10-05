@@ -43,10 +43,12 @@ class SettingsTVC_Sort: UITableViewController {
             defaults.synchronize()
             
             if let dvc = segue.destinationViewController as? SettingsTVC {
-                switch(selection) {
-                case 0:
+                switch(defaults.integerForKey("sortOrder")) {
+                case SortOrder.Manual.rawValue:
+                    medication.sortInPlace(Medicine.sortByManual)
                     dvc.sortLabel.text = "Manually"
-                case 1:
+                case SortOrder.NextDosage.rawValue:
+                    medication.sortInPlace(Medicine.sortByNextDose)
                     dvc.sortLabel.text = "Next Dosage"
                 default: break
                 }

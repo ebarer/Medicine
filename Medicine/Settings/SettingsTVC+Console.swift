@@ -11,34 +11,18 @@ import CoreData
 
 class SettingsTVC_Console: UITableViewController {
 
-    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     let cal = NSCalendar.currentCalendar()
     let dateFormatter = NSDateFormatter()
 
     var notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
-    var medication = [Medicine]()
     var console = [(name: String, date: String, id: String)]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Load medications
-        let moc = appDelegate.managedObjectContext
-        let request = NSFetchRequest(entityName:"Medicine")
-        
-        do {
-            let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
-            
-            if let results = fetchedResults {
-                medication = results
-                loadNotifications()
-            }
-        } catch {
-            print("Could not fetch medication.")
-        }
+        loadNotifications()
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewWillAppear(animated: Bool) {
         loadNotifications()
     }
 
@@ -77,36 +61,54 @@ class SettingsTVC_Console: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
+        return 2
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return console.count
+        switch(section) {
+        case 0:
+            return console.count
+        case 1:
+            return medication.count
+        default:
+            return 0
+        }
     }
     
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if section == 0 {
+        switch(section) {
+        case 0:
             if console.count == 0 {
                 return "No scheduled notifications."
             }
             
             return "Scheduled Notifications"
+        case 1:
+            return "Medication"
+        default:
+            return nil
         }
-        
-        return nil
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("consoleCell", forIndexPath: indexPath)
-        let txt = console[indexPath.row]
-
-        let attributedString = NSMutableAttributedString(string: "\(txt.name) \t\t \(txt.date)")
-        attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, txt.name.characters.count))
         
-        
-        cell.textLabel?.attributedText = attributedString
-        cell.detailTextLabel?.text = txt.id
+        switch(indexPath.section) {
+        case 0:
+            let txt = console[indexPath.row]
 
+            let attributedString = NSMutableAttributedString(string: "\(txt.name) \t\t \(txt.date)")
+            attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, txt.name.characters.count))
+            
+            
+            cell.textLabel?.attributedText = attributedString
+            cell.detailTextLabel?.text = txt.id
+        case 1:
+            cell.textLabel?.text = medication[indexPath.row].name!
+            cell.detailTextLabel?.text = medication[indexPath.row].medicineID
+        default: break
+        }
+        
         return cell
     }
 

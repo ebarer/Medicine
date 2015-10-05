@@ -12,27 +12,9 @@ import CoreData
 class AddDoseTV_Medicine: UITableViewController {
 
     var selectedMed: Medicine?
-    var medication = [Medicine]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        let moc = delegate.managedObjectContext
-        
-        // Load medications
-        let request = NSFetchRequest(entityName:"Medicine")
-        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        
-        do {
-            let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
-            
-            if let results = fetchedResults {
-                medication = results
-            }
-        } catch {
-            print("Could not fetch medication.")
-        }
     }
 
     override func didReceiveMemoryWarning() {

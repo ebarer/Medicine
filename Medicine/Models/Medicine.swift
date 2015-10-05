@@ -98,11 +98,39 @@ class Medicine: NSManagedObject {
         return nil
     }
     
+    class func sortByNextDose(medA: Medicine, medB: Medicine) -> Bool {
+        // Unscheduled medications should be at the bottom
+        if medA.reminderEnabled == false {
+            return false
+        }
+        
+        if medB.reminderEnabled == false {
+            return true
+        }
+        
+        guard let next1 = medA.nextDose else {
+            return false
+        }
+        
+        guard let next2 = medB.nextDose else {
+            return true
+        }
+        
+        return next1.compare(next2) == .OrderedAscending
+    }
+    
+    class func sortByManual(medA: Medicine, medB: Medicine) -> Bool {
+        return medA.sortOrder < medB.sortOrder
+    }
+    
     
     // MARK: - Initialization method
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
-        self.medicineID = NSUUID().UUIDString
+        
+        if self.medicineID.isEmpty {
+            self.medicineID = NSUUID().UUIDString
+        }
     }
     
     
@@ -165,6 +193,8 @@ class Medicine: NSManagedObject {
     // MARK: - Notification methods
     func scheduleNotification(date: NSDate) throws {
         // Schedule if the user wants a reminder and the reminder date is in the future
+        //print(UIApplication.sharedApplication().currentUserNotificationSettings())
+        
         guard date.compare(NSDate()) == .OrderedDescending else {
             throw MedicineError.DatePassed
         }
@@ -240,6 +270,8 @@ class Medicine: NSManagedObject {
     
     func calculateNextDose(date: NSDate? = nil) throws -> NSDate? {
         switch(intervalUnit) {
+        case .None:
+            return nil
         case .Hourly:
             let hr = Int(interval)
             let min = Int(60 * (interval % 1))
@@ -358,6 +390,13 @@ enum MedicineError: ErrorType {
 }
 
 
+// MARK: - Sort Order Enum
+enum SortOrder: Int {
+    case Manual
+    case NextDosage
+}
+
+
 // MARK: - Units Enum
 enum Doses: Int16, CustomStringConvertible {
     case Pills
@@ -393,7 +432,8 @@ enum Doses: Int16, CustomStringConvertible {
 
 // MARK: - Frequencies Enum
 enum Intervals: Int16, CustomStringConvertible {
-    case Hourly
+    case None = -1
+    case Hourly = 0
     case Daily
     case Weekly
     
@@ -406,6 +446,7 @@ enum Intervals: Int16, CustomStringConvertible {
         case .Hourly: return "Hourly"
         case .Daily: return "Daily"
         case .Weekly: return "Weekly"
+        default: return "None"
         }
     }
     
@@ -416,6 +457,7 @@ enum Intervals: Int16, CustomStringConvertible {
         case .Hourly: string = "hour"
         case .Daily: string = "day"
         case .Weekly: string = "week"
+        default: string = "none"
         }
         
         if (amount < 1 || amount >= 2) {

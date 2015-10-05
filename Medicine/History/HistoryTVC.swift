@@ -19,7 +19,6 @@ extension Array {
 class HistoryTVC: UITableViewController {
 
     var gblCount = 0
-    var medication = [Medicine]()
     var history = [History]()
     var log = [NSDate: [History]]()
     
@@ -62,14 +61,12 @@ class HistoryTVC: UITableViewController {
         
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
-        
-        loadMedication()
+
         loadHistory()
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        loadMedication()
         loadHistory()
         tableView.reloadData()
     }
@@ -114,21 +111,6 @@ class HistoryTVC: UITableViewController {
             }
         } catch {
             print("Could not fetch history.")
-        }
-    }
-    
-    func loadMedication() {
-        let request = NSFetchRequest(entityName:"Medicine")
-        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-        
-        do {
-            let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
-            
-            if let results = fetchedResults {
-                medication = results
-            }
-        } catch {
-            print("Could not fetch medication.")
         }
     }
     

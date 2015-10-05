@@ -12,9 +12,6 @@ import StoreKit
 
 class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
-    var medication = [Medicine]()
-    
-    
     // MARK: - Outlets
     
     @IBOutlet var addMedicationButton: UIBarButtonItem!
@@ -27,15 +24,15 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     // MARK: - Helper variables
     
     let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
-    let productID = "com.ebarer.Medicine.Unlock"
-    var mvc: UpgradeVC?
-    
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var moc: NSManagedObjectContext!
     var launchedShortcutItem: [NSObject: AnyObject]?
-    
+
     let cal = NSCalendar.currentCalendar()
     let dateFormatter = NSDateFormatter()
+    
+    let productID = "com.ebarer.Medicine.Unlock"
+    var mvc: UpgradeVC?
     
     
     // MARK: - IAP variables
@@ -52,12 +49,14 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         // Set mananged object context
         moc = appDelegate.managedObjectContext
         
+        // If selected, sort by next dosage
+        if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+            medication.sortInPlace(Medicine.sortByNextDose)
+        }
+        
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "internalNotification:", name: "medNotification", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "takeMedicationNotification:", name: "takeDoseNotification", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "snoozeReminderNotification:", name: "snoozeReminderNotification", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
-        defaults.addObserver(self, forKeyPath: "sortOrder", options: NSKeyValueObservingOptions.New, context: nil)
         
         // Register for 3D touch if available
         if #available(iOS 9.0, *) {
@@ -89,34 +88,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         // Remove tableView gap
         tableView.tableHeaderView = UIView(frame: CGRectMake(0.0, 0.0, tableView.bounds.size.width, 0.01))
-        
-        // Cancel all existing notifications
-        UIApplication.sharedApplication().cancelAllLocalNotifications()
-        
-        let request = NSFetchRequest(entityName:"Medicine")
-        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-        
-        do {
-            let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
-            
-            if let results = fetchedResults {
-                medication = results
-                
-                // Schedule all notifications
-                for med in medication {
-                    med.scheduleNextNotification()
-                }
-                
-                // If selected, sort by next dosage
-                if defaults.integerForKey("sortOrder") == 1 {
-                    medication.sortInPlace(sortByNextDose)
-                }
-
-                setDynamicShortcuts()
-            }
-        } catch {
-            print("Could not fetch medication.")
-        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -148,28 +119,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-    }
-    
-    func reloadMedication() {
-        let request = NSFetchRequest(entityName:"Medicine")
-        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-        
-        do {
-            let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
-            
-            if let results = fetchedResults {
-                medication = results
-                
-                // If selected, sort by next dosage
-                if defaults.integerForKey("sortOrder") == 1 {
-                    medication.sortInPlace(sortByNextDose)
-                }
-                
-                self.tableView.reloadData()
-            }
-        } catch {
-            print("Could not fetch medication.")
-        }
     }
 
     
@@ -294,8 +243,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                     subtitle = NSMutableAttributedString(string: "Earliest next dose: \(cellDateString(date))")
                     subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 20))
                 } else {
-                    subtitle = NSMutableAttributedString(string: "Last dose: \(cellDateString(date))")
-                    subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
+                    cell.textLabel?.textColor = UIColor.lightGrayColor()
+                    subtitle = NSMutableAttributedString(string: "Last dose: \(cellDateString(med.lastDose?.date))")
+                    subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, subtitle.length))
                 }
                 
                 cell.detailTextLabel?.attributedText = subtitle
@@ -341,6 +291,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         medication[fromIndexPath.row].sortOrder = Int16(toIndexPath.row)
         medication[toIndexPath.row].sortOrder = Int16(fromIndexPath.row)
         medication.sortInPlace({ $0.sortOrder < $1.sortOrder })
+        
         appDelegate.saveContext()
         
         // Set sort order to "manually"
@@ -364,7 +315,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         editAction.backgroundColor = UIColor(white: 0.78, alpha: 1.0)
         
         let deleteAction = UITableViewRowAction(style: .Destructive, title: "Delete") { (action, indexPath) -> Void in
-            if let name = self.medication[indexPath.row].name {
+            if let name = medication[indexPath.row].name {
                 self.presentDeleteAlert(name, indexPath: indexPath)
             }
         }
@@ -439,8 +390,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                         self.appDelegate.saveContext()
                         
                         // If selected, sort by next dosage
-                        if self.defaults.integerForKey("sortOrder") == 1 {
-                            self.medication.sortInPlace(self.sortByNextDose)
+                        if self.defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+                            medication.sortInPlace(Medicine.sortByNextDose)
                         }
                         
                         self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.None)
@@ -536,95 +487,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     
-    // MARK: - IAP methods
-    
-    func paymentQueue(queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
-        for transaction in transactions {
-            switch (transaction.transactionState) {
-            case SKPaymentTransactionState.Restored: fallthrough
-            case SKPaymentTransactionState.Purchased:
-                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
-                unlockManager()
-            case SKPaymentTransactionState.Failed:
-                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
-                mvc?.purchaseButton.enabled = true
-                mvc?.restoreButton.enabled = true
-                mvc?.purchaseIndicator.stopAnimating()
-                
-                presentPurchaseFailureAlert()
-            default: break
-            }
-        }
-    }
-    
-    func paymentQueueRestoreCompletedTransactionsFinished(queue: SKPaymentQueue) {
-        if queue.transactions.count == 0 {
-            presentRestoreFailureAlert()
-        }
-        
-        for transaction in queue.transactions {
-            let pID = transaction.payment.productIdentifier
-            queue.finishTransaction(transaction)
-            
-            if pID == productID {
-                unlockManager()
-            }
-        }
-    }
-    
-    func paymentQueue(queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: NSError) {
-        presentRestoreFailureAlert()
-    }
-
-    func presentPurchaseFailureAlert() {
-        mvc?.restoreButton.setTitle("Restore", forState: UIControlState.Normal)
-        mvc?.restoreButton.enabled = true
-        mvc?.purchaseButton.enabled = true
-        mvc?.purchaseIndicator.stopAnimating()
-        
-        let failAlert = UIAlertController(title: "Purchase Failed", message: "Please try again later.", preferredStyle: UIAlertControllerStyle.Alert)
-        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
-        
-        failAlert.view.tintColor = UIColor.grayColor()
-        mvc?.presentViewController(failAlert, animated: true, completion: nil)
-    }
-    
-    func presentRestoreFailureAlert() {
-        mvc?.restoreButton.setTitle("Restore", forState: UIControlState.Normal)
-        mvc?.restoreButton.enabled = true
-        mvc?.purchaseButton.enabled = true
-        mvc?.purchaseIndicator.stopAnimating()
-        
-        let failAlert = UIAlertController(title: "Restore Failed", message: "Please try again later. If the problem persists, use the purchase button above.", preferredStyle: UIAlertControllerStyle.Alert)
-        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
-        failAlert.view.tintColor = UIColor.grayColor()
-        mvc?.presentViewController(failAlert, animated: true, completion: nil)
-    }
-    
-    func unlockManager() {
-        defaults.setBool(true, forKey: "managerUnlocked")
-        defaults.synchronize()
-        productLock = false
-        continueToAdd()
-    }
-    
-    func getLockStatus() -> Bool {
-        if medication.count >= trialLimit {
-            if productLock == true {
-                return true
-            }
-        }
-        
-        return false
-    }
-    
-    func continueToAdd() {
-        dismissViewControllerAnimated(true) { () -> Void in
-            self.performSegueWithIdentifier("addMedication", sender: self)
-        }
-    }
-    
-    
     // MARK: - Navigation methods
     
     @IBAction func addMedication(sender: UIBarButtonItem) {
@@ -678,10 +540,23 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     @IBAction func medicationUnwindAdd(unwindSegue: UIStoryboardSegue) {
         if let svc = unwindSegue.sourceViewController as? AddMedicationTVC, addMed = svc.med {
+            // Editing existing medication
             if let selectedIndex = tableView.indexPathForSelectedRow {
                 appDelegate.saveContext()
+                
+                // Update last dose properties
+                do {
+                    addMed.lastDose?.dosage = addMed.dosage
+                    addMed.lastDose?.dosageUnitInt = addMed.dosageUnitInt
+                    addMed.lastDose?.next = try addMed.calculateNextDose(addMed.lastDose?.date)
+                } catch {
+                    print("Unable to update last dose")
+                }
+                
                 tableView.reloadRowsAtIndexPaths([selectedIndex], withRowAnimation: .None)
-            } else {
+            }
+            // Adding new medication
+            else {
                 let newIndex = NSIndexPath(forRow: medication.count, inSection: 0)
                 addMed.sortOrder = Int16(newIndex.row)
                 medication.append(addMed)
@@ -691,25 +566,17 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             }
             
             // If selected, sort by next dosage
-            if defaults.integerForKey("sortOrder") == 1 {
-                medication.sortInPlace(sortByNextDose)
-            }
-            
-            // Update last dose properties
-            do {
-                addMed.lastDose?.dosage = addMed.dosage
-                addMed.lastDose?.dosageUnitInt = addMed.dosageUnitInt
-                addMed.lastDose?.next = try addMed.calculateNextDose(addMed.lastDose?.date)
-            } catch {
-                print("Unable to update last dose")
+            if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+                medication.sortInPlace(Medicine.sortByNextDose)
             }
             
             // Reschedule next notification
             addMed.scheduleNextNotification()
             
-            self.tableView.reloadData()
-            
+            // Update shortcuts
             setDynamicShortcuts()
+            
+            // Return to normal mode
             setEditing(false, animated: true)
         }
     }
@@ -728,8 +595,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             appDelegate.saveContext()
             
             // If selected, sort by next dosage
-            if defaults.integerForKey("sortOrder") == 1 {
-                medication.sortInPlace(sortByNextDose)
+            if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+                medication.sortInPlace(Medicine.sortByNextDose)
             }
             
             // Reload table
@@ -752,7 +619,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {
         if unwindSegue.sourceViewController.restorationIdentifier == "welcomeScreen" {
-            reloadMedication()
+            self.tableView.reloadData()
         }
     }
     
@@ -784,27 +651,28 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     func takeMedicationNotification(notification: NSNotification) {
+        print("Notification received")
+        
         if let id = notification.userInfo!["id"] as? String {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
-                do {
-                    try med.takeDose(moc, date: NSDate())
-                    appDelegate.saveContext()
-                    
-                    // If selected, sort by next dosage
-                    if defaults.integerForKey("sortOrder") == 1 {
-                        medication.sortInPlace(sortByNextDose)
-                    }
-                    
-                    // Reload table
-                    self.tableView.reloadData()
-                } catch {
-                    dismissViewControllerAnimated(true, completion: { () -> Void in
-                        self.presentDoseAlert(med, date: NSDate())
-                    })
+                med.addDose(moc, date: NSDate())
+                appDelegate.saveContext()
+                
+                // If selected, sort by next dosage
+                if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+                    medication.sortInPlace(Medicine.sortByNextDose)
                 }
+                
+                // Reload table
+                if let index = self.tableView.indexPathForSelectedRow {
+                    updateHeader()
+                    self.tableView.reloadRowsAtIndexPaths([index], withRowAnimation: .Automatic)
+                } else {
+                    self.tableView.reloadData()
+                }
+                
+                setDynamicShortcuts()
             }
-        } else {
-            print("-E-: Cannot take next dose, no MedicineID specified")
         }
     }
     
@@ -821,42 +689,99 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
     }
     
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-        switch(defaults.integerForKey("sortOrder")) {
-        case 0: // Manually
-            medication.sortInPlace(sortByManual)
-        case 1: // Next dosage
-            medication.sortInPlace(sortByNextDose)
-        default: break
+    
+    // MARK: - IAP methods
+    
+    func paymentQueue(queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
+        for transaction in transactions {
+            switch (transaction.transactionState) {
+            case SKPaymentTransactionState.Restored:
+                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
+                unlockManager()
+            case SKPaymentTransactionState.Purchased:
+                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
+                unlockManager()
+            case SKPaymentTransactionState.Failed:
+                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
+                mvc?.purchaseButton.enabled = true
+                mvc?.restoreButton.enabled = true
+                mvc?.purchaseIndicator.stopAnimating()
+                
+                presentPurchaseFailureAlert()
+            default: break
+            }
         }
     }
     
-    
-    // MARK: - Sort methods
-    
-    func sortByNextDose(medA: Medicine, medB: Medicine) -> Bool {
-        // Unscheduled medications should be at the bottom
-        if medA.reminderEnabled == false {
-            return false
+    func paymentQueueRestoreCompletedTransactionsFinished(queue: SKPaymentQueue) {
+        if queue.transactions.count == 0 {
+            presentRestoreFailureAlert()
         }
         
-        if medB.reminderEnabled == false {
-            return true
+        for transaction in queue.transactions {
+            let pID = transaction.payment.productIdentifier
+            queue.finishTransaction(transaction)
+            
+            if pID == productID {
+                unlockManager()
+            }
         }
-        
-        guard let next1 = medA.nextDose else {
-            return false
-        }
-        
-        guard let next2 = medB.nextDose else {
-            return true
-        }
-        
-        return next1.compare(next2) == .OrderedAscending
     }
     
-    func sortByManual(medA: Medicine, medB: Medicine) -> Bool {
-        return medA.sortOrder < medB.sortOrder
+    func paymentQueue(queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: NSError) {
+        for transaction in queue.transactions {
+            queue.finishTransaction(transaction)
+        }
+        
+        presentRestoreFailureAlert()
+    }
+    
+    func presentPurchaseFailureAlert() {
+        mvc?.restoreButton.setTitle("Restore", forState: UIControlState.Normal)
+        mvc?.restoreButton.enabled = true
+        mvc?.purchaseButton.enabled = true
+        mvc?.purchaseIndicator.stopAnimating()
+        
+        let failAlert = UIAlertController(title: "Purchase Failed", message: "Please try again later.", preferredStyle: UIAlertControllerStyle.Alert)
+        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+        
+        failAlert.view.tintColor = UIColor.grayColor()
+        mvc?.presentViewController(failAlert, animated: true, completion: nil)
+    }
+    
+    func presentRestoreFailureAlert() {
+        mvc?.restoreButton.setTitle("Restore", forState: UIControlState.Normal)
+        mvc?.restoreButton.enabled = true
+        mvc?.purchaseButton.enabled = true
+        mvc?.purchaseIndicator.stopAnimating()
+        
+        let failAlert = UIAlertController(title: "Restore Failed", message: "Please try again later. If the problem persists, use the purchase button above.", preferredStyle: UIAlertControllerStyle.Alert)
+        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+        failAlert.view.tintColor = UIColor.grayColor()
+        mvc?.presentViewController(failAlert, animated: true, completion: nil)
+    }
+    
+    func unlockManager() {
+        defaults.setBool(true, forKey: "managerUnlocked")
+        defaults.synchronize()
+        productLock = false
+        continueToAdd()
+    }
+    
+    func getLockStatus() -> Bool {
+        if medication.count >= trialLimit {
+            if productLock == true {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    func continueToAdd() {
+        dismissViewControllerAnimated(true) { () -> Void in
+            self.performSegueWithIdentifier("addMedication", sender: self)
+        }
     }
     
     
@@ -904,8 +829,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             self.appDelegate.saveContext()
             
             // If selected, sort by next dosage
-            if self.defaults.integerForKey("sortOrder") == 1 {
-                self.medication.sortInPlace(self.sortByNextDose)
+            if self.defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+                medication.sortInPlace(Medicine.sortByNextDose)
             }
             
             self.tableView.reloadData()

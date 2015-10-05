@@ -195,7 +195,7 @@ class MedicineDetailsTVC: UITableViewController {
         let sectionDate = getSectionDate(indexPath.section)
         
         if log[sectionDate]?.count == 0 {
-            return false
+//            return false
         }
         
         return true
@@ -257,8 +257,6 @@ class MedicineDetailsTVC: UITableViewController {
         } else {
             setToolbarItems(normalButtons, animated: true)
         }
-        
-        displayEmptyView()
     }
     
     func updateDeleteButtonLabel() {

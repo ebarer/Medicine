@@ -14,20 +14,20 @@ import StoreKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    
-    var launchedShortcutItem: [NSObject: AnyObject]?
     let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
 
+    
+    // MARK: - Application methods
+    
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
-        // Get view controllers and setup IAP observers
+        // Setup IAP observers and pass moc
         if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
             if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
                 SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainTVC)
                 (vc as! MainTVC).moc = self.managedObjectContext
             }
         }
-        
         
         // Register for notifications and actions
         let notificationType: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
@@ -60,7 +60,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine") else { fatalError("No user defaults") }
         
         if !defaults.boolForKey("firstLaunch") {
-            defaults.setInteger(1, forKey: "sortOrder")         // Set sort order to "next dosage"
+            defaults.setInteger(SortOrder.NextDosage.rawValue, forKey: "sortOrder")         // Set sort order to "next dosage"
             defaults.setInteger(5, forKey: "snoozeLength")      // Set snooze duration to 5 minutes
             defaults.setBool(false, forKey: "debug")            // Disable debug
             defaults.synchronize()
@@ -84,7 +84,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillResignActive(application: UIApplication) {
-        // Remove IAP observers
+        // Setup IAP observers
         if let viewControllers = self.window?.rootViewController?.childViewControllers {
             for viewController in viewControllers {
                 if viewController.isKindOfClass(MainTVC) {
@@ -100,16 +100,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillEnterForeground(application: UIApplication) {}
     
     func applicationDidBecomeActive(application: UIApplication) {
+        // Remove IAP observers
+        if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
+            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
+                SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainTVC)
+            }
+        }
+        
         if #available(iOS 9.0, *) {
             if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
                 handleShortcut(shortcutItem)
             }
             
             launchedShortcutItem = nil
-            return
         }
-        
-        return
     }
 
     func applicationWillTerminate(application: UIApplication) {
@@ -130,6 +134,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     
     // MARK: - Application shortcut stack
+    
+    var launchedShortcutItem: [NSObject: AnyObject]?
     
     @available(iOS 9.0, *)
     func application(application: UIApplication, performActionForShortcutItem shortcutItem: UIApplicationShortcutItem, completionHandler: (Bool) -> Void) {
@@ -174,13 +180,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
         NSNotificationCenter.defaultCenter().postNotificationName("medNotification", object: nil, userInfo: notification.userInfo)
-        
-        if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
-            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
-                SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainTVC)
-                (vc as! MainTVC).updateHeader()
-            }
-        }
     }
     
     func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {

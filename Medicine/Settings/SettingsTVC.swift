@@ -83,7 +83,7 @@ class SettingsTVC: UITableViewController {
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // Hide console and help buttons if debug disabled        
-        return defaults.boolForKey("debug") == true ? 4 : 3
+        return defaults.boolForKey("debug") == true ? 4 : 4
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {        
@@ -95,7 +95,7 @@ class SettingsTVC: UITableViewController {
             }))
             
             deleteAlert.addAction(UIAlertAction(title: "Reset Data and Settings", style: .Destructive, handler: {(action) -> Void in
-                self.deleteAll()
+                self.resetApp()
             }))
             
             deleteAlert.view.tintColor = UIColor.grayColor()
@@ -106,7 +106,7 @@ class SettingsTVC: UITableViewController {
     
     // MARK: - Helper methods
     
-    func deleteAll() {
+    func resetApp() {
         let moc = appDelegate.managedObjectContext
         let request = NSFetchRequest(entityName:"Medicine")
         
@@ -122,13 +122,16 @@ class SettingsTVC: UITableViewController {
             
             appDelegate.saveContext()
             
+            medication.removeAll()
+            
             // Clear scheduled notifications
             UIApplication.sharedApplication().cancelAllLocalNotifications()
             
             // Reset preferences
-            defaults.setBool(false, forKey: "firstLaunch")
-            defaults.setInteger(0, forKey: "sortOrder")
+            defaults.setBool(true, forKey: "firstLaunch")
+            defaults.setInteger(SortOrder.NextDosage.rawValue, forKey: "sortOrder")
             defaults.setInteger(5, forKey: "snoozeLength")
+            defaults.setObject([], forKey: "todayData")
             defaults.synchronize()
             
             // Show reset confirmation
