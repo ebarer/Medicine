@@ -13,7 +13,7 @@ import NotificationCenter
 class TodayViewController: UIViewController, NCWidgetProviding {
 
     let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
-    var nextDose: [String:String]?
+    let cal = NSCalendar.currentCalendar()
     
     
     // MARK: - Outlets
@@ -50,38 +50,64 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     func updateLabels() -> NCUpdateResult {
         if let todayData = defaults.valueForKey("todayData") {
             let data = todayData as! [String: AnyObject]
+            
+            // If no doses taken, but medication count != 0
+//            if (data["dateString"] as? String) == "Take first dose" {
+//                let string = NSMutableAttributedString(string: "No doses scheduled")
+//                string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+//                
+//                doseDescriptionLabel.text = nil
+//                doseMainLabel.attributedText = string
+//                doseMedLabel.text = nil
+//            }
 
-            if (data["dateString"] as? String) == "Take first dose" {
+            if let date = data["date"] {
+                // Dose overdue
+                if (date as! NSDate).compare(NSDate()) == .OrderedAscending {
+                    let string = NSMutableAttributedString(string: "Overdue dose")
+                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+
+                    doseDescriptionLabel.text = nil
+                    doseMainLabel.attributedText = string
+                    doseMedLabel.text = nil
+                    return NCUpdateResult.NewData
+                }
+                // No doses due today
+                else if !cal.isDateInToday((date as! NSDate)) {
+                    let string = NSMutableAttributedString(string: "No more doses today")
+                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+                    
+                    doseDescriptionLabel.text = nil
+                    doseMainLabel.attributedText = string
+                    doseMedLabel.text = nil
+                    return NCUpdateResult.NewData
+                }
+                // Show next dose
+                else {
+                    if let dateString = data["dateString"] {
+                        let string = NSMutableAttributedString(string: (dateString as! String))
+                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(50.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, string.length-2))
+                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(string.length-2, 2))
+                        doseMainLabel.attributedText = string
+                    }
+                    
+                    doseDescriptionLabel.text = (data["descriptionString"] as? String)
+                    doseMedLabel.text = (data["medString"] as? String)
+                    return NCUpdateResult.NewData
+                }
+            } else {
                 let string = NSMutableAttributedString(string: "No doses scheduled")
                 string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+                
+                doseDescriptionLabel.text = nil
                 doseMainLabel.attributedText = string
                 doseMedLabel.text = nil
-                doseDescriptionLabel.text = nil
                 return NCUpdateResult.NewData
             }
-            
-            if let date = data["date"] where (date as! NSDate).compare(NSDate()) == .OrderedDescending {
-                if let dateString = data["dateString"] {
-                    let string = NSMutableAttributedString(string: (dateString as! String))
-                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(50.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, string.length-2))
-                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(string.length-2, 2))
-                    doseMainLabel.attributedText = string
-                }
-
-                doseMedLabel.text = (data["medString"] as? String)
-            } else {
-                let string = NSMutableAttributedString(string: "Overdue dose")
-                string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
-                doseMainLabel.attributedText = string
-                doseMedLabel.text = nil
-            }
-            
-            doseDescriptionLabel.text = (data["descriptionString"] as? String)
-            
-            return NCUpdateResult.NewData
         } else {
             let string = NSMutableAttributedString(string: "You have no medications")
             string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+            doseDescriptionLabel.text = nil
             doseMainLabel.attributedText = string
             doseMedLabel.text = nil
             return NCUpdateResult.NewData

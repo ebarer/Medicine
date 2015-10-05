@@ -150,20 +150,23 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         headerDescriptionLabel.text = nil
         headerMedLabel.text = nil
         var todayData = [String: AnyObject]()
-        
+        todayData["date"] = nil
+
         // Warn of overdue doses
-        let overdueItems = medication.filter({$0.isOverdue().flag}).count
-        if overdueItems > 0  {
+        let overdueItems = medication.filter({$0.isOverdue().flag})
+        if overdueItems.count > 0  {
             var text = "Overdue dose"
             
             // Pluralize string if multiple overdue doses
-            if overdueItems > 1 {
+            if overdueItems.count > 1 {
                 text += "s"
             }
             
             string = NSMutableAttributedString(string: text)
             string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
             headerCounterLabel.attributedText = string
+            
+            todayData["date"] = overdueItems.first?.lastDose?.next
         }
             
         // Show next scheduled dose
@@ -184,11 +187,11 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                         
                         let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
                         headerMedLabel.text = "\(dose) of \(med.name!)"
-
-                        todayData["date"] = nextDose.fireDate!
                     }
                 }
             }
+            
+            todayData["date"] = nextDose.fireDate!
         }
             
         // Prompt to take first dose
@@ -197,7 +200,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
             headerCounterLabel.attributedText = string
         }
-        
+
         todayData["descriptionString"] = headerDescriptionLabel.text
         todayData["dateString"] = headerCounterLabel.text
         todayData["medString"] = headerMedLabel.text
