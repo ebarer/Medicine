@@ -181,6 +181,9 @@ class HistoryTVC: UITableViewController {
         cell.selectedBackgroundView = UIView()
         
         if let history = log[sectionDate] where history.count > 0 {
+            let dose = history[indexPath.row]
+            let med = dose.medicine!
+            
             dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
             dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle;
             
@@ -188,7 +191,7 @@ class HistoryTVC: UITableViewController {
             cell.textLabel?.text = dateFormatter.stringFromDate(history[indexPath.row].date)
             
             cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-            cell.detailTextLabel?.text = history[indexPath.row].medicine?.name
+            cell.detailTextLabel?.text = String(format:"%@ - %g %@", med.name!, dose.dosage, med.dosageUnit.units(dose.dosage))
             
             return cell
         }

@@ -149,15 +149,25 @@ class Medicine: NSManagedObject {
         return true
     }
     
-    func addDose(moc: NSManagedObjectContext, date doseDate: NSDate) -> History {
+    func addDose(moc: NSManagedObjectContext, date doseDate: NSDate, dosage: Float? = nil, dosageUnitInt: Int16? = nil) -> History {
         // Log current dosage as new history element
         let entity = NSEntityDescription.entityForName("History", inManagedObjectContext: moc)
         
         let newDose = History(entity: entity!, insertIntoManagedObjectContext: moc)
         newDose.medicine = self
-        newDose.dosage = self.dosage
-        newDose.dosageUnitInt = self.dosageUnitInt
         newDose.date = doseDate
+
+        if let dosage = dosage {
+            newDose.dosage = dosage
+        } else {
+            newDose.dosage = self.dosage
+        }
+        
+        if let dosageUnitInt = dosageUnitInt {
+            newDose.dosageUnitInt = dosageUnitInt
+        } else {
+            newDose.dosageUnitInt = self.dosageUnitInt
+        }
         
         do {
             newDose.next = try calculateNextDose(doseDate)

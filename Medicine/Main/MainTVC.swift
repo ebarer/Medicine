@@ -641,54 +641,15 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                     let alert = UIAlertController(title: "Take \(name)", message: message, preferredStyle: .Alert)
                     
                     alert.addAction(UIAlertAction(title: "Take Dose", style:  UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-                        self.takeMedicationNotification(notification)
+                        (self.tabBarController as! MainTBC).takeMedicationNotification(notification)
                     }))
                     
                     alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
-                        self.snoozeReminderNotification(notification)
+                        (self.tabBarController as! MainTBC).snoozeReminderNotification(notification)
                     }))
 
                     alert.view.tintColor = UIColor.grayColor()
                     appDelegate.window!.rootViewController?.presentViewController(alert, animated: true, completion: nil)
-                }
-            }
-        }
-    }
-    
-    func takeMedicationNotification(notification: NSNotification) {
-        print("Notification received")
-        
-        if let id = notification.userInfo!["id"] as? String {
-            if let med = Medicine.getMedicine(arr: medication, id: id) {
-                med.addDose(moc, date: NSDate())
-                appDelegate.saveContext()
-                
-                // If selected, sort by next dosage
-                if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-                    medication.sortInPlace(Medicine.sortByNextDose)
-                }
-                
-                // Reload table
-                if let index = self.tableView.indexPathForSelectedRow {
-                    updateHeader()
-                    self.tableView.reloadRowsAtIndexPaths([index], withRowAnimation: .Automatic)
-                } else {
-                    self.tableView.reloadData()
-                }
-                
-                setDynamicShortcuts()
-            }
-        }
-    }
-    
-    func snoozeReminderNotification(notification: NSNotification) {
-        if let info = notification.userInfo {
-            if let id = info["id"] as? String {
-                let medQuery = Medicine.getMedicine(arr: medication, id: id)
-                if let med = medQuery {
-                    med.snoozeNotification()
-                    appDelegate.saveContext()
-                    self.tableView.reloadData()
                 }
             }
         }

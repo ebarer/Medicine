@@ -165,26 +165,32 @@ class MedicineDetailsTVC: UITableViewController {
         return tableView.rowHeight
     }
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {        
         let cell = tableView.dequeueReusableCellWithIdentifier("historyCell", forIndexPath: indexPath)
         let sectionDate = getSectionDate(indexPath.section)
         
         // Specify selection color
         cell.selectedBackgroundView = UIView()
-
-        if let history = log[sectionDate] {
-            if history.count == 0 {
-                cell.textLabel?.text = "No doses logged"
-                cell.textLabel?.textColor = UIColor.lightGrayColor()
-            } else {
-                dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
-                dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle;
-                
-                cell.textLabel?.text = dateFormatter.stringFromDate(history[indexPath.row].date)
-                cell.textLabel?.textColor = UIColor.blackColor()
-            }
+        
+        if let history = log[sectionDate] where history.count > 0 {
+            let dose = history[indexPath.row]
+            
+            dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
+            dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle;
+            
+            cell.textLabel?.textColor = UIColor.blackColor()
+            cell.textLabel?.text = dateFormatter.stringFromDate(history[indexPath.row].date)
+            
+            cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+            cell.detailTextLabel?.text = String(format:"%g %@", dose.dosage, med.dosageUnit.units(dose.dosage))
+            
+            return cell
         }
-
+        
+        cell.textLabel?.textColor = UIColor.lightGrayColor()
+        cell.textLabel?.text = "No doses logged"
+        cell.detailTextLabel?.text?.removeAll()
+        
         return cell
     }
     
