@@ -55,8 +55,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         // Add observeres for notifications
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateHeader", name: "refreshWidget", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshMedication", name: "refreshMedication", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "internalNotification:", name: "medNotification", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
         
         // Register for 3D touch if available
         if #available(iOS 9.0, *) {
@@ -328,21 +329,15 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         return [deleteAction, editAction]
     }
     
-    func refreshTableAndNotifications() {
-        clearOldNotifications()
-        tableView.reloadData()
-    }
-    
-    func clearOldNotifications() {
-        let currentDate = NSDate()
-        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
-        for notification in notifications {
-            if let date = notification.fireDate {
-                if date.compare(currentDate) == .OrderedAscending {
-                    UIApplication.sharedApplication().cancelLocalNotification(notification)
-                }
-            }
+    func refreshMedication() {
+        updateHeader()
+        
+        // If selected, sort by next dosage
+        if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+            medication.sortInPlace(Medicine.sortByNextDose)
         }
+        
+        tableView.reloadData()
     }
     
     

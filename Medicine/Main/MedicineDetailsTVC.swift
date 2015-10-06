@@ -227,20 +227,30 @@ class MedicineDetailsTVC: UITableViewController {
                 moc.deleteObject(logItems[indexPath.row])
             }
             
+            appDelegate.saveContext()
+            
             log[sectionDate]?.removeAtIndex(indexPath.row)
             count--
             
             if logItems.count == 1 {
                 if let cell = tableView.cellForRowAtIndexPath(indexPath) {
-                    cell.textLabel?.text = "No doses logged"
                     cell.textLabel?.textColor = UIColor.lightGrayColor()
-                    tableView.editing = false
+                    cell.textLabel?.text = "No doses logged"
+                    cell.detailTextLabel?.text?.removeAll()
                 }
             } else {
                 tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
             }
             
-            appDelegate.saveContext()
+            updateDeleteButtonLabel()
+            setEditing(false, animated: true)
+            
+            if count == 0 {
+                displayEmptyView()
+            }
+            
+            // Update widget
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
         }
     }
     
@@ -302,9 +312,11 @@ class MedicineDetailsTVC: UITableViewController {
                     
                     if logItems.count == 1 {
                         let label = tableView.cellForRowAtIndexPath(index)?.textLabel
+                        let detail = tableView.cellForRowAtIndexPath(index)?.detailTextLabel
 
                         label?.textColor = UIColor.lightGrayColor()
                         label?.text = "No doses logged"
+                        detail?.text?.removeAll()
                     } else {
                         tableView.deleteRowsAtIndexPaths([index], withRowAnimation: .Fade)
                     }
@@ -317,6 +329,9 @@ class MedicineDetailsTVC: UITableViewController {
             if count == 0 {
                 displayEmptyView()
             }
+            
+            // Update widget
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
         }
     }
     
@@ -387,6 +402,9 @@ class MedicineDetailsTVC: UITableViewController {
         
         // Reload table
         self.tableView.reloadData()
+
+        // Update widget
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
     }
     
     @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {}

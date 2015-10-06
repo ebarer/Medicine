@@ -257,20 +257,30 @@ class HistoryTVC: UITableViewController {
                 moc.deleteObject(logItems[indexPath.row])
             }
             
+            appDelegate.saveContext()
+            
             log[sectionDate]?.removeAtIndex(indexPath.row)
             gblCount--
             
             if logItems.count == 1 {
                 if let cell = tableView.cellForRowAtIndexPath(indexPath) {
-                    cell.textLabel?.text = "No doses logged"
                     cell.textLabel?.textColor = UIColor.lightGrayColor()
-                    tableView.editing = false
+                    cell.textLabel?.text = "No doses logged"
+                    cell.detailTextLabel?.text?.removeAll()
                 }
             } else {
                 tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
             }
             
-            appDelegate.saveContext()
+            updateDeleteButtonLabel()
+            setEditing(false, animated: true)
+            
+            if gblCount == 0 {
+                displayEmptyView()
+            }
+            
+            // Update widget
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
         }
     }
     
@@ -355,6 +365,9 @@ class HistoryTVC: UITableViewController {
             if gblCount == 0 {
                 displayEmptyView()
             }
+            
+            // Update widget
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
         }
     }
     
@@ -415,6 +428,9 @@ class HistoryTVC: UITableViewController {
             
             // Reload table
             self.tableView.reloadData()
+            
+            // Update widget
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
         }
     }
     

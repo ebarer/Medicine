@@ -14,7 +14,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 
     let cal = NSCalendar.currentCalendar()
     let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
-    var size: CGFloat = 75.0
+    var size: CGFloat = 130.0
     
     
     // MARK: - Outlets
