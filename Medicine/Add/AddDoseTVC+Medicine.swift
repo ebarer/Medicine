@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class AddDoseTV_Medicine: UITableViewController {
+class AddDoseTVC_Medicine: UITableViewController {
 
     var selectedMed: Medicine?
     

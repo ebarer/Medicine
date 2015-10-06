@@ -201,7 +201,7 @@ class MedicineDetailsTVC: UITableViewController {
         let sectionDate = getSectionDate(indexPath.section)
         
         if log[sectionDate]?.count == 0 {
-//            return false
+            return false
         }
         
         return true

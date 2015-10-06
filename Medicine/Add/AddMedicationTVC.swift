@@ -123,6 +123,10 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     // MARK: - Table view delegate
     
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 2
+    }
+    
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         if section == Rows.prescription.index().section {
             return "Keep track of your prescription levels, and be reminded to refill when running low."
@@ -162,6 +166,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         
         if let vc = segue.destinationViewController as? AddMedicationTVC_Interval {
             vc.med = self.med
+            vc.editMode = self.editMode
         }
     }
     

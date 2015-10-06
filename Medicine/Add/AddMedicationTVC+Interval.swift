@@ -11,6 +11,7 @@ import UIKit
 class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
 
     weak var med: Medicine?
+    var editMode: Bool = false
     
     
     // MARK: - Outlets
@@ -42,6 +43,10 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         // Setup date formatter
         dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
         dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
+        
+        if editMode == true {
+            selectedRow = Rows.intervalLabel
+        }
         
         // Set values
         if let medicine = med {
@@ -97,11 +102,11 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         switch(row) {
         case Rows.intervalUnitPicker:
             if selectedRow == Rows.intervalUnitLabel {
-                return 162
+                return 175
             }
         case Rows.intervalPicker:
             if selectedRow == Rows.intervalLabel {
-                return 162
+                return 175
             }
         case Rows.alarmLabel:
             if med?.intervalUnit == Intervals.Daily {
@@ -148,7 +153,13 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
     // MARK: - Table view delegate
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        selectedRow = Rows(index: indexPath)
+        let newSelect = Rows(index: indexPath)
+        
+        if selectedRow == newSelect {
+            selectedRow = Rows.none
+        } else {
+            selectedRow = newSelect
+        }
         
         // Reload labels
         let labels = [Rows.intervalLabel.index(), Rows.intervalUnitLabel.index(), Rows.alarmLabel.index()]
