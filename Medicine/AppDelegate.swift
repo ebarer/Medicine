@@ -29,9 +29,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        // Clear old notifications
-        let notifications = application.scheduledLocalNotifications
-        application.scheduledLocalNotifications = notifications
+        // Reschedule notifications
+        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
         
         // Register for notifications and actions
         let notificationType: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
@@ -101,9 +100,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(application: UIApplication) {}
     
     func applicationWillEnterForeground(application: UIApplication) {
-        // Clear old notifications
-        let notifications = application.scheduledLocalNotifications
-        application.scheduledLocalNotifications = notifications
+        // Reschedule notifications
+        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
     }
     
     func applicationDidBecomeActive(application: UIApplication) {
@@ -127,6 +125,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
         self.saveContext()
+        
+        // Reschedule notifications
+        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
         
         // Remove IAP observers
         if let viewControllers = self.window?.rootViewController?.childViewControllers {

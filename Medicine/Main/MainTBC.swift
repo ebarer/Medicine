@@ -38,6 +38,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         tabBar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         
         // Add observeres for notifications
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "rescheduleNotifications:", name: "rescheduleNotifications", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "takeMedicationNotification:", name: "takeDoseNotification", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "snoozeReminderNotification:", name: "snoozeReminderNotification", object: nil)
         
@@ -75,6 +76,16 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
 
     
     // MARK: - Observers
+    
+    func rescheduleNotifications(notification: NSNotification) {
+        let app = UIApplication.sharedApplication()
+        
+        app.cancelAllLocalNotifications()
+        
+        for med in medication {
+            med.scheduleNextNotification()
+        }
+    }
     
     func takeMedicationNotification(notification: NSNotification) {
         tabBar.items?.first?.title = "Hello"

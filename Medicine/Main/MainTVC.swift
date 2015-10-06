@@ -239,7 +239,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         cell.textLabel?.text = med.name
         cell.textLabel?.textColor = UIColor.blackColor()
         
-        // If reminders aren't enabled for medication, set subtitle to last dose taken
+        // If reminders aren't enabled for medication
         if med.reminderEnabled == false {
             if let date = med.lastDose?.next {
                 var subtitle:NSMutableAttributedString!
@@ -388,8 +388,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 self.performSegueWithIdentifier("addDose", sender: med)
             }))
             
-            // If next dosage is set, allow user to clear notification
-            if (med.nextDose != nil) {
+            // If last dose is set, allow user to clear notification
+            if (med.lastDose != nil) {
                 alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
                     if (med.untakeLastDose(self.moc)) {
                         self.appDelegate.saveContext()

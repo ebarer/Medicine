@@ -75,9 +75,10 @@ class Medicine: NSManagedObject {
             }
         }
         
-        if intervalUnit == Intervals.Daily && reminderEnabled == true {
+        // If daily interval with no history, and scheduled for tomorrow
+        if intervalUnit == Intervals.Daily && intervalAlarm != nil && reminderEnabled == true {
             if let date = scheduledNotification?.fireDate where lastDose == nil {
-                if cal.isDateInToday(date) == false {
+                if cal.isDateInToday(date) == false && !cal.isDateInToday(intervalAlarm!) {
                     return (true, nil)
                 }
             }
