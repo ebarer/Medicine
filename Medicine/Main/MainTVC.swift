@@ -397,9 +397,11 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                         // If selected, sort by next dosage
                         if self.defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
                             medication.sortInPlace(Medicine.sortByNextDose)
+                            self.tableView.reloadData()
+                        } else {
+                            self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.None)
                         }
                         
-                        self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.None)
                         self.updateHeader()
                         self.setDynamicShortcuts()
                     } else {

@@ -29,13 +29,6 @@ class AddDoseTVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.clearsSelectionOnViewWillAppear = true
-
-        // Display med name in prompt when not in global history
-        if let name = med?.name where !globalHistory {
-            self.navigationItem.prompt = name
-        }
-        
-        updateLabels()
         
         // Set picker min/max values
         picker.maximumDate = NSDate()
@@ -47,6 +40,11 @@ class AddDoseTVC: UITableViewController {
     override func viewWillAppear(animated: Bool) {
         if let index = tableView.indexPathForSelectedRow {
             tableView.deselectRowAtIndexPath(index, animated: animated)
+        }
+        
+        // Display med name in prompt when not in global history
+        if let name = med?.name where !globalHistory {
+            self.navigationItem.prompt = name
         }
         
         updateLabels()
