@@ -588,7 +588,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     @IBAction func medicationUnwindCancel(unwindSegue: UIStoryboardSegue) {
         moc.rollback()
-        setEditing(false, animated: true)
+        setEditing(true, animated: true)
         self.tableView.reloadData()
     }
     

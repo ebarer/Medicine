@@ -29,6 +29,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
+        // Clear old notifications
+        let notifications = application.scheduledLocalNotifications
+        application.scheduledLocalNotifications = notifications
+        
         // Register for notifications and actions
         let notificationType: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
         
@@ -71,7 +75,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             defaults.setBool(true, forKey: "debug")      // Set snooze duration to 5 minutes
         }
         
-        
         // Handle application shortcut
         if #available(iOS 9.0, *) {
             if let _ = launchOptions?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
@@ -97,7 +100,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationDidEnterBackground(application: UIApplication) {}
     
-    func applicationWillEnterForeground(application: UIApplication) {}
+    func applicationWillEnterForeground(application: UIApplication) {
+        // Clear old notifications
+        let notifications = application.scheduledLocalNotifications
+        application.scheduledLocalNotifications = notifications
+    }
     
     func applicationDidBecomeActive(application: UIApplication) {
         // Remove IAP observers

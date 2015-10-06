@@ -8,8 +8,9 @@
 
 import UIKit
 import CoreData
+import MessageUI
 
-class SettingsTVC: UITableViewController {
+class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
 
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
@@ -83,10 +84,25 @@ class SettingsTVC: UITableViewController {
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // Hide console and help buttons if debug disabled        
-        return defaults.boolForKey("debug") == true ? 4 : 4
+        return defaults.boolForKey("debug") == true ? 4 : 3
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {        
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if tableView.cellForRowAtIndexPath(indexPath)?.reuseIdentifier == "feedbackCell" {
+            let mc: MFMailComposeViewController = MFMailComposeViewController()
+            mc.mailComposeDelegate = self
+            mc.setToRecipients(["hello@medicinemanagerapp.com"])
+            mc.setSubject("Feedback for Medicine Manager")
+
+            if let deviceEncode = generateDeviceInfo()?.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0)) {
+                if let infoFile = NSData(base64EncodedString: deviceEncode, options: []) {
+                    mc.addAttachmentData(infoFile, mimeType: "text/plain", fileName: "device_information.txt")
+                }
+            }
+            
+            self.presentViewController(mc, animated: true, completion: nil)
+        }
+        
         if tableView.cellForRowAtIndexPath(indexPath)?.reuseIdentifier == "resetCell" {
             let deleteAlert = UIAlertController(title: "Reset Data and Settings?", message: "This will permanently delete all medication, history, and preferences.", preferredStyle: UIAlertControllerStyle.Alert)
             
@@ -101,6 +117,19 @@ class SettingsTVC: UITableViewController {
             deleteAlert.view.tintColor = UIColor.grayColor()
             self.presentViewController(deleteAlert, animated: true, completion: nil)
         }
+    }
+    
+    func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
+        switch result {
+        case MFMailComposeResultSent:
+            print("Mail sent")
+        case MFMailComposeResultFailed:
+            print("Mail sent failure: %@", error?.localizedDescription)
+        default:
+            break
+        }
+        
+        self.dismissViewControllerAnimated(true, completion: nil)
     }
     
     
@@ -146,6 +175,37 @@ class SettingsTVC: UITableViewController {
         } catch {
             print("Could not fetch medication.")
         }
+    }
+    
+    func generateDeviceInfo() -> NSData? {
+        let device = UIDevice.currentDevice()
+        let dictionary = NSBundle.mainBundle().infoDictionary!
+        let name = dictionary["CFBundleName"] as! String
+        let version = dictionary["CFBundleShortVersionString"] as! String
+        let build = dictionary["CFBundleVersion"] as! String
+        
+        var deviceInfo = "App Information:\n"
+        deviceInfo += "App Name: \(name)\n"
+        deviceInfo += "App Version: \(version) (\(build))\n\n"
+
+        deviceInfo += "Device Information:\n"
+        deviceInfo += "Device: \(deviceName())\n"
+        deviceInfo += "iOS Version: \(device.systemVersion)\n"
+        deviceInfo += "Timezone: \(NSTimeZone.localTimeZone().abbreviation!)\n"
+        
+        return deviceInfo.dataUsingEncoding(NSUTF8StringEncoding)
+    }
+    
+    func deviceName() -> String {
+        var systemInfo = utsname()
+        uname(&systemInfo)
+        let machineMirror = Mirror(reflecting: systemInfo.machine)
+        let identifier = machineMirror.children.reduce("") { identifier, element in
+            guard let value = element.value as? Int8 where value != 0 else { return identifier }
+            return identifier + String(UnicodeScalar(UInt8(value)))
+        }
+        
+        return identifier
     }
     
     

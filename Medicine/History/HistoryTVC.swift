@@ -243,6 +243,37 @@ class HistoryTVC: UITableViewController {
         return true
     }
     
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        let sectionDate = getSectionDate(indexPath.section)
+        
+        if let logItems = log[sectionDate] {
+            if let med = logItems[safe: indexPath.row]?.medicine {
+                if med.lastDose == logItems[indexPath.row] {
+                    med.untakeLastDose(moc)
+                } else {
+                    moc.deleteObject(logItems[indexPath.row])
+                }
+            } else {
+                moc.deleteObject(logItems[indexPath.row])
+            }
+            
+            log[sectionDate]?.removeAtIndex(indexPath.row)
+            gblCount--
+            
+            if logItems.count == 1 {
+                if let cell = tableView.cellForRowAtIndexPath(indexPath) {
+                    cell.textLabel?.text = "No doses logged"
+                    cell.textLabel?.textColor = UIColor.lightGrayColor()
+                    tableView.editing = false
+                }
+            } else {
+                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            }
+            
+            appDelegate.saveContext()
+        }
+    }
+    
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         updateDeleteButtonLabel()
     }
