@@ -29,6 +29,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
+        // Setup background fetch to reload reschedule notifications
+        UIApplication.sharedApplication().setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
+        
         // Reschedule notifications
         NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
         
@@ -57,8 +60,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let settings = UIUserNotificationSettings(forTypes: notificationType, categories: categories as? Set<UIUserNotificationCategory>)
 
         application.registerUserNotificationSettings(settings)
-        
-        
+
         // Set user preferences
         guard let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine") else { fatalError("No user defaults") }
         
@@ -68,9 +70,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             defaults.setBool(false, forKey: "debug")            // Disable debug
             defaults.synchronize()
         }
-        
-        if UIDevice.currentDevice().identifierForVendor?.UUIDString == "1236238D-3703-4DEA-93A7-B521FE341AF5" ||
-           UIDevice.currentDevice().identifierForVendor?.UUIDString == "89AED7B3-EAAB-4E5C-8CBE-CE5A48B311EE" {
+
+        if UIDevice.currentDevice().identifierForVendor?.UUIDString == "003DDFAB-8F5B-4F26-A7AD-23F6F0AC97F3" {
             defaults.setBool(true, forKey: "debug")      // Set snooze duration to 5 minutes
         }
         
@@ -138,6 +139,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
         }
+    }
+    
+    
+    // MARK: - Background refresh
+    
+    func application(application: UIApplication, performFetchWithCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
+        print("Background update")
+        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshWidget", object: nil, userInfo: nil)
+        completionHandler(.NewData)
     }
     
     

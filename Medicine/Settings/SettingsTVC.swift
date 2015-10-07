@@ -84,7 +84,7 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     // MARK: - Table view delegate
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // Hide console and help buttons if debug disabled        
+        // Hide console and help buttons if debug disabled
         return defaults.boolForKey("debug") == true ? 4 : 3
     }
     

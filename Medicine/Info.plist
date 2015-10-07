@@ -30,7 +30,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>105</string>
+	<string>108</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationShortcutItems</key>
@@ -48,6 +48,10 @@
 				<string>addMedication</string>
 			</dict>
 		</dict>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

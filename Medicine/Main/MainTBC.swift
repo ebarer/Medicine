@@ -49,22 +49,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         super.didReceiveMemoryWarning()
     }
     
-    func loadMedication() {
-        let request = NSFetchRequest(entityName:"Medicine")
-        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-        
-        do {
-            let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
-            
-            if let results = fetchedResults {
-                medication = results
-                setDynamicShortcuts()
-            }
-        } catch {
-            print("Could not fetch medication.")
-        }
-    }
-    
     func tabBarController(tabBarController: UITabBarController, didSelectViewController viewController: UIViewController) {
         for vc in viewController.childViewControllers {
             if vc.isKindOfClass(SettingsTVC_Console) {
@@ -85,6 +69,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         for med in medication {
             med.scheduleNextNotification()
         }
+        
+        setDynamicShortcuts()
     }
     
     func takeMedicationNotification(notification: NSNotification) {
@@ -119,6 +105,22 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     
     // MARK: - Helper methods
+    
+    func loadMedication() {
+        let request = NSFetchRequest(entityName:"Medicine")
+        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+        
+        do {
+            let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
+            
+            if let results = fetchedResults {
+                medication = results
+                setDynamicShortcuts()
+            }
+        } catch {
+            print("Could not fetch medication.")
+        }
+    }
     
     func cellDateString(date: NSDate?) -> String {
         guard let date = date else { return "" }
