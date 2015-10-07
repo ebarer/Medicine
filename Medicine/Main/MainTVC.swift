@@ -585,7 +585,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     @IBAction func medicationUnwindCancel(unwindSegue: UIStoryboardSegue) {
         moc.rollback()
-        setEditing(true, animated: true)
+        setEditing(false, animated: true)
         self.tableView.reloadData()
     }
     
@@ -666,6 +666,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 unlockManager()
             case SKPaymentTransactionState.Failed:
                 SKPaymentQueue.defaultQueue().finishTransaction(transaction)
+                
                 mvc?.purchaseButton.enabled = true
                 mvc?.restoreButton.enabled = true
                 mvc?.purchaseIndicator.stopAnimating()
@@ -700,7 +701,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     func presentPurchaseFailureAlert() {
-        mvc?.restoreButton.setTitle("Restore", forState: UIControlState.Normal)
+        mvc?.restoreButton.setTitle("Restore Purchase", forState: UIControlState.Normal)
         mvc?.restoreButton.enabled = true
         mvc?.purchaseButton.enabled = true
         mvc?.purchaseIndicator.stopAnimating()
@@ -713,7 +714,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     func presentRestoreFailureAlert() {
-        mvc?.restoreButton.setTitle("Restore", forState: UIControlState.Normal)
+        mvc?.restoreButton.setTitle("Restore Purchase", forState: UIControlState.Normal)
         mvc?.restoreButton.enabled = true
         mvc?.purchaseButton.enabled = true
         mvc?.purchaseIndicator.stopAnimating()

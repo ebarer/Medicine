@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9052" systemVersion="15B17c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Kbg-Ff-MZ0">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9058" systemVersion="15B22c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Kbg-Ff-MZ0">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9040"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9048"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -32,7 +32,9 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T1w-Bc-DFr">
                                 <rect key="frame" x="239" y="382.5" width="121" height="30"/>
                                 <animations/>
-                                <state key="normal" title="Restore Purchase"/>
+                                <state key="normal" title="Restore Purchase">
+                                    <color key="titleColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
                                 <connections>
                                     <action selector="restoreFullVersion:" destination="02U-hZ-tkT" eventType="touchUpInside" id="tS2-b9-GZ0"/>
                                 </connections>
@@ -47,7 +49,9 @@
                                     </constraint>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
-                                <state key="normal" title="Buy"/>
+                                <state key="normal" title="Buy">
+                                    <color key="titleColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
                                 <connections>
                                     <action selector="purchaseFullVersion" destination="02U-hZ-tkT" eventType="touchUpInside" id="1oB-gB-ivy"/>
                                 </connections>

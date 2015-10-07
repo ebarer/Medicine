@@ -20,7 +20,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Application methods
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        
         // Setup IAP observers and pass moc
         if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
             if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
@@ -87,26 +86,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillResignActive(application: UIApplication) {
-        // Setup IAP observers
-        if let viewControllers = self.window?.rootViewController?.childViewControllers {
-            for viewController in viewControllers {
-                if viewController.isKindOfClass(MainTVC) {
-                    let vc = viewController as! MainTVC
-                    SKPaymentQueue.defaultQueue().removeTransactionObserver(vc)
-                }
+        // Remove IAP observers
+        if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
+            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
+                SKPaymentQueue.defaultQueue().removeTransactionObserver(vc as! MainTVC)
             }
         }
     }
     
-    func applicationDidEnterBackground(application: UIApplication) {}
+    func applicationDidEnterBackground(application: UIApplication) {
+        // Remove IAP observers
+        if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
+            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
+                SKPaymentQueue.defaultQueue().removeTransactionObserver(vc as! MainTVC)
+            }
+        }
+    }
     
     func applicationWillEnterForeground(application: UIApplication) {
+        // Setup IAP observers and pass moc
+        if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
+            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
+                SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainTVC)
+            }
+        }
+        
         NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
         NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
     }
     
     func applicationDidBecomeActive(application: UIApplication) {
-        // Remove IAP observers
+        // Setup IAP observers and pass moc
         if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
             if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
                 SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainTVC)
@@ -131,12 +141,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
         
         // Remove IAP observers
-        if let viewControllers = self.window?.rootViewController?.childViewControllers {
-            for viewController in viewControllers {
-                if viewController.isKindOfClass(MainTVC) {
-                    let vc = viewController as! MainTVC
-                    SKPaymentQueue.defaultQueue().removeTransactionObserver(vc)
-                }
+        if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
+            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
+                SKPaymentQueue.defaultQueue().removeTransactionObserver(vc as! MainTVC)
             }
         }
     }
