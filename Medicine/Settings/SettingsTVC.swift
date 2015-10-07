@@ -30,6 +30,7 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         super.viewDidLoad()
         
         setLabels()
+        print(generateDeviceInfo())
         
         // Set version string
         let dictionary = NSBundle.mainBundle().infoDictionary!
@@ -94,7 +95,8 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
             mc.setToRecipients(["hello@medicinemanagerapp.com"])
             mc.setSubject("Feedback for Medicine Manager")
 
-            if let deviceEncode = generateDeviceInfo()?.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0)) {
+            let deviceInfo = generateDeviceInfo().dataUsingEncoding(NSUTF8StringEncoding)
+            if let deviceEncode = deviceInfo?.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0)) {
                 if let infoFile = NSData(base64EncodedString: deviceEncode, options: []) {
                     mc.addAttachmentData(infoFile, mimeType: "text/plain", fileName: "device_information.txt")
                 }
@@ -177,7 +179,7 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         }
     }
     
-    func generateDeviceInfo() -> NSData? {
+    func generateDeviceInfo() -> String {
         let device = UIDevice.currentDevice()
         let dictionary = NSBundle.mainBundle().infoDictionary!
         let name = dictionary["CFBundleName"] as! String
@@ -191,9 +193,9 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         deviceInfo += "Device Information:\n"
         deviceInfo += "Device: \(deviceName())\n"
         deviceInfo += "iOS Version: \(device.systemVersion)\n"
-        deviceInfo += "Timezone: \(NSTimeZone.localTimeZone().abbreviation!)\n"
+        deviceInfo += "Timezone: \(NSTimeZone.localTimeZone().name) (\(NSTimeZone.localTimeZone().abbreviation!))\n"
         
-        return deviceInfo.dataUsingEncoding(NSUTF8StringEncoding)
+        return deviceInfo
     }
     
     func deviceName() -> String {
