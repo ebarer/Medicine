@@ -166,8 +166,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             string = NSMutableAttributedString(string: text)
             string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
             headerCounterLabel.attributedText = string
-            
-            todayData["date"] = overdueItems.first?.lastDose?.next
         }
             
         // Show next scheduled dose
@@ -330,6 +328,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     func refreshMedication() {
+        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+        
         updateHeader()
         
         // If selected, sort by next dosage
@@ -638,17 +638,30 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                     let alert = UIAlertController(title: "Take \(name)", message: message, preferredStyle: .Alert)
                     
                     alert.addAction(UIAlertAction(title: "Take Dose", style:  UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-                        (self.tabBarController as! MainTBC).takeMedicationNotification(notification)
+                        self.performSegueWithIdentifier("addDose", sender: med)
                     }))
                     
-                    alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
-                        (self.tabBarController as! MainTBC).snoozeReminderNotification(notification)
+                    alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+                        if let id = notification.userInfo!["id"] as? String {
+                            if let med = Medicine.getMedicine(arr: medication, id: id) {
+                                med.snoozeNotification()
+                                self.appDelegate.saveContext()
+                                
+                                self.setDynamicShortcuts()
+                            }
+                        }
+                    }))
+                    
+                    alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Cancel, handler:  {(action) -> Void in
+                        self.refreshMedication()
                     }))
 
                     alert.view.tintColor = UIColor.grayColor()
                     appDelegate.window!.rootViewController?.presentViewController(alert, animated: true, completion: nil)
                 }
             }
+            
+            refreshMedication()
         }
     }
     

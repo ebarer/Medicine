@@ -51,58 +51,38 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     func updateLabels() -> NCUpdateResult {
         if let todayData = defaults.valueForKey("todayData") {
             let data = todayData as! [String: AnyObject]
-            size = 75.0
-
+            
+            // Show next dose
             if let date = data["date"] {
-                // Dose overdue
-                if (date as! NSDate).compare(NSDate()) == .OrderedAscending {
-                    let string = NSMutableAttributedString(string: "Overdue dose")
-                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
-
-                    doseDescriptionLabel.text = nil
-                    doseMainLabel.attributedText = string
-                    doseMedLabel.text = nil
-                }
-                // No doses due today
-                else if !cal.isDateInToday((date as! NSDate)) {
-                    let string = NSMutableAttributedString(string: "No more doses today")
-                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
-                    
-                    doseDescriptionLabel.text = nil
-                    doseMainLabel.attributedText = string
-                    doseMedLabel.text = nil
-                }
-                // Show next dose
-                else {
-                    if let dateString = data["dateString"] {
-                        let string = NSMutableAttributedString(string: (dateString as! String))
-                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(50.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, string.length-2))
-                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(string.length-2, 2))
-                        doseMainLabel.attributedText = string
-                    }
+                if ((date as! NSDate).compare(NSDate()) == .OrderedDescending && cal.isDateInToday(date as! NSDate)) {
+                    let string = NSMutableAttributedString(string: data["dateString"] as! String)
+                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(50.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, string.length-2))
+                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(string.length-2, 2))
                     
                     doseDescriptionLabel.text = (data["descriptionString"] as? String)
+                    doseMainLabel.attributedText = string
                     doseMedLabel.text = (data["medString"] as? String)
                     size = 130.0
+                    
+                    self.preferredContentSize = CGSizeMake(0, size);
+                    return NCUpdateResult.NewData
                 }
-            } else {
-                let string = NSMutableAttributedString(string: "No doses scheduled")
-                string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
-                
-                doseDescriptionLabel.text = nil
-                doseMainLabel.attributedText = string
-                doseMedLabel.text = nil
             }
-        } else {
-            let string = NSMutableAttributedString(string: "You have no medications")
+            
+            let string = NSMutableAttributedString(string: data["dateString"] as! String)
             string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+            
             doseDescriptionLabel.text = nil
             doseMainLabel.attributedText = string
             doseMedLabel.text = nil
+            size = 75.0
+            
+            self.preferredContentSize = CGSizeMake(0, size);
+            return NCUpdateResult.NewData
         }
         
         self.preferredContentSize = CGSizeMake(0, size);
-        return NCUpdateResult.NewData
+        return NCUpdateResult.NoData
     }
     
     @IBAction func launchApp() {

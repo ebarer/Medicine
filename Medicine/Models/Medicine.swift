@@ -203,9 +203,7 @@ class Medicine: NSManagedObject {
     
     // MARK: - Notification methods
     func scheduleNotification(date: NSDate) throws {
-        // Schedule if the user wants a reminder and the reminder date is in the future
-        //print(UIApplication.sharedApplication().currentUserNotificationSettings())
-        
+        // Schedule if the user wants a reminder and the reminder date is in the future        
         guard date.compare(NSDate()) == .OrderedDescending else {
             throw MedicineError.DatePassed
         }
@@ -254,6 +252,8 @@ class Medicine: NSManagedObject {
         } else {
             snoozeDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: 5, toDate: NSDate(), options: [])!
         }
+        
+        self.lastDose?.next = snoozeDate
         
         // Schedule new notification
         do {

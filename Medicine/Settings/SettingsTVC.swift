@@ -30,7 +30,6 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         super.viewDidLoad()
         
         setLabels()
-        print(generateDeviceInfo())
         
         // Set version string
         let dictionary = NSBundle.mainBundle().infoDictionary!

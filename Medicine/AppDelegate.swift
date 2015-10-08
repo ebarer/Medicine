@@ -70,7 +70,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             defaults.synchronize()
         }
 
-        if UIDevice.currentDevice().identifierForVendor?.UUIDString == "003DDFAB-8F5B-4F26-A7AD-23F6F0AC97F3" {
+        print(UIDevice.currentDevice().identifierForVendor?.UUIDString)
+        if UIDevice.currentDevice().identifierForVendor?.UUIDString == "104AFCAA-C1C8-4628-8B81-7ED680C8157B" ||
+           UIDevice.currentDevice().identifierForVendor?.UUIDString == "3CF28B81-5657-465E-96B4-1E094CE335B3" {
             defaults.setBool(true, forKey: "debug")      // Set snooze duration to 5 minutes
         }
         
@@ -152,9 +154,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Background refresh
     
     func application(application: UIApplication, performFetchWithCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
-        print("Background update")
         NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
-        NSNotificationCenter.defaultCenter().postNotificationName("refreshWidget", object: nil, userInfo: nil)
         completionHandler(.NewData)
     }
     

@@ -71,34 +71,29 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         }
         
         setDynamicShortcuts()
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshWidget", object: nil, userInfo: nil)
     }
     
     func takeMedicationNotification(notification: NSNotification) {
-        tabBar.items?.first?.title = "Hello"
-        
         if let id = notification.userInfo!["id"] as? String {
-            tabBar.items?.first?.title = Medicine.getMedicine(arr: medication, id: id)?.name
-            
             if let med = Medicine.getMedicine(arr: medication, id: id) {
-                
-                tabBar.items?.first?.title = med.name!
-                
                 med.addDose(moc, date: NSDate())
                 appDelegate.saveContext()
                 
                 setDynamicShortcuts()
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
             }
         }
     }
     
     func snoozeReminderNotification(notification: NSNotification) {
-        if let info = notification.userInfo {
-            if let id = info["id"] as? String {
-                let medQuery = Medicine.getMedicine(arr: medication, id: id)
-                if let med = medQuery {
-                    med.snoozeNotification()
-                    appDelegate.saveContext()
-                }
+        if let id = notification.userInfo!["id"] as? String {
+            if let med = Medicine.getMedicine(arr: medication, id: id) {
+                med.snoozeNotification()
+                appDelegate.saveContext()
+                    
+                setDynamicShortcuts()
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
             }
         }
     }
