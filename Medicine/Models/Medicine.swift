@@ -326,8 +326,8 @@ class Medicine: NSManagedObject {
                 date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])!
             }
             
-            // If scheduled dose is in the past, schedule for next interval
-            if date.compare(NSDate()) == .OrderedAscending {
+            // If scheduled dose is in the past, schedule for next interval until it is for the future
+            while date.compare(NSDate()) == .OrderedAscending {
                 date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])!
             }
             
