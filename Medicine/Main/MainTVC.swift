@@ -7,8 +7,10 @@
 //
 
 import UIKit
-import CoreData
 import StoreKit
+import CoreData
+import CoreSpotlight
+import MobileCoreServices
 
 class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
@@ -244,11 +246,11 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 var subtitle:NSMutableAttributedString!
                 
                 if date.compare(NSDate()) == .OrderedDescending {
-                    subtitle = NSMutableAttributedString(string: "Earliest next dose: \(cellDateString(date))")
+                    subtitle = NSMutableAttributedString(string: "Earliest next dose: \(Medicine.dateString(date))")
                     subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 20))
                 } else {
                     cell.textLabel?.textColor = UIColor.lightGrayColor()
-                    subtitle = NSMutableAttributedString(string: "Last dose: \(cellDateString(med.lastDose?.date))")
+                    subtitle = NSMutableAttributedString(string: "Last dose: \(Medicine.dateString(med.lastDose?.date))")
                     subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, subtitle.length))
                 }
                 
@@ -263,7 +265,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             var subtitle = NSMutableAttributedString(string: "Overdue")
             
             if let date = med.isOverdue().lastDose {
-                subtitle = NSMutableAttributedString(string: "Overdue: \(cellDateString(date))")
+                subtitle = NSMutableAttributedString(string: "Overdue: \(Medicine.dateString(date))")
             }
             
             subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, subtitle.length))
@@ -274,7 +276,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         // Set subtitle to next dosage date
         if let date = med.nextDose {
-            let subtitle = NSMutableAttributedString(string: "Next dose: \(cellDateString(date))")
+            let subtitle = NSMutableAttributedString(string: "Next dose: \(Medicine.dateString(date))")
             subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
             cell.detailTextLabel?.attributedText = subtitle
             return cell
@@ -398,6 +400,17 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                         }
                         
                         self.updateHeader()
+                        
+                        // Update spotlight index
+                        if #available(iOS 9.0, *) {
+                            if let attributes = med.attributeSet {
+                                let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: med.medicineID, attributeSet: attributes)
+                                CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+                                print("\(med.name!) index updated")
+                            }
+                        }
+                        
+                        // Update shortcuts
                         self.setDynamicShortcuts()
                     } else {
                         self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
@@ -448,16 +461,27 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     func deleteMed(indexPath: NSIndexPath) {
+        let med = medication[indexPath.row]
+        
         // Cancel all notifications for medication
-        medication[indexPath.row].cancelNotification()
+        med.cancelNotification()
         
         // Remove medication from persistent store
-        moc.deleteObject(medication[indexPath.row])
+        moc.deleteObject(med)
         appDelegate.saveContext()
+        
+        // Update spotlight index
+        if #available(iOS 9.0, *) {
+            CSSearchableIndex.defaultSearchableIndex().deleteSearchableItemsWithIdentifiers([med.medicineID], completionHandler: nil)
+            print("\(med.name!) removed from index")
+        }
+        
+        // Update shortcuts
+        setDynamicShortcuts()
         
         // Remove medication from array
         medication.removeAtIndex(indexPath.row)
-
+        
         if medication.count == 0 {
             displayEmptyView()
         } else {
@@ -465,7 +489,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         updateHeader()
-        setDynamicShortcuts()
     }
     
     func displayEmptyView() {
@@ -575,6 +598,15 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             // Reschedule next notification
             addMed.scheduleNextNotification()
             
+            // Update spotlight index
+            if #available(iOS 9.0, *) {
+                if let attributes = addMed.attributeSet {
+                    let item = CSSearchableItem(uniqueIdentifier: addMed.medicineID, domainIdentifier: addMed.medicineID, attributeSet: attributes)
+                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+                    print("index updated")
+                }
+            }
+            
             // Update shortcuts
             setDynamicShortcuts()
             
@@ -609,6 +641,16 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 self.tableView.reloadData()
             }
             
+            // Update spotlight index
+            if #available(iOS 9.0, *) {
+                if let attributes = svc.med!.attributeSet {
+                    let item = CSSearchableItem(uniqueIdentifier: svc.med?.medicineID, domainIdentifier: svc.med?.medicineID, attributeSet: attributes)
+                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+                    print("index updated")
+                }
+            }
+            
+            // Update shortcuts
             setDynamicShortcuts()
         } catch {
             dismissViewControllerAnimated(true, completion: { () -> Void in
@@ -646,8 +688,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                             if let med = Medicine.getMedicine(arr: medication, id: id) {
                                 med.snoozeNotification()
                                 self.appDelegate.saveContext()
-                                
-                                self.setDynamicShortcuts()
                             }
                         }
                     }))
@@ -764,38 +804,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     // MARK: - Helper methods
     
-    func cellDateString(date: NSDate?) -> String {
-        guard let date = date else { return "" }
-        
-        var dateString = String()
-        
-        // Set label date, skip if date is today
-        if !cal.isDateInToday(date) {
-            if cal.isDateInYesterday(date) {
-                dateString = "Yesterday, "
-            } else if cal.isDateInTomorrow(date) {
-                dateString = "Tomorrow, "
-            } else if date.isDateInWeek() {
-                dateFormatter.dateFormat = "EEEE, "
-                dateString = dateFormatter.stringFromDate(date)
-            } else {
-                // Default case
-                dateFormatter.dateFormat = "MMM d, "
-                dateString = dateFormatter.stringFromDate(date)
-            }
-        }
-        
-        // Set label time
-        if date.isMidnight() {
-            dateString.appendContentsOf("Midnight")
-        } else {
-            dateFormatter.dateFormat = "h:mm a"
-            dateString.appendContentsOf(dateFormatter.stringFromDate(date))
-        }
-        
-        return dateString
-    }
-    
     func presentDoseAlert(med: Medicine, date: NSDate) {
         let doseAlert = UIAlertController(title: "Repeat Dose?", message: "You have logged a dose for \(med.name!) within the passed 5 minutes, do you wish to log another dose?", preferredStyle: UIAlertControllerStyle.Alert)
         
@@ -811,7 +819,17 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             }
             
             self.tableView.reloadData()
+
+            // Update spotlight index
+            if #available(iOS 9.0, *) {
+                if let attributes = med.attributeSet {
+                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: med.medicineID, attributeSet: attributes)
+                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+                    print("\(med.name!) index updated")
+                }
+            }
             
+            // Update shortcuts
             self.setDynamicShortcuts()
         }))
         
@@ -851,7 +869,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                     guard let med = Medicine.getMedicine(arr: medication, id: id as! String) else { return }
                     let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
                     let date = nextDose.fireDate
-                    let subtitle = "\(cellDateString(date)): \(dose) of \(med.name!)"
+                    let subtitle = "\(Medicine.dateString(date)): \(dose) of \(med.name!)"
                     
                     let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
                         localizedTitle: "Take Next Dose", localizedSubtitle: subtitle,

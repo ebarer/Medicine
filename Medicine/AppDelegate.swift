@@ -72,7 +72,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         print(UIDevice.currentDevice().identifierForVendor?.UUIDString)
         if UIDevice.currentDevice().identifierForVendor?.UUIDString == "104AFCAA-C1C8-4628-8B81-7ED680C8157B" ||
-           UIDevice.currentDevice().identifierForVendor?.UUIDString == "3CF28B81-5657-465E-96B4-1E094CE335B3" {
+           UIDevice.currentDevice().identifierForVendor?.UUIDString == "3CF28B81-5657-465E-96B4-1E094CE335B3" ||
+           UIDevice.currentDevice().identifierForVendor?.UUIDString == "A2AD279E-6719-4BAD-B5FA-250D90285D08" {
             defaults.setBool(true, forKey: "debug")      // Set snooze duration to 5 minutes
         }
         

@@ -8,8 +8,13 @@
 
 import UIKit
 import CoreData
+import CoreSpotlight
+import MobileCoreServices
 
+
+// Global medication array
 var medication = [Medicine]()
+
 
 class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
@@ -20,9 +25,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var moc: NSManagedObjectContext!
     var launchedShortcutItem: [NSObject: AnyObject]?
-    
-    let cal = NSCalendar.currentCalendar()
-    let dateFormatter = NSDateFormatter()
     
     
     // MARK: - View methods
@@ -109,44 +111,26 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
             
             if let results = fetchedResults {
+                // Store results in medication array
                 medication = results
+                
+                // Index results
+                if #available(iOS 9.0, *) {
+                    for med in medication  {
+                        if let attributes = med.attributeSet {
+                            let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: med.medicineID, attributeSet: attributes)
+                            CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+                            print("\(med.name!) indexed!")
+                        }
+                    }
+                }
+                    
+                // Update homescreen shortcuts for force touch devices
                 setDynamicShortcuts()
             }
         } catch {
             print("Could not fetch medication.")
         }
-    }
-    
-    func cellDateString(date: NSDate?) -> String {
-        guard let date = date else { return "" }
-        
-        var dateString = String()
-        
-        // Set label date, skip if date is today
-        if !cal.isDateInToday(date) {
-            if cal.isDateInYesterday(date) {
-                dateString = "Yesterday, "
-            } else if cal.isDateInTomorrow(date) {
-                dateString = "Tomorrow, "
-            } else if date.isDateInWeek() {
-                dateFormatter.dateFormat = "EEEE, "
-                dateString = dateFormatter.stringFromDate(date)
-            } else {
-                // Default case
-                dateFormatter.dateFormat = "MMM d, "
-                dateString = dateFormatter.stringFromDate(date)
-            }
-        }
-        
-        // Set label time
-        if date.isMidnight() {
-            dateString.appendContentsOf("Midnight")
-        } else {
-            dateFormatter.dateFormat = "h:mm a"
-            dateString.appendContentsOf(dateFormatter.stringFromDate(date))
-        }
-        
-        return dateString
     }
     
     func setDynamicShortcuts() {
@@ -181,7 +165,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                     guard let med = Medicine.getMedicine(arr: medication, id: id as! String) else { return }
                     let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
                     let date = nextDose.fireDate
-                    let subtitle = "\(cellDateString(date)): \(dose) of \(med.name!)"
+                    let subtitle = "\(Medicine.dateString(date)): \(dose) of \(med.name!)"
                     
                     let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
                         localizedTitle: "Take Next Dose", localizedSubtitle: subtitle,

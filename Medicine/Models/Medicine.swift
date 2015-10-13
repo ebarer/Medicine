@@ -8,6 +8,9 @@
 
 import UIKit
 import CoreData
+import CoreSpotlight
+import MobileCoreServices
+
 
 class Medicine: NSManagedObject {
     
@@ -67,6 +70,25 @@ class Medicine: NSManagedObject {
         return nil
     }
     
+    @available(iOS 9.0, *)
+    var attributeSet: CSSearchableItemAttributeSet? {
+        let attributeSet = CSSearchableItemAttributeSet(itemContentType: kUTTypeContent as String)
+        attributeSet.title = self.name!
+        
+        let dose = String(format:"%g %@", self.dosage, self.dosageUnit.units(self.dosage))
+        let date = self.lastDose?.next
+        
+        if self.isOverdue().flag {
+            let descriptionString = "Overdue"
+            attributeSet.contentDescription = descriptionString
+        } else {
+            let descriptionString = "Next dose: \(Medicine.dateString(date))\n\(dose)"
+            attributeSet.contentDescription = descriptionString
+        }
+        
+        return attributeSet
+    }
+    
     func isOverdue() -> (flag: Bool, lastDose: NSDate?) {
         // Medicine can't be overdue if reminders are disabled
         if let date = lastDose?.next where reminderEnabled == true {
@@ -122,6 +144,40 @@ class Medicine: NSManagedObject {
     
     class func sortByManual(medA: Medicine, medB: Medicine) -> Bool {
         return medA.sortOrder < medB.sortOrder
+    }
+    
+    class func dateString(date: NSDate?) -> String {
+        guard let date = date else { return "" }
+        
+        let cal = NSCalendar.currentCalendar()
+        let dateFormatter = NSDateFormatter()
+        var dateString = String()
+        
+        // Set label date, skip if date is today
+        if !cal.isDateInToday(date) {
+            if cal.isDateInYesterday(date) {
+                dateString = "Yesterday, "
+            } else if cal.isDateInTomorrow(date) {
+                dateString = "Tomorrow, "
+            } else if date.isDateInWeek() {
+                dateFormatter.dateFormat = "EEEE, "
+                dateString = dateFormatter.stringFromDate(date)
+            } else {
+                // Default case
+                dateFormatter.dateFormat = "MMM d, "
+                dateString = dateFormatter.stringFromDate(date)
+            }
+        }
+        
+        // Set label time
+        if date.isMidnight() {
+            dateString.appendContentsOf("Midnight")
+        } else {
+            dateFormatter.dateFormat = "h:mm a"
+            dateString.appendContentsOf(dateFormatter.stringFromDate(date))
+        }
+        
+        return dateString
     }
     
     
