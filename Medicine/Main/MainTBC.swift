@@ -115,12 +115,11 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 medication = results
                 
                 // Index results
-                if #available(iOS 9.0, *) {
+                if #available(iOS 9.0, *) {                    
                     for med in medication  {
                         if let attributes = med.attributeSet {
-                            let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: med.medicineID, attributeSet: attributes)
+                            let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
                             CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                            print("\(med.name!) indexed!")
                         }
                     }
                 }

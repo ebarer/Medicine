@@ -121,15 +121,6 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     }
     
     func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
-        switch result {
-        case MFMailComposeResultSent:
-            print("Mail sent")
-        case MFMailComposeResultFailed:
-            print("Mail sent failure: %@", error?.localizedDescription)
-        default:
-            break
-        }
-        
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     

@@ -334,6 +334,19 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         updateHeader()
         
+        // Update spotlight index
+        if #available(iOS 9.0, *) {
+            for med in medication {
+                if let attributes = med.attributeSet {
+                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
+                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+                }
+            }
+        }
+        
+        // Update shortcuts
+        self.setDynamicShortcuts()
+        
         // If selected, sort by next dosage
         if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
             medication.sortInPlace(Medicine.sortByNextDose)
@@ -404,9 +417,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                         // Update spotlight index
                         if #available(iOS 9.0, *) {
                             if let attributes = med.attributeSet {
-                                let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: med.medicineID, attributeSet: attributes)
+                                let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
                                 CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                                print("\(med.name!) index updated")
                             }
                         }
                         
@@ -466,6 +478,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         // Cancel all notifications for medication
         med.cancelNotification()
         
+        // Remove medication from array
+        medication.removeAtIndex(indexPath.row)
+        
         // Remove medication from persistent store
         moc.deleteObject(med)
         appDelegate.saveContext()
@@ -473,14 +488,10 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         // Update spotlight index
         if #available(iOS 9.0, *) {
             CSSearchableIndex.defaultSearchableIndex().deleteSearchableItemsWithIdentifiers([med.medicineID], completionHandler: nil)
-            print("\(med.name!) removed from index")
         }
         
         // Update shortcuts
         setDynamicShortcuts()
-        
-        // Remove medication from array
-        medication.removeAtIndex(indexPath.row)
         
         if medication.count == 0 {
             displayEmptyView()
@@ -601,9 +612,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             // Update spotlight index
             if #available(iOS 9.0, *) {
                 if let attributes = addMed.attributeSet {
-                    let item = CSSearchableItem(uniqueIdentifier: addMed.medicineID, domainIdentifier: addMed.medicineID, attributeSet: attributes)
+                    let item = CSSearchableItem(uniqueIdentifier: addMed.medicineID, domainIdentifier: nil, attributeSet: attributes)
                     CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                    print("index updated")
                 }
             }
             
@@ -644,9 +654,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             // Update spotlight index
             if #available(iOS 9.0, *) {
                 if let attributes = svc.med!.attributeSet {
-                    let item = CSSearchableItem(uniqueIdentifier: svc.med?.medicineID, domainIdentifier: svc.med?.medicineID, attributeSet: attributes)
+                    let item = CSSearchableItem(uniqueIdentifier: svc.med?.medicineID, domainIdentifier: nil, attributeSet: attributes)
                     CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                    print("index updated")
                 }
             }
             
@@ -823,9 +832,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             // Update spotlight index
             if #available(iOS 9.0, *) {
                 if let attributes = med.attributeSet {
-                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: med.medicineID, attributeSet: attributes)
+                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
                     CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                    print("\(med.name!) index updated")
                 }
             }
             

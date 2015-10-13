@@ -81,8 +81,16 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             return NCUpdateResult.NewData
         }
         
+        let string = NSMutableAttributedString(string: "Couldn't update")
+        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+        
+        doseDescriptionLabel.text = nil
+        doseMainLabel.attributedText = string
+        doseMedLabel.text = nil
+        size = 75.0
+        
         self.preferredContentSize = CGSizeMake(0, size);
-        return NCUpdateResult.NoData
+        return NCUpdateResult.NewData
     }
     
     @IBAction func launchApp() {
