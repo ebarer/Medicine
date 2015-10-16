@@ -14,6 +14,7 @@ import MobileCoreServices
 
 // Global medication array
 var medication = [Medicine]()
+var rescheduleDates = [NSDate]()
 
 
 class MainTBC: UITabBarController, UITabBarControllerDelegate {
@@ -45,6 +46,11 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "snoozeReminderNotification:", name: "snoozeReminderNotification", object: nil)
         
         loadMedication()
+        
+        if let dates = defaults.objectForKey("rescheduleDates") {
+            rescheduleDates = dates as! [NSDate]
+            rescheduleDates.sortInPlace({$0.compare($1) == .OrderedDescending})
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -74,6 +80,9 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         
         setDynamicShortcuts()
         NSNotificationCenter.defaultCenter().postNotificationName("refreshWidget", object: nil, userInfo: nil)
+
+        rescheduleDates.append(NSDate())
+        defaults.setObject(rescheduleDates, forKey: "rescheduleDates")
     }
     
     func takeMedicationNotification(notification: NSNotification) {

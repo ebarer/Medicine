@@ -76,13 +76,15 @@ class Medicine: NSManagedObject {
         attributeSet.title = self.name!
         
         let dose = String(format:"%g %@", self.dosage, self.dosageUnit.units(self.dosage))
-        let date = self.lastDose?.next
         
         if self.isOverdue().flag {
-            let descriptionString = "Overdue"
+            let descriptionString = "Overdue\n\(dose)"
+            attributeSet.contentDescription = descriptionString
+        } else if let date = self.lastDose?.next {
+            let descriptionString = "Next dose: \(Medicine.dateString(date))\n\(dose)"
             attributeSet.contentDescription = descriptionString
         } else {
-            let descriptionString = "Next dose: \(Medicine.dateString(date))\n\(dose)"
+            let descriptionString = "\(dose)"
             attributeSet.contentDescription = descriptionString
         }
         

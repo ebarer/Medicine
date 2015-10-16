@@ -155,7 +155,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(application: UIApplication, performFetchWithCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
         NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
-        completionHandler(.NewData)
+        completionHandler(UIBackgroundFetchResult.NewData)
     }
     
     
