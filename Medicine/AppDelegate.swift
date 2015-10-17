@@ -154,7 +154,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Background refresh
     
     func application(application: UIApplication, performFetchWithCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
-        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: ["activator":"background"])
         completionHandler(UIBackgroundFetchResult.NewData)
     }
     

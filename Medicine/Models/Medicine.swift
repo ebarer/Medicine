@@ -311,6 +311,7 @@ class Medicine: NSManagedObject {
             snoozeDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: 5, toDate: NSDate(), options: [])!
         }
         
+        // Update last dose next value in case notifications are rescheduled
         self.lastDose?.next = snoozeDate
         
         // Schedule new notification
@@ -354,10 +355,17 @@ class Medicine: NSManagedObject {
             
             // Caculate interval based on last dose
             if let lastDose = lastDose {
+                // If last dose next value is in the future, return
+                if lastDose.next?.compare(NSDate()) == .OrderedDescending {
+                    return lastDose.next
+                }
+                    
                 // If overdue, return
-                if isOverdue().flag {
+                else if isOverdue().flag {
                     return isOverdue().lastDose
-                } else {
+                }
+                
+                else {
                     var next = cal.dateByAddingUnit(NSCalendarUnit.Hour, value: hr, toDate: lastDose.date, options: [])!
                     next = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: min, toDate: next, options: [])!
                     return next

@@ -16,6 +16,8 @@ class SettingsTVC_Console: UITableViewController {
 
     var notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
     var console = [(name: String, date: String, id: String)]()
+    
+    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
 
     
     // MARK: - View methods
@@ -23,10 +25,14 @@ class SettingsTVC_Console: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         loadNotifications()
+        
+        self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
     
     override func viewWillAppear(animated: Bool) {
-        loadNotifications()
+        if loadNotifications() {
+            tableView.reloadData()
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -132,6 +138,26 @@ class SettingsTVC_Console: UITableViewController {
             return 44.0;
         default:
             return 70.0;
+        }
+    }
+    
+    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        switch(indexPath.section) {
+        case 2:
+            return true;
+        default:
+            return false;
+        }
+    }
+    
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        if (indexPath.section == 2) {
+            if editingStyle == .Delete {
+                rescheduleDates.removeAtIndex(indexPath.row)
+                defaults.synchronize()
+                
+                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+            }
         }
     }
 

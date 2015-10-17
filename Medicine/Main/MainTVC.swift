@@ -114,6 +114,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             }
         }
         
+        // Reschedule notifications
+        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+        
         // If no medications, display empty message
         displayEmptyView()
         
