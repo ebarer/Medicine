@@ -25,8 +25,6 @@ class SettingsTVC_Console: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         loadNotifications()
-        
-        self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -81,6 +79,10 @@ class SettingsTVC_Console: UITableViewController {
         case 1:
             return console.count
         case 2:
+            if rescheduleDates.count > 5 {
+                return 5
+            }
+            
             return rescheduleDates.count
         default:
             return 0
@@ -138,26 +140,6 @@ class SettingsTVC_Console: UITableViewController {
             return 44.0;
         default:
             return 70.0;
-        }
-    }
-    
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        switch(indexPath.section) {
-        case 2:
-            return true;
-        default:
-            return false;
-        }
-    }
-    
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if (indexPath.section == 2) {
-            if editingStyle == .Delete {
-                rescheduleDates.removeAtIndex(indexPath.row)
-                defaults.synchronize()
-                
-                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
-            }
         }
     }
 

@@ -93,18 +93,32 @@ class Medicine: NSManagedObject {
     
     func isOverdue() -> (flag: Bool, lastDose: NSDate?) {
         // Medicine can't be overdue if reminders are disabled
-        if let date = lastDose?.next where reminderEnabled == true {
-            if date.compare(NSDate()) == .OrderedAscending {
-                return (true, date)
-            }
-        }
-        
-        // If daily interval with no history, and scheduled for tomorrow
-        if intervalUnit == Intervals.Daily && intervalAlarm != nil && reminderEnabled == true {
-            if let date = scheduledNotification?.fireDate where lastDose == nil {
-                if cal.isDateInToday(date) == false && !cal.isDateInToday(intervalAlarm!) {
-                    return (true, nil)
+        if reminderEnabled == true {
+            switch(intervalUnit) {
+            case .Hourly:
+                if let date = lastDose?.next {
+                    if date.compare(NSDate()) == .OrderedAscending {
+                        return (true, date)
+                    }
                 }
+            case .Daily:
+                if intervalAlarm != nil {
+                    if let date = lastDose?.next {
+                        // If date is not in today and in the past, return false
+                        if (cal.isDateInToday(date)) && date.compare(NSDate()) == .OrderedAscending {
+                            return (true, date)
+                        }
+                    }
+                    
+                    // If daily interval with no history, and scheduled for tomorrow
+                    if let date = scheduledNotification?.fireDate where lastDose == nil {
+                        if cal.isDateInToday(date) == false && !cal.isDateInToday(intervalAlarm!) {
+                            return (true, nil)
+                        }
+                    }
+                }
+            default:
+                return (false, nil)
             }
         }
         
@@ -260,7 +274,7 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Notification methods
-    func scheduleNotification(date: NSDate) throws {
+    func scheduleNotification(date: NSDate, snooze: Bool = false) throws {
         // Schedule if the user wants a reminder and the reminder date is in the future        
         guard date.compare(NSDate()) == .OrderedDescending else {
             throw MedicineError.DatePassed
@@ -280,7 +294,7 @@ class Medicine: NSManagedObject {
         notification.alertBody = String(format:"Time to take %g %@ of %@", dosage, dosageUnit.units(dosage), name)
         notification.soundName = UILocalNotificationDefaultSoundName
         notification.category = "Reminder"
-        notification.userInfo = ["id": self.medicineID]
+        notification.userInfo = ["id": self.medicineID, "snooze": snooze]
         notification.fireDate = date
         
         UIApplication.sharedApplication().scheduleLocalNotification(notification)
@@ -317,18 +331,20 @@ class Medicine: NSManagedObject {
         // Schedule new notification
         do {
             cancelNotification()
-            try scheduleNotification(snoozeDate)
+            try scheduleNotification(snoozeDate, snooze: true)
             return true
         } catch {
             return false
         }
     }
     
-    func cancelNotification() {
+    func cancelNotification(cancelSnoozed: Bool = false) {
         let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
         for notification in notifications {
-            if let id = notification.userInfo?["id"] as? String {
-                if (id == self.medicineID) {
+            let (id, snooze) = (notification.userInfo?["id"] as? String, notification.userInfo?["snooze"] as? Bool)
+            
+            if (id == self.medicineID) {
+                if snooze == false || (snooze == true && cancelSnoozed == true) {
                     UIApplication.sharedApplication().cancelLocalNotification(notification)
                 }
             }
@@ -353,14 +369,14 @@ class Medicine: NSManagedObject {
                 return next
             }
             
-            // Caculate interval based on last dose
+            // Calculate interval based on last dose
             if let lastDose = lastDose {
-                // If last dose next value is in the future, return
+                // If next dose is in the future, return next dose
                 if lastDose.next?.compare(NSDate()) == .OrderedDescending {
                     return lastDose.next
                 }
                     
-                // If overdue, return
+                // If med is overdue
                 else if isOverdue().flag {
                     return isOverdue().lastDose
                 }

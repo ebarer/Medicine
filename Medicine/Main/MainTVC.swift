@@ -91,6 +91,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         // Remove tableView gap
         tableView.tableHeaderView = UIView(frame: CGRectMake(0.0, 0.0, tableView.bounds.size.width, 0.01))
+        
+        // Setup refresh timer
+        let _ = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(300), target: self, selector: Selector("refreshTable"), userInfo: nil, repeats: true)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -270,9 +273,17 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             if let date = med.isOverdue().lastDose {
                 subtitle = NSMutableAttributedString(string: "Overdue: \(Medicine.dateString(date))")
             }
-            
+ 
             subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, subtitle.length))
             subtitle.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(15.0), range: NSMakeRange(0, 7))
+            cell.detailTextLabel?.attributedText = subtitle
+            return cell
+        }
+        
+        // If notiifcation scheduled, set date to next scheduled fire date
+        if let date = med.scheduledNotification?.fireDate {
+            let subtitle = NSMutableAttributedString(string: "Next dose: \(Medicine.dateString(date))")
+            subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
             cell.detailTextLabel?.attributedText = subtitle
             return cell
         }
@@ -355,6 +366,10 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             medication.sortInPlace(Medicine.sortByNextDose)
         }
         
+        tableView.reloadData()
+    }
+    
+    func refreshTable() {        
         tableView.reloadData()
     }
     

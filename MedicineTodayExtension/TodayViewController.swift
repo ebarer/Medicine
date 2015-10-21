@@ -25,14 +25,13 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     // MARK: - View methods
     override func viewDidLoad() {
-        self.preferredContentSize = CGSizeMake(0, size);
-        
         NSNotificationCenter.defaultCenter().addObserverForName(NSUserDefaultsDidChangeNotification, object: nil, queue: NSOperationQueue.mainQueue()) { _ in
             self.updateLabels()
         }
     }
     
     override func viewWillAppear(animated: Bool) {
+        self.preferredContentSize = CGSizeMake(0, size);
         updateLabels()
     }
     
