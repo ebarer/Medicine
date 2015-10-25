@@ -11,7 +11,6 @@ import CoreData
 import CoreSpotlight
 import MobileCoreServices
 
-
 class Medicine: NSManagedObject {
     
     
