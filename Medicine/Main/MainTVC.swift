@@ -813,6 +813,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     func getLockStatus() -> Bool {
+        // If debug device, disable medication limit
+        if defaults.boolForKey("debug") == true {
+            return false
+        }
+        
+        // If limit exceeded and product locked, return true
         if medication.count >= trialLimit {
             if productLock == true {
                 return true

@@ -101,17 +101,30 @@ class Medicine: NSManagedObject {
                     }
                 }
             case .Daily:
-                if intervalAlarm != nil {
+                if let alarm = intervalAlarm {
+                    
+                    // Check to see if alarm date is same as today
+                    if cal.isDateInToday(alarm) && alarm.compare(NSDate()) == .OrderedAscending {
+                        return (false, nil)
+                    }
+                    
+                    // If date is in today but behind the current time, return true
                     if let date = lastDose?.next {
-                        // If date is not in today and in the past, return false
-                        if (cal.isDateInToday(date)) && date.compare(NSDate()) == .OrderedAscending {
-                            return (true, date)
+                        if cal.isDateInToday(date) && date.compare(NSDate()) == .OrderedAscending {
+                            return (true, nil)
+                        }
+                        
+                        // If in the passed and not scheduled for today, return true
+                        if let scheduledDate = scheduledNotification?.fireDate {
+                            if date.compare(NSDate()) == .OrderedAscending && !cal.isDateInToday(scheduledDate) {
+                                return (true, nil)
+                            }
                         }
                     }
                     
                     // If daily interval with no history, and scheduled for tomorrow
                     if let date = scheduledNotification?.fireDate where lastDose == nil {
-                        if cal.isDateInToday(date) == false && !cal.isDateInToday(intervalAlarm!) {
+                        if cal.isDateInToday(date) == false && !cal.isDateInToday(alarm) {
                             return (true, nil)
                         }
                     }
@@ -398,9 +411,19 @@ class Medicine: NSManagedObject {
                 return cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])
             }
             
+            
             // Calculate interval based on last dose
             let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
             var date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: NSDate(), options: [])!
+            
+            // If no last dose
+            if lastDose?.date == nil {
+                while date.compare(NSDate()) == .OrderedAscending {
+                    date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: 1, toDate: date, options: [])!
+                }
+                
+                return date
+            }
             
             // If last dose was today, schedule for next interval
             if let last = lastDose?.date where cal.isDateInToday(last) {

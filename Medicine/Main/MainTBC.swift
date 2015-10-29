@@ -79,16 +79,15 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         }
         
         setDynamicShortcuts()
+        
         NSNotificationCenter.defaultCenter().postNotificationName("refreshWidget", object: nil, userInfo: nil)
         
-        rescheduleDates.insert(NSDate(), atIndex: 0)
-        
-        if rescheduleDates.count >= 5 {
-            //rescheduleDates.removeAtIndex(5)
+        // Only log when rescheduling in background
+        if notification.userInfo?["activator"] != nil {
+            rescheduleDates.insert(NSDate(), atIndex: 0)
+            defaults.setObject(rescheduleDates, forKey: "rescheduleDates")
+            defaults.synchronize()
         }
-        
-        defaults.setObject(rescheduleDates, forKey: "rescheduleDates")
-        defaults.synchronize()
     }
     
     func takeMedicationNotification(notification: NSNotification) {

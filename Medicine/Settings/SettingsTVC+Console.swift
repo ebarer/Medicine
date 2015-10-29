@@ -100,7 +100,7 @@ class SettingsTVC_Console: UITableViewController {
             
             return "Scheduled Notifications"
         case 2:
-            return "Rescheduling Occurences"
+            return "Background Rescheduling Calls"
         default:
             return nil
         }
