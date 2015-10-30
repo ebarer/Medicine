@@ -372,7 +372,15 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
     
     @IBAction func updateAlert(sender: UIDatePicker) {
         if let medicine = med {
-            medicine.intervalAlarm = sender.date
+            
+            let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: sender.date)
+            var date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: NSDate(), options: [])!
+            
+            while date.compare(NSDate()) == .OrderedAscending {
+                date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: 1, toDate: date, options: [])!
+            }
+            
+            medicine.intervalAlarm = date
             
             if sender.date.isMidnight() {
                 alarmLabel.text = "Midnight"

@@ -710,14 +710,17 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                         self.performSegueWithIdentifier("addDose", sender: med)
                     }))
                     
-                    alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-                        if let id = notification.userInfo!["id"] as? String {
-                            if let med = Medicine.getMedicine(arr: medication, id: id) {
-                                med.snoozeNotification()
-                                self.appDelegate.saveContext()
+                    if med.lastDose != nil {
+                        alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+                            if let id = notification.userInfo!["id"] as? String {
+                                if let med = Medicine.getMedicine(arr: medication, id: id) {
+                                    med.snoozeNotification()
+                                    self.appDelegate.saveContext()
+                                    self.refreshMedication()
+                                }
                             }
-                        }
-                    }))
+                        }))
+                    }
                     
                     alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Cancel, handler:  {(action) -> Void in
                         self.refreshMedication()
