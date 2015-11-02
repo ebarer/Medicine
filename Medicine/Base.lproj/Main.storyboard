@@ -4,6 +4,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Segues with Peek and Pop" minToolsVersion="7.1"/>
     </dependencies>
     <scenes>
         <!--Upgrade-->
@@ -97,7 +98,10 @@
                                 <animations/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <connections>
-                                    <segue destination="hvL-QA-tmo" kind="show" identifier="viewMedicationDetails" trigger="accessoryAction" id="LK1-7V-jnC"/>
+                                    <segue destination="hvL-QA-tmo" kind="show" identifier="viewMedicationDetails" trigger="accessoryAction" id="LK1-7V-jnC">
+                                        <segue key="commit" inheritsFrom="parent" id="tMw-cU-nIu"/>
+                                        <segue key="preview" inheritsFrom="commit" id="kIx-Yn-Pam"/>
+                                    </segue>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -905,6 +909,7 @@
         <image name="SettingsTab" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="LK1-7V-jnC"/>
         <segue reference="tHn-tf-kiw"/>
         <segue reference="0Oe-mX-irt"/>
     </inferredMetricsTieBreakers>
