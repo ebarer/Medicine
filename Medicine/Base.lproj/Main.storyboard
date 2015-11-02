@@ -4,6 +4,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Segues with Peek and Pop" minToolsVersion="7.1"/>
     </dependencies>
     <scenes>
         <!--Upgrade-->
@@ -12,7 +13,7 @@
                 <viewControllerPlaceholder storyboardName="Upgrade" id="l1N-4I-mqi" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jlM-d8-EFB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2284" y="326"/>
+            <point key="canvasLocation" x="2284" y="295"/>
         </scene>
         <!--Medicine Manager-->
         <scene sceneID="DrC-QF-zXV">
@@ -69,35 +70,75 @@
                             </constraints>
                         </view>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="detailButton" indentationWidth="10" reuseIdentifier="medicationCell" editingAccessoryType="disclosureIndicator" textLabel="n1u-dO-pwG" detailTextLabel="tmF-CZ-lik" rowHeight="100" style="IBUITableViewCellStyleSubtitle" id="EQE-7U-RYh">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="detailButton" indentationWidth="10" reuseIdentifier="medicineCell" editingAccessoryType="disclosureIndicator" rowHeight="100" id="Unc-VA-g5h" customClass="MedicineCell" customModule="Medicine" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="199.5" width="600" height="100"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="EQE-7U-RYh" id="6no-j4-Oqk">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Unc-VA-g5h" id="7Y1-HP-ICu">
                                     <rect key="frame" x="0.0" y="0.0" width="553" height="99.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="n1u-dO-pwG">
-                                            <rect key="frame" x="15" y="25" width="49.5" height="32.5"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bsg-dL-Yop">
+                                            <rect key="frame" x="75" y="19" width="462" height="32.5"/>
                                             <animations/>
                                             <fontDescription key="fontDescription" type="system" weight="light" pointSize="27"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="tmF-CZ-lik">
-                                            <rect key="frame" x="15" y="57.5" width="53" height="18"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wOb-Wi-wwb">
+                                            <rect key="frame" x="15" y="25" width="50" height="50"/>
                                             <animations/>
+                                            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="50" id="R8q-A1-NMd"/>
+                                                <constraint firstAttribute="height" constant="50" id="UpV-Vb-wZF"/>
+                                            </constraints>
+                                        </view>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="OverdueIcon" translatesAutoresizingMaskIntoConstraints="NO" id="kXg-VV-ktb">
+                                            <rect key="frame" x="75" y="55.5" width="20" height="20"/>
+                                            <animations/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="20" id="Rl1-vT-Q3Y"/>
+                                                <constraint firstAttribute="width" constant="20" id="kBA-CW-cPF"/>
+                                            </constraints>
+                                        </imageView>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FcH-CF-Bwc">
+                                            <rect key="frame" x="100" y="55.5" width="437" height="20"/>
+                                            <animations/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="20" id="e87-Vs-ccC"/>
+                                            </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                     <animations/>
+                                    <constraints>
+                                        <constraint firstItem="FcH-CF-Bwc" firstAttribute="leading" secondItem="kXg-VV-ktb" secondAttribute="trailing" constant="5" id="0cK-Z5-iKC"/>
+                                        <constraint firstItem="kXg-VV-ktb" firstAttribute="top" secondItem="Bsg-dL-Yop" secondAttribute="bottom" constant="4" id="7s1-9F-NNe"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="Bsg-dL-Yop" secondAttribute="trailing" constant="8" id="GTm-Wv-fZR"/>
+                                        <constraint firstItem="Bsg-dL-Yop" firstAttribute="leading" secondItem="wOb-Wi-wwb" secondAttribute="trailing" constant="10" id="GuI-AG-uuf"/>
+                                        <constraint firstItem="wOb-Wi-wwb" firstAttribute="centerY" secondItem="7Y1-HP-ICu" secondAttribute="centerY" id="Haq-eY-wKp"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="FcH-CF-Bwc" secondAttribute="trailing" constant="8" id="awf-I9-eR9"/>
+                                        <constraint firstItem="kXg-VV-ktb" firstAttribute="leading" secondItem="wOb-Wi-wwb" secondAttribute="trailing" constant="10" id="l1a-QF-QFn"/>
+                                        <constraint firstItem="FcH-CF-Bwc" firstAttribute="bottom" secondItem="kXg-VV-ktb" secondAttribute="bottom" id="luv-lg-tHl"/>
+                                        <constraint firstItem="Bsg-dL-Yop" firstAttribute="top" secondItem="7Y1-HP-ICu" secondAttribute="topMargin" constant="11" id="pw9-9h-EPt"/>
+                                        <constraint firstItem="wOb-Wi-wwb" firstAttribute="leading" secondItem="7Y1-HP-ICu" secondAttribute="leadingMargin" constant="7" id="vQM-MZ-USY"/>
+                                    </constraints>
                                 </tableViewCellContentView>
                                 <animations/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <connections>
-                                    <segue destination="hvL-QA-tmo" kind="show" identifier="viewMedicationDetails" trigger="accessoryAction" id="LK1-7V-jnC"/>
+                                    <outlet property="adherenceScore" destination="wOb-Wi-wwb" id="M6J-gq-kU7"/>
+                                    <outlet property="adherenceWidth" destination="R8q-A1-NMd" id="StC-kl-9mL"/>
+                                    <outlet property="subtitle" destination="FcH-CF-Bwc" id="Q5F-Qp-heL"/>
+                                    <outlet property="subtitleGlyph" destination="kXg-VV-ktb" id="pPh-JS-BJG"/>
+                                    <outlet property="subtitleLeading" destination="l1a-QF-QFn" id="CEC-DH-dk7"/>
+                                    <outlet property="title" destination="Bsg-dL-Yop" id="lYr-Zb-A2p"/>
+                                    <outlet property="titleLeading" destination="GuI-AG-uuf" id="NVU-7m-1vW"/>
+                                    <segue destination="hvL-QA-tmo" kind="show" identifier="viewMedicationDetails" trigger="accessoryAction" id="FUg-Oe-n4H">
+                                        <segue key="commit" inheritsFrom="parent" id="C8i-Kj-uGh"/>
+                                        <segue key="preview" inheritsFrom="commit" id="0su-PN-4cx"/>
+                                    </segue>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -222,7 +263,7 @@
                 <viewControllerPlaceholder storyboardName="AddMedication" id="KKX-VQ-lBK" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iW6-yh-2SF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2284" y="246"/>
+            <point key="canvasLocation" x="2046" y="237"/>
         </scene>
         <!--AddDose-->
         <scene sceneID="V2c-5F-wuu">
@@ -230,7 +271,7 @@
                 <viewControllerPlaceholder storyboardName="AddDose" id="bZR-7Y-tt8" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2P2-5h-dae" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2666.5" y="165"/>
+            <point key="canvasLocation" x="2666.5" y="237"/>
         </scene>
         <!--History-->
         <scene sceneID="QO9-Ky-i0L">
@@ -902,10 +943,12 @@
         <image name="Logo" width="500" height="425"/>
         <image name="MedicineTab" width="28" height="25"/>
         <image name="MedicineTab+Selected" width="28" height="25"/>
+        <image name="OverdueIcon" width="28" height="28"/>
         <image name="SettingsTab" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="tHn-tf-kiw"/>
-        <segue reference="0Oe-mX-irt"/>
+        <segue reference="tQz-wz-X6o"/>
+        <segue reference="5Gy-on-iGP"/>
+        <segue reference="FUg-Oe-n4H"/>
     </inferredMetricsTieBreakers>
 </document>
