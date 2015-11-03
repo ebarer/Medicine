@@ -416,9 +416,7 @@ class HistoryTVC: UITableViewController {
     @IBAction func historyUnwindAdd(unwindSegue: UIStoryboardSegue) {
         // Log dose
         let svc = unwindSegue.sourceViewController as! AddDoseTVC
-        if let dose = svc.med?.addDose(moc, date: svc.date) {
-            appDelegate.saveContext()
-            
+        if let dose = svc.med?.addDose(moc, date: svc.date) {            
             gblCount++
             
             // Add to log

@@ -423,8 +423,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             if (med.lastDose != nil) {
                 alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
                     if (med.untakeLastDose(self.moc)) {
-                        self.appDelegate.saveContext()
-                        
                         // If selected, sort by next dosage
                         if self.defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
                             medication.sortInPlace(Medicine.sortByNextDose)
@@ -605,11 +603,15 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         if let svc = unwindSegue.sourceViewController as? AddMedicationTVC, addMed = svc.med {
             // Editing existing medication
             if let selectedIndex = tableView.indexPathForSelectedRow {
+                // Save changes to medication
                 appDelegate.saveContext()
                 
                 // Recalculate and update next dose property for previous dose
                 do {
                     addMed.lastDose?.next = try addMed.calculateNextDose(addMed.lastDose?.date)
+                    
+                    // Save changes to last dose
+                    appDelegate.saveContext()
                 } catch {
                     print("Unable to update last dose")
                 }
@@ -622,7 +624,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 addMed.sortOrder = Int16(newIndex.row)
                 medication.append(addMed)
                 
+                // Save medication
                 appDelegate.saveContext()
+                
                 tableView.insertRowsAtIndexPaths([newIndex], withRowAnimation: .None)
             }
             
@@ -661,7 +665,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         do {
             try svc.med?.takeDose(moc, date: svc.date)
-            appDelegate.saveContext()
             
             // If selected, sort by next dosage
             if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
@@ -722,7 +725,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                             if let id = notification.userInfo!["id"] as? String {
                                 if let med = Medicine.getMedicine(arr: medication, id: id) {
                                     med.snoozeNotification()
-                                    self.appDelegate.saveContext()
                                     self.refreshMedication()
                                 }
                             }
@@ -854,7 +856,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
 
         doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
             med.addDose(self.moc, date: date)
-            self.appDelegate.saveContext()
             
             // If selected, sort by next dosage
             if self.defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {

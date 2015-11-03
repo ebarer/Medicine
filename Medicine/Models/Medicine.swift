@@ -312,9 +312,10 @@ class Medicine: NSManagedObject {
         if let lastDose = lastDose {
             // Modify prescription count
             self.prescriptionCount += lastDose.dosage
+
+            moc.deleteObject(lastDose)
             
             // Save dose deletion
-            moc.deleteObject(lastDose)
             let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
             delegate.saveContext()
             
@@ -454,6 +455,10 @@ class Medicine: NSManagedObject {
         
         // Update last dose next value in case notifications are rescheduled
         self.lastDose?.next = snoozeDate
+        
+        // Save modifications to last dose
+        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        delegate.saveContext()
         
         // Schedule new notification
         do {

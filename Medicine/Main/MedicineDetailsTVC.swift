@@ -392,8 +392,6 @@ class MedicineDetailsTVC: UITableViewController {
         let svc = unwindSegue.sourceViewController as! AddDoseTVC
         let dose = med.addDose(moc, date: svc.date)
         
-        appDelegate.saveContext()
-        
         // Add to log
         let index = cal.startOfDayForDate(svc.date)
         log[index]?.insert(dose, atIndex: 0)

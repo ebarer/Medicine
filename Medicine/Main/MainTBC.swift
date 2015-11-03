@@ -94,7 +94,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         if let id = notification.userInfo!["id"] as? String {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
                 med.addDose(moc, date: NSDate())
-                appDelegate.saveContext()
                 
                 setDynamicShortcuts()
                 NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
@@ -106,8 +105,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         if let id = notification.userInfo!["id"] as? String {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
                 med.snoozeNotification()
-                appDelegate.saveContext()
-                    
                 setDynamicShortcuts()
                 NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
             }
