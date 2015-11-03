@@ -38,6 +38,7 @@
 		CE7519781BB00CB5000A2879 /* SettingsTVC+Sort.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7519771BB00CB5000A2879 /* SettingsTVC+Sort.swift */; };
 		CE75197A1BB00CFE000A2879 /* SettingsTVC+Snooze.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7519791BB00CFE000A2879 /* SettingsTVC+Snooze.swift */; };
 		CE75197E1BB1607F000A2879 /* SettingsTVC+Console.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE75197D1BB1607F000A2879 /* SettingsTVC+Console.swift */; };
+		CE94A5B61BE8B13B008E58DF /* SettingsTVC+Refill.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE94A5B51BE8B13B008E58DF /* SettingsTVC+Refill.swift */; };
 		CE9A36C71B98FDCB00B90EDB /* MedicineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9A36C61B98FDCB00B90EDB /* MedicineTests.swift */; };
 		CEA250E91B90396C00BBE466 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA250E81B90396C00BBE466 /* AppDelegate.swift */; };
 		CEA250EE1B90396C00BBE466 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEA250EC1B90396C00BBE466 /* Main.storyboard */; };
@@ -117,6 +118,7 @@
 		CE7519791BB00CFE000A2879 /* SettingsTVC+Snooze.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Snooze.swift"; path = "Settings/SettingsTVC+Snooze.swift"; sourceTree = "<group>"; };
 		CE75197D1BB1607F000A2879 /* SettingsTVC+Console.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Console.swift"; path = "Settings/SettingsTVC+Console.swift"; sourceTree = "<group>"; };
 		CE7A8E7F1BB89CD1001727B9 /* Medicine - 2.3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2.3.xcdatamodel"; sourceTree = "<group>"; };
+		CE94A5B51BE8B13B008E58DF /* SettingsTVC+Refill.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Refill.swift"; path = "Settings/SettingsTVC+Refill.swift"; sourceTree = "<group>"; };
 		CE9A36C41B98FDCB00B90EDB /* MedicineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MedicineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9A36C61B98FDCB00B90EDB /* MedicineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineTests.swift; sourceTree = "<group>"; };
 		CE9A36C81B98FDCB00B90EDB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -167,6 +169,7 @@
 				CE7519751BB00CA9000A2879 /* SettingsTVC.swift */,
 				CE7519771BB00CB5000A2879 /* SettingsTVC+Sort.swift */,
 				CE7519791BB00CFE000A2879 /* SettingsTVC+Snooze.swift */,
+				CE94A5B51BE8B13B008E58DF /* SettingsTVC+Refill.swift */,
 				CE75197D1BB1607F000A2879 /* SettingsTVC+Console.swift */,
 			);
 			name = Settings;
@@ -504,6 +507,7 @@
 			files = (
 				CEA2510C1B903E7D00BBE466 /* Medicine.xcdatamodeld in Sources */,
 				CE24971B1BAA4E7400627525 /* TutorialContentVC.swift in Sources */,
+				CE94A5B61BE8B13B008E58DF /* SettingsTVC+Refill.swift in Sources */,
 				CE6E551E1B9040C900805397 /* Medicine.swift in Sources */,
 				CE6E551D1B9040C900805397 /* Medicine+CoreDataProperties.swift in Sources */,
 				CE6E55201B9040C900805397 /* History.swift in Sources */,

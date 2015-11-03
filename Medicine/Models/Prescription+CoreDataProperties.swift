@@ -14,9 +14,10 @@ import CoreData
 
 extension Prescription {
 
-    @NSManaged var conversion: Int16
-    @NSManaged var date: NSTimeInterval
-    @NSManaged var quantity: Int16
+    @NSManaged var date: NSDate
     @NSManaged var medicine: Medicine?
+    
+    @NSManaged var quantity: Float
+    @NSManaged var conversion: Float
 
 }

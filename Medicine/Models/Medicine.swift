@@ -69,25 +69,27 @@ class Medicine: NSManagedObject {
         return nil
     }
     
-    @available(iOS 9.0, *)
-    var attributeSet: CSSearchableItemAttributeSet? {
-        let attributeSet = CSSearchableItemAttributeSet(itemContentType: kUTTypeContent as String)
-        attributeSet.title = self.name!
-        
-        let dose = String(format:"%g %@", self.dosage, self.dosageUnit.units(self.dosage))
-        
-        if self.isOverdue().flag {
-            let descriptionString = "Overdue\n\(dose)"
-            attributeSet.contentDescription = descriptionString
-        } else if let date = self.lastDose?.next {
-            let descriptionString = "Next dose: \(Medicine.dateString(date))\n\(dose)"
-            attributeSet.contentDescription = descriptionString
-        } else {
-            let descriptionString = "\(dose)"
-            attributeSet.contentDescription = descriptionString
+    var historyArray: [NSDate: [History]]? {
+        if self.history?.count > 0 {
+            var arr = [NSDate: [History]]()
+            for dose in self.history?.array as! [History] {
+                let date = cal.startOfDayForDate(dose.date)
+                if (arr[date] == nil) {
+                    arr[date] = []
+                }
+                arr[date]!.append(dose)
+            }
+            
+            //            return sorted(g.keys) { (a: NSDate, b: NSDate) in
+            //                a.compare(b) == .OrderedAscending // sorting the outer array by 'time'
+            //                }
+            //                // sorting the inner arrays by `name`
+            //                .map { sorted(g[$0]!) { $0.name < $1.name } }
+            
+            return arr
         }
         
-        return attributeSet
+        return nil
     }
     
     func isOverdue() -> (flag: Bool, lastDose: NSDate?) {
@@ -130,6 +132,29 @@ class Medicine: NSManagedObject {
         }
         
         return (false, nil)
+    }
+    
+    
+    // MARK: - Spotlight indexing values
+    @available(iOS 9.0, *)
+    var attributeSet: CSSearchableItemAttributeSet? {
+        let attributeSet = CSSearchableItemAttributeSet(itemContentType: kUTTypeContent as String)
+        attributeSet.title = self.name!
+        
+        let dose = String(format:"%g %@", self.dosage, self.dosageUnit.units(self.dosage))
+        
+        if self.isOverdue().flag {
+            let descriptionString = "Overdue\n\(dose)"
+            attributeSet.contentDescription = descriptionString
+        } else if let date = self.lastDose?.next {
+            let descriptionString = "Next dose: \(Medicine.dateString(date))\n\(dose)"
+            attributeSet.contentDescription = descriptionString
+        } else {
+            let descriptionString = "\(dose)"
+            attributeSet.contentDescription = descriptionString
+        }
+        
+        return attributeSet
     }
 
     
@@ -223,7 +248,7 @@ class Medicine: NSManagedObject {
     }
     
     
-    // MARK: - Action (dose) methods
+    // MARK: - Dose methods
     func takeDose(moc: NSManagedObjectContext, date doseDate: NSDate) throws -> Bool {
         // Throw error if another dose has been taken within the previous 5 minutes
         let compareDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: -5, toDate: doseDate, options: [])!
@@ -239,9 +264,8 @@ class Medicine: NSManagedObject {
     }
     
     func addDose(moc: NSManagedObjectContext, date doseDate: NSDate, dosage: Float? = nil, dosageUnitInt: Int16? = nil) -> History {
-        // Log current dosage as new history element
+        // Log current dosage as new History element
         let entity = NSEntityDescription.entityForName("History", inManagedObjectContext: moc)
-        
         let newDose = History(entity: entity!, insertIntoManagedObjectContext: moc)
         newDose.medicine = self
         newDose.date = doseDate
@@ -271,6 +295,11 @@ class Medicine: NSManagedObject {
             }
         }
         
+        // Modify prescription count
+        if self.prescriptionCount >= newDose.dosage {
+            self.prescriptionCount -= newDose.dosage
+        }
+        
         scheduleNextNotification()
         return newDose
     }
@@ -283,6 +312,60 @@ class Medicine: NSManagedObject {
             
             scheduleNextNotification()
             return true
+        }
+        
+        return false
+    }
+    
+    
+    // MARK: - Prescription methods
+    func addRefill(moc: NSManagedObjectContext, date refillDate: NSDate?, refillQuantity: Float) -> Prescription {
+        // Log current refill as new Prescription element
+        let entity = NSEntityDescription.entityForName("Prescription", inManagedObjectContext: moc)
+        let refill = Prescription(entity: entity!, insertIntoManagedObjectContext: moc)
+        refill.medicine = self
+        refill.quantity = refillQuantity
+        
+        if let date = refillDate {
+            refill.date = date
+        } else {
+            refill.date = NSDate()
+        }
+        
+        // Increase prescription count
+        self.prescriptionCount += refillQuantity
+        
+        return refill
+    }
+    
+    // Determine whether a refill is necessary
+    // Range default is 3 days, specified by in user defaults
+    func checkRefill(range: Int = 3) -> Bool {
+        if let history = self.historyArray {
+            // Only calculate the daily consumption average
+            // when medication has more than a week of data
+            if history.count >= 7  {
+                // Determine total amount of medication consumed
+                var doseCount: Float = 0.0
+                for i in history {
+                    for j in i.1 {
+                        doseCount += j.dosage
+                    }
+                }
+                
+                // Calculate daily consumption average
+                let dailyAvg = round(doseCount / Float(history.count))
+                print("Daily average: \(dailyAvg)")
+                
+                // Calculate consumption limit
+                let limit = dailyAvg * Float(range)
+                
+                // If remaining prescription count is insufficient
+                // for specified alert range, return true
+                if (self.prescriptionCount < limit) {
+                    return true
+                }
+            }
         }
         
         return false

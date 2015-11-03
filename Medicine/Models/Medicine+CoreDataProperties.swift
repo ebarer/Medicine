@@ -28,7 +28,7 @@ extension Medicine {
     
     @NSManaged var history: NSOrderedSet?
     
-    @NSManaged var quantity: Int16
-    @NSManaged var prescription: NSOrderedSet?
+    @NSManaged var prescriptionCount: Float
+    @NSManaged var refillHistory: NSOrderedSet?
     
 }

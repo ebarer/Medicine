@@ -15,20 +15,20 @@
         <attribute name="intervalUnitInt" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="medicineID" attributeType="String" syncable="YES"/>
         <attribute name="name" attributeType="String" minValueString="1" spotlightIndexingEnabled="YES" syncable="YES"/>
-        <attribute name="quantity" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="prescriptionCount" attributeType="Float" minValueString="0" defaultValueString="0" syncable="YES"/>
         <attribute name="reminderEnabled" attributeType="Boolean" defaultValueString="YES" syncable="YES"/>
         <attribute name="sortOrder" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <relationship name="history" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="History" inverseName="medicine" inverseEntity="History" syncable="YES"/>
-        <relationship name="prescription" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Prescription" inverseName="medicine" inverseEntity="Prescription" syncable="YES"/>
+        <relationship name="refillHistory" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Prescription" inverseName="medicine" inverseEntity="Prescription" syncable="YES"/>
         <fetchedProperty name="fetchedProperty" optional="YES" syncable="YES">
             <fetchRequest name="fetchedPropertyFetchRequest" entity="Medicine"/>
         </fetchedProperty>
     </entity>
     <entity name="Prescription" representedClassName=".Prescription" syncable="YES">
-        <attribute name="conversion" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="conversion" optional="YES" attributeType="Float" defaultValueString="0" syncable="YES"/>
         <attribute name="date" attributeType="Date" syncable="YES"/>
-        <attribute name="quantity" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
-        <relationship name="medicine" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Medicine" inverseName="prescription" inverseEntity="Medicine" syncable="YES"/>
+        <attribute name="quantity" optional="YES" attributeType="Float" defaultValueString="0" syncable="YES"/>
+        <relationship name="medicine" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Medicine" inverseName="refillHistory" inverseEntity="Medicine" syncable="YES"/>
     </entity>
     <elements>
         <element name="History" positionX="-92" positionY="51" width="128" height="120"/>

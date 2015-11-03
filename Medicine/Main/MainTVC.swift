@@ -69,8 +69,11 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         // Display tutorial on first launch
-        if !defaults.boolForKey("firstLaunch") {
-            defaults.setBool(true, forKey: "firstLaunch")
+        let dictionary = NSBundle.mainBundle().infoDictionary!
+        let version = dictionary["CFBundleShortVersionString"] as! String
+        
+        if defaults.stringForKey("version") != version {
+            defaults.setValue(version, forKey: "version")
             appDelegate.window!.rootViewController?.performSegueWithIdentifier("tutorial", sender: self)
         }
         
@@ -448,6 +451,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 }))
             }
             
+            alert.addAction(UIAlertAction(title: "Refill Prescription", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+                med.addRefill(self.moc, date: NSDate(), refillQuantity: 5)
+                med.checkRefill(self.defaults.integerForKey("refillTime"))
+                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            }))
+            
             alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
                 if let name = med.name {
                     self.presentDeleteAlert(name, indexPath: indexPath)
@@ -598,10 +607,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             if let selectedIndex = tableView.indexPathForSelectedRow {
                 appDelegate.saveContext()
                 
-                // Update last dose properties
+                // Recalculate and update next dose property for previous dose
                 do {
-                    addMed.lastDose?.dosage = addMed.dosage
-                    addMed.lastDose?.dosageUnitInt = addMed.dosageUnitInt
                     addMed.lastDose?.next = try addMed.calculateNextDose(addMed.lastDose?.date)
                 } catch {
                     print("Unable to update last dose")
