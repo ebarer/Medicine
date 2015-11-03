@@ -417,6 +417,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             
             alert.addAction(UIAlertAction(title: "Take Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
                 self.performSegueWithIdentifier("addDose", sender: med)
+                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }))
             
             // If last dose is set, allow user to clear notification
@@ -450,8 +451,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             }
             
             alert.addAction(UIAlertAction(title: "Refill Prescription", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-                med.addRefill(self.moc, date: NSDate(), refillQuantity: 5)
-                med.checkRefill(self.defaults.integerForKey("refillTime"))
+                self.performSegueWithIdentifier("refillPrescription", sender: med)
                 self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }))
             
@@ -560,17 +560,17 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "addMedication" {
-            let vc = segue.destinationViewController as! UINavigationController
-            let addVC = vc.topViewController as! AddMedicationTVC
-            addVC.title = "New Medication"
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddMedicationTVC {
+                vc.title = "New Medication"
+            }
         }
         
         if segue.identifier == "editMedication" {
-            let vc = segue.destinationViewController as! UINavigationController
-            let addVC = vc.topViewController as! AddMedicationTVC
-            addVC.title = "Edit Medication"
-            addVC.med = medication[sender as! Int]
-            addVC.editMode = true
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddMedicationTVC {
+                vc.title = "Edit Medication"
+                vc.med = medication[sender as! Int]
+                vc.editMode = true
+            }
         }
         
         if segue.identifier == "viewMedicationDetails" {
@@ -581,17 +581,25 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             }
         }
         
-        if segue.identifier == "upgrade" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? UpgradeVC {
-                mvc = vc
-            }
-        }
-        
         if segue.identifier == "addDose" {
             if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
                 if let med = sender as? Medicine {
                     vc.med = med
                 }
+            }
+        }
+        
+        if segue.identifier == "refillPrescription" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
+                if let med = sender as? Medicine {
+                    vc.med = med
+                }
+            }
+        }
+        
+        if segue.identifier == "upgrade" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? UpgradeVC {
+                mvc = vc
             }
         }
     }
@@ -686,6 +694,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                     CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
                 }
             }
+            
+            // Check refill status and present alert if medication is running low
+            print("Refill? : \(svc.med?.checkRefill(self.defaults.integerForKey("refillTime")))")
             
             // Update shortcuts
             setDynamicShortcuts()

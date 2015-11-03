@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9052" systemVersion="15B22c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="0VT-Kq-zHt">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="0VT-Kq-zHt">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9040"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -113,6 +113,33 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection id="UhI-6K-xav">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="dosageCell" textLabel="2Y1-Pe-HfI" style="IBUITableViewCellStyleDefault" id="AIf-yY-HgS">
+                                        <rect key="frame" x="0.0" y="411" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="AIf-yY-HgS" id="vjF-Sf-sXM">
+                                            <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Refill Prescription" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="2Y1-Pe-HfI">
+                                                    <rect key="frame" x="15" y="0.0" width="550" height="43.5"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <animations/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <animations/>
+                                        </tableViewCellContentView>
+                                        <animations/>
+                                        <connections>
+                                            <segue destination="vP0-ol-dyP" kind="presentation" identifier="refillPrescription" id="XSU-TH-tlS"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                         </sections>
                         <connections>
                             <outlet property="dataSource" destination="HPy-gl-Dzk" id="WhS-c1-jWP"/>
@@ -122,6 +149,7 @@
                     <navigationItem key="navigationItem" title="Log Dose" id="yNv-pI-UX8">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="oyO-59-MWx">
                             <connections>
+                                <action selector="dismissView:" destination="HPy-gl-Dzk" id="tMI-r3-Hap"/>
                                 <segue destination="xOG-E7-LlZ" kind="unwind" unwindAction="unwindCancel:" id="NPz-RX-qnh"/>
                             </connections>
                         </barButtonItem>
@@ -133,14 +161,24 @@
                     </navigationItem>
                     <connections>
                         <outlet property="doseLabel" destination="rZy-aS-7eF" id="kPI-W9-kOj"/>
+                        <outlet property="medCell" destination="6om-aj-KfG" id="7LP-rI-SAv"/>
                         <outlet property="medLabel" destination="JJH-9M-zHn" id="spA-pv-ldg"/>
                         <outlet property="picker" destination="C5L-05-w6E" id="6iS-pO-FKa"/>
+                        <outlet property="saveButton" destination="irm-aw-TcC" id="tC2-Fp-WIG"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hai-zN-Uzf" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="xOG-E7-LlZ" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="1782" y="779"/>
+        </scene>
+        <!--AddRefill-->
+        <scene sceneID="zQB-tV-3fu">
+            <objects>
+                <viewControllerPlaceholder storyboardName="AddRefill" id="vP0-ol-dyP" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="LLj-Af-n1d" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2327.5" y="779"/>
         </scene>
         <!--Medicine-->
         <scene sceneID="zwh-BJ-IeN">
@@ -410,7 +448,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MnS-O6-OfM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2584" y="1126"/>
+            <point key="canvasLocation" x="2584" y="1152"/>
         </scene>
     </scenes>
 </document>

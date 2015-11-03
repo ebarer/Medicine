@@ -1,5 +1,5 @@
 //
-//  HistoryAddTVC.swift
+//  AddDoseTVC.swift
 //  Medicine
 //
 //  Created by Elliot Barer on 2015-08-31.
@@ -17,8 +17,11 @@ class AddDoseTVC: UITableViewController {
     var date = NSDate()
     let cal = NSCalendar.currentCalendar()
     
+    
     // MARK: - Outlets
     
+    @IBOutlet var saveButton: UIBarButtonItem!
+    @IBOutlet var medCell: UITableViewCell!
     @IBOutlet var medLabel: UILabel!
     @IBOutlet var doseLabel: UILabel!
     @IBOutlet var picker: UIDatePicker!
@@ -42,12 +45,15 @@ class AddDoseTVC: UITableViewController {
             tableView.deselectRowAtIndexPath(index, animated: animated)
         }
         
-        // Display med name in prompt when not in global history
-        if let name = med?.name where !globalHistory {
-            self.navigationItem.prompt = name
+        // Prevent modification of medication when not in global history
+        if !globalHistory {
+            medCell.accessoryType = UITableViewCellAccessoryType.None
+            medCell.selectionStyle = UITableViewCellSelectionStyle.None
         }
         
         updateLabels()
+        
+        tableView.reloadData()
     }
     
     override func didReceiveMemoryWarning() {
@@ -59,45 +65,78 @@ class AddDoseTVC: UITableViewController {
         if let med = med {
             medLabel.text = med.name
             doseLabel.text = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
-            self.navigationItem.rightBarButtonItem?.enabled = true
+            
+            // Check prescription levels
+            if (med.dosage > med.prescriptionCount) {
+                saveButton.enabled = false
+            } else {
+                saveButton.enabled = true
+            }
         } else {
             if let med = medication.first {
                 self.med = med
                 medLabel.text = med.name
                 doseLabel.text = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
-                self.navigationItem.rightBarButtonItem?.enabled = true
+                saveButton.enabled = true
             } else {
                 medLabel.text = "None"
                 doseLabel.text = "None"
-                self.navigationItem.rightBarButtonItem?.enabled = false
+                saveButton.enabled = false
             }
         }
-    }
-    
-    @IBAction func updateDate(sender: UIDatePicker) {
-        date = sender.date
     }
     
     
     // MARK: - Table view data source
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        switch(indexPath) {
-        case NSIndexPath(forRow: 0, inSection: 1):
-            if globalHistory {
-                return tableView.rowHeight
-            } else {
-                return 0.0
-            }
-        case NSIndexPath(forRow: 0, inSection: 0):
+        if indexPath == NSIndexPath(forRow: 0, inSection: 0) {
             return 216.0
-        default:
-            return tableView.rowHeight
         }
+        
+        return tableView.rowHeight
+    }
+    
+    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        if section == 2 {
+            if let med = med {
+                let count = med.prescriptionCount
+                
+                if (count < med.dosage) {
+                    return "You do not appear to have enough medication remaining to take this dose. " +
+                           "Tap \"Refill Prescription\" to update your prescription amount."
+                } else {
+                    return "You will have \(count - med.dosage) \(med.dosageUnit.units(count)) remaining after taking this dose."
+                }
+            }
+        }
+        
+        if section == 2 {
+            if let med = med where med.prescriptionCount < med.dosage {
+                return "Remember to enter your refills in Medicine Manager for accurate prescription tracking."
+            }
+        }
+        
+        return nil
+    }
+    
+    
+    // MARK: - Actions
+    
+    @IBAction func updateDate(sender: UIDatePicker) {
+        date = sender.date
     }
     
     
     // MARK: - Navigation
+    
+    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+        if !globalHistory && identifier == "selectMedicine" {
+            return false
+        }
+        
+        return true
+    }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if let vc = segue.destinationViewController as? AddDoseTVC_Medicine {
@@ -106,10 +145,11 @@ class AddDoseTVC: UITableViewController {
         
         if let vc = segue.destinationViewController as? AddMedicationTVC_Dosage {
             vc.med = med
-            
-            // Display med name in prompt when not in global history
-            if let name = med?.name where !globalHistory {
-                vc.navigationItem.prompt = name
+        }
+        
+        if segue.identifier == "refillPrescription" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
+                vc.med = med
             }
         }
     }
@@ -125,6 +165,10 @@ class AddDoseTVC: UITableViewController {
         if let svc = unwindSegue.sourceViewController as? AddMedicationTVC_Dosage, med = svc.med {
             doseLabel.text = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
         }
+    }
+    
+    @IBAction func dismissView(sender: AnyObject) {
+        dismissViewControllerAnimated(true, completion: nil)
     }
 
 }

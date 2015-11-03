@@ -372,7 +372,6 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
     
     @IBAction func updateAlert(sender: UIDatePicker) {
         if let medicine = med {
-            
             let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: sender.date)
             var date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: NSDate(), options: [])!
             

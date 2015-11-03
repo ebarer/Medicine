@@ -13,7 +13,15 @@
                 <viewControllerPlaceholder storyboardName="Upgrade" id="l1N-4I-mqi" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jlM-d8-EFB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2284" y="326"/>
+            <point key="canvasLocation" x="1854" y="246"/>
+        </scene>
+        <!--AddRefill-->
+        <scene sceneID="lan-nL-PWk">
+            <objects>
+                <viewControllerPlaceholder storyboardName="AddRefill" id="0rS-bm-Zw4" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="I0U-hY-Aro" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2277.5" y="246"/>
         </scene>
         <!--Medicine Manager-->
         <scene sceneID="DrC-QF-zXV">
@@ -128,11 +136,12 @@
                         <segue destination="bZR-7Y-tt8" kind="presentation" identifier="addDose" id="tQz-wz-X6o"/>
                         <segue destination="KKX-VQ-lBK" kind="presentation" identifier="addMedication" id="5Gy-on-iGP"/>
                         <segue destination="l1N-4I-mqi" kind="presentation" identifier="upgrade" id="6jJ-Gd-VPL"/>
+                        <segue destination="0rS-bm-Zw4" kind="presentation" identifier="refillPrescription" id="Rra-so-SIx"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x4v-fN-eJ1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2284" y="-307"/>
+            <point key="canvasLocation" x="2112" y="-307"/>
         </scene>
         <!--Medication-->
         <scene sceneID="Je1-oK-fKE">
@@ -218,7 +227,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Z1B-Nm-fXJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3057" y="-307"/>
+            <point key="canvasLocation" x="2865" y="-307"/>
         </scene>
         <!--AddMedication-->
         <scene sceneID="pTI-n1-n91">
@@ -226,7 +235,7 @@
                 <viewControllerPlaceholder storyboardName="AddMedication" id="KKX-VQ-lBK" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iW6-yh-2SF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2284" y="246"/>
+            <point key="canvasLocation" x="2065" y="246"/>
         </scene>
         <!--AddDose-->
         <scene sceneID="V2c-5F-wuu">
@@ -234,7 +243,7 @@
                 <viewControllerPlaceholder storyboardName="AddDose" id="bZR-7Y-tt8" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2P2-5h-dae" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2666.5" y="165"/>
+            <point key="canvasLocation" x="2494.5" y="246"/>
         </scene>
         <!--History-->
         <scene sceneID="QO9-Ky-i0L">
@@ -290,7 +299,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HCw-k7-25B" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2284" y="739"/>
+            <point key="canvasLocation" x="2112" y="739"/>
         </scene>
         <!--MainTBC-->
         <scene sceneID="R1M-UE-wqt">
@@ -311,7 +320,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="o8O-sL-lb1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="356" y="246"/>
+            <point key="canvasLocation" x="602" y="246"/>
         </scene>
         <!--Tutorial-->
         <scene sceneID="uJe-Pw-JeJ">
@@ -319,7 +328,7 @@
                 <viewControllerPlaceholder storyboardName="Tutorial" id="omS-jf-M2h" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FD3-8j-bs6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="95.5" y="717"/>
+            <point key="canvasLocation" x="1099.5" y="246"/>
         </scene>
         <!--History-->
         <scene sceneID="fpV-lt-R8E">
@@ -464,8 +473,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Refill Alert" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="IzS-Mj-x5T">
-                                                    <rect key="frame" x="15" y="12" width="74.5" height="19.5"/>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Time to Refill Alert" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="IzS-Mj-x5T">
+                                                    <rect key="frame" x="15" y="12" width="133.5" height="19.5"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
@@ -606,7 +615,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gId-aS-ZUY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1360" y="1896"/>
+            <point key="canvasLocation" x="1360" y="1544"/>
         </scene>
         <!--Tutorial-->
         <scene sceneID="faB-Xg-ayT">
@@ -614,7 +623,7 @@
                 <viewControllerPlaceholder storyboardName="Tutorial" id="Rfe-rG-seV" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Jm5-Vy-6dt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1360.5" y="2352"/>
+            <point key="canvasLocation" x="1851.5" y="1544"/>
         </scene>
         <!--Settings-->
         <scene sceneID="jFp-9x-dGI">
@@ -639,7 +648,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TTD-cb-P5u" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="356" y="1896"/>
+            <point key="canvasLocation" x="602" y="1544"/>
         </scene>
         <!--AddDose-->
         <scene sceneID="hlM-7E-p46">
@@ -647,7 +656,7 @@
                 <viewControllerPlaceholder storyboardName="AddDose" id="3SL-Re-aut" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XIP-cF-qN4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2800.5" y="739"/>
+            <point key="canvasLocation" x="2608.5" y="739"/>
         </scene>
         <!--Sort Medication By-->
         <scene sceneID="kwb-F9-wzz">
@@ -721,7 +730,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ual-dv-tn8" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="U5q-d4-dWw" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="2284" y="1536"/>
+            <point key="canvasLocation" x="602" y="2568"/>
         </scene>
         <!--Snooze Length-->
         <scene sceneID="8hU-QD-RMW">
@@ -769,7 +778,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="znU-p5-lf7" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="9FV-ib-jzv" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="3057" y="1536"/>
+            <point key="canvasLocation" x="1360" y="2568"/>
         </scene>
         <!--Console-->
         <scene sceneID="bMy-Fr-TEI">
@@ -819,7 +828,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fvp-Gm-Kqd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3057" y="2255"/>
+            <point key="canvasLocation" x="2112" y="3319"/>
         </scene>
         <!--Acknowledgements-->
         <scene sceneID="1UI-8x-FK3">
@@ -929,7 +938,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8ji-ws-nOb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2284" y="2255"/>
+            <point key="canvasLocation" x="602" y="3319"/>
         </scene>
         <!--Refill Alert-->
         <scene sceneID="F4D-t0-AIl">
@@ -997,7 +1006,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PCA-0p-wrf" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="ke9-HB-LHc" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="3819" y="1536"/>
+            <point key="canvasLocation" x="2112" y="2568"/>
         </scene>
     </scenes>
     <resources>
@@ -1009,8 +1018,8 @@
         <image name="SettingsTab" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="LK1-7V-jnC"/>
         <segue reference="tHn-tf-kiw"/>
-        <segue reference="0Oe-mX-irt"/>
+        <segue reference="tQz-wz-X6o"/>
+        <segue reference="LK1-7V-jnC"/>
     </inferredMetricsTieBreakers>
 </document>

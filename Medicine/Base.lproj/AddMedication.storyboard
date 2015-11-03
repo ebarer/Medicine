@@ -267,7 +267,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Amount" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="L6Z-9O-aSK">
-                                                    <rect key="frame" x="15" y="12" width="70" height="20"/>
+                                                    <rect key="frame" x="16" y="12" width="70" height="20"/>
                                                     <animations/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="70" id="Idd-Bb-Ijj"/>
@@ -278,7 +278,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Detail" textAlignment="right" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="9aJ-tH-z7H">
-                                                    <rect key="frame" x="71" y="0.0" width="513.5" height="43.5"/>
+                                                    <rect key="frame" x="72" y="0.0" width="512.5" height="43.5"/>
                                                     <animations/>
                                                     <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="calibratedRGB"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
@@ -290,7 +290,7 @@
                                             </subviews>
                                             <animations/>
                                             <constraints>
-                                                <constraint firstItem="L6Z-9O-aSK" firstAttribute="leading" secondItem="v3Y-2R-ylr" secondAttribute="leadingMargin" constant="7" id="4yn-yz-MKI"/>
+                                                <constraint firstItem="L6Z-9O-aSK" firstAttribute="leading" secondItem="v3Y-2R-ylr" secondAttribute="leadingMargin" constant="8" id="4yn-yz-MKI"/>
                                                 <constraint firstItem="L6Z-9O-aSK" firstAttribute="top" secondItem="v3Y-2R-ylr" secondAttribute="topMargin" constant="4" id="7HY-2T-lID"/>
                                                 <constraint firstItem="9aJ-tH-z7H" firstAttribute="leading" secondItem="L6Z-9O-aSK" secondAttribute="trailing" constant="-14" id="Rnh-oG-5mv"/>
                                                 <constraint firstItem="9aJ-tH-z7H" firstAttribute="top" secondItem="v3Y-2R-ylr" secondAttribute="top" id="azQ-JS-Bff"/>
