@@ -295,6 +295,10 @@ class Medicine: NSManagedObject {
             }
         }
         
+        // Save dose insertion
+        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        delegate.saveContext()
+        
         // Modify prescription count
         if self.prescriptionCount >= newDose.dosage {
             self.prescriptionCount -= newDose.dosage
@@ -306,6 +310,10 @@ class Medicine: NSManagedObject {
     
     func untakeLastDose(moc: NSManagedObjectContext) -> Bool {
         if let lastDose = lastDose {
+            // Modify prescription count
+            self.prescriptionCount += lastDose.dosage
+            
+            // Save dose deletion
             moc.deleteObject(lastDose)
             let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
             delegate.saveContext()
@@ -319,6 +327,15 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Prescription methods
+    /**
+    Add a new prescription refill for medication
+    
+    - Parameter moc: Managed object context
+    - Parameter date: Date when refill occurred/should be logged
+    - Parameter refillQuantity: Amount of medication in refill
+    
+    - Returns: Prescription element for refill
+    */
     func addRefill(moc: NSManagedObjectContext, date refillDate: NSDate?, refillQuantity: Float) -> Prescription {
         // Log current refill as new Prescription element
         let entity = NSEntityDescription.entityForName("Prescription", inManagedObjectContext: moc)
@@ -332,14 +349,25 @@ class Medicine: NSManagedObject {
             refill.date = NSDate()
         }
         
+        // Save refill insertion
+        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        delegate.saveContext()
+        
         // Increase prescription count
         self.prescriptionCount += refillQuantity
         
+        print(self.prescriptionCount)
+        
         return refill
     }
-    
-    // Determine whether a refill is necessary
-    // Range default is 3 days, specified by in user defaults
+
+    /**
+     Determine whether a refill is necessary
+     
+     - Parameter range: Number of days worth of prescription remaining (default is 3 days)
+     
+     - Returns: Bool indicating whether user needs to be notified to refill
+    */
     func checkRefill(range: Int = 3) -> Bool {
         if let history = self.historyArray {
             // Only calculate the daily consumption average
