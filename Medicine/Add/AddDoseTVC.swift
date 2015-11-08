@@ -98,7 +98,7 @@ class AddDoseTVC: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if section == 2 {
+        if section == 1 {
             if let med = med {
                 let count = med.prescriptionCount
                 
@@ -106,14 +106,10 @@ class AddDoseTVC: UITableViewController {
                     return "You do not appear to have enough medication remaining to take this dose. " +
                            "Tap \"Refill Prescription\" to update your prescription amount."
                 } else {
-                    return "You will have \(count - med.dosage) \(med.dosageUnit.units(count)) remaining after taking this dose."
+                    return "You currently have " +
+                           "\(count) \(med.dosageUnit.units(count)) of \(med.name!). " +
+                           "Based on your current usage, this will last you approximately \(med.refillDaysRemaining()) days."
                 }
-            }
-        }
-        
-        if section == 2 {
-            if let med = med where med.prescriptionCount < med.dosage {
-                return "Remember to enter your refills in Medicine Manager for accurate prescription tracking."
             }
         }
         

@@ -296,7 +296,9 @@ class Medicine: NSManagedObject {
         }
         
         // Modify prescription count
-        if self.prescriptionCount >= newDose.dosage {
+        if self.prescriptionCount < newDose.dosage {
+            self.prescriptionCount = 0
+        } else {
             self.prescriptionCount -= newDose.dosage
         }
         
@@ -337,43 +339,31 @@ class Medicine: NSManagedObject {
     
     - Returns: Prescription element for refill
     */
-    func addRefill(moc: NSManagedObjectContext, refillQuantity: Float, date refillDate: NSDate?, conversionAmount: Float?) -> Prescription {
-        // Log current refill as new Prescription element
-        let entity = NSEntityDescription.entityForName("Prescription", inManagedObjectContext: moc)
-        let refill = Prescription(entity: entity!, insertIntoManagedObjectContext: moc)
-        refill.medicine = self
-        refill.quantity = refillQuantity
-        
-        if let date = refillDate {
-            refill.date = date
-        } else {
-            refill.date = NSDate()
-        }
-        
-        if let amount = conversionAmount {
-            refill.conversion = amount
-        }
-        
-        // Save refill insertion
-        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        delegate.saveContext()
-        
+    func addRefill(refill: Prescription) {
         // Increase prescription count
-        self.prescriptionCount += refillQuantity
-        
-        print(self.prescriptionCount)
-        
-        return refill
+        self.prescriptionCount += refill.quantity * refill.conversion
+    }
+    
+    /**
+     Add a new prescription refill for medication
+     
+     - Parameter moc: Managed object context
+     - Parameter date: Date when refill occurred/should be logged
+     - Parameter refillQuantity: Amount of medication in refill
+     
+     - Returns: Prescription element for refill
+     */
+    func removeRefill(refill: Prescription) {
+        // Increase prescription count
+        self.prescriptionCount -= refill.quantity * refill.conversion
     }
 
     /**
-     Determine whether a refill is necessary
+     Determine number of days worth of prescription remaining
      
-     - Parameter range: Number of days worth of prescription remaining (default is 3 days)
-     
-     - Returns: Bool indicating whether user needs to be notified to refill
+     - Returns: Int representing number of days
     */
-    func checkRefill(range: Int = 3) -> Bool {
+    func refillDaysRemaining() -> Int {
         if let history = self.historyArray {
             // Only calculate the daily consumption average
             // when medication has more than a week of data
@@ -388,17 +378,33 @@ class Medicine: NSManagedObject {
                 
                 // Calculate daily consumption average
                 let dailyAvg = round(doseCount / Float(history.count))
-                print("Daily average: \(dailyAvg)")
                 
-                // Calculate consumption limit
-                let limit = dailyAvg * Float(range)
+                // Calculate number of days remaining
+                let days = Int(floorf(self.prescriptionCount / dailyAvg))
                 
-                // If remaining prescription count is insufficient
-                // for specified alert range, return true
-                if (self.prescriptionCount < limit) {
-                    return true
-                }
+                return days
             }
+        }
+        
+        if intervalUnit == Intervals.Daily {
+            let days = Int(floorf(prescriptionCount * (interval / dosage)))
+            
+            return days
+        }
+        
+        return 0
+    }
+    
+    /**
+     Determine whether medication needs to be refilled
+     
+     - Parameter limit: Number of days worth of prescription remaining (default is 3 days)
+     
+     - Returns: Bool indicating whether user needs to be notified to refill
+    */
+    func checkRefill(limit: Int = 3) -> Bool {
+        if refillDaysRemaining() <= limit {
+            return true
         }
         
         return false

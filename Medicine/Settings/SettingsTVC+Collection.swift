@@ -130,7 +130,7 @@ class SettingsTVC_Collection: UITableViewController {
                     (self.tabBarController as! MainTBC).loadMedication()
                 case "Prescription":
                     let refill = collection![indexPath.row] as! Prescription
-                    refill.medicine?.prescriptionCount -= refill.quantity * refill.conversion
+                    refill.medicine?.removeRefill(refill)
                 default:
                     break
                 }

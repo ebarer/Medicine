@@ -11,7 +11,7 @@ import CoreData
 
 class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDelegate {
     
-    var med:Medicine?
+    var med: Medicine?
     var refill: Prescription
     
     
@@ -73,10 +73,15 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
             self.navigationItem.title = "Refill \(med.name!)"
             
             // Set description
-            prescriptionCountLabel.text = "You currently have \(med.prescriptionCount) \(med.dosageUnit.units(med.prescriptionCount)) of \(med.name!)"
-            
+            if med.prescriptionCount > 0 {
+                prescriptionCountLabel.text = "You currently have " +
+                                              "\(med.prescriptionCount) \(med.dosageUnit.units(med.prescriptionCount)) of \(med.name!). " +
+                                              "Based on your current usage, this will last you approximately \(med.refillDaysRemaining()) days."
+            } else {
+                prescriptionCountLabel.text = "You currently don't have any \(med.dosageUnit.units(med.prescriptionCount))."
+            }
+                
             // Set refill parameters
-            
             if let prev = med.refillHistory?.array.last as? Prescription {
                 refill.quantity = prev.quantity
                 refill.quantityUnit = prev.quantityUnit
@@ -280,10 +285,8 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
     // MARK: - Navigation
     
     @IBAction func saveRefill(sender: AnyObject) {
-        med?.prescriptionCount += refill.quantity * refill.conversion
-        
+        med?.addRefill(refill)
         appDelegate.saveContext()
-        
         dismissViewControllerAnimated(true, completion: nil)
     }
     
