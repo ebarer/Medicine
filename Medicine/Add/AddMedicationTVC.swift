@@ -162,6 +162,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if let vc = segue.destinationViewController as? AddMedicationTVC_Dosage {
             vc.med = self.med
+            vc.editMode = self.editMode
         }
         
         if let vc = segue.destinationViewController as? AddMedicationTVC_Interval {

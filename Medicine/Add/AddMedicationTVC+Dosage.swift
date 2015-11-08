@@ -11,6 +11,7 @@ import UIKit
 class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
     
     weak var med: Medicine?
+    var editMode: Bool = false
     
     
     // MARK: - Outlets
@@ -54,6 +55,33 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
+    }
+    
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        switch indexPath {
+        case NSIndexPath(forRow: 2, inSection: 0):
+            if editMode == false {
+                return 162
+            }
+        default:
+            return tableView.rowHeight
+        }
+        
+        return 0
+    }
+    
+    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        cell.preservesSuperviewLayoutMargins = false
+        cell.layoutMargins = UIEdgeInsetsZero
+        cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
+        
+        switch indexPath {
+        case NSIndexPath(forRow: 1, inSection: 0):
+            if editMode == true {
+                cell.separatorInset = UIEdgeInsetsZero
+            }
+        default: break
+        }
     }
     
     

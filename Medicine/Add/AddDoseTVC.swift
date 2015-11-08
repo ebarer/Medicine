@@ -141,6 +141,7 @@ class AddDoseTVC: UITableViewController {
         
         if let vc = segue.destinationViewController as? AddMedicationTVC_Dosage {
             vc.med = med
+            vc.editMode = true
         }
         
         if segue.identifier == "refillPrescription" {
