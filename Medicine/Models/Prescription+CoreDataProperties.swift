@@ -18,6 +18,8 @@ extension Prescription {
     @NSManaged var medicine: Medicine?
     
     @NSManaged var quantity: Float
+    @NSManaged var quantityUnitInt: Int16
+    
     @NSManaged var conversion: Float
 
 }

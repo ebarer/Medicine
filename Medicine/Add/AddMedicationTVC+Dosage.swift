@@ -32,7 +32,7 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
         if let medicine = med {
             dosageInput.text = String(format:"%g", medicine.dosage)
 
-            dosageUnitLabel.text = medicine.dosageUnit.units(medicine.dosage)
+            dosageUnitLabel.text = medicine.dosageUnit.description
             dosageUnitPicker.selectRow(Int(medicine.dosageUnitInt), inComponent: 0, animated: false)
         }
     }
@@ -81,7 +81,7 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if let unit = Doses(rawValue: Int16(row)) {
             med?.dosageUnit = unit
-            dosageUnitLabel.text = unit.units(med?.dosage)
+            dosageUnitLabel.text = unit.description
         }
     }
     

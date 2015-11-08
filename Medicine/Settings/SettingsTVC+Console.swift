@@ -109,6 +109,10 @@ class SettingsTVC_Console: UITableViewController {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("consoleCell", forIndexPath: indexPath)
         
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
+        dateFormatter.timeStyle = NSDateFormatterStyle.MediumStyle
+        
         switch(indexPath.section) {
         case 0:
             let name = medication[indexPath.row].name!
@@ -123,9 +127,6 @@ class SettingsTVC_Console: UITableViewController {
             cell.textLabel?.attributedText = attributedString
             cell.detailTextLabel?.text = txt.id
         case 2:
-            let dateFormatter = NSDateFormatter()
-            dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
-            dateFormatter.timeStyle = NSDateFormatterStyle.MediumStyle
             cell.textLabel?.text = dateFormatter.stringFromDate(rescheduleDates[indexPath.row])
             cell.detailTextLabel?.text = nil
         default: break

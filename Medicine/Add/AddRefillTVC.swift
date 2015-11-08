@@ -9,26 +9,48 @@
 import UIKit
 import CoreData
 
-class AddRefillTVC: UITableViewController {
+class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDelegate {
     
     var med:Medicine?
-    
-    var date = NSDate()
-    let cal = NSCalendar.currentCalendar()
-    let dateFormatter = NSDateFormatter()
+    var refill: Prescription
     
     
     // MARK: - Outlets
-
+    
+    @IBOutlet var prescriptionCountLabel: UILabel!
     @IBOutlet var quantityInput: UITextField!
     @IBOutlet var quantityUnitLabel: UILabel!
+    @IBOutlet var quantityUnitPicker: UIPickerView!
+    @IBOutlet var conversionLabel: UILabel!
+    @IBOutlet var conversionInput: UITextField!
     @IBOutlet var dateLabel: UILabel!
     @IBOutlet var picker: UIDatePicker!
-    
+
     
     // MARK: - Helper variables
     
+    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    var moc: NSManagedObjectContext
+    let cal = NSCalendar.currentCalendar()
+    let dateFormatter = NSDateFormatter()
     private var selectedRow = Rows.none
+
+    
+    // MARK: - Initialization
+    
+    required init?(coder aDecoder: NSCoder) {
+        // Setup context
+        moc = appDelegate.managedObjectContext
+        
+        // Setup date formatter
+        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+        dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
+        
+        let entity = NSEntityDescription.entityForName("Prescription", inManagedObjectContext: moc)
+        refill = Prescription(entity: entity!, insertIntoManagedObjectContext: moc)
+        
+        super.init(coder: aDecoder)
+    }
     
     
     // MARK: - View methods
@@ -40,24 +62,36 @@ class AddRefillTVC: UITableViewController {
         // Modify VC
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         
-        // Setup date formatter
-        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-        dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
-        
         // Set picker min/max values
         picker.maximumDate = NSDate()
     }
     
     override func viewWillAppear(animated: Bool) {
         // Set values
-        if let history = med?.refillHistory?.array as? [Prescription] {
-            if let quantity = history.last?.quantity {
-                quantityInput.text = String(format:"%g", quantity)
-                quantityUnitLabel.text = med?.dosageUnit.description
+        if let med = med {
+            // Set title
+            self.navigationItem.title = "Refill \(med.name!)"
+            
+            // Set description
+            prescriptionCountLabel.text = "You currently have \(med.prescriptionCount) \(med.dosageUnit.units(med.prescriptionCount)) of \(med.name!)"
+            
+            // Set refill parameters
+            
+            if let prev = med.refillHistory?.array.last as? Prescription {
+                refill.quantity = prev.quantity
+                refill.quantityUnit = prev.quantityUnit
+                refill.conversion = prev.conversion
+            } else {
+                refill.quantity = 1.0
+                refill.quantityUnit = med.dosageUnit
+                refill.conversion = 1.0
             }
+            
+            refill.medicine = med
+            refill.date = NSDate()
         }
-        
-        dateLabel.text = dateFormatter.stringFromDate(date)
+
+        updateLabels()
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -65,11 +99,24 @@ class AddRefillTVC: UITableViewController {
     }
     
     override func viewWillDisappear(animated: Bool) {
-        quantityInput.resignFirstResponder()
+        self.view.endEditing(true)
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    func updateLabels() {
+        quantityInput.text = String(format:"%g", refill.quantity)
+        quantityUnitLabel.text = refill.quantityUnit.description
+        quantityUnitPicker.selectRow(Int(refill.quantityUnitInt), inComponent: 0, animated: false)
+        
+        if let med = med {
+            conversionLabel.text = "\(med.dosageUnit.description) / \(refill.quantityUnit.description)"
+            conversionInput.text = String(format:"%g", refill.conversion)
+        }
+        
+        dateLabel.text = dateFormatter.stringFromDate(refill.date)
     }
     
     
@@ -79,8 +126,16 @@ class AddRefillTVC: UITableViewController {
         let row = Rows(index: indexPath)
         
         switch(row) {
+        case Rows.quantityUnitPicker:
+            if selectedRow == Rows.quantityUnit {
+                return 175
+            }
+        case Rows.conversionAmount:
+            if med?.dosageUnit != refill.quantityUnit {
+                return tableView.rowHeight
+            }
         case Rows.datePicker:
-            if selectedRow == Rows.dateLabel {
+            if selectedRow == Rows.date {
                 return 216
             }
         default:
@@ -104,7 +159,15 @@ class AddRefillTVC: UITableViewController {
         }
         
         switch(row) {
-        case Rows.dateLabel:
+        case Rows.quantityUnit:
+            if row != selectedRow {
+                cell.separatorInset = UIEdgeInsetsZero
+            }
+        case Rows.quantityUnitPicker:
+            if med?.dosageUnit == refill.quantityUnit {
+                cell.separatorInset = UIEdgeInsetsZero
+            }
+        case Rows.date:
             if row != selectedRow {
                 cell.separatorInset = UIEdgeInsetsZero
             }
@@ -116,6 +179,8 @@ class AddRefillTVC: UITableViewController {
     // MARK: - Table view delegate
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        self.view.endEditing(true)
+        
         let newSelect = Rows(index: indexPath)
         
         if selectedRow == newSelect {
@@ -125,7 +190,7 @@ class AddRefillTVC: UITableViewController {
         }
         
         // Reload labels
-        let labels = [Rows.quantityAmount.index(), Rows.quantityUnit.index(), Rows.dateLabel.index()]
+        let labels = [Rows.quantityUnit.index(), Rows.date.index()]
         tableView.reloadRowsAtIndexPaths(labels, withRowAnimation: .None)
         
         // Reload table
@@ -134,10 +199,61 @@ class AddRefillTVC: UITableViewController {
     }
     
     
+    // MARK: - Text input delegate
+    
+    func textFieldDidBeginEditing(textField: UITextField) {
+        selectedRow = Rows.none
+        
+        
+        // Reload labels
+        let labels = [Rows.quantityUnit.index(), Rows.date.index()]
+        tableView.reloadRowsAtIndexPaths(labels, withRowAnimation: .None)
+        
+        // Reload table
+        tableView.beginUpdates()
+        tableView.endUpdates()
+    }
+
+    
+    // MARK: - Picker data source
+    
+    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return Doses.count
+    }
+    
+    func pickerView(pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
+        return 30.0
+    }
+    
+    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return Doses(rawValue: Int16(row))?.description
+    }
+    
+    
+    // MARK: - Picker delegate
+    
+    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if let unit = Doses(rawValue: Int16(row)) {
+            refill.quantityUnit = unit
+        }
+        
+        updateLabels()
+        
+        // Reload table view
+        tableView.reloadRowsAtIndexPaths([Rows.quantityUnitPicker.index()], withRowAnimation: .None)
+        tableView.beginUpdates()
+        tableView.endUpdates()
+    }
+    
+    
     // MARK: - Actions
     
     @IBAction func updateDate(sender: UIDatePicker) {
-        date = sender.date
+        refill.date = sender.date
             
         if sender.date.isMidnight() {
             dateLabel.text = "Midnight"
@@ -146,27 +262,46 @@ class AddRefillTVC: UITableViewController {
         }
     }
     
+    @IBAction func updateQuantity(sender: UITextField) {
+        if let value = sender.text {
+            let val = (value as NSString).floatValue
+            refill.quantity = val
+        }
+    }
+    
+    @IBAction func updateConversion(sender: UITextField) {
+        if let value = sender.text {
+            let val = (value as NSString).floatValue
+            refill.conversion = val
+        }
+    }
+
     
     // MARK: - Navigation
     
     @IBAction func saveRefill(sender: AnyObject) {
-//        med.addRefill(self.moc, date: NSDate(), refillQuantity: 5)
+        med?.prescriptionCount += refill.quantity * refill.conversion
+        
+        appDelegate.saveContext()
+        
         dismissViewControllerAnimated(true, completion: nil)
     }
     
-    @IBAction func dismissView(sender: AnyObject) {
+    @IBAction func cancelRefill(sender: AnyObject) {
+        moc.rollback()
         dismissViewControllerAnimated(true, completion: nil)
     }
     
 }
 
 
-
 private enum Rows: Int {
     case none = -1
     case quantityAmount
     case quantityUnit
-    case dateLabel
+    case quantityUnitPicker
+    case conversionAmount
+    case date
     case datePicker
     
     init(index: NSIndexPath) {
@@ -177,8 +312,12 @@ private enum Rows: Int {
             row = Rows.quantityAmount
         case (0, 1):
             row = Rows.quantityUnit
+        case (0, 2):
+            row = Rows.quantityUnitPicker
+        case (0, 3):
+            row = Rows.conversionAmount
         case (1, 0):
-            row = Rows.dateLabel
+            row = Rows.date
         case (1, 1):
             row = Rows.datePicker
         default:
@@ -194,7 +333,11 @@ private enum Rows: Int {
             return NSIndexPath(forRow: 0, inSection: 0)
         case .quantityUnit:
             return NSIndexPath(forRow: 1, inSection: 0)
-        case .dateLabel:
+        case .quantityUnitPicker:
+            return NSIndexPath(forRow: 2, inSection: 0)
+        case .conversionAmount:
+            return NSIndexPath(forRow: 3, inSection: 0)
+        case .date:
             return NSIndexPath(forRow: 0, inSection: 1)
         case .datePicker:
             return NSIndexPath(forRow: 1, inSection: 1)

@@ -295,14 +295,14 @@ class Medicine: NSManagedObject {
             }
         }
         
-        // Save dose insertion
-        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        delegate.saveContext()
-        
         // Modify prescription count
         if self.prescriptionCount >= newDose.dosage {
             self.prescriptionCount -= newDose.dosage
         }
+        
+        // Save dose insertion
+        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        delegate.saveContext()
         
         scheduleNextNotification()
         return newDose
@@ -337,7 +337,7 @@ class Medicine: NSManagedObject {
     
     - Returns: Prescription element for refill
     */
-    func addRefill(moc: NSManagedObjectContext, date refillDate: NSDate?, refillQuantity: Float) -> Prescription {
+    func addRefill(moc: NSManagedObjectContext, refillQuantity: Float, date refillDate: NSDate?, conversionAmount: Float?) -> Prescription {
         // Log current refill as new Prescription element
         let entity = NSEntityDescription.entityForName("Prescription", inManagedObjectContext: moc)
         let refill = Prescription(entity: entity!, insertIntoManagedObjectContext: moc)
@@ -348,6 +348,10 @@ class Medicine: NSManagedObject {
             refill.date = date
         } else {
             refill.date = NSDate()
+        }
+        
+        if let amount = conversionAmount {
+            refill.conversion = amount
         }
         
         // Save refill insertion

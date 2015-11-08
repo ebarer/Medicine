@@ -49,6 +49,8 @@
 		CEA2510C1B903E7D00BBE466 /* Medicine.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CEA2510A1B903E7D00BBE466 /* Medicine.xcdatamodeld */; };
 		CECD22B41BE94FDB007C5F25 /* AddRefill.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CECD22B21BE94FDB007C5F25 /* AddRefill.storyboard */; };
 		CECD22B61BE95088007C5F25 /* AddRefillTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECD22B51BE95088007C5F25 /* AddRefillTVC.swift */; };
+		CEE18F361BEEC91800222D92 /* SettingsTVC+Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE18F351BEEC91800222D92 /* SettingsTVC+Collection.swift */; };
+		CEE18F381BEECE3700222D92 /* SettingsTVC+Manage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE18F371BEECE3700222D92 /* SettingsTVC+Manage.swift */; };
 		CEF5483C1B9CEA7100C344B4 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -136,6 +138,9 @@
 		CEA9CA0D1BA87317001395BF /* Medicine - 2.1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2.1.xcdatamodel"; sourceTree = "<group>"; };
 		CECD22B31BE94FDB007C5F25 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/AddRefill.storyboard; sourceTree = "<group>"; };
 		CECD22B51BE95088007C5F25 /* AddRefillTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddRefillTVC.swift; path = Add/AddRefillTVC.swift; sourceTree = "<group>"; };
+		CEE18F341BEEC5CF00222D92 /* Medicine - 2.4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2.4.xcdatamodel"; sourceTree = "<group>"; };
+		CEE18F351BEEC91800222D92 /* SettingsTVC+Collection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Collection.swift"; path = "Settings/SettingsTVC+Collection.swift"; sourceTree = "<group>"; };
+		CEE18F371BEECE3700222D92 /* SettingsTVC+Manage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Manage.swift"; path = "Settings/SettingsTVC+Manage.swift"; sourceTree = "<group>"; };
 		CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		CEF5483E1B9CEA8200C344B4 /* Medicine.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Medicine.entitlements; path = Medicine/Medicine.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -175,6 +180,8 @@
 				CE7519791BB00CFE000A2879 /* SettingsTVC+Snooze.swift */,
 				CE94A5B51BE8B13B008E58DF /* SettingsTVC+Refill.swift */,
 				CE75197D1BB1607F000A2879 /* SettingsTVC+Console.swift */,
+				CEE18F371BEECE3700222D92 /* SettingsTVC+Manage.swift */,
+				CEE18F351BEEC91800222D92 /* SettingsTVC+Collection.swift */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -531,6 +538,7 @@
 				CE30D1571B9856D1007805DB /* Prescription+CoreDataProperties.swift in Sources */,
 				CE0EA1991BAFF49100F48A09 /* MainTBC.swift in Sources */,
 				CEA250E91B90396C00BBE466 /* AppDelegate.swift in Sources */,
+				CEE18F381BEECE3700222D92 /* SettingsTVC+Manage.swift in Sources */,
 				CE0EA19D1BAFFDA200F48A09 /* AddDoseTVC+Medicine.swift in Sources */,
 				CEA251021B903BE400BBE466 /* MainTVC.swift in Sources */,
 				CEA250FF1B903BC200BBE466 /* AddMedicationTVC.swift in Sources */,
@@ -545,6 +553,7 @@
 				CE38AF231B950517000D00AD /* AddDoseTVC.swift in Sources */,
 				CE0EA1951BAFE28200F48A09 /* HistoryTVC.swift in Sources */,
 				CE0EA1971BAFE2B800F48A09 /* MedicineDetailsTVC.swift in Sources */,
+				CEE18F361BEEC91800222D92 /* SettingsTVC+Collection.swift in Sources */,
 				CE2497161BAA00DF00627525 /* TutorialPVC.swift in Sources */,
 				CE2F6B111BBD492400707951 /* MainTVC+UIViewControllerPreviewing.swift in Sources */,
 			);
@@ -872,13 +881,14 @@
 		CEA2510A1B903E7D00BBE466 /* Medicine.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				CEE18F341BEEC5CF00222D92 /* Medicine - 2.4.xcdatamodel */,
 				CE7A8E7F1BB89CD1001727B9 /* Medicine - 2.3.xcdatamodel */,
 				CE587A151BA9244400821D18 /* Medicine - 2. 2.xcdatamodel */,
 				CEA9CA0D1BA87317001395BF /* Medicine - 2.1.xcdatamodel */,
 				CE48157B1B971A5700F1FA0C /* Medicine - 2.xcdatamodel */,
 				CEA2510B1B903E7D00BBE466 /* Medicine.xcdatamodel */,
 			);
-			currentVersion = CE7A8E7F1BB89CD1001727B9 /* Medicine - 2.3.xcdatamodel */;
+			currentVersion = CEE18F341BEEC5CF00222D92 /* Medicine - 2.4.xcdatamodel */;
 			name = Medicine.xcdatamodeld;
 			path = Medicine/Medicine.xcdatamodeld;
 			sourceTree = "<group>";
