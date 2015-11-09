@@ -124,7 +124,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     // MARK: - Table view delegate
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
@@ -160,14 +160,24 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     // MARK: - Navigation
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if let vc = segue.destinationViewController as? AddMedicationTVC_Dosage {
-            vc.med = self.med
-            vc.editMode = self.editMode
+        if segue.identifier == "setDosage" {
+            if let vc = segue.destinationViewController as? AddMedicationTVC_Dosage {
+                vc.med = self.med
+                vc.editMode = self.editMode
+            }
         }
         
-        if let vc = segue.destinationViewController as? AddMedicationTVC_Interval {
-            vc.med = self.med
-            vc.editMode = self.editMode
+        if segue.identifier == "setInterval" {
+            if let vc = segue.destinationViewController as? AddMedicationTVC_Interval {
+                vc.med = self.med
+                vc.editMode = self.editMode
+            }
+        }
+        
+        if segue.identifier == "refillPrescription" {
+            if let vc = segue.destinationViewController as? AddRefillTVC {
+                vc.med = self.med
+            }
         }
     }
     

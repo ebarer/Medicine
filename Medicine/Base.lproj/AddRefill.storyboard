@@ -21,7 +21,7 @@
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You currently have 10 pills of Medication." lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lcS-JN-vxI">
                                     <rect key="frame" x="18" y="8" width="564" height="59"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                    <color key="textColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
+                                    <color key="textColor" red="0.43529411759999997" green="0.4431372549" blue="0.47450980390000003" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
@@ -241,6 +241,7 @@
                         <outlet property="quantityInput" destination="hfh-ci-lQv" id="z2A-rG-TOn"/>
                         <outlet property="quantityUnitLabel" destination="bbz-e6-bfM" id="Ub8-To-NfK"/>
                         <outlet property="quantityUnitPicker" destination="OpM-Pd-D9u" id="Mkv-8J-Iju"/>
+                        <outlet property="saveButton" destination="SYX-7O-NPd" id="ZNi-GV-kL3"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TfH-Mn-2Wa" userLabel="First Responder" sceneMemberID="firstResponder"/>

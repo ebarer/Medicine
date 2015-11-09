@@ -43,8 +43,8 @@ class AddDoseTVC_Medicine: UITableViewController {
     // MARK: - Navigation
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if let selRow = tableView.indexPathForSelectedRow?.row {
-            selectedMed = medication[selRow]
+        if let selectedRow = tableView.indexPathForSelectedRow?.row {
+            self.selectedMed = medication[selectedRow]
         }
     }
 

@@ -42,7 +42,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "rescheduleNotifications:", name: "rescheduleNotifications", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "takeMedicationNotification:", name: "takeDoseNotification", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "takeDoseNotification:", name: "takeDoseNotification", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "snoozeReminderNotification:", name: "snoozeReminderNotification", object: nil)
         
         loadMedication()
@@ -90,10 +90,19 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         }
     }
     
-    func takeMedicationNotification(notification: NSNotification) {
+    func takeDoseNotification(notification: NSNotification) {
         if let id = notification.userInfo!["id"] as? String {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
-                med.addDose(moc, date: NSDate())
+                let entity = NSEntityDescription.entityForName("History", inManagedObjectContext: moc)
+                let dose = History(entity: entity!, insertIntoManagedObjectContext: moc)
+                
+                dose.medicine = med
+                dose.date = NSDate()
+                dose.dosage = med.dosage
+                dose.dosageUnitInt = med.dosageUnitInt
+                
+                med.addDose(dose)
+                appDelegate.saveContext()
                 
                 setDynamicShortcuts()
                 NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)

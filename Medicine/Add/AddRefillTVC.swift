@@ -17,6 +17,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
     
     // MARK: - Outlets
     
+    @IBOutlet var saveButton: UIBarButtonItem!
     @IBOutlet var prescriptionCountLabel: UILabel!
     @IBOutlet var quantityInput: UITextField!
     @IBOutlet var quantityUnitLabel: UILabel!
@@ -91,8 +92,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
                 refill.quantityUnit = med.dosageUnit
                 refill.conversion = 1.0
             }
-            
-            refill.medicine = med
+
             refill.date = NSDate()
         }
 
@@ -122,6 +122,13 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
         }
         
         dateLabel.text = dateFormatter.stringFromDate(refill.date)
+        
+        // Disable save button if no medication selected
+        if med == nil {
+            saveButton.enabled = false
+        } else {
+            saveButton.enabled = true
+        }
     }
     
     
@@ -286,12 +293,15 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
     
     @IBAction func saveRefill(sender: AnyObject) {
         med?.addRefill(refill)
+        refill.medicine = med
+        
         appDelegate.saveContext()
+        
         dismissViewControllerAnimated(true, completion: nil)
     }
     
     @IBAction func cancelRefill(sender: AnyObject) {
-        moc.rollback()
+        moc.deleteObject(refill)
         dismissViewControllerAnimated(true, completion: nil)
     }
     

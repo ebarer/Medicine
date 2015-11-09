@@ -14,6 +14,7 @@ import MobileCoreServices
 
 class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
+    
     // MARK: - Outlets
     
     @IBOutlet var addMedicationButton: UIBarButtonItem!
@@ -22,34 +23,41 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     @IBOutlet var headerCounterLabel: UILabel!
     @IBOutlet var headerMedLabel: UILabel!
     
-    
+
     // MARK: - Helper variables
     
     let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
-    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-    var moc: NSManagedObjectContext!
     var launchedShortcutItem: [NSObject: AnyObject]?
-
+    
+    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    var moc: NSManagedObjectContext
+    
     let cal = NSCalendar.currentCalendar()
     let dateFormatter = NSDateFormatter()
     
-    let productID = "com.ebarer.Medicine.Unlock"
-    var mvc: UpgradeVC?
-    
     
     // MARK: - IAP variables
-
+    
+    let productID = "com.ebarer.Medicine.Unlock"
     let trialLimit = 2
     var productLock = true
+    var mvc: UpgradeVC?
+
+    
+    // MARK: - Initialization
+    
+    required init?(coder aDecoder: NSCoder) {
+        // Setup context
+        moc = appDelegate.managedObjectContext
+        
+        super.init(coder: aDecoder)
+    }
     
     
     // MARK: - View methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Set mananged object context
-        moc = appDelegate.managedObjectContext
         
         // If selected, sort by next dosage
         if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
@@ -103,7 +111,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(true, animated: true)
         
-        // Handle application shortcuts
+        // Handle homescreen shortcuts (selected by user)
         if #available(iOS 9.0, *) {
             if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
                 if let action = shortcutItem.userInfo?["action"] {
@@ -120,22 +128,55 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             }
         }
         
-        // Reschedule notifications
-        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+        if #available(iOS 9.0, *) {
+            // Update spotlight index values
+            for med in medication {
+                if let attributes = med.attributeSet {
+                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
+                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+                }
+            }
+            
+            setDynamicShortcuts()
+        }
         
-        // If no medications, display empty message
-        displayEmptyView()
-        
-        self.tableView.reloadData()
+        updateTableView()
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+    
+    func updateTableView() {
+        if medication.count == 0 {
+            navigationItem.leftBarButtonItem?.enabled = false
+            
+            // Create empty message
+            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                // Display message
+                tableView.backgroundView = emptyView
+                tableView.separatorStyle = UITableViewCellSeparatorStyle.None
+            }
+            
+            tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Automatic)
+        } else {
+            navigationItem.leftBarButtonItem?.enabled = true
+            tableView.backgroundView = nil
+            tableView.separatorStyle = UITableViewCellSeparatorStyle.SingleLine
+            
+            // If selected, sort by next dosage
+            if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+                medication.sortInPlace(Medicine.sortByNextDose)
+            }
+            
+            // Reschedule notifications
+            NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+            
+            tableView.reloadData()
+        }
+    }
 
-    
     // Create banner
-    
     override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         // Setup summary header
         if section == 0 {
@@ -479,8 +520,200 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
     }
     
+    // MARK: - Observers
     
-    // MARK: - Delete methods
+    func internalNotification(notification: NSNotification) {
+        if let id = notification.userInfo!["id"] as? String {
+            let medQuery = Medicine.getMedicine(arr: medication, id: id)
+            if let med = medQuery {
+                if let name = med.name {
+                    let message = String(format:"Time to take %g %@ of %@", med.dosage, med.dosageUnit.units(med.dosage), name)
+                    
+                    let alert = UIAlertController(title: "Take \(name)", message: message, preferredStyle: .Alert)
+                    
+                    alert.addAction(UIAlertAction(title: "Take Dose", style:  UIAlertActionStyle.Destructive, handler: {(action) -> Void in
+                        self.performSegueWithIdentifier("addDose", sender: med)
+                    }))
+                    
+                    if med.lastDose != nil {
+                        alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+                            if let id = notification.userInfo!["id"] as? String {
+                                if let med = Medicine.getMedicine(arr: medication, id: id) {
+                                    med.snoozeNotification()
+                                    self.refreshMedication()
+                                }
+                            }
+                        }))
+                    }
+                    
+                    alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Cancel, handler:  {(action) -> Void in
+                        self.refreshMedication()
+                    }))
+                    
+                    alert.view.tintColor = UIColor.grayColor()
+                    appDelegate.window!.rootViewController?.presentViewController(alert, animated: true, completion: nil)
+                }
+            }
+            
+            refreshMedication()
+        }
+    }
+    
+    
+    // MARK: - IAP methods
+    
+    func paymentQueue(queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
+        for transaction in transactions {
+            switch (transaction.transactionState) {
+            case SKPaymentTransactionState.Restored:
+                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
+                unlockManager()
+            case SKPaymentTransactionState.Purchased:
+                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
+                unlockManager()
+            case SKPaymentTransactionState.Failed:
+                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
+                
+                mvc?.purchaseButton.enabled = true
+                mvc?.restoreButton.enabled = true
+                mvc?.purchaseIndicator.stopAnimating()
+                
+                presentPurchaseFailureAlert()
+            default: break
+            }
+        }
+    }
+    
+    func paymentQueueRestoreCompletedTransactionsFinished(queue: SKPaymentQueue) {
+        if queue.transactions.count == 0 {
+            presentRestoreFailureAlert()
+        }
+        
+        for transaction in queue.transactions {
+            let pID = transaction.payment.productIdentifier
+            queue.finishTransaction(transaction)
+            
+            if pID == productID {
+                unlockManager()
+            }
+        }
+    }
+    
+    func paymentQueue(queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: NSError) {
+        for transaction in queue.transactions {
+            queue.finishTransaction(transaction)
+        }
+        
+        presentRestoreFailureAlert()
+    }
+    
+    func presentPurchaseFailureAlert() {
+        mvc?.restoreButton.setTitle("Restore Purchase", forState: UIControlState.Normal)
+        mvc?.restoreButton.enabled = true
+        mvc?.purchaseButton.enabled = true
+        mvc?.purchaseIndicator.stopAnimating()
+        
+        let failAlert = UIAlertController(title: "Purchase Failed", message: "Please try again later.", preferredStyle: UIAlertControllerStyle.Alert)
+        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+        
+        failAlert.view.tintColor = UIColor.grayColor()
+        mvc?.presentViewController(failAlert, animated: true, completion: nil)
+    }
+    
+    func presentRestoreFailureAlert() {
+        mvc?.restoreButton.setTitle("Restore Purchase", forState: UIControlState.Normal)
+        mvc?.restoreButton.enabled = true
+        mvc?.purchaseButton.enabled = true
+        mvc?.purchaseIndicator.stopAnimating()
+        
+        let failAlert = UIAlertController(title: "Restore Failed", message: "Please try again later. If the problem persists, use the purchase button above.", preferredStyle: UIAlertControllerStyle.Alert)
+        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+        failAlert.view.tintColor = UIColor.grayColor()
+        mvc?.presentViewController(failAlert, animated: true, completion: nil)
+    }
+    
+    func unlockManager() {
+        defaults.setBool(true, forKey: "managerUnlocked")
+        defaults.synchronize()
+        productLock = false
+        continueToAdd()
+    }
+    
+    func getLockStatus() -> Bool {
+        // If debug device, disable medication limit
+        if defaults.boolForKey("debug") == true {
+            return false
+        }
+        
+        // If limit exceeded and product locked, return true
+        if medication.count >= trialLimit {
+            if productLock == true {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    func continueToAdd() {
+        dismissViewControllerAnimated(true) { () -> Void in
+            self.performSegueWithIdentifier("addMedication", sender: self)
+        }
+    }
+    
+    
+    // MARK: - Helper methods
+    
+    func setDynamicShortcuts() {
+        if #available(iOS 9.0, *) {
+            let overdueItems = medication.filter({$0.isOverdue().flag})
+            if overdueItems.count > 0  {
+                var text = "Overdue Dose"
+                var subtitle: String? = nil
+                var userInfo = [String:String]()
+                
+                // Pluralize string if multiple overdue doses
+                if overdueItems.count > 1 {
+                    text += "s"
+                }
+                    // Otherwise set subtitle to overdue med
+                else {
+                    let med = overdueItems.first!
+                    subtitle = med.name!
+                    userInfo["action"] = "takeDose"
+                    userInfo["medID"] = med.medicineID
+                }
+                
+                let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.overdue",
+                    localizedTitle: text, localizedSubtitle: subtitle,
+                    icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
+                    userInfo: userInfo)
+                
+                UIApplication.sharedApplication().shortcutItems = [shortcutItem]
+                return
+            } else if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
+                if let id = nextDose.userInfo?["id"] {
+                    guard let med = Medicine.getMedicine(arr: medication, id: id as! String) else { return }
+                    let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
+                    let date = nextDose.fireDate
+                    let subtitle = "\(Medicine.dateString(date)): \(dose) of \(med.name!)"
+                    
+                    let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
+                        localizedTitle: "Take Next Dose", localizedSubtitle: subtitle,
+                        icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
+                        userInfo: ["action":"takeDose", "medID":med.medicineID])
+                    
+                    UIApplication.sharedApplication().shortcutItems = [shortcutItem]
+                    return
+                }
+            }
+            
+            UIApplication.sharedApplication().shortcutItems = []
+        }
+    }
+    
+    
+    // MARK: - Actions
     
     func presentDeleteAlert(name: String, indexPath: NSIndexPath) {
         let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.Alert)
@@ -519,32 +752,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         setDynamicShortcuts()
         
         if medication.count == 0 {
-            displayEmptyView()
+            updateTableView()
         } else {
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
         }
         
         updateHeader()
-    }
-    
-    func displayEmptyView() {
-        if medication.count == 0 {
-            navigationItem.leftBarButtonItem?.enabled = false
-            
-            // Create empty message
-            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
-                // Display message
-                tableView.backgroundView = emptyView
-                tableView.separatorStyle = UITableViewCellSeparatorStyle.None
-            }
-            
-            tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Automatic)
-        } else {
-            navigationItem.leftBarButtonItem?.enabled = true
-            tableView.backgroundView = nil
-            tableView.separatorStyle = UITableViewCellSeparatorStyle.SingleLine
-            tableView.reloadData()
-        }
     }
     
     
@@ -668,274 +881,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         self.tableView.reloadData()
     }
     
-    @IBAction func historyUnwindAdd(unwindSegue: UIStoryboardSegue) {
-        let svc = unwindSegue.sourceViewController as! AddDoseTVC
-        
-        do {
-            try svc.med?.takeDose(moc, date: svc.date)
-            
-            // If selected, sort by next dosage
-            if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-                medication.sortInPlace(Medicine.sortByNextDose)
-            }
-            
-            // Reload table
-            if let index = self.tableView.indexPathForSelectedRow {
-                updateHeader()
-                self.tableView.reloadRowsAtIndexPaths([index], withRowAnimation: .Automatic)
-            } else {
-                self.tableView.reloadData()
-            }
-            
-            // Update spotlight index
-            if #available(iOS 9.0, *) {
-                if let attributes = svc.med!.attributeSet {
-                    let item = CSSearchableItem(uniqueIdentifier: svc.med?.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                }
-            }
-            
-            // Check refill status and present alert if medication is running low
-            print("Refill? : \(svc.med?.checkRefill(self.defaults.integerForKey("refillTime")))")
-            
-            // Update shortcuts
-            setDynamicShortcuts()
-        } catch {
-            dismissViewControllerAnimated(true, completion: { () -> Void in
-                if let med = svc.med {
-                    self.presentDoseAlert(med, date: svc.date)
-                }
-            })
-        }
-    }
-    
     @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {
         if unwindSegue.sourceViewController.restorationIdentifier == "welcomeScreen" {
             self.tableView.reloadData()
-        }
-    }
-    
-    
-    // MARK: - Observers
-    
-    func internalNotification(notification: NSNotification) {
-        if let id = notification.userInfo!["id"] as? String {
-            let medQuery = Medicine.getMedicine(arr: medication, id: id)
-            if let med = medQuery {
-                if let name = med.name {
-                    let message = String(format:"Time to take %g %@ of %@", med.dosage, med.dosageUnit.units(med.dosage), name)
-                    
-                    let alert = UIAlertController(title: "Take \(name)", message: message, preferredStyle: .Alert)
-                    
-                    alert.addAction(UIAlertAction(title: "Take Dose", style:  UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-                        self.performSegueWithIdentifier("addDose", sender: med)
-                    }))
-                    
-                    if med.lastDose != nil {
-                        alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-                            if let id = notification.userInfo!["id"] as? String {
-                                if let med = Medicine.getMedicine(arr: medication, id: id) {
-                                    med.snoozeNotification()
-                                    self.refreshMedication()
-                                }
-                            }
-                        }))
-                    }
-                    
-                    alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Cancel, handler:  {(action) -> Void in
-                        self.refreshMedication()
-                    }))
-
-                    alert.view.tintColor = UIColor.grayColor()
-                    appDelegate.window!.rootViewController?.presentViewController(alert, animated: true, completion: nil)
-                }
-            }
-            
-            refreshMedication()
-        }
-    }
-    
-    
-    // MARK: - IAP methods
-    
-    func paymentQueue(queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
-        for transaction in transactions {
-            switch (transaction.transactionState) {
-            case SKPaymentTransactionState.Restored:
-                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
-                unlockManager()
-            case SKPaymentTransactionState.Purchased:
-                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
-                unlockManager()
-            case SKPaymentTransactionState.Failed:
-                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
-                
-                mvc?.purchaseButton.enabled = true
-                mvc?.restoreButton.enabled = true
-                mvc?.purchaseIndicator.stopAnimating()
-                
-                presentPurchaseFailureAlert()
-            default: break
-            }
-        }
-    }
-    
-    func paymentQueueRestoreCompletedTransactionsFinished(queue: SKPaymentQueue) {
-        if queue.transactions.count == 0 {
-            presentRestoreFailureAlert()
-        }
-        
-        for transaction in queue.transactions {
-            let pID = transaction.payment.productIdentifier
-            queue.finishTransaction(transaction)
-            
-            if pID == productID {
-                unlockManager()
-            }
-        }
-    }
-    
-    func paymentQueue(queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: NSError) {
-        for transaction in queue.transactions {
-            queue.finishTransaction(transaction)
-        }
-        
-        presentRestoreFailureAlert()
-    }
-    
-    func presentPurchaseFailureAlert() {
-        mvc?.restoreButton.setTitle("Restore Purchase", forState: UIControlState.Normal)
-        mvc?.restoreButton.enabled = true
-        mvc?.purchaseButton.enabled = true
-        mvc?.purchaseIndicator.stopAnimating()
-        
-        let failAlert = UIAlertController(title: "Purchase Failed", message: "Please try again later.", preferredStyle: UIAlertControllerStyle.Alert)
-        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
-        
-        failAlert.view.tintColor = UIColor.grayColor()
-        mvc?.presentViewController(failAlert, animated: true, completion: nil)
-    }
-    
-    func presentRestoreFailureAlert() {
-        mvc?.restoreButton.setTitle("Restore Purchase", forState: UIControlState.Normal)
-        mvc?.restoreButton.enabled = true
-        mvc?.purchaseButton.enabled = true
-        mvc?.purchaseIndicator.stopAnimating()
-        
-        let failAlert = UIAlertController(title: "Restore Failed", message: "Please try again later. If the problem persists, use the purchase button above.", preferredStyle: UIAlertControllerStyle.Alert)
-        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
-        failAlert.view.tintColor = UIColor.grayColor()
-        mvc?.presentViewController(failAlert, animated: true, completion: nil)
-    }
-    
-    func unlockManager() {
-        defaults.setBool(true, forKey: "managerUnlocked")
-        defaults.synchronize()
-        productLock = false
-        continueToAdd()
-    }
-    
-    func getLockStatus() -> Bool {
-        // If debug device, disable medication limit
-        if defaults.boolForKey("debug") == true {
-            return false
-        }
-        
-        // If limit exceeded and product locked, return true
-        if medication.count >= trialLimit {
-            if productLock == true {
-                return true
-            }
-        }
-        
-        return false
-    }
-    
-    func continueToAdd() {
-        dismissViewControllerAnimated(true) { () -> Void in
-            self.performSegueWithIdentifier("addMedication", sender: self)
-        }
-    }
-    
-    
-    // MARK: - Helper methods
-    
-    func presentDoseAlert(med: Medicine, date: NSDate) {
-        let doseAlert = UIAlertController(title: "Repeat Dose?", message: "You have logged a dose for \(med.name!) within the passed 5 minutes, do you wish to log another dose?", preferredStyle: UIAlertControllerStyle.Alert)
-        
-        doseAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
-
-        doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-            med.addDose(self.moc, date: date)
-            
-            // If selected, sort by next dosage
-            if self.defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-                medication.sortInPlace(Medicine.sortByNextDose)
-            }
-            
-            self.tableView.reloadData()
-
-            // Update spotlight index
-            if #available(iOS 9.0, *) {
-                if let attributes = med.attributeSet {
-                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                }
-            }
-            
-            // Update shortcuts
-            self.setDynamicShortcuts()
-        }))
-        
-        doseAlert.view.tintColor = UIColor.grayColor()
-        self.presentViewController(doseAlert, animated: true, completion: nil)
-    }
-    
-    func setDynamicShortcuts() {
-        if #available(iOS 9.0, *) {
-            let overdueItems = medication.filter({$0.isOverdue().flag})
-            if overdueItems.count > 0  {
-                var text = "Overdue Dose"
-                var subtitle: String? = nil
-                var userInfo = [String:String]()
-                
-                // Pluralize string if multiple overdue doses
-                if overdueItems.count > 1 {
-                    text += "s"
-                }
-                // Otherwise set subtitle to overdue med
-                else {
-                    let med = overdueItems.first!
-                    subtitle = med.name!
-                    userInfo["action"] = "takeDose"
-                    userInfo["medID"] = med.medicineID
-                }
-                
-                let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.overdue",
-                    localizedTitle: text, localizedSubtitle: subtitle,
-                    icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
-                    userInfo: userInfo)
-                
-                UIApplication.sharedApplication().shortcutItems = [shortcutItem]
-                return
-            } else if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
-                if let id = nextDose.userInfo?["id"] {
-                    guard let med = Medicine.getMedicine(arr: medication, id: id as! String) else { return }
-                    let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
-                    let date = nextDose.fireDate
-                    let subtitle = "\(Medicine.dateString(date)): \(dose) of \(med.name!)"
-                    
-                    let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
-                        localizedTitle: "Take Next Dose", localizedSubtitle: subtitle,
-                        icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
-                        userInfo: ["action":"takeDose", "medID":med.medicineID])
-                    
-                    UIApplication.sharedApplication().shortcutItems = [shortcutItem]
-                    return
-                }
-            }
-            
-            UIApplication.sharedApplication().shortcutItems = []
         }
     }
     

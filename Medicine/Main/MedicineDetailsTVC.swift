@@ -390,11 +390,10 @@ class MedicineDetailsTVC: UITableViewController {
     @IBAction func historyUnwindAdd(unwindSegue: UIStoryboardSegue) {
         // Log dose
         let svc = unwindSegue.sourceViewController as! AddDoseTVC
-        let dose = med.addDose(moc, date: svc.date)
         
         // Add to log
-        let index = cal.startOfDayForDate(svc.date)
-        log[index]?.insert(dose, atIndex: 0)
+        let index = cal.startOfDayForDate(svc.dose.date)
+        log[index]?.insert(svc.dose, atIndex: 0)
         log[index]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
         count++
         

@@ -255,9 +255,16 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Dose methods
-    func takeDose(moc: NSManagedObjectContext, date doseDate: NSDate) throws -> Bool {
+    /**
+    Add a new dose for medication
+    
+    - Parameter dose: History object
+    
+    - Throws: 'MedicineError.TooSoon' if another dose has been taken in the previous 5 minutes.
+    */
+    func takeDose(dose: History) throws {
         // Throw error if another dose has been taken within the previous 5 minutes
-        let compareDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: -5, toDate: doseDate, options: [])!
+        let compareDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: -5, toDate: dose.date, options: [])!
         
         if lastDose != nil {
             guard lastDose?.date.compare(compareDate) == .OrderedAscending else {
@@ -265,57 +272,46 @@ class Medicine: NSManagedObject {
             }
         }
         
-        addDose(moc, date: doseDate)
-        return true
+        addDose(dose)
     }
     
-    func addDose(moc: NSManagedObjectContext, date doseDate: NSDate, dosage: Float? = nil, dosageUnitInt: Int16? = nil) -> History {
-        // Log current dosage as new History element
-        let entity = NSEntityDescription.entityForName("History", inManagedObjectContext: moc)
-        let newDose = History(entity: entity!, insertIntoManagedObjectContext: moc)
-        newDose.medicine = self
-        newDose.date = doseDate
-
-        if let dosage = dosage {
-            newDose.dosage = dosage
-        } else {
-            newDose.dosage = self.dosage
-        }
-        
-        if let dosageUnitInt = dosageUnitInt {
-            newDose.dosageUnitInt = dosageUnitInt
-        } else {
-            newDose.dosageUnitInt = self.dosageUnitInt
-        }
-        
+    /**
+     Add a new dose for medication
+     
+     - Parameter dose: History object
+     
+     - Returns: History object
+     */
+    func addDose(dose: History) -> History {
+        // Calculate the next dose and store in history
         do {
-            newDose.next = try calculateNextDose(doseDate)
+            dose.next = try calculateNextDose(dose.date)
         } catch {
-            newDose.next = nil
-        }
-        
-        // Only reschedule notification if dose is medications latest dose
-        if let lastDose = self.lastDose {
-            if doseDate.compare(lastDose.date) == .OrderedAscending {
-                return newDose
-            }
+            dose.next = nil
         }
         
         // Modify prescription count
-        if self.prescriptionCount < newDose.dosage {
+        if self.prescriptionCount < dose.dosage {
             self.prescriptionCount = 0
         } else {
-            self.prescriptionCount -= newDose.dosage
+            self.prescriptionCount -= dose.dosage
         }
         
-        // Save dose insertion
-        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        delegate.saveContext()
+        // Reschedule notification if dose is medications only/latest dose
+        if self.lastDose == nil || dose.date.compare(self.lastDose!.date) == .OrderedDescending {
+            scheduleNextNotification()
+        }
         
-        scheduleNextNotification()
-        return newDose
+        return dose
     }
-    
+
+    /**
+     Remove the last dose for medication
+     
+     - Parameter moc: NSManagedObjectContext object
+     
+     - Returns: Bool depending on whether action was successful
+     */
     func untakeLastDose(moc: NSManagedObjectContext) -> Bool {
         if let lastDose = lastDose {
             // Modify prescription count

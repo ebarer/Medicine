@@ -15,4 +15,9 @@ class History: NSManagedObject {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
+    var dosageUnit: Doses {
+        get { return Doses(rawValue: self.dosageUnitInt)! }
+        set { self.dosageUnitInt = newValue.rawValue }
+    }
+    
 }

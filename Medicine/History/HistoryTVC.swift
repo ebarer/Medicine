@@ -410,28 +410,4 @@ class HistoryTVC: UITableViewController {
         }
     }
     
-    
-    // MARK: - Unwind methods
-    
-    @IBAction func historyUnwindAdd(unwindSegue: UIStoryboardSegue) {
-        // Log dose
-        let svc = unwindSegue.sourceViewController as! AddDoseTVC
-        if let dose = svc.med?.addDose(moc, date: svc.date) {            
-            gblCount++
-            
-            // Add to log
-            let index = cal.startOfDayForDate(svc.date)
-            log[index]?.insert(dose, atIndex: 0)
-            log[index]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
-            
-            // Reload table
-            self.tableView.reloadData()
-            
-            // Update widget
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
-        }
-    }
-    
-    @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {}
-    
 }
