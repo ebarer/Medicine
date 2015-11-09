@@ -129,7 +129,7 @@ class MedicineDetailsTVC: UITableViewController {
             return count
         }
         
-        return 0;
+        return 0
     }
     
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -137,8 +137,8 @@ class MedicineDetailsTVC: UITableViewController {
         
         // Special headers for today/yesterday
         if (section == 0) {
-            dateFormatter.timeStyle = NSDateFormatterStyle.NoStyle;
-            dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle;
+            dateFormatter.timeStyle = NSDateFormatterStyle.NoStyle
+            dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
             return "Today (\(dateFormatter.stringFromDate(sectionDate)))"
         }
         
@@ -175,8 +175,8 @@ class MedicineDetailsTVC: UITableViewController {
         if let history = log[sectionDate] where history.count > 0 {
             let dose = history[indexPath.row]
             
-            dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle;
-            dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle;
+            dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+            dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
             
             cell.textLabel?.textColor = UIColor.blackColor()
             cell.textLabel?.text = dateFormatter.stringFromDate(history[indexPath.row].date)

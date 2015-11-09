@@ -49,24 +49,30 @@ class Medicine: NSManagedObject {
                     }
                 }
                 
-                return dose;
+                return dose
             }
         }
         
         return nil
     }
     
-    var scheduledNotification: UILocalNotification? {
+    var scheduledNotifications: [UILocalNotification]? {
+        var medNotifications = [UILocalNotification]()
+        
         let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
         for notification in notifications {
             if let id = notification.userInfo?["id"] as? String {
                 if (id == self.medicineID) {
-                    return notification
+                    medNotifications.append(notification)
                 }
             }
         }
         
-        return nil
+        if medNotifications.count == 0 {
+            return nil
+        }
+        
+        return medNotifications
     }
     
     var historyArray: [NSDate: [History]]? {
@@ -80,11 +86,11 @@ class Medicine: NSManagedObject {
                 arr[date]!.append(dose)
             }
             
-            //            return sorted(g.keys) { (a: NSDate, b: NSDate) in
-            //                a.compare(b) == .OrderedAscending // sorting the outer array by 'time'
-            //                }
-            //                // sorting the inner arrays by `name`
-            //                .map { sorted(g[$0]!) { $0.name < $1.name } }
+            // return sorted(g.keys) { (a: NSDate, b: NSDate) in
+            //     a.compare(b) == .OrderedAscending // sorting the outer array by 'time'
+            // }
+            // sorting the inner arrays by 'name'
+            // .map { sorted(g[$0]!) { $0.name < $1.name } }
             
             return arr
         }
@@ -119,7 +125,7 @@ class Medicine: NSManagedObject {
                         }
                         
                         // If in the passed and not scheduled for today, return true
-                        if let scheduledDate = scheduledNotification?.fireDate {
+                        if let scheduledDate = scheduledNotifications?.first?.fireDate {
                             if date.compare(NSDate()) == .OrderedAscending && !cal.isDateInToday(scheduledDate) {
                                 return (true, nil)
                             }

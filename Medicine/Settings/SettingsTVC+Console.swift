@@ -138,9 +138,9 @@ class SettingsTVC_Console: UITableViewController {
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         switch(indexPath.section) {
         case 2:
-            return 44.0;
+            return 44.0
         default:
-            return 70.0;
+            return 70.0
         }
     }
 

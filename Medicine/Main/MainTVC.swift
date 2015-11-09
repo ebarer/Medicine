@@ -284,7 +284,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         // If notiifcation scheduled, set date to next scheduled fire date
-        if let date = med.scheduledNotification?.fireDate {
+        if let date = med.scheduledNotifications?.first?.fireDate {
             let subtitle = NSMutableAttributedString(string: "Next dose: \(Medicine.dateString(date))")
             subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
             cell.detailTextLabel?.attributedText = subtitle

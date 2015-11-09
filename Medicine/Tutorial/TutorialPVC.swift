@@ -10,7 +10,7 @@ import UIKit
 
 class TutorialPVC: UIPageViewController, UIPageViewControllerDataSource {
     
-    var tutorialPages = ["This", "is", "a", "tutorial"];
+    var tutorialPages = ["This", "is", "a", "tutorial"]
     
     
     // MARK: - View methods
