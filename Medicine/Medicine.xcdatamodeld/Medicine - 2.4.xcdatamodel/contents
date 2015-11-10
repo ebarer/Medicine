@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9520" systemVersion="15C27e" minimumToolsVersion="Automatic">
+    <entity name="History" representedClassName=".History" syncable="YES">
+        <attribute name="date" attributeType="Date" syncable="YES"/>
+        <attribute name="dosage" attributeType="Float" defaultValueString="1" syncable="YES"/>
+        <attribute name="dosageUnitInt" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="next" optional="YES" attributeType="Date" syncable="YES"/>
+        <relationship name="medicine" maxCount="1" deletionRule="Nullify" destinationEntity="Medicine" inverseName="history" inverseEntity="Medicine" syncable="YES"/>
+    </entity>
+    <entity name="Medicine" representedClassName=".Medicine" syncable="YES">
+        <attribute name="dosage" attributeType="Float" defaultValueString="1" syncable="YES"/>
+        <attribute name="dosageUnitInt" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="interval" attributeType="Float" defaultValueString="4" syncable="YES"/>
+        <attribute name="intervalAlarm" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="intervalUnitInt" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="medicineID" attributeType="String" syncable="YES"/>
+        <attribute name="name" attributeType="String" minValueString="1" spotlightIndexingEnabled="YES" syncable="YES"/>
+        <attribute name="prescriptionCount" attributeType="Float" minValueString="0" defaultValueString="0" syncable="YES"/>
+        <attribute name="reminderEnabled" attributeType="Boolean" defaultValueString="YES" syncable="YES"/>
+        <attribute name="sortOrder" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <relationship name="history" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="History" inverseName="medicine" inverseEntity="History" syncable="YES"/>
+        <relationship name="refillHistory" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Prescription" inverseName="medicine" inverseEntity="Prescription" syncable="YES"/>
+    </entity>
+    <entity name="Prescription" representedClassName=".Prescription" syncable="YES">
+        <attribute name="conversion" optional="YES" attributeType="Float" defaultValueString="1" syncable="YES"/>
+        <attribute name="date" attributeType="Date" syncable="YES"/>
+        <attribute name="quantity" attributeType="Float" defaultValueString="0" syncable="YES"/>
+        <attribute name="quantityUnitInt" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <relationship name="medicine" maxCount="1" deletionRule="Nullify" destinationEntity="Medicine" inverseName="refillHistory" inverseEntity="Medicine" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="History" positionX="-92" positionY="51" width="128" height="120"/>
+        <element name="Medicine" positionX="-263" positionY="-142" width="128" height="225"/>
+        <element name="Prescription" positionX="-180" positionY="-27" width="128" height="30"/>
+    </elements>
+</model>
