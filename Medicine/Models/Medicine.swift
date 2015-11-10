@@ -75,7 +75,7 @@ class Medicine: NSManagedObject {
         return medNotifications
     }
     
-    var historyArray: [NSDate: [History]]? {
+    func historyArray() -> [NSDate: [History]]? {
         if self.history?.count > 0 {
             var arr = [NSDate: [History]]()
             for dose in self.history?.array as! [History] {
@@ -98,6 +98,51 @@ class Medicine: NSManagedObject {
         return nil
     }
     
+    /**
+     Display the interval as a properly formatted string
+     
+     - Returns: Formatted interval string
+     */
+    func intervalLabel() -> String {
+        var label = String()
+        
+        let hr = Int(self.interval)
+        let min = Int(60 * (self.interval % 1))
+        let hrUnit = self.intervalUnit.units(self.interval)
+        
+        if hr == 1 && min == 0 {
+            label = String(format:"%@", hrUnit.capitalizedString)
+        } else if min == 0 {
+            label = String(format:"%d %@", hr, hrUnit)
+        } else if hr == 0 {
+            label = String(format:"%d min", min)
+        } else {
+            label = String(format:"%d %@ %d min", hr, hrUnit, min)
+        }
+        
+        // Append alarm time for daily interval
+        if self.intervalUnit == .Daily {
+            if let alarm = self.intervalAlarm {
+                if alarm.isMidnight() {
+                    label += " at Midnight"
+                } else {
+                    let dateFormatter = NSDateFormatter()
+                    dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+                    dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
+                    
+                    label += String(format:" at %@", dateFormatter.stringFromDate(alarm))
+                }
+            }
+        }
+        
+        return label
+    }
+    
+    /**
+     Determines whether the medication is overdue
+     
+     - Returns: Tuple: (Overdue value as Bool, NSDate of last dose)
+     */
     func isOverdue() -> (flag: Bool, lastDose: NSDate?) {
         // Medicine can't be overdue if reminders are disabled
         if reminderEnabled == true {
@@ -263,12 +308,16 @@ class Medicine: NSManagedObject {
     - Throws: 'MedicineError.TooSoon' if another dose has been taken in the previous 5 minutes.
     */
     func takeDose(dose: History) throws {
-        // Throw error if another dose has been taken within the previous 5 minutes
-        let compareDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: -5, toDate: dose.date, options: [])!
-        
-        if lastDose != nil {
-            guard lastDose?.date.compare(compareDate) == .OrderedAscending else {
-                throw MedicineError.TooSoon
+        // Only check for duplicate if attempting to take new dose
+        if lastDose?.date.compare(dose.date) == .OrderedAscending {
+            
+            // Throw error if another dose has been taken within the previous 5 minutes
+            let compareDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: -5, toDate: dose.date, options: [])!
+            
+            if lastDose != nil {
+                guard lastDose?.date.compare(compareDate) == .OrderedAscending else {
+                    throw MedicineError.TooSoon
+                }
             }
         }
         
@@ -366,7 +415,7 @@ class Medicine: NSManagedObject {
      - Returns: Int representing number of days
     */
     func refillDaysRemaining() -> Int {
-        if let history = self.historyArray {
+        if let history = self.historyArray() {
             // Only calculate the daily consumption average
             // when medication has more than a week of data
             if history.count >= 7  {
@@ -495,6 +544,15 @@ class Medicine: NSManagedObject {
     
     // MARK: - Helper method
     
+    /**
+    Determine the date of the next dose from the current time or optional parameter
+    
+    - Parameter date: Optional date from which to calculate
+    
+    - Returns: Date of next dose or nil
+    
+    - Throws: 'MedicineError.NoAlarm' if medication has daily interval and no alarm set
+    */
     func calculateNextDose(date: NSDate? = nil) throws -> NSDate? {
         switch(intervalUnit) {
         case .None:

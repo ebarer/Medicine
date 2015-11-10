@@ -103,7 +103,6 @@ class AddDoseTVC: UITableViewController {
     }
     
     func updateLabels() {
-        
         // If no medication selected, force user to select a medication
         if med == nil {
             medLabel.text = "None"
@@ -207,17 +206,21 @@ class AddDoseTVC: UITableViewController {
     }
     
     @IBAction func saveDose(sender: AnyObject) {
-        do {
-            try med?.takeDose(dose)
-            dose.medicine = med
-            
-            appDelegate.saveContext()
-            
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
-            
-            dismissViewControllerAnimated(true, completion: nil)
-        } catch {
-            presentDoseAlert()
+        if let med = self.med {
+            do {
+                try med.takeDose(dose)
+                dose.medicine = med
+                
+                appDelegate.saveContext()
+                
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+                
+                dismissViewControllerAnimated(true, completion: nil)
+            } catch {
+                presentDoseAlert()
+            }
+        } else {
+            presentMedAlert()
         }
     }
     
@@ -228,6 +231,14 @@ class AddDoseTVC: UITableViewController {
     
     
     // MARK: - Error handling
+
+    func presentMedAlert() {
+            globalHistory = true
+        
+            let alert = UIAlertController(title: "Invalid Medication", message: "You have to select a valid medication.", preferredStyle: UIAlertControllerStyle.Alert)
+            alert.view.tintColor = UIColor.grayColor()
+            self.presentViewController(alert, animated: true, completion: nil)
+    }
     
     func presentDoseAlert() {
         if let med = self.med {

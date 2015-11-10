@@ -65,8 +65,26 @@ class MedicineDetailsTVC: UITableViewController {
         editButtons.append(self.editButtonItem())
 
         setToolbarItems(normalButtons, animated: false)
-        
-        // Sort history
+
+        // Add observeres for notifications
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        loadHistory()
+        tableView.reloadData()
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        self.navigationController?.setToolbarHidden(false, animated: false)
+    }
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    func loadHistory() {
         if let historySet = med.history {
             let history = historySet.array as! [History]
             
@@ -88,22 +106,9 @@ class MedicineDetailsTVC: UITableViewController {
             }
             
             count = history.count
-            displayEmptyView()
         }
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
+        
         displayEmptyView()
-        tableView.reloadData()
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-        self.navigationController?.setToolbarHidden(false, animated: false)
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
     }
     
     
@@ -192,6 +197,23 @@ class MedicineDetailsTVC: UITableViewController {
         cell.detailTextLabel?.text?.removeAll()
         
         return cell
+    }
+    
+    func refreshTableAndNotifications() {
+        clearOldNotifications()
+        tableView.reloadData()
+    }
+    
+    func clearOldNotifications() {
+        let currentDate = NSDate()
+        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
+        for notification in notifications {
+            if let date = notification.fireDate {
+                if date.compare(currentDate) == .OrderedAscending {
+                    UIApplication.sharedApplication().cancelLocalNotification(notification)
+                }
+            }
+        }
     }
     
     

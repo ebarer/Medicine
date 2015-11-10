@@ -61,8 +61,6 @@ class HistoryTVC: UITableViewController {
         
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
-
-        loadHistory()
     }
     
     override func viewWillAppear(animated: Bool) {

@@ -45,13 +45,6 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-
-    
-    // MARK: - Navigation
-    
-    @IBAction func cancel(sender: AnyObject?) {
-        dismissViewControllerAnimated(true, completion: nil)
-    }
     
     
     // MARK: - Store kit delegate/observer
@@ -109,6 +102,12 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
         }
     }
     
+
+    // MARK: - Navigation
+    
+    @IBAction func cancel(sender: AnyObject?) {
+        dismissViewControllerAnimated(true, completion: nil)
+    }    
 
 }
 

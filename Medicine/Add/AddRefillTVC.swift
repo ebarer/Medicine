@@ -75,11 +75,10 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
             
             // Set description
             if med.prescriptionCount > 0 {
-                prescriptionCountLabel.text = "You currently have " +
-                                              "\(med.prescriptionCount) \(med.dosageUnit.units(med.prescriptionCount)) of \(med.name!). " +
-                                              "Based on your current usage, this will last you approximately \(med.refillDaysRemaining()) days."
+                prescriptionCountLabel.text = "You currently have \(med.prescriptionCount) \(med.dosageUnit.units(med.prescriptionCount)) of \(med.name!).\n" +
+                                              "Based on current usage, this should last \(med.refillDaysRemaining()) days."
             } else {
-                prescriptionCountLabel.text = "You currently don't have any \(med.dosageUnit.units(med.prescriptionCount))."
+                prescriptionCountLabel.text = "You don't currently have any \(med.name!)."
             }
                 
             // Set refill parameters

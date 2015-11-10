@@ -7,8 +7,8 @@
 //
 
 import UIKit
-import StoreKit
 import CoreData
+import StoreKit
 import CoreSpotlight
 import MobileCoreServices
 
@@ -67,7 +67,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateHeader", name: "refreshWidget", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshMedication", name: "refreshMedication", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "internalNotification:", name: "medNotification", object: nil)
         
         // Register for 3D touch if available
         if #available(iOS 9.0, *) {
@@ -171,6 +170,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             
             // Reschedule notifications
             NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+            
+            // Dismiss editing mode
+            setEditing(false, animated: true)
             
             tableView.reloadData()
         }
@@ -410,6 +412,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             medication.sortInPlace(Medicine.sortByNextDose)
         }
         
+        // Dismiss editing mode
+        setEditing(false, animated: true)
+        
         tableView.reloadData()
     }
     
@@ -520,45 +525,104 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
     }
     
-    // MARK: - Observers
     
-    func internalNotification(notification: NSNotification) {
-        if let id = notification.userInfo!["id"] as? String {
-            let medQuery = Medicine.getMedicine(arr: medication, id: id)
-            if let med = medQuery {
-                if let name = med.name {
-                    let message = String(format:"Time to take %g %@ of %@", med.dosage, med.dosageUnit.units(med.dosage), name)
-                    
-                    let alert = UIAlertController(title: "Take \(name)", message: message, preferredStyle: .Alert)
-                    
-                    alert.addAction(UIAlertAction(title: "Take Dose", style:  UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-                        self.performSegueWithIdentifier("addDose", sender: med)
-                    }))
-                    
-                    if med.lastDose != nil {
-                        alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-                            if let id = notification.userInfo!["id"] as? String {
-                                if let med = Medicine.getMedicine(arr: medication, id: id) {
-                                    med.snoozeNotification()
-                                    self.refreshMedication()
-                                }
-                            }
-                        }))
-                    }
-                    
-                    alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Cancel, handler:  {(action) -> Void in
-                        self.refreshMedication()
-                    }))
-                    
-                    alert.view.tintColor = UIColor.grayColor()
-                    appDelegate.window!.rootViewController?.presentViewController(alert, animated: true, completion: nil)
-                }
-            }
-            
-            refreshMedication()
+    // MARK: - Actions
+    
+    func presentDeleteAlert(name: String, indexPath: NSIndexPath) {
+        let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.Alert)
+        
+        deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
+            self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        }))
+        
+        deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
+            self.deleteMed(indexPath)
+        }))
+        
+        deleteAlert.view.tintColor = UIColor.grayColor()
+        self.presentViewController(deleteAlert, animated: true, completion: nil)
+    }
+    
+    func deleteMed(indexPath: NSIndexPath) {
+        let med = medication[indexPath.row]
+        
+        // Cancel all notifications for medication
+        med.cancelNotification()
+        
+        // Remove medication from array
+        medication.removeAtIndex(indexPath.row)
+        
+        // Remove medication from persistent store
+        moc.deleteObject(med)
+        appDelegate.saveContext()
+        
+        // Update spotlight index
+        if #available(iOS 9.0, *) {
+            CSSearchableIndex.defaultSearchableIndex().deleteSearchableItemsWithIdentifiers([med.medicineID], completionHandler: nil)
+        }
+        
+        // Update shortcuts
+        setDynamicShortcuts()
+        
+        if medication.count == 0 {
+            updateTableView()
+        } else {
+            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+        }
+        
+        updateHeader()
+    }
+    
+    
+    // MARK: - Navigation methods
+    
+    @IBAction func addMedication(sender: UIBarButtonItem) {
+        if appLocked() == false {
+            performSegueWithIdentifier("addMedication", sender: self)
+        } else {
+            performSegueWithIdentifier("upgrade", sender: self)
         }
     }
     
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "editMedication" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddMedicationTVC {
+                vc.med = medication[sender as! Int]
+                vc.editMode = true
+            }
+        }
+        
+        if segue.identifier == "viewMedicationDetails" {
+            let vc = segue.destinationViewController as! MedicineDetailsTVC
+            if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
+                vc.med = medication[index.row]
+                vc.moc = self.moc
+            }
+        }
+        
+        if segue.identifier == "addDose" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
+                if let med = sender as? Medicine {
+                    vc.med = med
+                }
+            }
+        }
+        
+        if segue.identifier == "refillPrescription" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
+                if let med = sender as? Medicine {
+                    vc.med = med
+                }
+            }
+        }
+        
+        if segue.identifier == "upgrade" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? UpgradeVC {
+                mvc = vc
+            }
+        }
+    }
+
     
     // MARK: - IAP methods
     
@@ -639,7 +703,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         continueToAdd()
     }
     
-    func getLockStatus() -> Bool {
+    func appLocked() -> Bool {
         // If debug device, disable medication limit
         if defaults.boolForKey("debug") == true {
             return false
@@ -709,181 +773,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             }
             
             UIApplication.sharedApplication().shortcutItems = []
-        }
-    }
-    
-    
-    // MARK: - Actions
-    
-    func presentDeleteAlert(name: String, indexPath: NSIndexPath) {
-        let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.Alert)
-        
-        deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
-            self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        }))
-        
-        deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
-            self.deleteMed(indexPath)
-        }))
-        
-        deleteAlert.view.tintColor = UIColor.grayColor()
-        self.presentViewController(deleteAlert, animated: true, completion: nil)
-    }
-    
-    func deleteMed(indexPath: NSIndexPath) {
-        let med = medication[indexPath.row]
-        
-        // Cancel all notifications for medication
-        med.cancelNotification()
-        
-        // Remove medication from array
-        medication.removeAtIndex(indexPath.row)
-        
-        // Remove medication from persistent store
-        moc.deleteObject(med)
-        appDelegate.saveContext()
-        
-        // Update spotlight index
-        if #available(iOS 9.0, *) {
-            CSSearchableIndex.defaultSearchableIndex().deleteSearchableItemsWithIdentifiers([med.medicineID], completionHandler: nil)
-        }
-        
-        // Update shortcuts
-        setDynamicShortcuts()
-        
-        if medication.count == 0 {
-            updateTableView()
-        } else {
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
-        }
-        
-        updateHeader()
-    }
-    
-    
-    // MARK: - Navigation methods
-    
-    @IBAction func addMedication(sender: UIBarButtonItem) {
-        if getLockStatus() == false {
-            performSegueWithIdentifier("addMedication", sender: self)
-        } else {
-            performSegueWithIdentifier("upgrade", sender: self)
-        }
-    }
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "addMedication" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? AddMedicationTVC {
-                vc.title = "New Medication"
-            }
-        }
-        
-        if segue.identifier == "editMedication" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? AddMedicationTVC {
-                vc.title = "Edit Medication"
-                vc.med = medication[sender as! Int]
-                vc.editMode = true
-            }
-        }
-        
-        if segue.identifier == "viewMedicationDetails" {
-            let vc = segue.destinationViewController as! MedicineDetailsTVC
-            if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
-                vc.med = medication[index.row]
-                vc.moc = self.moc
-            }
-        }
-        
-        if segue.identifier == "addDose" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
-                if let med = sender as? Medicine {
-                    vc.med = med
-                }
-            }
-        }
-        
-        if segue.identifier == "refillPrescription" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
-                if let med = sender as? Medicine {
-                    vc.med = med
-                }
-            }
-        }
-        
-        if segue.identifier == "upgrade" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? UpgradeVC {
-                mvc = vc
-            }
-        }
-    }
-    
-    
-    // MARK: - Unwind methods
-    
-    @IBAction func medicationUnwindAdd(unwindSegue: UIStoryboardSegue) {
-        if let svc = unwindSegue.sourceViewController as? AddMedicationTVC, addMed = svc.med {
-            // Editing existing medication
-            if let selectedIndex = tableView.indexPathForSelectedRow {
-                // Save changes to medication
-                appDelegate.saveContext()
-                
-                // Recalculate and update next dose property for previous dose
-                do {
-                    addMed.lastDose?.next = try addMed.calculateNextDose(addMed.lastDose?.date)
-                    
-                    // Save changes to last dose
-                    appDelegate.saveContext()
-                } catch {
-                    print("Unable to update last dose")
-                }
-                
-                tableView.reloadRowsAtIndexPaths([selectedIndex], withRowAnimation: .None)
-            }
-            // Adding new medication
-            else {
-                let newIndex = NSIndexPath(forRow: medication.count, inSection: 0)
-                addMed.sortOrder = Int16(newIndex.row)
-                medication.append(addMed)
-                
-                // Save medication
-                appDelegate.saveContext()
-                
-                tableView.insertRowsAtIndexPaths([newIndex], withRowAnimation: .None)
-            }
-            
-            // If selected, sort by next dosage
-            if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-                medication.sortInPlace(Medicine.sortByNextDose)
-            }
-            
-            // Reschedule next notification
-            addMed.scheduleNextNotification()
-            
-            // Update spotlight index
-            if #available(iOS 9.0, *) {
-                if let attributes = addMed.attributeSet {
-                    let item = CSSearchableItem(uniqueIdentifier: addMed.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                }
-            }
-            
-            // Update shortcuts
-            setDynamicShortcuts()
-            
-            // Return to normal mode
-            setEditing(false, animated: true)
-        }
-    }
-    
-    @IBAction func medicationUnwindCancel(unwindSegue: UIStoryboardSegue) {
-        moc.rollback()
-        setEditing(false, animated: true)
-        self.tableView.reloadData()
-    }
-    
-    @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {
-        if unwindSegue.sourceViewController.restorationIdentifier == "welcomeScreen" {
-            self.tableView.reloadData()
         }
     }
     

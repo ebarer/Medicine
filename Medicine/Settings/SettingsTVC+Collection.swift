@@ -103,9 +103,10 @@ class SettingsTVC_Collection: UITableViewController {
                 cell.detailTextLabel?.text = "\(dose.medicine!.name!) - \(dose.dosage) \(Doses(rawValue: dose.dosageUnitInt)!.description)"
             case "Prescription":
                 let refill = collection![indexPath.row] as! Prescription
-                cell.textLabel?.text = dateFormatter.stringFromDate(refill.date)
-                cell.detailTextLabel?.text = "\(refill.medicine!.name!) - \(refill.quantity) \(refill.quantityUnit.description)" +
-                                             "* \(refill.conversion) = \(refill.quantity * refill.conversion) \(refill.medicine!.dosageUnit.description)"
+                cell.textLabel?.text = "\(refill.medicine!.name!) - \(refill.quantity * refill.conversion) \(refill.medicine!.dosageUnit.description)"
+                cell.detailTextLabel?.text = dateFormatter.stringFromDate(refill.date) +
+                                             " - \(refill.quantity) \(refill.quantityUnit.description) * \(refill.conversion) " +
+                                             "\(refill.medicine!.dosageUnit.description)/\(refill.quantityUnit.description)"
             default:
                 break
             }

@@ -199,12 +199,12 @@
                         <barButtonItem key="backBarButtonItem" title="Back" id="lHf-tU-uZ1"/>
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="TCv-vP-Ly4">
                             <connections>
-                                <segue destination="IZZ-iB-rUd" kind="unwind" unwindAction="medicationUnwindCancel:" id="Uzd-xa-CRw"/>
+                                <action selector="cancelMedication:" destination="p2V-uz-hw7" id="C66-Pv-pCo"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="bcZ-JF-Wy5">
                             <connections>
-                                <segue destination="IZZ-iB-rUd" kind="unwind" unwindAction="medicationUnwindAdd:" id="gh0-OR-wEk"/>
+                                <action selector="saveMedication:" destination="p2V-uz-hw7" id="ELz-uL-Flp"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -218,7 +218,6 @@
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xYa-xS-080" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="IZZ-iB-rUd" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="1489" y="500"/>
         </scene>

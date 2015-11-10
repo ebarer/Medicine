@@ -52,6 +52,7 @@
 		CEE18F361BEEC91800222D92 /* SettingsTVC+Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE18F351BEEC91800222D92 /* SettingsTVC+Collection.swift */; };
 		CEE18F381BEECE3700222D92 /* SettingsTVC+Manage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE18F371BEECE3700222D92 /* SettingsTVC+Manage.swift */; };
 		CEF5483C1B9CEA7100C344B4 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */; };
+		CEFE5E211BF1E00C00039302 /* WelcomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFE5E201BF1E00C00039302 /* WelcomeVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -143,6 +144,7 @@
 		CEE18F371BEECE3700222D92 /* SettingsTVC+Manage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Manage.swift"; path = "Settings/SettingsTVC+Manage.swift"; sourceTree = "<group>"; };
 		CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		CEF5483E1B9CEA8200C344B4 /* Medicine.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Medicine.entitlements; path = Medicine/Medicine.entitlements; sourceTree = "<group>"; };
+		CEFE5E201BF1E00C00039302 /* WelcomeVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WelcomeVC.swift; path = Tutorial/WelcomeVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -335,6 +337,7 @@
 			isa = PBXGroup;
 			children = (
 				CE0EA1831BAFDAED00F48A09 /* Tutorial.storyboard */,
+				CEFE5E201BF1E00C00039302 /* WelcomeVC.swift */,
 				CE2497151BAA00DF00627525 /* TutorialPVC.swift */,
 				CE24971A1BAA4E7400627525 /* TutorialContentVC.swift */,
 			);
@@ -548,6 +551,7 @@
 				CECD22B61BE95088007C5F25 /* AddRefillTVC.swift in Sources */,
 				CE75197E1BB1607F000A2879 /* SettingsTVC+Console.swift in Sources */,
 				CE247B8F1B96618100E4EB5F /* AddMedicationTVC+Dosage.swift in Sources */,
+				CEFE5E211BF1E00C00039302 /* WelcomeVC.swift in Sources */,
 				CE247B911B96619B00E4EB5F /* AddMedicationTVC+Interval.swift in Sources */,
 				CE7519761BB00CA9000A2879 /* SettingsTVC.swift in Sources */,
 				CE38AF231B950517000D00AD /* AddDoseTVC.swift in Sources */,

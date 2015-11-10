@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9052" systemVersion="15B22c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Dbz-0S-Ah1">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9527.1" systemVersion="15C27e" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Dbz-0S-Ah1">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9040"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9525.1"/>
     </dependencies>
     <scenes>
         <!--TutorialPVC-->
@@ -14,7 +14,6 @@
                         <button key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Rzm-yI-tkC">
                             <rect key="frame" x="180" y="7" width="240" height="30"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <animations/>
                             <fontDescription key="fontDescription" type="system" pointSize="18"/>
                             <state key="normal" title="Skip">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -30,10 +29,10 @@
             </objects>
             <point key="canvasLocation" x="964" y="311"/>
         </scene>
-        <!--View Controller-->
+        <!--WelcomeVC-->
         <scene sceneID="eMT-d9-JR7">
             <objects>
-                <viewController storyboardIdentifier="welcomeScreen" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Dbz-0S-Ah1" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="welcomeScreen" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Dbz-0S-Ah1" customClass="WelcomeVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="8Rf-em-UbX"/>
                         <viewControllerLayoutGuide type="bottom" id="Smf-rU-Yaj"/>
@@ -44,7 +43,6 @@
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo-White" translatesAutoresizingMaskIntoConstraints="NO" id="DR0-NF-Ekp">
                                 <rect key="frame" x="240.5" y="131" width="119" height="100"/>
-                                <animations/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="100" id="1af-JL-lof"/>
                                     <constraint firstAttribute="width" constant="119" id="EdI-C5-HFK"/>
@@ -52,7 +50,6 @@
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome to Medicine Manager" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qbw-wE-XpR">
                                 <rect key="frame" x="183" y="267" width="234" height="64.5"/>
-                                <animations/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="234" id="JFf-Bn-ZQB"/>
                                 </constraints>
@@ -62,18 +59,16 @@
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hrj-xC-lL3">
                                 <rect key="frame" x="247" y="466" width="106" height="36"/>
-                                <animations/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <state key="normal" title="Get Started">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <segue destination="RIX-ki-Du1" kind="unwind" unwindAction="unwindCancel:" id="n6r-nD-y0j"/>
+                                    <action selector="dismiss" destination="Dbz-0S-Ah1" eventType="touchUpInside" id="soO-WZ-8m2"/>
                                 </connections>
                             </button>
                         </subviews>
-                        <animations/>
                         <color key="backgroundColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="qbw-wE-XpR" firstAttribute="centerX" secondItem="U4x-DD-et4" secondAttribute="centerX" id="0lO-iu-Wv3"/>
@@ -89,7 +84,6 @@
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sgo-9K-qsH" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="RIX-ki-Du1" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="-545" y="311"/>
         </scene>
@@ -101,7 +95,6 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="AuX-wn-PTy">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <color key="barTintColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
                         <textAttributes key="titleTextAttributes">
@@ -131,13 +124,11 @@
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7mQ-C1-Zu0">
                                 <rect key="frame" x="268" y="467" width="64" height="32.5"/>
-                                <animations/>
                                 <fontDescription key="fontDescription" type="system" weight="light" pointSize="27"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <animations/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="7mQ-C1-Zu0" firstAttribute="centerX" secondItem="GoE-AL-jiF" secondAttribute="centerX" id="BZ2-l1-zQz"/>

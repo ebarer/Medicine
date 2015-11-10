@@ -41,6 +41,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         tabBar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         
         // Add observeres for notifications
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "internalNotification:", name: "medNotification", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "rescheduleNotifications:", name: "rescheduleNotifications", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "takeDoseNotification:", name: "takeDoseNotification", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "snoozeReminderNotification:", name: "snoozeReminderNotification", object: nil)
@@ -56,18 +57,42 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    
-    func tabBarController(tabBarController: UITabBarController, didSelectViewController viewController: UIViewController) {
-        for vc in viewController.childViewControllers {
-            if vc.isKindOfClass(SettingsTVC_Console) {
-                let svc = vc as! SettingsTVC_Console
-                svc.reloadView()
-            }
-        }
-    }
 
     
     // MARK: - Observers
+    
+    func internalNotification(notification: NSNotification) {
+        if let id = notification.userInfo!["id"] as? String {
+            let medQuery = Medicine.getMedicine(arr: medication, id: id)
+            if let med = medQuery {
+                let message = String(format:"Time to take %g %@ of %@", med.dosage, med.dosageUnit.units(med.dosage), med.name!)
+                
+                let alert = UIAlertController(title: "Take \(med.name!)", message: message, preferredStyle: .Alert)
+                
+                alert.addAction(UIAlertAction(title: "Take Dose", style:  UIAlertActionStyle.Destructive, handler: {(action) -> Void in
+                    self.performSegueWithIdentifier("addDose", sender: med)
+                }))
+                
+                if med.lastDose != nil {
+                    alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+                        if let id = notification.userInfo!["id"] as? String {
+                            if let med = Medicine.getMedicine(arr: medication, id: id) {
+                                med.snoozeNotification()
+                                NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+                            }
+                        }
+                    }))
+                }
+                
+                alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
+                    NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+                }))
+                
+                alert.view.tintColor = UIColor.grayColor()
+                appDelegate.window!.rootViewController?.presentViewController(alert, animated: true, completion: nil)
+            }
+        }
+    }
     
     func rescheduleNotifications(notification: NSNotification) {
         let app = UIApplication.sharedApplication()
