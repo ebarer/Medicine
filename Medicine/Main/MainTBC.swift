@@ -48,6 +48,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         
         loadMedication()
         
+        // Setup array of reschedule calls
         if let dates = defaults.objectForKey("rescheduleDates") {
             rescheduleDates = dates as! [NSDate]
             rescheduleDates.sortInPlace({$0.compare($1) == .OrderedDescending})

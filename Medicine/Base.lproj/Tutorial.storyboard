@@ -18,14 +18,10 @@
                             <state key="normal" title="Skip">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </state>
-                            <connections>
-                                <segue destination="1In-Q3-DFb" kind="unwind" unwindAction="unwindCancel:" id="aHS-ya-i2K"/>
-                            </connections>
                         </button>
                     </navigationItem>
                 </pageViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IDt-ut-wfh" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="1In-Q3-DFb" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="964" y="311"/>
         </scene>
@@ -65,7 +61,7 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <action selector="dismiss" destination="Dbz-0S-Ah1" eventType="touchUpInside" id="soO-WZ-8m2"/>
+                                    <segue destination="bWJ-xU-Wfx" kind="unwind" unwindAction="unwindCancel:" id="ehj-Eq-bPI"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -84,6 +80,7 @@
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sgo-9K-qsH" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="bWJ-xU-Wfx" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="-545" y="311"/>
         </scene>

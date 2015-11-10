@@ -17,10 +17,5 @@ class WelcomeVC: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    
-    @IBAction func dismiss() {
-        NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
-        self.dismissViewControllerAnimated(true, completion: nil)
-    }
 
 }

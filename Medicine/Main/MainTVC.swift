@@ -75,15 +75,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             }
         }
         
-        // Display tutorial on first launch
-        let dictionary = NSBundle.mainBundle().infoDictionary!
-        let version = dictionary["CFBundleShortVersionString"] as! String
-        
-        if defaults.stringForKey("version") != version {
-            defaults.setValue(version, forKey: "version")
-            appDelegate.window!.rootViewController?.performSegueWithIdentifier("tutorial", sender: self)
-        }
-        
         // Setup IAP
         if defaults.boolForKey("managerUnlocked") {
             productLock = false
@@ -104,6 +95,14 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         // Setup refresh timer
         let _ = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(300), target: self, selector: Selector("refreshTable"), userInfo: nil, repeats: true)
+        
+        // Display tutorial on first launch
+        let dictionary = NSBundle.mainBundle().infoDictionary!
+        let version = dictionary["CFBundleShortVersionString"] as! String
+        if defaults.stringForKey("version") != version {
+            defaults.setValue(version, forKey: "version")
+            self.performSegueWithIdentifier("tutorial", sender: self)
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -620,6 +619,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             if let vc = segue.destinationViewController.childViewControllers[0] as? UpgradeVC {
                 mvc = vc
             }
+        }
+    }
+    
+    @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {
+        if let _ = unwindSegue.sourceViewController as? WelcomeVC {
+            refreshMedication()
         }
     }
 
