@@ -41,7 +41,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         tabBar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         
         // Add observeres for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "internalNotification:", name: "medNotification", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "doseNotification:", name: "doseNotification", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refillNotification:", name: "refillNotification", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "rescheduleNotifications:", name: "rescheduleNotifications", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "takeDoseNotification:", name: "takeDoseNotification", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "snoozeReminderNotification:", name: "snoozeReminderNotification", object: nil)
@@ -62,7 +63,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     // MARK: - Observers
     
-    func internalNotification(notification: NSNotification) {
+    func doseNotification(notification: NSNotification) {
         if let id = notification.userInfo!["id"] as? String {
             let medQuery = Medicine.getMedicine(arr: medication, id: id)
             if let med = medQuery {
@@ -90,7 +91,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 }))
                 
                 alert.view.tintColor = UIColor.grayColor()
-                appDelegate.window!.rootViewController?.presentViewController(alert, animated: true, completion: nil)
+                self.presentViewController(alert, animated: true, completion: nil)
             }
         }
     }
@@ -142,6 +143,31 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 med.snoozeNotification()
                 setDynamicShortcuts()
                 NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+            }
+        }
+    }
+    
+    func refillNotification(notification: NSNotification) {
+        if let id = notification.userInfo!["id"] as? String {
+            let medQuery = Medicine.getMedicine(arr: medication, id: id)
+            if let med = medQuery {
+                var message = String()
+                if med.prescriptionCount > 0 {
+                    message = "You currently have enough medication for about \(med.refillDaysRemaining()) days."
+                } else {
+                    message = "You don't currently have any \(med.name!) remaining."
+                }
+                
+                let alert = UIAlertController(title: "Reminder to Refill \(med.name!)", message: message, preferredStyle: .Alert)
+                
+                alert.addAction(UIAlertAction(title: "Refill", style:  UIAlertActionStyle.Destructive, handler: {(action) -> Void in
+                    self.performSegueWithIdentifier("refillPrescription", sender: med)
+                }))
+                
+                alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Cancel, handler: nil))
+                
+                alert.view.tintColor = UIColor.grayColor()
+                self.presentViewController(alert, animated: true, completion: nil)
             }
         }
     }

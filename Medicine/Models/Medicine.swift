@@ -412,59 +412,99 @@ class Medicine: NSManagedObject {
     /**
      Determine number of days worth of prescription remaining
      
-     - Returns: Int representing number of days
+     - Returns: Int: number of days remaining
     */
-    func refillDaysRemaining() -> Int {
-        if let history = self.historyArray() {
-            // Only calculate the daily consumption average
-            // when medication has more than a week of data
-            if history.count >= 7  {
-                // Determine total amount of medication consumed
-                var doseCount: Float = 0.0
-                for i in history {
-                    for j in i.1 {
-                        doseCount += j.dosage
+    func refillDaysRemaining() -> Int? {
+        // Only calculate if there is a prescription refill history
+        if self.prescriptionCount > 0 {
+            if let history = self.historyArray() {
+                // Only calculate the daily consumption average
+                // when medication has more than a week of data
+                if history.count >= 7  {
+                    // Determine total amount of medication consumed
+                    var doseCount: Float = 0.0
+                    for i in history {
+                        for j in i.1 {
+                            doseCount += j.dosage
+                        }
                     }
+                    
+                    // Calculate daily consumption average
+                    let dailyAvg = round(doseCount / Float(history.count))
+                    
+                    // Calculate number of days remaining
+                    let days = Int(floorf(self.prescriptionCount / dailyAvg))
+                    
+                    return days
                 }
-                
-                // Calculate daily consumption average
-                let dailyAvg = round(doseCount / Float(history.count))
-                
-                // Calculate number of days remaining
-                let days = Int(floorf(self.prescriptionCount / dailyAvg))
-                
+            }
+            
+            if intervalUnit == Intervals.Daily {
+                let days = Int(floorf(prescriptionCount * (interval / dosage)))
                 return days
             }
         }
         
-        if intervalUnit == Intervals.Daily {
-            let days = Int(floorf(prescriptionCount * (interval / dosage)))
-            
-            return days
-        }
-        
-        return 0
+        return nil
     }
     
     /**
-     Determine whether medication needs to be refilled
+     Determine whether the medication needs to be refilled
      
      - Parameter limit: Number of days worth of prescription remaining (default is 3 days)
      
      - Returns: Bool indicating whether user needs to be notified to refill
     */
-    func checkRefill(limit: Int = 3) -> Bool {
-        if refillDaysRemaining() <= limit {
-            return true
+    func needsRefill(limit limit: Int = 3) -> Bool {
+        if self.refillHistory?.count > 0 {
+            if refillDaysRemaining() <= limit {
+                return true
+            }
         }
         
         return false
+    }
+
+    /**
+     Print out the refill status
+     
+     - Returns: String with refill status
+     */
+    func refillStatus(entry: Bool = false) -> String {
+        var status = String()
+        
+        if entry && prescriptionCount == 0 {
+            status = "You do not currently have any \(name!)."
+            return status
+        } else {
+            if refillHistory?.count == 0 {
+                status = "Tap \"Refill Prescription\" to update your prescription amount."
+                return status
+            } else if prescriptionCount < dosage {
+                status = "You do not appear to have enough \(name!) remaining to take this dose."
+                status += "\nTap \"Refill Prescription\" to update your prescription amount."
+                return status
+            }
+        }
+        
+        status = "You currently have "
+        status += "\(prescriptionCount) \(dosageUnit.units(prescriptionCount)) of \(name!). "
+        
+        if let days = refillDaysRemaining() {
+            if days == 1 && intervalUnit == Intervals.Daily {
+                status += "You will need to refill after this dose."
+            } else {
+                status += "Based on your current usage, this will last you approximately \(days) \(Intervals.Daily.units(Float(days)))."
+            }
+        }
+        
+        return status
     }
     
     
     // MARK: - Notification methods
     func scheduleNotification(date: NSDate) throws {
-        // Schedule if the user wants a reminder and the reminder date is in the future        
+        // Schedule if the user wants a reminder and the reminder date is in the future
         guard date.compare(NSDate()) == .OrderedDescending else {
             throw MedicineError.DatePassed
         }
@@ -478,11 +518,11 @@ class Medicine: NSManagedObject {
         }
 
         let notification = UILocalNotification()
-        notification.alertAction = "View Dose"
+        notification.alertAction = "View Medicine"
         notification.alertTitle = "Take \(name)"
         notification.alertBody = String(format:"Time to take %g %@ of %@", dosage, dosageUnit.units(dosage), name)
         notification.soundName = UILocalNotificationDefaultSoundName
-        notification.category = "Reminder"
+        notification.category = "Dose Reminder"
         notification.userInfo = ["id": self.medicineID]
         notification.fireDate = date
         
@@ -539,6 +579,26 @@ class Medicine: NSManagedObject {
                 UIApplication.sharedApplication().cancelLocalNotification(notification)
             }
         }
+    }
+    
+    func sendRefillNotification() {
+        let notification = UILocalNotification()
+        
+        var message = String()
+        if self.prescriptionCount > 0 {
+            message = "You currently have enough medication for about \(refillDaysRemaining()) days."
+        } else {
+            message = "You don't currently have any \(name!) remaining."
+        }
+        
+        notification.alertTitle = "Refill \(name)"
+        notification.alertBody = message
+        notification.soundName = UILocalNotificationDefaultSoundName
+        notification.category = "Refill Reminder"
+        notification.userInfo = ["id": self.medicineID]
+        notification.fireDate = NSDate()
+        
+        UIApplication.sharedApplication().scheduleLocalNotification(notification)
     }
     
     

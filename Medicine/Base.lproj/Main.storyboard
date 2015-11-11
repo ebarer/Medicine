@@ -296,6 +296,7 @@
                         <segue destination="tMS-nO-ybq" kind="relationship" relationship="viewControllers" id="Ina-G6-Eh6"/>
                         <segue destination="QkY-Qj-4ds" kind="relationship" relationship="viewControllers" id="zvO-m7-DaU"/>
                         <segue destination="jhv-gA-12s" kind="presentation" identifier="addDose" id="8cv-yX-pIU"/>
+                        <segue destination="HGE-ul-mTl" kind="presentation" identifier="refillPrescription" id="UNh-mw-cOy"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="o8O-sL-lb1" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1163,7 +1164,15 @@
                 <viewControllerPlaceholder storyboardName="AddDose" id="jhv-gA-12s" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sZ3-gF-2Uo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1103.5" y="246"/>
+            <point key="canvasLocation" x="1103.5" y="283"/>
+        </scene>
+        <!--AddRefill-->
+        <scene sceneID="ots-6m-s5S">
+            <objects>
+                <viewControllerPlaceholder storyboardName="AddRefill" id="HGE-ul-mTl" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="aKd-87-Sr4" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1103.5" y="208"/>
         </scene>
     </scenes>
     <resources>

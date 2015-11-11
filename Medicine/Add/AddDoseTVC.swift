@@ -28,8 +28,11 @@ class AddDoseTVC: UITableViewController {
     
     // MARK: - Helper variables
     
+    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var moc: NSManagedObjectContext
+    
     let cal = NSCalendar.currentCalendar()
     let dateFormatter = NSDateFormatter()
     var globalHistory: Bool = false
@@ -136,19 +139,8 @@ class AddDoseTVC: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if section == 1 {
-            if let med = med {
-                let count = med.prescriptionCount
-                
-                if (count < med.dosage) {
-                    return "You do not appear to have enough \(med.name!) remaining to take this dose. " +
-                           "Tap \"Refill Prescription\" to update your prescription amount."
-                } else {
-                    return "You currently have " +
-                           "\(count) \(med.dosageUnit.units(count)) of \(med.name!). " +
-                           "Based on your current usage, this will last you approximately \(med.refillDaysRemaining()) days."
-                }
-            }
+        if let med = med where section == 1 {
+            return med.refillStatus()
         }
         
         return nil
@@ -208,10 +200,16 @@ class AddDoseTVC: UITableViewController {
     @IBAction func saveDose(sender: AnyObject) {
         if let med = self.med {
             do {
+                // Save dose
                 try med.takeDose(dose)
                 dose.medicine = med
-                
                 appDelegate.saveContext()
+                
+                // Check if medication needs to be refilled
+                let refillTime = defaults.integerForKey("refillTime")
+                if med.needsRefill(limit: refillTime) {
+                    med.sendRefillNotification()
+                }
                 
                 NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
                 

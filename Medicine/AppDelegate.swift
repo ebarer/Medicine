@@ -51,11 +51,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             snoozeAction.destructive = false
             snoozeAction.authenticationRequired = false
         
-        let category = UIMutableUserNotificationCategory()
-            category.identifier = "Reminder"
-            category.setActions([takeAction, snoozeAction], forContext: UIUserNotificationActionContext.Default)
+        let doseCategory = UIMutableUserNotificationCategory()
+            doseCategory.identifier = "Dose Reminder"
+            doseCategory.setActions([takeAction, snoozeAction], forContext: UIUserNotificationActionContext.Default)
         
-        let categories = NSSet(array: [category])
+        let refillCategory = UIMutableUserNotificationCategory()
+            refillCategory.identifier = "Refill Reminder"
+        
+        let categories = NSSet(array: [doseCategory, refillCategory])
         let settings = UIUserNotificationSettings(forTypes: notificationType, categories: categories as? Set<UIUserNotificationCategory>)
 
         application.registerUserNotificationSettings(settings)
@@ -220,7 +223,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
-        NSNotificationCenter.defaultCenter().postNotificationName("medNotification", object: nil, userInfo: notification.userInfo)
+        if notification.category == "Dose Reminder" {
+            NSNotificationCenter.defaultCenter().postNotificationName("doseNotification", object: nil, userInfo: notification.userInfo)
+        } else if notification.category == "Refill Reminder" {
+            NSNotificationCenter.defaultCenter().postNotificationName("refillNotification", object: nil, userInfo: notification.userInfo)
+        }
     }
     
     func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {
