@@ -336,28 +336,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             return cell
         }
         
-        // If notiifcation scheduled, set date to next scheduled fire date
-        if let date = med.scheduledNotifications?.first?.fireDate {
-            let subtitle = NSMutableAttributedString(string: "Next dose: \(Medicine.dateString(date))")
-            subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
-            cell.detailTextLabel?.attributedText = subtitle
-            return cell
-        }
-        
-        // Set subtitle to next dosage date
-        if let date = med.nextDose {
-            let subtitle = NSMutableAttributedString(string: "Next dose: \(Medicine.dateString(date))")
-            subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
-            cell.detailTextLabel?.attributedText = subtitle
-            return cell
-        }
-        
-        // If no doses taken, or other conditions met, instruct user on how to take dose
-        else  {
-            cell.detailTextLabel?.attributedText = NSAttributedString(string: "Tap to take first dose", attributes: [NSForegroundColorAttributeName: UIColor.lightGrayColor()])
-            return cell
-        }
-    
         return cell
     }
 
