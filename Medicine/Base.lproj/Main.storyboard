@@ -102,7 +102,7 @@
                                             </constraints>
                                         </imageView>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yMx-kf-26h">
-                                            <rect key="frame" x="100" y="55.5" width="437" height="20"/>
+                                            <rect key="frame" x="100" y="56" width="437" height="20"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="20" id="EJw-cq-0SH"/>
                                             </constraints>
@@ -127,6 +127,7 @@
                                 <connections>
                                     <outlet property="adherenceScore" destination="V61-dz-9nY" id="Lqq-tD-Rdq"/>
                                     <outlet property="adherenceWidth" destination="eBt-Gv-GRw" id="5oU-Un-FRn"/>
+                                    <outlet property="glyphWidth" destination="L7T-FO-Xqh" id="Ga7-fV-WYT"/>
                                     <outlet property="subtitle" destination="yMx-kf-26h" id="cTB-W0-u5h"/>
                                     <outlet property="subtitleGlyph" destination="pE0-9f-j7n" id="ndX-r5-YDL"/>
                                     <outlet property="subtitleLeading" destination="lLG-Xd-gLx" id="ufZ-dG-i2v"/>

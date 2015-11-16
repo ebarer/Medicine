@@ -286,7 +286,11 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         // Set medication name
         cell.title.text = med.name
         cell.title.textColor = UIColor.blackColor()
+        
+        // Set subtitle
+        cell.hideGlyph(false)
         cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
+        cell.subtitle.textColor = UIColor.blackColor()
         
         // Set adherence score
         print(med.adherenceScore())
@@ -294,26 +298,25 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         // If reminders aren't enabled for medication
         if med.reminderEnabled == false {
             if let date = med.lastDose?.next {
-                var subtitle:NSMutableAttributedString!
-                
                 if date.compare(NSDate()) == .OrderedDescending {
-                    subtitle = NSMutableAttributedString(string: Medicine.dateString(date))
-                    cell.subtitle.attributedText = subtitle
+                    cell.hideGlyph(true)
+                    cell.subtitle.textColor = UIColor.lightGrayColor()
+                    cell.subtitle.text = "Unscheduled, \(Medicine.dateString(date))"
                 }
             }
         } else {
             // If medication is overdue, set subtitle to next dosage date and tint red
             if med.isOverdue().flag {
                 cell.title.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                cell.subtitleGlyph.image = UIImage(named: "OverdueIcon")
                 
                 var subtitle = "Overdue"
                 if let date = med.isOverdue().lastDose {
                     subtitle = Medicine.dateString(date)
                 }
                 
-                cell.subtitle.text = subtitle
+                cell.subtitleGlyph.image = UIImage(named: "OverdueIcon")
                 cell.subtitle.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                cell.subtitle.text = subtitle
             }
                 
             // If notification scheduled, set date to next scheduled fire date
@@ -329,11 +332,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             // If no doses taken, or other conditions met, instruct user on how to take dose
             else {
                 cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
-                cell.subtitle.text = "Tap to take first dose"
                 cell.subtitle.textColor = UIColor.lightGrayColor()
+                cell.subtitle.text = "Tap to take first dose"
             }
-
-            return cell
         }
         
         return cell

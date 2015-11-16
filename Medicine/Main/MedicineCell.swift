@@ -15,11 +15,12 @@ class MedicineCell: UITableViewCell {
     @IBOutlet var title: UILabel!
     @IBOutlet var subtitle: UILabel!
     @IBOutlet var subtitleGlyph: UIImageView!
-    
+    var glyphHidden = false
     
     // MARK: - Constraints
     @IBOutlet var adherenceWidth: NSLayoutConstraint!
     @IBOutlet var titleLeading: NSLayoutConstraint!
+    @IBOutlet var glyphWidth: NSLayoutConstraint!
     @IBOutlet var subtitleLeading: NSLayoutConstraint!
     
     
@@ -39,14 +40,14 @@ class MedicineCell: UITableViewCell {
         if editing {
             adherenceWidth.constant = 0.0
             titleLeading.constant = 0.0
-            subtitleLeading.constant = 0.0
+            subtitleLeading.constant = glyphHidden ? -5.0 : 0.0
         } else {
             // Width to display adherence score
             //adherenceWidth.constant = 50.0
             
             adherenceWidth.constant = 0.0
             titleLeading.constant = 10.0
-            subtitleLeading.constant = 10.0
+            subtitleLeading.constant = glyphHidden ? 5.0 : 10.0
         }
         
         self.setNeedsUpdateConstraints()
@@ -54,6 +55,21 @@ class MedicineCell: UITableViewCell {
             self.layoutIfNeeded()
             super.setEditing(editing, animated: animated)
         }
+    }
+    
+    func hideGlyph(val: Bool) {
+        if val {
+            glyphHidden = true
+            glyphWidth.constant = 0.0
+            subtitleLeading.constant = 5.0
+        } else {
+            glyphHidden = false
+            glyphWidth.constant = 20.0
+            subtitleLeading.constant = 10.0
+        }
+        
+        self.setNeedsUpdateConstraints()
+        self.layoutIfNeeded()
     }
 
 }
