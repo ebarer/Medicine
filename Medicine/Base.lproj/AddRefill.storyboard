@@ -145,6 +145,7 @@
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
                                                     <connections>
+                                                        <action selector="correctConversion:" destination="VWf-LW-CiA" eventType="editingDidEnd" id="86T-Ce-Lz2"/>
                                                         <action selector="updateConversion:" destination="VWf-LW-CiA" eventType="editingChanged" id="iFK-ex-I7W"/>
                                                         <outlet property="delegate" destination="VWf-LW-CiA" id="Y3T-tL-dwb"/>
                                                     </connections>

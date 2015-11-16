@@ -73,9 +73,6 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
         if let med = med {
             // Set title
             self.navigationItem.title = "Refill \(med.name!)"
-            
-            // Set description
-            prescriptionCountLabel.text = med.refillStatus(entry: true)
                 
             // Set refill parameters
             if let prev = med.refillHistory?.array.last as? Prescription {
@@ -110,7 +107,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
         quantityInput.text = String(format:"%g", refill.quantity)
         quantityUnitLabel.text = refill.quantityUnit.description
         quantityUnitPicker.selectRow(Int(refill.quantityUnitInt), inComponent: 0, animated: false)
-        
+
         if let med = med {
             conversionLabel.text = "\(med.dosageUnit.description) / \(refill.quantityUnit.description)"
             conversionInput.text = String(format:"%g", refill.conversion)
@@ -118,8 +115,28 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
         
         dateLabel.text = dateFormatter.stringFromDate(refill.date)
         
+        // Update description
+        updateDescription()
+        
         // Disable save button if no medication selected
-        if med == nil {
+        updateSave()
+    }
+    
+    func updateDescription() {
+        if let med = med {
+            var refillGuide = med.refillStatus(entry: true)
+            
+            if refill.quantityUnit != med.dosageUnit && refill.conversion != 0 {
+                let count = refill.quantity * refill.conversion
+                refillGuide += "This will add \(med.removeTrailingZero(count)) \(med.dosageUnit.units(count))."
+            }
+            
+            prescriptionCountLabel.text = refillGuide
+        }
+    }
+    
+    func updateSave() {
+        if med == nil || refill.conversion == 0 {
             saveButton.enabled = false
         } else {
             saveButton.enabled = true
@@ -180,30 +197,6 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
             }
         default: break
         }
-    }
-    
-    override func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        switch section {
-        case Rows.conversionAmount.index().section:
-            if med?.dosageUnit != refill.quantityUnit {
-                return tableView.rowHeight
-            }
-        default:
-            return tableView.rowHeight
-        }
-        
-        return 0
-    }
-    
-    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if let med = med where section == 0 {
-            if refill.quantityUnit != med.dosageUnit {
-                let count = refill.quantity * refill.conversion
-                return "This will add \(count) \(med.dosageUnit.units(count))."
-            }
-        }
-        
-        return nil
     }
     
     
@@ -274,7 +267,6 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
         updateLabels()
         
         // Reload table view
-        tableView.reloadRowsAtIndexPaths([Rows.quantityUnitPicker.index()], withRowAnimation: .None)
         tableView.beginUpdates()
         tableView.endUpdates()
     }
@@ -294,17 +286,29 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
     
     @IBAction func updateQuantity(sender: UITextField) {
         if let value = sender.text {
-            let val = (value as NSString).floatValue
-            refill.quantity = val
+            refill.quantity = (value as NSString).floatValue
+            updateDescription()
         }
     }
     
     @IBAction func updateConversion(sender: UITextField) {
         if let value = sender.text {
-            let val = (value as NSString).floatValue
-            refill.conversion = val
+            refill.conversion = (value as NSString).floatValue
+            updateDescription()
+            updateSave()
         }
     }
+
+    @IBAction func correctConversion(sender: UITextField) {
+        if let value = sender.text {
+            var val = (value as NSString).floatValue
+            if val == 0 { val = 1 }
+            
+            refill.conversion = val
+            updateLabels()
+        }
+    }
+    
 
     
     // MARK: - Navigation

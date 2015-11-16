@@ -514,7 +514,7 @@ class Medicine: NSManagedObject {
         
         else {
             status = "You currently have "
-            status += "\(prescriptionCount) \(dosageUnit.units(prescriptionCount)) of \(name!). "
+            status += "\(removeTrailingZero(prescriptionCount)) \(dosageUnit.units(prescriptionCount)) of \(name!). "
             
             if let days = refillDaysRemaining() where !entry {
                 if days <= 1 {
@@ -727,6 +727,11 @@ class Medicine: NSManagedObject {
         }
         
         return nil
+    }
+    
+    func removeTrailingZero(num: Float) -> String {
+        let temp = String(format: "%g", num)
+        return temp
     }
     
 }
