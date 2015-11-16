@@ -163,7 +163,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         if section == Rows.prescription.index().section {
-            if editMode && med.refillHistory?.count > 0 {
+            if med.refillHistory?.count > 0 {
                 return med.refillStatus()
             } else if med.name != nil && med.name != "" {
                 return "Keep track of your prescription levels, and be reminded to refill when running low."

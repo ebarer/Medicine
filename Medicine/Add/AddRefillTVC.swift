@@ -132,7 +132,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         let row = Rows(index: indexPath)
         
-        switch(row) {
+        switch row {
         case Rows.quantityUnitPicker:
             if selectedRow == Rows.quantityUnit {
                 return 175
@@ -180,6 +180,19 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
             }
         default: break
         }
+    }
+    
+    override func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        switch section {
+        case Rows.conversionAmount.index().section:
+            if med?.dosageUnit != refill.quantityUnit {
+                return tableView.rowHeight
+            }
+        default:
+            return tableView.rowHeight
+        }
+        
+        return 0
     }
     
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {

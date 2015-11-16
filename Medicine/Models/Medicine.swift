@@ -159,20 +159,20 @@ class Medicine: NSManagedObject {
                     // If created today (with no history), overdue depends on alarm
                     if cal.isDateInToday(alarm) && lastDose == nil{
                         if alarm.compare(NSDate()) == .OrderedAscending{
-                            return (true, nil)
+                            return (true, alarm)
                         }
                     }
                     
                     // If date is in today but behind the current time, return true
                     else if let date = lastDose?.next {
                         if cal.isDateInToday(date) && date.compare(NSDate()) == .OrderedAscending {
-                            return (true, nil)
+                            return (true, date)
                         }
                         
                         // If in the passed and not scheduled for today, return true
                         if let scheduledDate = scheduledNotifications?.first?.fireDate {
                             if date.compare(NSDate()) == .OrderedAscending && !cal.isDateInToday(scheduledDate) {
-                                return (true, nil)
+                                return (true, scheduledDate)
                             }
                         }
                     }
@@ -235,11 +235,13 @@ class Medicine: NSManagedObject {
         
         // Overdue medications should be at the top
         if medA.isOverdue().flag == true {
-            if let overdue1 = medA.isOverdue().lastDose {
-                if let overdue2 = medB.isOverdue().lastDose {
+            if let overdue2 = medB.isOverdue().lastDose {
+                if let overdue1 = medA.isOverdue().lastDose {
                     // If both are overdue, return sorted by longest overdue
                     return overdue1.compare(overdue2) == .OrderedAscending
                 }
+                
+                return false
             }
             
             return true
