@@ -289,7 +289,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
         
         // Set adherence score
-        med.adherenceScore
+        print(med.adherenceScore())
         
         // If reminders aren't enabled for medication
         if med.reminderEnabled == false {
@@ -317,7 +317,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             }
                 
             // If notification scheduled, set date to next scheduled fire date
-            else if let date = med.scheduledNotification?.fireDate {
+            else if let date = med.scheduledNotifications?.first?.fireDate {
                 cell.subtitle.text = Medicine.dateString(date)
             }
                 
@@ -332,10 +332,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 cell.subtitle.text = "Tap to take first dose"
                 cell.subtitle.textColor = UIColor.lightGrayColor()
             }
- 
-            subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, subtitle.length))
-            subtitle.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(15.0), range: NSMakeRange(0, 7))
-            cell.detailTextLabel?.attributedText = subtitle
+
             return cell
         }
         

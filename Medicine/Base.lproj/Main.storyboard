@@ -73,33 +73,68 @@
                             </constraints>
                         </view>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="detailButton" indentationWidth="10" reuseIdentifier="medicineCell" editingAccessoryType="disclosureIndicator" rowHeight="100" id="Unc-VA-g5h" customClass="MedicineCell" customModule="Medicine" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="detailButton" indentationWidth="10" reuseIdentifier="medicineCell" editingAccessoryType="disclosureIndicator" rowHeight="100" id="tXK-Ci-BPn" customClass="MedicineCell" customModule="Medicine" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="199.5" width="600" height="100"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Unc-VA-g5h" id="7Y1-HP-ICu">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="tXK-Ci-BPn" id="w8C-NI-NAx">
                                     <rect key="frame" x="0.0" y="0.0" width="553" height="99.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="n1u-dO-pwG">
-                                            <rect key="frame" x="15" y="25" width="49.5" height="32.5"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aeo-WW-mwr">
+                                            <rect key="frame" x="75" y="19" width="462" height="32.5"/>
                                             <fontDescription key="fontDescription" type="system" weight="light" pointSize="27"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="tmF-CZ-lik">
-                                            <rect key="frame" x="15" y="57.5" width="53" height="18"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="V61-dz-9nY">
+                                            <rect key="frame" x="15" y="25" width="50" height="50"/>
+                                            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="50" id="YeR-Y2-HXu"/>
+                                                <constraint firstAttribute="width" constant="50" id="eBt-Gv-GRw"/>
+                                            </constraints>
+                                        </view>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="OverdueIcon" translatesAutoresizingMaskIntoConstraints="NO" id="pE0-9f-j7n">
+                                            <rect key="frame" x="75" y="55.5" width="20" height="20"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="20" id="L7T-FO-Xqh"/>
+                                                <constraint firstAttribute="height" constant="20" id="mF1-fj-fNU"/>
+                                            </constraints>
+                                        </imageView>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yMx-kf-26h">
+                                            <rect key="frame" x="100" y="55.5" width="437" height="20"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="20" id="EJw-cq-0SH"/>
+                                            </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="yMx-kf-26h" firstAttribute="leading" secondItem="pE0-9f-j7n" secondAttribute="trailing" constant="5" id="9vg-46-IEr"/>
+                                        <constraint firstItem="V61-dz-9nY" firstAttribute="leading" secondItem="w8C-NI-NAx" secondAttribute="leadingMargin" constant="7" id="F9U-77-r1w"/>
+                                        <constraint firstItem="pE0-9f-j7n" firstAttribute="top" secondItem="aeo-WW-mwr" secondAttribute="bottom" constant="4" id="IHh-z7-Htr"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="aeo-WW-mwr" secondAttribute="trailing" constant="8" id="bwv-sX-hh2"/>
+                                        <constraint firstItem="aeo-WW-mwr" firstAttribute="top" secondItem="w8C-NI-NAx" secondAttribute="topMargin" constant="11" id="c2r-7e-5Po"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="yMx-kf-26h" secondAttribute="trailing" constant="8" id="eGo-p9-MYe"/>
+                                        <constraint firstItem="pE0-9f-j7n" firstAttribute="leading" secondItem="V61-dz-9nY" secondAttribute="trailing" constant="10" id="lLG-Xd-gLx"/>
+                                        <constraint firstItem="aeo-WW-mwr" firstAttribute="leading" secondItem="V61-dz-9nY" secondAttribute="trailing" constant="10" id="q5q-w0-nsq"/>
+                                        <constraint firstItem="V61-dz-9nY" firstAttribute="centerY" secondItem="w8C-NI-NAx" secondAttribute="centerY" id="rlN-3x-ANn"/>
+                                        <constraint firstItem="yMx-kf-26h" firstAttribute="bottom" secondItem="pE0-9f-j7n" secondAttribute="bottom" id="u2E-0u-61D"/>
+                                    </constraints>
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <connections>
-                                    <segue destination="hvL-QA-tmo" kind="show" identifier="viewMedicationDetails" trigger="accessoryAction" id="LK1-7V-jnC">
-                                        <segue key="commit" inheritsFrom="parent" id="tMw-cU-nIu"/>
-                                        <segue key="preview" inheritsFrom="commit" id="kIx-Yn-Pam"/>
+                                    <outlet property="adherenceScore" destination="V61-dz-9nY" id="Lqq-tD-Rdq"/>
+                                    <outlet property="adherenceWidth" destination="eBt-Gv-GRw" id="5oU-Un-FRn"/>
+                                    <outlet property="subtitle" destination="yMx-kf-26h" id="cTB-W0-u5h"/>
+                                    <outlet property="subtitleGlyph" destination="pE0-9f-j7n" id="ndX-r5-YDL"/>
+                                    <outlet property="subtitleLeading" destination="lLG-Xd-gLx" id="ufZ-dG-i2v"/>
+                                    <outlet property="title" destination="aeo-WW-mwr" id="CUt-cd-WWj"/>
+                                    <outlet property="titleLeading" destination="q5q-w0-nsq" id="G7F-Y8-uxs"/>
+                                    <segue destination="hvL-QA-tmo" kind="show" identifier="viewMedicationDetails" trigger="accessoryAction" id="y5a-Wh-C29">
+                                        <segue key="commit" inheritsFrom="parent" id="fWE-uJ-Lmc"/>
+                                        <segue key="preview" inheritsFrom="commit" id="JXS-PK-I4E"/>
                                     </segue>
                                 </connections>
                             </tableViewCell>
@@ -221,7 +256,7 @@
                 <viewControllerPlaceholder storyboardName="AddMedication" id="KKX-VQ-lBK" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iW6-yh-2SF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2656" y="-333"/>
+            <point key="canvasLocation" x="2656" y="-307"/>
         </scene>
         <!--AddDose-->
         <scene sceneID="V2c-5F-wuu">
@@ -1185,12 +1220,12 @@
         <image name="SettingsTab" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="aaT-BJ-605"/>
         <segue reference="HfD-yH-Bkx"/>
         <segue reference="boT-ys-MKj"/>
-        <segue reference="aaT-BJ-605"/>
         <segue reference="qK7-4Q-NbR"/>
         <segue reference="tHn-tf-kiw"/>
+        <segue reference="y5a-Wh-C29"/>
         <segue reference="tQz-wz-X6o"/>
-        <segue reference="LK1-7V-jnC"/>
     </inferredMetricsTieBreakers>
 </document>

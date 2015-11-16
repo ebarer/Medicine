@@ -12,7 +12,8 @@ import CoreSpotlight
 import MobileCoreServices
 
 class Medicine: NSManagedObject {
-
+    
+    
     // MARK: - Enum variables
     private let cal = NSCalendar.currentCalendar()
     
@@ -135,6 +136,78 @@ class Medicine: NSManagedObject {
         }
         
         return label
+    }
+    
+    func adherenceScore() -> Int? {
+        if let tempArr = self.history?.array where tempArr.count > 0 {
+            // Retrieve history
+            var scoreArray = tempArr as! [History]
+            
+            // Reverse so newest items are at the top
+            scoreArray = scoreArray.reverse()
+            
+            var averageScore: Int = 0
+            var averageCount: Int = 0
+            let historyLength = (scoreArray.count < 16) ? (scoreArray.count - 1) : 15
+            
+            switch(intervalUnit) {
+            case .Hourly:
+                return nil
+//                    for i in 0...historyLength {
+//                        if let expectedDate = scoreArray[i+1].next {
+//                            let scoreDate = scoreArray[i].date
+//                            if cal.isDate(scoreDate, inSameDayAsDate: expectedDate) {
+//                                print("\(scoreArray[i].date) ? \(expectedDate)")
+//                            }
+//                        }
+//                    }
+            case .Daily:
+                if let alarm = intervalAlarm {
+                    let alarmComponents = cal.components([.Hour, .Minute], fromDate: alarm)
+                    for i in 0...historyLength {
+                        let date = scoreArray[i].date
+                        let dateComponents = cal.components([.Hour, .Minute], fromDate: date)
+                        let dif = cal.components(.Minute, fromDateComponents: dateComponents, toDateComponents: alarmComponents, options: [])
+                        
+                        //print("\(name!): \(scoreArray[i].date) : \(dif.minute) = \(calculateScore(dif.minute, date: date))")
+                        let (score, multiplier) = calculateScore(dif.minute, date: date)
+                        averageScore += (score * multiplier)
+                        averageCount += multiplier
+                    }
+                }
+            default:
+                return nil
+            }
+            
+            //print("\(name!) Score: \(averageScore / averageCount)")
+            return (averageScore / averageCount)
+        }
+
+        return nil
+    }
+    
+    func calculateScore(dif: Int, date: NSDate) -> (Score: Int, Multiplier: Int) {
+        var score: Int = 0
+        var multiplier: Int = 1
+        
+        switch(abs(dif)) {
+        case 0...5:
+            score = 100
+        case 5...10:
+            score = 75
+        case 10...30:
+            score = 50
+        default:
+            score = 0
+        }
+        
+        if date.isDateInWeek() {
+            multiplier = 3
+        } else if date.isDateInLastWeek() {
+            multiplier = 2
+        }
+        
+        return (score, multiplier)
     }
     
     /**
@@ -871,5 +944,5 @@ enum Intervals: Int16, CustomStringConvertible {
         
         return string
     }
-
+    
 }
