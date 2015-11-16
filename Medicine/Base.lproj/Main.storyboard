@@ -73,10 +73,10 @@
                             </constraints>
                         </view>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="detailButton" indentationWidth="10" reuseIdentifier="medicationCell" editingAccessoryType="disclosureIndicator" textLabel="n1u-dO-pwG" detailTextLabel="tmF-CZ-lik" rowHeight="100" style="IBUITableViewCellStyleSubtitle" id="EQE-7U-RYh">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="detailButton" indentationWidth="10" reuseIdentifier="medicineCell" editingAccessoryType="disclosureIndicator" rowHeight="100" id="Unc-VA-g5h" customClass="MedicineCell" customModule="Medicine" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="199.5" width="600" height="100"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="EQE-7U-RYh" id="6no-j4-Oqk">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Unc-VA-g5h" id="7Y1-HP-ICu">
                                     <rect key="frame" x="0.0" y="0.0" width="553" height="99.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
@@ -1181,6 +1181,7 @@
         <image name="Logo" width="500" height="425"/>
         <image name="MedicineTab" width="28" height="25"/>
         <image name="MedicineTab+Selected" width="28" height="25"/>
+        <image name="OverdueIcon" width="28" height="28"/>
         <image name="SettingsTab" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>

@@ -12,8 +12,7 @@ import CoreSpotlight
 import MobileCoreServices
 
 class Medicine: NSManagedObject {
-    
-    
+
     // MARK: - Enum variables
     private let cal = NSCalendar.currentCalendar()
     
@@ -738,7 +737,6 @@ class Medicine: NSManagedObject {
 
 
 // MARK: - NSDate extensions
-
 extension NSDate {
 
     // Determines if time is set to midnight

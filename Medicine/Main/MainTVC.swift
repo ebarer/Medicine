@@ -280,15 +280,16 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("medicationCell", forIndexPath: indexPath)
+        let cell = tableView.dequeueReusableCellWithIdentifier("medicineCell", forIndexPath: indexPath) as! MedicineCell
         let med = medication[indexPath.row]
         
-        // Set cell tint
-        cell.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-        
         // Set medication name
-        cell.textLabel?.text = med.name
-        cell.textLabel?.textColor = UIColor.blackColor()
+        cell.title.text = med.name
+        cell.title.textColor = UIColor.blackColor()
+        cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
+        
+        // Set adherence score
+        med.adherenceScore
         
         // If reminders aren't enabled for medication
         if med.reminderEnabled == false {
@@ -296,26 +297,40 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 var subtitle:NSMutableAttributedString!
                 
                 if date.compare(NSDate()) == .OrderedDescending {
-                    subtitle = NSMutableAttributedString(string: "Earliest next dose: \(Medicine.dateString(date))")
-                    subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 20))
-                } else {
-                    cell.textLabel?.textColor = UIColor.lightGrayColor()
-                    subtitle = NSMutableAttributedString(string: "Last dose: \(Medicine.dateString(med.lastDose?.date))")
-                    subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, subtitle.length))
+                    subtitle = NSMutableAttributedString(string: Medicine.dateString(date))
+                    cell.subtitle.attributedText = subtitle
+                }
+            }
+        } else {
+            // If medication is overdue, set subtitle to next dosage date and tint red
+            if med.isOverdue().flag {
+                cell.title.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                cell.subtitleGlyph.image = UIImage(named: "OverdueIcon")
+                
+                var subtitle = "Overdue"
+                if let date = med.isOverdue().lastDose {
+                    subtitle = Medicine.dateString(date)
                 }
                 
-                cell.detailTextLabel?.attributedText = subtitle
-                return cell
+                cell.subtitle.text = subtitle
+                cell.subtitle.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
             }
-        }
-        
-        // If medication is overdue, set subtitle to next dosage date and tint red
-        if med.isOverdue().flag {
-            cell.textLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-            var subtitle = NSMutableAttributedString(string: "Overdue")
-            
-            if let date = med.isOverdue().lastDose {
-                subtitle = NSMutableAttributedString(string: "Overdue: \(Medicine.dateString(date))")
+                
+            // If notification scheduled, set date to next scheduled fire date
+            else if let date = med.scheduledNotification?.fireDate {
+                cell.subtitle.text = Medicine.dateString(date)
+            }
+                
+            // Set subtitle to next dosage date
+            else if let date = med.nextDose {
+                cell.subtitle.text = Medicine.dateString(date)
+            }
+                
+            // If no doses taken, or other conditions met, instruct user on how to take dose
+            else {
+                cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
+                cell.subtitle.text = "Tap to take first dose"
+                cell.subtitle.textColor = UIColor.lightGrayColor()
             }
  
             subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, subtitle.length))
@@ -345,8 +360,10 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             cell.detailTextLabel?.attributedText = NSAttributedString(string: "Tap to take first dose", attributes: [NSForegroundColorAttributeName: UIColor.lightGrayColor()])
             return cell
         }
-    }
     
+        return cell
+    }
+
     override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         return true
     }
