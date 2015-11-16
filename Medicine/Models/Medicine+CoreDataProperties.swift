@@ -30,5 +30,6 @@ extension Medicine {
     
     @NSManaged var prescriptionCount: Float
     @NSManaged var refillHistory: NSOrderedSet?
+    @NSManaged var refillFlag: Bool
     
 }

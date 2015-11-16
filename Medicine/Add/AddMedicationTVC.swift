@@ -118,14 +118,77 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     }
     
     
-    // MARK: - Table view delegate
+    // MARK: - Table view data source
+    
+    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        switch section {
+        case Rows.prescription.index().section:
+            if med.name != nil && med.name != "" {
+                return tableView.rowHeight
+            }
+        default:
+            return UITableViewAutomaticDimension
+        }
+        
+        return 0
+    }
+    
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        let row = Rows(index: indexPath)
+        
+        switch row {
+        case Rows.prescription:
+            if med.name != nil && med.name != "" {
+                return tableView.rowHeight
+            }
+        default:
+            return tableView.rowHeight
+        }
+        
+        return 0
+    }
+    
+    override func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        switch section {
+        case Rows.prescription.index().section:
+            if med.name != nil && med.name != "" {
+                return tableView.rowHeight
+            }
+        default:
+            return UITableViewAutomaticDimension
+        }
+        
+        return 0
+    }
     
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         if section == Rows.prescription.index().section {
-            return "Keep track of your prescription levels, and be reminded to refill when running low."
+            if editMode && med.refillHistory?.count > 0 {
+                return med.refillStatus()
+            } else if med.name != nil && med.name != "" {
+                return "Keep track of your prescription levels, and be reminded to refill when running low."
+            }
         }
         
         return nil
+    }
+    
+    
+    // MARK: - Table view delegate
+    
+    override func tableView(tableView: UITableView, shouldHighlightRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        let row = Rows(index: indexPath)
+        
+        switch row {
+        case Rows.prescription:
+            if med.name == nil || med.name == "" {
+                return false
+            }
+        default:
+            return true
+        }
+        
+        return true
     }
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
@@ -137,8 +200,16 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     // MARK: - Actions
     
     @IBAction func updateName(sender: UITextField) {
+        let temp = med.name
         med.name = sender.text
         updateLabels()
+        
+        // Reload table view
+        if temp == nil || temp == "" || sender.text!.isEmpty {
+            tableView.reloadSections(NSIndexSet(index: Rows.prescription.index().section), withRowAnimation: .Automatic)
+            tableView.beginUpdates()
+            tableView.endUpdates()
+        }
     }
     
     @IBAction func toggleReminder(sender: UISwitch) {
@@ -147,6 +218,16 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     
     // MARK: - Navigation
+    
+    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+        if med.name == nil || med.name == "" {
+            if identifier == "refillPrescription" {
+                return false
+            }
+        }
+        
+        return true
+    }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "setDosage" {
@@ -164,7 +245,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         }
         
         if segue.identifier == "refillPrescription" {
-            if let vc = segue.destinationViewController as? AddRefillTVC {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
                 vc.med = self.med
             }
         }

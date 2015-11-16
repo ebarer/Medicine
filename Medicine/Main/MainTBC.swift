@@ -11,11 +11,9 @@ import CoreData
 import CoreSpotlight
 import MobileCoreServices
 
-
 // Global medication array
 var medication = [Medicine]()
 var rescheduleDates = [NSDate]()
-
 
 class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
@@ -43,9 +41,14 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "doseNotification:", name: "doseNotification", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refillNotification:", name: "refillNotification", object: nil)
+        
+        // Add observers for notification actions
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "takeDoseAction:", name: "takeDoseAction", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "snoozeReminderAction:", name: "snoozeReminderAction", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refillAction:", name: "refillAction", object: nil)
+
+        // Add observer for scheduling notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "rescheduleNotifications:", name: "rescheduleNotifications", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "takeDoseNotification:", name: "takeDoseNotification", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "snoozeReminderNotification:", name: "snoozeReminderNotification", object: nil)
         
         loadMedication()
         
@@ -61,7 +64,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     }
 
     
-    // MARK: - Observers
+    // MARK: - Notification observers
     
     func doseNotification(notification: NSNotification) {
         if let id = notification.userInfo!["id"] as? String {
@@ -96,28 +99,36 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         }
     }
     
-    func rescheduleNotifications(notification: NSNotification) {
-        let app = UIApplication.sharedApplication()
-        
-        app.cancelAllLocalNotifications()
-        
-        for med in medication {
-            med.scheduleNextNotification()
-        }
-        
-        setDynamicShortcuts()
-        
-        NSNotificationCenter.defaultCenter().postNotificationName("refreshWidget", object: nil, userInfo: nil)
-        
-        // Only log when rescheduling in background
-        if notification.userInfo?["activator"] != nil {
-            rescheduleDates.insert(NSDate(), atIndex: 0)
-            defaults.setObject(rescheduleDates, forKey: "rescheduleDates")
-            defaults.synchronize()
+    func refillNotification(notification: NSNotification) {
+        if let id = notification.userInfo!["id"] as? String {
+            let medQuery = Medicine.getMedicine(arr: medication, id: id)
+            if let med = medQuery {
+                var message = "You don't have enough \(med.name!) to take your next dose."
+                
+                if med.refillHistory?.count > 0 {
+                    if let count = med.refillDaysRemaining() where med.prescriptionCount > 0 && count > 0 {
+                        message = "You currently have enough medication for about \(count) days."
+                    }
+                }
+                
+                let alert = UIAlertController(title: "Reminder to Refill \(med.name!)", message: message, preferredStyle: .Alert)
+                
+                alert.addAction(UIAlertAction(title: "Refill", style:  UIAlertActionStyle.Destructive, handler: {(action) -> Void in
+                    self.performSegueWithIdentifier("refillPrescription", sender: med)
+                }))
+                
+                alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Cancel, handler: nil))
+                
+                alert.view.tintColor = UIColor.grayColor()
+                self.presentViewController(alert, animated: true, completion: nil)
+            }
         }
     }
     
-    func takeDoseNotification(notification: NSNotification) {
+    
+    // MARK: - Action observers
+    
+    func takeDoseAction(notification: NSNotification) {
         if let id = notification.userInfo!["id"] as? String {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
                 let entity = NSEntityDescription.entityForName("History", inManagedObjectContext: moc)
@@ -131,13 +142,19 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 med.addDose(dose)
                 appDelegate.saveContext()
                 
+                // Check if medication needs to be refilled
+                let refillTime = defaults.integerForKey("refillTime")
+                if med.needsRefill(limit: refillTime) {
+                    med.sendRefillNotification()
+                }
+                
                 setDynamicShortcuts()
                 NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
             }
         }
     }
     
-    func snoozeReminderNotification(notification: NSNotification) {
+    func snoozeReminderAction(notification: NSNotification) {
         if let id = notification.userInfo!["id"] as? String {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
                 med.snoozeNotification()
@@ -147,27 +164,54 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         }
     }
     
-    func refillNotification(notification: NSNotification) {
+    func refillAction(notification: NSNotification) {
         if let id = notification.userInfo!["id"] as? String {
             let medQuery = Medicine.getMedicine(arr: medication, id: id)
             if let med = medQuery {
-                var message = String()
-                if med.prescriptionCount > 0 {
-                    message = "You currently have enough medication for about \(med.refillDaysRemaining()) days."
-                } else {
-                    message = "You don't currently have any \(med.name!) remaining."
+                performSegueWithIdentifier("refillPrescription", sender: med)
+            }
+        }
+    }
+    
+    
+    // MARK: - Scheduling observers
+    
+    func rescheduleNotifications(notification: NSNotification) {        
+        // Reschedule notifications
+        for med in medication {
+            med.scheduleNextNotification()
+        }
+        
+        // Update shortcuts
+        setDynamicShortcuts()
+        
+        // Refresh widget
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshWidget", object: nil, userInfo: nil)
+        
+        // Only log when rescheduling in background
+        if notification.userInfo?["activator"] != nil {
+            rescheduleDates.insert(NSDate(), atIndex: 0)
+            defaults.setObject(rescheduleDates, forKey: "rescheduleDates")
+            defaults.synchronize()
+        }
+    }
+    
+    
+    // MARK: - Navigation
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "addDose" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
+                if let med = sender as? Medicine {
+                    vc.med = med
                 }
-                
-                let alert = UIAlertController(title: "Reminder to Refill \(med.name!)", message: message, preferredStyle: .Alert)
-                
-                alert.addAction(UIAlertAction(title: "Refill", style:  UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-                    self.performSegueWithIdentifier("refillPrescription", sender: med)
-                }))
-                
-                alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Cancel, handler: nil))
-                
-                alert.view.tintColor = UIColor.grayColor()
-                self.presentViewController(alert, animated: true, completion: nil)
+            }
+        }
+        
+        if segue.identifier == "refillPrescription" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
+                if let med = sender as? Medicine {
+                    vc.med = med
+                }
             }
         }
     }

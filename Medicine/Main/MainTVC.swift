@@ -177,7 +177,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
     }
 
-    // Create banner
     override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         // Setup summary header
         if section == 0 {

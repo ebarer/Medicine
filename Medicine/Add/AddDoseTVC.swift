@@ -74,6 +74,8 @@ class AddDoseTVC: UITableViewController {
 
         // Set picker min/max values
         picker.maximumDate = NSDate()
+        
+        updateDoseValues()
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -81,8 +83,7 @@ class AddDoseTVC: UITableViewController {
         if let index = tableView.indexPathForSelectedRow {
             tableView.deselectRowAtIndexPath(index, animated: animated)
         }
-        
-        updateDoseValues()
+
         updateLabels()
         
         tableView.reloadData()

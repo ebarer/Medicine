@@ -32,6 +32,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var moc: NSManagedObjectContext
+    
     let cal = NSCalendar.currentCalendar()
     let dateFormatter = NSDateFormatter()
     private var selectedRow = Rows.none
@@ -74,7 +75,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
             self.navigationItem.title = "Refill \(med.name!)"
             
             // Set description
-            prescriptionCountLabel.text = med.refillStatus()
+            prescriptionCountLabel.text = med.refillStatus(entry: true)
                 
             // Set refill parameters
             if let prev = med.refillHistory?.array.last as? Prescription {
@@ -181,6 +182,17 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
         }
     }
     
+    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        if let med = med where section == 0 {
+            if refill.quantityUnit != med.dosageUnit {
+                let count = refill.quantity * refill.conversion
+                return "This will add \(count) \(med.dosageUnit.units(count))."
+            }
+        }
+        
+        return nil
+    }
+    
     
     // MARK: - Table view delegate
     
@@ -209,7 +221,6 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
     
     func textFieldDidBeginEditing(textField: UITextField) {
         selectedRow = Rows.none
-        
         
         // Reload labels
         let labels = [Rows.quantityUnit.index(), Rows.date.index()]

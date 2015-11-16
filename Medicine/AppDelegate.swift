@@ -32,6 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UIApplication.sharedApplication().setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
         
         // Reschedule notifications
+        UIApplication.sharedApplication().cancelAllLocalNotifications()
         NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
         
         // Register for notifications and actions
@@ -55,8 +56,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             doseCategory.identifier = "Dose Reminder"
             doseCategory.setActions([takeAction, snoozeAction], forContext: UIUserNotificationActionContext.Default)
         
+        let refillAction = UIMutableUserNotificationAction()
+            refillAction.identifier = "refillMed"
+            refillAction.title = "Refill Medication"
+            refillAction.activationMode = UIUserNotificationActivationMode.Foreground
+            refillAction.destructive = false
+            refillAction.authenticationRequired = true
+        
         let refillCategory = UIMutableUserNotificationCategory()
             refillCategory.identifier = "Refill Reminder"
+            refillCategory.setActions([refillAction], forContext: UIUserNotificationActionContext.Default)
         
         let categories = NSSet(array: [doseCategory, refillCategory])
         let settings = UIUserNotificationSettings(forTypes: notificationType, categories: categories as? Set<UIUserNotificationCategory>)
@@ -131,6 +140,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
+        UIApplication.sharedApplication().cancelAllLocalNotifications()
         NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
         NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
     }
@@ -232,9 +242,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {
         if identifier == "takeDose" {
-            NSNotificationCenter.defaultCenter().postNotificationName("takeDoseNotification", object: nil, userInfo: notification.userInfo)
-        } else if identifier == "snoozeReminder" {
-            NSNotificationCenter.defaultCenter().postNotificationName("snoozeReminderNotification", object: nil, userInfo: notification.userInfo)
+            NSNotificationCenter.defaultCenter().postNotificationName("takeDoseAction", object: nil, userInfo: notification.userInfo)
+        }
+        
+        if identifier == "snoozeReminder" {
+            NSNotificationCenter.defaultCenter().postNotificationName("snoozeReminderAction", object: nil, userInfo: notification.userInfo)
+        }
+        
+        if identifier == "refillMed" {
+            NSNotificationCenter.defaultCenter().postNotificationName("refillAction", object: nil, userInfo: notification.userInfo)
         }
         
         completionHandler()

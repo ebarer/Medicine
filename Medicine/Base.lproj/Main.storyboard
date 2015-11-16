@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9527.1" systemVersion="15C27e" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="YNu-dM-a51">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9527.1" systemVersion="15C40a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="YNu-dM-a51">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9525.1"/>
@@ -474,7 +474,7 @@
                             <tableViewSection headerTitle="" footerTitle="Got a great idea, or seeing a pesky bug? Let us know!" id="F4m-cO-7ri">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="Bik-ed-2n0" style="IBUITableViewCellStyleDefault" id="eWb-s7-5IP">
-                                        <rect key="frame" x="0.0" y="307" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="306.5" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="eWb-s7-5IP" id="cqx-Ew-arL">
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
@@ -497,7 +497,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="feedbackCell" textLabel="ixI-Y9-krp" style="IBUITableViewCellStyleDefault" id="2bQ-6j-f22">
-                                        <rect key="frame" x="0.0" y="351" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="350.5" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2bQ-6j-f22" id="Jji-Lp-kiH">
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
@@ -518,7 +518,7 @@
                             <tableViewSection footerTitle="" id="yxF-6G-LA8">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="resetCell" textLabel="Qxg-fW-VxI" style="IBUITableViewCellStyleDefault" id="zGk-BY-GGd">
-                                        <rect key="frame" x="0.0" y="440" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="439" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="zGk-BY-GGd" id="NU9-8X-IlG">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
@@ -539,7 +539,7 @@
                             <tableViewSection id="mVD-sC-Hpr">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="consoleCell" textLabel="2jC-uQ-Ypa" style="IBUITableViewCellStyleDefault" id="SaB-d8-9kc">
-                                        <rect key="frame" x="0.0" y="520" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="519" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="SaB-d8-9kc" id="QRU-cG-C2z">
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
@@ -559,7 +559,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="Manage" textLabel="jiO-4Z-QUI" style="IBUITableViewCellStyleDefault" id="Moy-SV-7uU">
-                                        <rect key="frame" x="0.0" y="564" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="563" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Moy-SV-7uU" id="w0i-KA-tJM">
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
@@ -1164,7 +1164,7 @@
                 <viewControllerPlaceholder storyboardName="AddDose" id="jhv-gA-12s" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sZ3-gF-2Uo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1103.5" y="283"/>
+            <point key="canvasLocation" x="1103.5" y="307"/>
         </scene>
         <!--AddRefill-->
         <scene sceneID="ots-6m-s5S">
@@ -1172,7 +1172,7 @@
                 <viewControllerPlaceholder storyboardName="AddRefill" id="HGE-ul-mTl" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aKd-87-Sr4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1103.5" y="208"/>
+            <point key="canvasLocation" x="1103.5" y="185"/>
         </scene>
     </scenes>
     <resources>
