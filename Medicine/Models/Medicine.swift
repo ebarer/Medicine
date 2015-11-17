@@ -691,11 +691,12 @@ class Medicine: NSManagedObject {
         if refillFlag {
             let notification = UILocalNotification()
             
-            var message = String()
-            if let count = refillDaysRemaining() where prescriptionCount > 0 && count > 0 {
-                message = "You currently have enough \(name!) for about \(count) \(count == 1 ? "day" : "days")."
-            } else {
-                message = "You are running low on \(name!)."
+            var message = "You are running low on \(name!) and should refill soon."
+            
+            if prescriptionCount < dosage {
+                message = "You don't have enough \(name!) to take your next dose."
+            } else if let count = refillDaysRemaining() where prescriptionCount > 0 && count > 0 {
+                message = "You currently have enough \(name!) for about \(count) \(count == 1 ? "day" : "days") and should refill soon."
             }
             
             notification.alertTitle = "Refill \(name!)"

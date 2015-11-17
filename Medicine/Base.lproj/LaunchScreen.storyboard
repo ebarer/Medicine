@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9052" systemVersion="15B22c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" initialViewController="Vcp-bg-VkN">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9527.1" systemVersion="15C40a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" initialViewController="Vcp-bg-VkN">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9040"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9525.1"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -19,7 +19,6 @@
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo-White" translatesAutoresizingMaskIntoConstraints="NO" id="gLp-nu-22W">
                                 <rect key="frame" x="240.5" y="131" width="119" height="100"/>
-                                <animations/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="100" id="Oc2-1x-Ycn"/>
                                     <constraint firstAttribute="width" constant="119" id="Ycw-gY-LjF"/>
@@ -27,17 +26,23 @@
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Medicine Manager" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gnI-HC-dwC">
                                 <rect key="frame" x="191.5" y="283" width="217.5" height="32.5"/>
-                                <animations/>
                                 <fontDescription key="fontDescription" type="system" weight="light" pointSize="27"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="© Elliot Barer" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WSU-Qq-bhX">
+                                <rect key="frame" x="263.5" y="565.5" width="75" height="14.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
-                        <animations/>
                         <color key="backgroundColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="gLp-nu-22W" firstAttribute="centerX" secondItem="7zW-bh-rw8" secondAttribute="centerX" id="5yz-Q0-4az"/>
                             <constraint firstItem="gnI-HC-dwC" firstAttribute="centerY" secondItem="7zW-bh-rw8" secondAttribute="centerY" id="7pz-Yd-qFc"/>
+                            <constraint firstItem="WSU-Qq-bhX" firstAttribute="centerX" secondItem="7zW-bh-rw8" secondAttribute="centerX" id="B17-EQ-WTy"/>
+                            <constraint firstItem="oIY-NU-Pcb" firstAttribute="top" secondItem="WSU-Qq-bhX" secondAttribute="bottom" constant="20" id="I7N-EB-IKA"/>
                             <constraint firstItem="gLp-nu-22W" firstAttribute="centerX" secondItem="7zW-bh-rw8" secondAttribute="centerX" id="dV4-oX-YcE"/>
                             <constraint firstItem="gnI-HC-dwC" firstAttribute="centerX" secondItem="7zW-bh-rw8" secondAttribute="centerX" id="kqA-Ta-Tec"/>
                             <constraint firstItem="gnI-HC-dwC" firstAttribute="top" secondItem="gLp-nu-22W" secondAttribute="bottom" constant="52" id="sPo-Fq-MbQ"/>

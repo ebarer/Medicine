@@ -106,12 +106,12 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         if let id = notification.userInfo!["id"] as? String {
             let medQuery = Medicine.getMedicine(arr: medication, id: id)
             if let med = medQuery {
-                var message = "You don't have enough \(med.name!) to take your next dose."
+                var message = "You are running low on \(med.name!) and should refill soon."
                 
-                if med.refillHistory?.count > 0 {
-                    if let count = med.refillDaysRemaining() where med.prescriptionCount > 0 && count > 0 {
-                        message = "You currently have enough medication for about \(count) days."
-                    }
+                if med.prescriptionCount < med.dosage {
+                    message = "You don't have enough \(med.name!) to take your next dose."
+                } else if let count = med.refillDaysRemaining() where med.prescriptionCount > 0 && count > 0 {
+                    message = "You currently have enough \(med.name!) for about \(count) \(count == 1 ? "day" : "days") and should refill soon."
                 }
                 
                 let alert = UIAlertController(title: "Reminder to Refill \(med.name!)", message: message, preferredStyle: .Alert)
