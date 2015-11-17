@@ -13,9 +13,12 @@ import MobileCoreServices
 
 // Global medication array
 var medication = [Medicine]()
+
+// Array to store background refresh calls
 var rescheduleDates = [NSDate]()
 
 class MainTBC: UITabBarController, UITabBarControllerDelegate {
+    
     
     // MARK: - Helper variables
     
@@ -140,13 +143,14 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 dose.dosageUnitInt = med.dosageUnitInt
                 
                 med.addDose(dose)
-                appDelegate.saveContext()
                 
                 // Check if medication needs to be refilled
                 let refillTime = defaults.integerForKey("refillTime")
                 if med.needsRefill(limit: refillTime) {
                     med.sendRefillNotification()
                 }
+                
+                appDelegate.saveContext()
                 
                 setDynamicShortcuts()
                 NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
@@ -295,6 +299,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             UIApplication.sharedApplication().shortcutItems = []
         }
     }
+    
 }
 
 extension UITabBarController {
@@ -321,4 +326,5 @@ extension UITabBarController {
     func tabBarIsVisible() -> Bool {
         return self.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame)
     }
+    
 }

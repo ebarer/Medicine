@@ -137,7 +137,13 @@ class Medicine: NSManagedObject {
         
         return label
     }
-    
+
+    /**
+     Determines how well the user is adhering to their dose schedule
+     Scored on a 100 point scale
+     
+     - Returns: Score as Int, or nil if not enough history
+     */
     func adherenceScore() -> Int? {
         if let tempArr = self.history?.array where tempArr.count > 0 {
             // Retrieve history
@@ -382,6 +388,7 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Dose methods
+    
     /**
     Add a new dose for medication
     
@@ -686,7 +693,7 @@ class Medicine: NSManagedObject {
             
             var message = String()
             if let count = refillDaysRemaining() where prescriptionCount > 0 && count > 0 {
-                message = "You currently have enough medication for about \(refillDaysRemaining()) days."
+                message = "You currently have enough \(name!) for about \(count) \(count == 1 ? "day" : "days")."
             } else {
                 message = "You are running low on \(name!)."
             }

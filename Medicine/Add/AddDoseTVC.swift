@@ -204,13 +204,14 @@ class AddDoseTVC: UITableViewController {
                 // Save dose
                 try med.takeDose(dose)
                 dose.medicine = med
-                appDelegate.saveContext()
                 
                 // Check if medication needs to be refilled
                 let refillTime = defaults.integerForKey("refillTime")
                 if med.needsRefill(limit: refillTime) {
                     med.sendRefillNotification()
                 }
+                
+                appDelegate.saveContext()
                 
                 NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
                 

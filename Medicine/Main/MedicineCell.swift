@@ -1,5 +1,5 @@
 //
-//  MainTVC+Cell.swift
+//  MedicineCell.swift
 //  Medicine
 //
 //  Created by Elliot Barer on 2015-11-01.

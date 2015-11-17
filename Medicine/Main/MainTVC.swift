@@ -13,8 +13,7 @@ import CoreSpotlight
 import MobileCoreServices
 
 class MainTVC: UITableViewController, SKPaymentTransactionObserver {
-    
-    
+
     // MARK: - Outlets
     
     @IBOutlet var addMedicationButton: UIBarButtonItem!

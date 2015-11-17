@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
             if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
                 SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainTVC)
-                (vc as! MainTVC).moc = self.managedObjectContext
+                //(vc as! MainTVC).moc = self.managedObjectContext
             }
         }
         

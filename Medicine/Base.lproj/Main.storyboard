@@ -13,7 +13,7 @@
                 <viewControllerPlaceholder storyboardName="Upgrade" id="l1N-4I-mqi" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jlM-d8-EFB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2636" y="-461"/>
+            <point key="canvasLocation" x="2636" y="-444"/>
         </scene>
         <!--AddRefill-->
         <scene sceneID="lan-nL-PWk">
@@ -21,11 +21,12 @@
                 <viewControllerPlaceholder storyboardName="AddRefill" id="0rS-bm-Zw4" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="I0U-hY-Aro" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2637.5" y="-172"/>
+            <point key="canvasLocation" x="2637.5" y="-21"/>
         </scene>
         <!--Medicine Manager-->
         <scene sceneID="DrC-QF-zXV">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="x4v-fN-eJ1" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tableViewController storyboardIdentifier="home" id="Opo-0h-aD1" customClass="MainTVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" sectionIndexMinimumDisplayRowCount="1" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="XNe-sj-IWf">
                         <rect key="frame" x="0.0" y="64" width="600" height="536"/>
@@ -167,7 +168,6 @@
                         <segue destination="omS-jf-M2h" kind="presentation" identifier="tutorial" id="ONj-rQ-Xfc"/>
                     </connections>
                 </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="x4v-fN-eJ1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2112" y="-307"/>
         </scene>
@@ -188,7 +188,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="Opo-0h-aD1" kind="relationship" relationship="rootViewController" id="Bq3-UK-p5a"/>
+                        <segue destination="Opo-0h-aD1" kind="relationship" relationship="rootViewController" id="RcS-Pe-BEc"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zNh-Fi-739" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -257,7 +257,7 @@
                 <viewControllerPlaceholder storyboardName="AddMedication" id="KKX-VQ-lBK" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iW6-yh-2SF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2656" y="-307"/>
+            <point key="canvasLocation" x="2656" y="-147"/>
         </scene>
         <!--AddDose-->
         <scene sceneID="V2c-5F-wuu">
@@ -1218,11 +1218,11 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="aaT-BJ-605"/>
+        <segue reference="qK7-4Q-NbR"/>
         <segue reference="HfD-yH-Bkx"/>
         <segue reference="boT-ys-MKj"/>
-        <segue reference="qK7-4Q-NbR"/>
-        <segue reference="tHn-tf-kiw"/>
         <segue reference="y5a-Wh-C29"/>
+        <segue reference="tHn-tf-kiw"/>
         <segue reference="tQz-wz-X6o"/>
     </inferredMetricsTieBreakers>
 </document>
