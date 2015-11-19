@@ -235,22 +235,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
         if notification.category == "Dose Reminder" {
             NSNotificationCenter.defaultCenter().postNotificationName("doseNotification", object: nil, userInfo: notification.userInfo)
+            UIApplication.sharedApplication().cancelLocalNotification(notification)
         } else if notification.category == "Refill Reminder" {
             NSNotificationCenter.defaultCenter().postNotificationName("refillNotification", object: nil, userInfo: notification.userInfo)
+            UIApplication.sharedApplication().cancelLocalNotification(notification)
         }
     }
     
     func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {
         if identifier == "takeDose" {
             NSNotificationCenter.defaultCenter().postNotificationName("takeDoseAction", object: nil, userInfo: notification.userInfo)
+            UIApplication.sharedApplication().cancelLocalNotification(notification)
         }
         
         if identifier == "snoozeReminder" {
             NSNotificationCenter.defaultCenter().postNotificationName("snoozeReminderAction", object: nil, userInfo: notification.userInfo)
+            UIApplication.sharedApplication().cancelLocalNotification(notification)
         }
         
         if identifier == "refillMed" {
             NSNotificationCenter.defaultCenter().postNotificationName("refillAction", object: nil, userInfo: notification.userInfo)
+            UIApplication.sharedApplication().cancelLocalNotification(notification)
         }
         
         completionHandler()

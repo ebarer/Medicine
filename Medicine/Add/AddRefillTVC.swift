@@ -124,11 +124,19 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
     
     func updateDescription() {
         if let med = med {
-            var refillGuide = med.refillStatus(entry: true)
+            var refillGuide: String
             
             if refill.quantityUnit != med.dosageUnit && refill.conversion != 0 {
                 let count = refill.quantity * refill.conversion
-                refillGuide += "This will add \(med.removeTrailingZero(count)) \(med.dosageUnit.units(count))."
+                refillGuide = med.refillStatus(entry: true, conversion: true)
+                refillGuide += "\nThis will add \(med.removeTrailingZero(count)) \(med.dosageUnit.units(count))."
+            } else {
+                refillGuide = med.refillStatus(entry: true, conversion: false)
+                
+                if med.refillHistory?.count > 0 {
+                    let count = refill.quantity
+                    refillGuide += "\nThis will add \(med.removeTrailingZero(count)) \(med.dosageUnit.units(count))."
+                }
             }
             
             prescriptionCountLabel.text = refillGuide

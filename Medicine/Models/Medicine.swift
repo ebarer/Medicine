@@ -555,6 +555,10 @@ class Medicine: NSManagedObject {
             if let days = refillDaysRemaining() where days <= limit {
                 return true
             }
+            
+            if prescriptionCount < dosage {
+                return true
+            }
         }
         
         return false
@@ -567,28 +571,31 @@ class Medicine: NSManagedObject {
      
      - Returns: String with refill status
      */
-    func refillStatus(entry entry: Bool = false) -> String {
+    func refillStatus(entry entry: Bool = false, conversion: Bool = false) -> String {
         var status = ""
         
         // If new medication with prescription count of 0
         if entry && prescriptionCount == 0 {
             if refillHistory?.count == 0 {
-                status = "Enter your prescription amount below. If you receive your prescription in " +
-                         "a different unit, you will need to enter a conversion amount (ie. Milligrams/Pill)."
+                status = "Enter your prescription amount below. "
+                
+                if !conversion {
+                    status += "If you receive your prescription in a different unit, you will need to enter a conversion amount (ie. Milligrams/Pill). "
+                }
             } else {
-                status = "You do not currently have any \(name!)."
+                status = "You do not currently have any \(name!). "
             }
         }
         
         // If medication has no refill history
         else if refillHistory?.count == 0 {
-            status = "Tap \"Refill Prescription\" to update your prescription amount."
+            status = "Tap \"Refill Prescription\" to update your prescription amount. "
         }
             
         // If prescription count is insufficient for dosage
         else if !entry && prescriptionCount < dosage {
             status = "You do not appear to have enough \(name!) remaining to take this dose. "
-            status += "Tap \"Refill Prescription\" to update your prescription amount."
+            status += "Tap \"Refill Prescription\" to update your prescription amount. "
         }
         
         else {
@@ -597,9 +604,9 @@ class Medicine: NSManagedObject {
             
             if let days = refillDaysRemaining() where !entry {
                 if days <= 1 {
-                    status += "You will need to refill after this dose."
+                    status += "You will need to refill after this dose. "
                 } else {
-                    status += "Based on your current usage, this will last you approximately \(days) \(Intervals.Daily.units(Float(days)))."
+                    status += "Based on your current usage, this will last you approximately \(days) \(Intervals.Daily.units(Float(days))). "
                 }
             }
         }
@@ -688,7 +695,7 @@ class Medicine: NSManagedObject {
     }
     
     func sendRefillNotification() {
-        if refillFlag {
+        if prescriptionCount < dosage || refillFlag {
             let notification = UILocalNotification()
             
             var message = "You are running low on \(name!) and should refill soon."
