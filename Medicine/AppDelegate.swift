@@ -84,35 +84,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         return true
     }
-    
-    func setUserDefaults() {
-        guard let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine") else { fatalError("No user defaults") }
-        
-        if defaults.valueForKey("sortOrder") == nil {
-            // Set sort order to "next dosage"
-            defaults.setInteger(SortOrder.NextDosage.rawValue, forKey: "sortOrder")
-        }
-        
-        if (defaults.valueForKey("snoozeLength") == nil) {
-            // Set snooze duration to 5 minutes
-            defaults.setInteger(5, forKey: "snoozeLength")
-        }
-        
-        if (defaults.valueForKey("refillTime") == nil) {
-            // Set refill time to 3 days
-            defaults.setInteger(3, forKey: "refillTime")
-        }
-        
-        if  UIDevice.currentDevice().identifierForVendor?.UUIDString == "104AFCAA-C1C8-4628-8B81-7ED680C8157B" ||
-            UIDevice.currentDevice().identifierForVendor?.UUIDString == "3CF28B81-5657-465E-96B4-1E094CE335B3" ||
-            UIDevice.currentDevice().identifierForVendor?.UUIDString == "A2AD279E-6719-4BAD-B5FA-250D90285D08" {
-                defaults.setBool(true, forKey: "debug")      // Turn on debug mode for approved devices
-        } else {
-            defaults.setBool(false, forKey: "debug")         // Disable debug
-        }
-        
-        defaults.synchronize()
-    }
 
     func applicationWillResignActive(application: UIApplication) {
         // Remove IAP observers
@@ -121,6 +92,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 SKPaymentQueue.defaultQueue().removeTransactionObserver(vc as! MainTVC)
             }
         }
+        
+        UIApplication.sharedApplication().cancelAllLocalNotifications()
+        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
     }
     
     func applicationDidEnterBackground(application: UIApplication) {
@@ -167,15 +141,47 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Saves changes in the application's managed object context before the application terminates.
         self.saveContext()
         
-        // Reschedule notifications
-        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
-        
         // Remove IAP observers
         if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
             if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
                 SKPaymentQueue.defaultQueue().removeTransactionObserver(vc as! MainTVC)
             }
         }
+        
+        UIApplication.sharedApplication().cancelAllLocalNotifications()
+        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+    }
+    
+    
+    // MARK: - Application helper methods
+    
+    func setUserDefaults() {
+        guard let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine") else { fatalError("No user defaults") }
+        
+        if defaults.valueForKey("sortOrder") == nil {
+            // Set sort order to "next dosage"
+            defaults.setInteger(SortOrder.NextDosage.rawValue, forKey: "sortOrder")
+        }
+        
+        if (defaults.valueForKey("snoozeLength") == nil) {
+            // Set snooze duration to 5 minutes
+            defaults.setInteger(5, forKey: "snoozeLength")
+        }
+        
+        if (defaults.valueForKey("refillTime") == nil) {
+            // Set refill time to 3 days
+            defaults.setInteger(3, forKey: "refillTime")
+        }
+        
+        if  UIDevice.currentDevice().identifierForVendor?.UUIDString == "104AFCAA-C1C8-4628-8B81-7ED680C8157B" ||
+            UIDevice.currentDevice().identifierForVendor?.UUIDString == "3CF28B81-5657-465E-96B4-1E094CE335B3" ||
+            UIDevice.currentDevice().identifierForVendor?.UUIDString == "A2AD279E-6719-4BAD-B5FA-250D90285D08" {
+                defaults.setBool(true, forKey: "debug")      // Turn on debug mode for approved devices
+        } else {
+            defaults.setBool(false, forKey: "debug")         // Disable debug
+        }
+        
+        defaults.synchronize()
     }
     
     

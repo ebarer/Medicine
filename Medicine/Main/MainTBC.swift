@@ -50,7 +50,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "snoozeReminderAction:", name: "snoozeReminderAction", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refillAction:", name: "refillAction", object: nil)
 
-        // Add observer for scheduling notifications
+        // Add observer for scheduling notifications and updating app badge count
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "rescheduleNotifications:", name: "rescheduleNotifications", object: nil)
         
         loadMedication()
@@ -178,7 +178,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     }
     
     
-    // MARK: - Scheduling observers
+    // MARK: - Other observers
     
     func rescheduleNotifications(notification: NSNotification) {        
         // Reschedule notifications
@@ -188,6 +188,10 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         
         // Update shortcuts
         setDynamicShortcuts()
+        
+        // Update badge count
+        let overdueCount = medication.filter({$0.isOverdue().flag}).count
+        UIApplication.sharedApplication().applicationIconBadgeNumber = overdueCount
         
         // Refresh widget
         NSNotificationCenter.defaultCenter().postNotificationName("refreshWidget", object: nil, userInfo: nil)

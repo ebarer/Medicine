@@ -616,7 +616,7 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Notification methods
-    func scheduleNotification(date: NSDate) throws {
+    func scheduleNotification(date: NSDate, badgeCount: Int = 1) throws {
         // Schedule if the user wants a reminder and the reminder date is in the future
         guard date.compare(NSDate()) == .OrderedDescending else {
             throw MedicineError.DatePassed
@@ -637,9 +637,12 @@ class Medicine: NSManagedObject {
         notification.soundName = UILocalNotificationDefaultSoundName
         notification.category = "Dose Reminder"
         notification.userInfo = ["id": self.medicineID]
+        notification.applicationIconBadgeNumber = badgeCount
         notification.fireDate = date
         
         UIApplication.sharedApplication().scheduleLocalNotification(notification)
+        
+        print("Notification:: Date: \(date), Badge: \(badgeCount)")
     }
     
     func scheduleNextNotification() -> Bool {
@@ -648,7 +651,7 @@ class Medicine: NSManagedObject {
         guard let date = nextDose else { return false }
         
         do {
-            try scheduleNotification(date)
+            try scheduleNotification(date, badgeCount: getBadgeCount(date))
             return true
         } catch {
             return false
@@ -721,6 +724,17 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Helper method
+    
+    /**
+    Determine the number of overdue items at a specific date
+    
+    - Parameter date: Date at which to determine overdue count
+    
+    - Returns: Number of overdue items at date
+    */
+    func getBadgeCount(date: NSDate) -> Int {
+        return medication.filter({$0.nextDose?.compare(date) != .OrderedDescending}).count
+    }
     
     /**
     Determine the date of the next dose from the current time or optional parameter
@@ -816,9 +830,15 @@ class Medicine: NSManagedObject {
         return nil
     }
     
+    /**
+     Removes trailing zeroes from passed number
+     
+     Parameter num: Float value to truncate
+     
+     Returns: Number as a string with trailing zeroes truncated
+     */
     func removeTrailingZero(num: Float) -> String {
-        let temp = String(format: "%g", num)
-        return temp
+        return String(format: "%g", num)
     }
     
 }

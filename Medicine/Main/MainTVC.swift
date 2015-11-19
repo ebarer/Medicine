@@ -292,7 +292,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         cell.subtitle.textColor = UIColor.blackColor()
         
         // Set adherence score
-        print(med.adherenceScore())
+        print("\(med.name!) Score: \(med.adherenceScore())")
         
         // If reminders aren't enabled for medication
         if med.reminderEnabled == false {
