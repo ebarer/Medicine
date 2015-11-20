@@ -121,24 +121,25 @@ class SettingsTVC_Collection: UITableViewController {
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
-
-            moc.deleteObject(collection![indexPath.row] as! NSManagedObject)
-            appDelegate.saveContext()
             
             if let name = entityName {
                 switch name {
                 case "Medicine":
+                    moc.deleteObject(collection![indexPath.row] as! NSManagedObject)
+                    appDelegate.saveContext()
                     (self.tabBarController as! MainTBC).loadMedication()
+                case "History":
+                    let dose = collection![indexPath.row] as! History
+                    dose.medicine?.untakeDose(dose, moc: moc)
                 case "Prescription":
                     let refill = collection![indexPath.row] as! Prescription
-                    refill.medicine?.removeRefill(refill)
+                    refill.medicine?.removeRefill(refill, moc: moc)
                 default:
                     break
                 }
             }
             
             collection?.removeAtIndex(indexPath.row)
-            
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         }
     }

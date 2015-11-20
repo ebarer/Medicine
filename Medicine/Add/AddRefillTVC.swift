@@ -269,14 +269,17 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if let unit = Doses(rawValue: Int16(row)) {
-            refill.quantityUnit = unit
+            if unit != refill.quantityUnit {
+                refill.quantityUnit = unit
+                refill.conversion = 1
+            }
+        
+            updateLabels()
+            
+            // Reload table view
+            tableView.beginUpdates()
+            tableView.endUpdates()
         }
-        
-        updateLabels()
-        
-        // Reload table view
-        tableView.beginUpdates()
-        tableView.endUpdates()
     }
     
     

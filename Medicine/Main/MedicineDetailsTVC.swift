@@ -243,13 +243,13 @@ class MedicineDetailsTVC: UITableViewController {
         let sectionDate = getSectionDate(indexPath.section)
         
         if let logItems = log[sectionDate] {
-            if logItems[indexPath.row] == med.lastDose {
+            let dose = logItems[indexPath.row]
+            
+            if med.lastDose == dose {
                 med.untakeLastDose(moc)
             } else {
-                moc.deleteObject(logItems[indexPath.row])
+                med.untakeDose(dose, moc: moc)
             }
-            
-            appDelegate.saveContext()
             
             log[sectionDate]?.removeAtIndex(indexPath.row)
             count--
@@ -318,29 +318,27 @@ class MedicineDetailsTVC: UITableViewController {
                 
                 if let logItems = log[sectionDate] {
                     if let med = logItems[safe: index.row]?.medicine {
-                        if med.lastDose == logItems[index.row] {
+                        let dose = logItems[index.row]
+                        
+                        if med.lastDose == dose {
                             med.untakeLastDose(moc)
                         } else {
-                            moc.deleteObject(logItems[index.row])
+                            med.untakeDose(dose, moc: moc)
                         }
-                    } else {
-                        moc.deleteObject(logItems[index.row])
-                    }
                     
-                    appDelegate.saveContext()
-                    
-                    log[sectionDate]?.removeAtIndex(index.row)
-                    count--
-                    
-                    if logItems.count == 1 {
-                        let label = tableView.cellForRowAtIndexPath(index)?.textLabel
-                        let detail = tableView.cellForRowAtIndexPath(index)?.detailTextLabel
+                        log[sectionDate]?.removeAtIndex(index.row)
+                        count--
+                        
+                        if logItems.count == 1 {
+                            let label = tableView.cellForRowAtIndexPath(index)?.textLabel
+                            let detail = tableView.cellForRowAtIndexPath(index)?.detailTextLabel
 
-                        label?.textColor = UIColor.lightGrayColor()
-                        label?.text = "No doses logged"
-                        detail?.text?.removeAll()
-                    } else {
-                        tableView.deleteRowsAtIndexPaths([index], withRowAnimation: .Fade)
+                            label?.textColor = UIColor.lightGrayColor()
+                            label?.text = "No doses logged"
+                            detail?.text?.removeAll()
+                        } else {
+                            tableView.deleteRowsAtIndexPaths([index], withRowAnimation: .Fade)
+                        }
                     }
                 }
             }

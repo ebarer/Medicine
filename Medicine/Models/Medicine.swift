@@ -454,23 +454,33 @@ class Medicine: NSManagedObject {
      */
     func untakeLastDose(moc: NSManagedObjectContext) -> Bool {
         if let lastDose = lastDose {
-            // Modify prescription count
-            if self.refillHistory?.count > 0 {
-                self.prescriptionCount += lastDose.dosage
-                self.refillFlag = true
-            }
-
-            moc.deleteObject(lastDose)
-            
-            // Save dose deletion
-            let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-            delegate.saveContext()
+            untakeDose(lastDose, moc: moc)
             
             scheduleNextNotification()
             return true
         }
         
         return false
+    }
+
+    /**
+     Remove a dose from medication history
+
+     - Parameter dose: History object
+     - Parameter moc: NSManagedObjectContext object
+     */
+    func untakeDose(dose: History, moc: NSManagedObjectContext) {
+        // Modify prescription count
+        if self.refillHistory?.count > 0 {
+            self.prescriptionCount += dose.dosage
+            self.refillFlag = true
+        }
+        
+        moc.deleteObject(dose)
+        
+        // Save dose deletion
+        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        delegate.saveContext()
     }
     
     
@@ -499,9 +509,15 @@ class Medicine: NSManagedObject {
      
      - Returns: Prescription element for refill
      */
-    func removeRefill(refill: Prescription) {
+    func removeRefill(refill: Prescription, moc: NSManagedObjectContext) {
         // Increase prescription count
         self.prescriptionCount -= refill.quantity * refill.conversion
+        
+        moc.deleteObject(refill)
+        
+        // Save refill deletion
+        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        delegate.saveContext()
     }
 
     /**
@@ -588,7 +604,7 @@ class Medicine: NSManagedObject {
         }
         
         // If medication has no refill history
-        else if refillHistory?.count == 0 {
+        else if !entry && refillHistory?.count == 0 {
             status = "Tap \"Refill Prescription\" to update your prescription amount. "
         }
             
@@ -772,12 +788,19 @@ class Medicine: NSManagedObject {
                     return isOverdue().lastDose
                 }
                 
+                // Calculate next dose based on last dose taken, and update next value
                 else {
-                    var next = cal.dateByAddingUnit(NSCalendarUnit.Hour, value: hr, toDate: lastDose.date, options: [])!
-                    next = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: min, toDate: next, options: [])!
+                    var next = lastDose.date
+                    while next.compare(NSDate()) == .OrderedAscending {
+                        next = cal.dateByAddingUnit(NSCalendarUnit.Hour, value: hr, toDate: next, options: [])!
+                        next = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: min, toDate: next, options: [])!
+                    }
+                    
+                    lastDose.next = next
                     return next
                 }
             }
+            
         case .Daily:
             guard let alarm = intervalAlarm else {
                 throw MedicineError.NoAlarm

@@ -246,39 +246,37 @@ class HistoryTVC: UITableViewController {
         
         if let logItems = log[sectionDate] {
             if let med = logItems[safe: indexPath.row]?.medicine {
-                if med.lastDose == logItems[indexPath.row] {
+                let dose = logItems[indexPath.row]
+                
+                if med.lastDose == dose {
                     med.untakeLastDose(moc)
                 } else {
-                    moc.deleteObject(logItems[indexPath.row])
+                    med.untakeDose(dose, moc: moc)
                 }
-            } else {
-                moc.deleteObject(logItems[indexPath.row])
-            }
             
-            appDelegate.saveContext()
-            
-            log[sectionDate]?.removeAtIndex(indexPath.row)
-            gblCount--
-            
-            if logItems.count == 1 {
-                if let cell = tableView.cellForRowAtIndexPath(indexPath) {
-                    cell.textLabel?.textColor = UIColor.lightGrayColor()
-                    cell.textLabel?.text = "No doses logged"
-                    cell.detailTextLabel?.text?.removeAll()
+                log[sectionDate]?.removeAtIndex(indexPath.row)
+                gblCount--
+                
+                if logItems.count == 1 {
+                    if let cell = tableView.cellForRowAtIndexPath(indexPath) {
+                        cell.textLabel?.textColor = UIColor.lightGrayColor()
+                        cell.textLabel?.text = "No doses logged"
+                        cell.detailTextLabel?.text?.removeAll()
+                    }
+                } else {
+                    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
                 }
-            } else {
-                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+                
+                updateDeleteButtonLabel()
+                setEditing(false, animated: true)
+                
+                if gblCount == 0 {
+                    displayEmptyView()
+                }
+                
+                // Update widget
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
             }
-            
-            updateDeleteButtonLabel()
-            setEditing(false, animated: true)
-            
-            if gblCount == 0 {
-                displayEmptyView()
-            }
-            
-            // Update widget
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
         }
     }
     
@@ -329,29 +327,27 @@ class HistoryTVC: UITableViewController {
                 
                 if let logItems = log[sectionDate] {
                     if let med = logItems[safe: index.row]?.medicine {
-                        if med.lastDose == logItems[index.row] {
+                        let dose = logItems[index.row]
+                        
+                        if med.lastDose == dose {
                             med.untakeLastDose(moc)
                         } else {
-                            moc.deleteObject(logItems[index.row])
+                            med.untakeDose(dose, moc: moc)
                         }
-                    } else {
-                        moc.deleteObject(logItems[index.row])
-                    }
                     
-                    appDelegate.saveContext()
-                    
-                    log[sectionDate]?.removeAtIndex(index.row)
-                    gblCount--
-                    
-                    if logItems.count == 1 {
-                        let label = tableView.cellForRowAtIndexPath(index)?.textLabel
-                        let detail = tableView.cellForRowAtIndexPath(index)?.detailTextLabel
+                        log[sectionDate]?.removeAtIndex(index.row)
+                        gblCount--
                         
-                        label?.textColor = UIColor.lightGrayColor()
-                        label?.text = "No doses logged"
-                        detail?.text?.removeAll()
-                    } else {
-                        tableView.deleteRowsAtIndexPaths([index], withRowAnimation: .Fade)
+                        if logItems.count == 1 {
+                            let label = tableView.cellForRowAtIndexPath(index)?.textLabel
+                            let detail = tableView.cellForRowAtIndexPath(index)?.detailTextLabel
+                            
+                            label?.textColor = UIColor.lightGrayColor()
+                            label?.text = "No doses logged"
+                            detail?.text?.removeAll()
+                        } else {
+                            tableView.deleteRowsAtIndexPaths([index], withRowAnimation: .Fade)
+                        }
                     }
                 }
             }
