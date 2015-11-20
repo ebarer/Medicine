@@ -12,7 +12,7 @@ import CoreData
 class AddDoseTVC: UITableViewController {
     
     var med: Medicine?
-    var dose: History
+    var dose: Dose
 
     
     // MARK: - Outlets
@@ -49,8 +49,8 @@ class AddDoseTVC: UITableViewController {
         dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
         dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
         
-        let entity = NSEntityDescription.entityForName("History", inManagedObjectContext: moc)
-        dose = History(entity: entity!, insertIntoManagedObjectContext: moc)
+        let entity = NSEntityDescription.entityForName("Dose", inManagedObjectContext: moc)
+        dose = Dose(entity: entity!, insertIntoManagedObjectContext: moc)
         
         super.init(coder: aDecoder)
     }

@@ -52,9 +52,9 @@ class SettingsTVC_Collection: UITableViewController {
                 switch name {
                 case "Medicine":
                     request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-                case "History":
+                case "Dose":
                     request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
-                case "Prescription":
+                case "Refill":
                     request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
                 default:
                     break
@@ -97,12 +97,12 @@ class SettingsTVC_Collection: UITableViewController {
                 let med = collection![indexPath.row] as! Medicine
                 cell.textLabel?.text = med.name!
                 cell.detailTextLabel?.text = "\(med.prescriptionCount) \(med.dosageUnit.description) - \(med.medicineID)"
-            case "History":
-                let dose = collection![indexPath.row] as! History
+            case "Dose":
+                let dose = collection![indexPath.row] as! Dose
                 cell.textLabel?.text = dateFormatter.stringFromDate(dose.date)
                 cell.detailTextLabel?.text = "\(dose.medicine!.name!) - \(dose.dosage) \(Doses(rawValue: dose.dosageUnitInt)!.description)"
-            case "Prescription":
-                let refill = collection![indexPath.row] as! Prescription
+            case "Refill":
+                let refill = collection![indexPath.row] as! Refill
                 cell.textLabel?.text = "\(refill.medicine!.name!) - \(refill.quantity * refill.conversion) \(refill.medicine!.dosageUnit.description)"
                 cell.detailTextLabel?.text = dateFormatter.stringFromDate(refill.date) +
                                              " - \(refill.quantity) \(refill.quantityUnit.description) * \(refill.conversion) " +
@@ -128,11 +128,11 @@ class SettingsTVC_Collection: UITableViewController {
                     moc.deleteObject(collection![indexPath.row] as! NSManagedObject)
                     appDelegate.saveContext()
                     (self.tabBarController as! MainTBC).loadMedication()
-                case "History":
-                    let dose = collection![indexPath.row] as! History
+                case "Dose":
+                    let dose = collection![indexPath.row] as! Dose
                     dose.medicine?.untakeDose(dose, moc: moc)
-                case "Prescription":
-                    let refill = collection![indexPath.row] as! Prescription
+                case "Refill":
+                    let refill = collection![indexPath.row] as! Refill
                     refill.medicine?.removeRefill(refill, moc: moc)
                 default:
                     break

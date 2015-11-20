@@ -13,7 +13,7 @@ class MedicineDetailsTVC: UITableViewController {
     
     weak var med:Medicine!
     var count = 0
-    var log = [NSDate: [History]]()
+    var log = [NSDate: [Dose]]()
     
     
     // MARK: - Helper variables
@@ -85,14 +85,14 @@ class MedicineDetailsTVC: UITableViewController {
     }
     
     func loadHistory() {
-        if let historySet = med.history {
-            let history = historySet.array as! [History]
+        if let historySet = med.doseHistory {
+            let history = historySet.array as! [Dose]
             
             for index in 0...6 {
                 let sectionDate = getSectionDate(index)
                 
                 // Initialize date log
-                log[sectionDate] = [History]()
+                log[sectionDate] = [Dose]()
                 
                 // Store history in log
                 for dose in history {

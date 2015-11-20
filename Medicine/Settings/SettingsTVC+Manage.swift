@@ -47,15 +47,15 @@ class SettingsTVC_Manage: UITableViewController {
             set = "Medication"
             request = NSFetchRequest(entityName:"Medicine")
         case NSIndexPath(forRow: 0, inSection: 1):
-            performSegueWithIdentifier("viewCollection", sender: "History")
+            performSegueWithIdentifier("viewCollection", sender: "Dose")
         case NSIndexPath(forRow: 1, inSection: 1):
             set = "Doses"
-            request = NSFetchRequest(entityName:"History")
+            request = NSFetchRequest(entityName:"Dose")
         case NSIndexPath(forRow: 0, inSection: 2):
-            performSegueWithIdentifier("viewCollection", sender: "Prescription")
+            performSegueWithIdentifier("viewCollection", sender: "Refill")
         case NSIndexPath(forRow: 1, inSection: 2):
             set = "Refills"
-            request = NSFetchRequest(entityName:"Prescription")
+            request = NSFetchRequest(entityName:"Refill")
             for med in medication {
                 med.prescriptionCount = 0.0
             }
@@ -95,10 +95,10 @@ class SettingsTVC_Manage: UITableViewController {
                 switch entity {
                 case "Medicine":
                     vc.entityName = "Medicine"
-                case "History":
-                    vc.entityName = "History"
-                case "Prescription":
-                    vc.entityName = "Prescription"
+                case "Dose":
+                    vc.entityName = "Dose"
+                case "Refill":
+                    vc.entityName = "Refill"
                 default:
                     break
                 }

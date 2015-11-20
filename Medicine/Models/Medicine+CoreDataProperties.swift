@@ -26,7 +26,7 @@ extension Medicine {
     @NSManaged var intervalUnitInt: Int16
     @NSManaged var intervalAlarm: NSDate?
     
-    @NSManaged var history: NSOrderedSet?
+    @NSManaged var doseHistory: NSOrderedSet?
     
     @NSManaged var prescriptionCount: Float
     @NSManaged var refillHistory: NSOrderedSet?
