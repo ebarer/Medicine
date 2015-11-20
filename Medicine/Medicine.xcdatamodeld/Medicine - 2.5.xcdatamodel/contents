@@ -20,7 +20,7 @@
         <attribute name="refillFlag" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="reminderEnabled" attributeType="Boolean" defaultValueString="YES" syncable="YES"/>
         <attribute name="sortOrder" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
-        <relationship name="doseHistory" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Dose" inverseName="medicine" inverseEntity="Dose" syncable="YES"/>
+        <relationship name="doseHistory" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Dose" inverseName="medicine" inverseEntity="Dose" elementID="history" syncable="YES"/>
         <relationship name="refillHistory" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Refill" inverseName="medicine" inverseEntity="Refill" syncable="YES"/>
     </entity>
     <entity name="Refill" representedClassName=".Refill" elementID="Prescription" syncable="YES">
