@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9520" systemVersion="15C47a" minimumToolsVersion="Automatic">
-    <entity name="Dose" representedClassName=".Dose" syncable="YES">
+    <entity name="Dose" representedClassName=".Dose" elementID="History" syncable="YES">
         <attribute name="date" attributeType="Date" syncable="YES"/>
         <attribute name="dosage" attributeType="Float" defaultValueString="1" syncable="YES"/>
         <attribute name="dosageUnitInt" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
@@ -23,7 +23,7 @@
         <relationship name="doseHistory" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Dose" inverseName="medicine" inverseEntity="Dose" syncable="YES"/>
         <relationship name="refillHistory" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Refill" inverseName="medicine" inverseEntity="Refill" syncable="YES"/>
     </entity>
-    <entity name="Refill" representedClassName=".Refill" syncable="YES">
+    <entity name="Refill" representedClassName=".Refill" elementID="Prescription" syncable="YES">
         <attribute name="conversion" optional="YES" attributeType="Float" defaultValueString="1" syncable="YES"/>
         <attribute name="date" attributeType="Date" syncable="YES"/>
         <attribute name="quantity" attributeType="Float" defaultValueString="0" syncable="YES"/>
