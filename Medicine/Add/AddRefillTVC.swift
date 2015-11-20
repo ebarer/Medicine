@@ -12,7 +12,7 @@ import CoreData
 class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDelegate {
     
     var med: Medicine?
-    var refill: Prescription
+    var refill: Refill
     
     
     // MARK: - Outlets
@@ -48,8 +48,8 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
         dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
         dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
         
-        let entity = NSEntityDescription.entityForName("Prescription", inManagedObjectContext: moc)
-        refill = Prescription(entity: entity!, insertIntoManagedObjectContext: moc)
+        let entity = NSEntityDescription.entityForName("Refill", inManagedObjectContext: moc)
+        refill = Refill(entity: entity!, insertIntoManagedObjectContext: moc)
         
         super.init(coder: aDecoder)
     }
@@ -75,7 +75,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
             self.navigationItem.title = "Refill \(med.name!)"
                 
             // Set refill parameters
-            if let prev = med.refillHistory?.array.last as? Prescription {
+            if let prev = med.refillHistory?.array.last as? Refill {
                 refill.quantity = prev.quantity
                 refill.quantityUnit = prev.quantityUnit
                 refill.conversion = prev.conversion

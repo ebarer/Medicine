@@ -134,8 +134,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     func takeDoseAction(notification: NSNotification) {
         if let id = notification.userInfo!["id"] as? String {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
-                let entity = NSEntityDescription.entityForName("History", inManagedObjectContext: moc)
-                let dose = History(entity: entity!, insertIntoManagedObjectContext: moc)
+                let entity = NSEntityDescription.entityForName("Dose", inManagedObjectContext: moc)
+                let dose = Dose(entity: entity!, insertIntoManagedObjectContext: moc)
                 
                 dose.medicine = med
                 dose.date = NSDate()

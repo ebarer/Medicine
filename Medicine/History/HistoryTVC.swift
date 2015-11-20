@@ -19,8 +19,8 @@ extension Array {
 class HistoryTVC: UITableViewController {
 
     var gblCount = 0
-    var history = [History]()
-    var log = [NSDate: [History]]()
+    var history = [Dose]()
+    var log = [NSDate: [Dose]]()
     
     
     // MARK: - Helper variables
@@ -74,11 +74,11 @@ class HistoryTVC: UITableViewController {
     }
     
     func loadHistory() {
-        let request = NSFetchRequest(entityName:"History")
+        let request = NSFetchRequest(entityName:"Dose")
         request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
         
         do {
-            let fetchedResults = try moc.executeFetchRequest(request) as? [History]
+            let fetchedResults = try moc.executeFetchRequest(request) as? [Dose]
             
             if let results = fetchedResults {
                 history = results
@@ -91,7 +91,7 @@ class HistoryTVC: UITableViewController {
                     let sectionDate = getSectionDate(index)
                     
                     // Initialize date log
-                    log[sectionDate] = [History]()
+                    log[sectionDate] = [Dose]()
                     
                     // Store history in log
                     for dose in history {

@@ -1,5 +1,5 @@
 //
-//  Prescription.swift
+//  Refill.swift
 //  Medicine
 //
 //  Created by Elliot Barer on 2015-09-03.
@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class Prescription: NSManagedObject {
+class Refill: NSManagedObject {
     
     var quantityUnit: Doses {
         get { return Doses(rawValue: self.quantityUnitInt)! }

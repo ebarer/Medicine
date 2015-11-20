@@ -37,12 +37,12 @@ class Medicine: NSManagedObject {
         }
     }
 
-    var lastDose: History? {
-        if let lastHistory = history {
+    var lastDose: Dose? {
+        if let lastHistory = doseHistory {
             if let object = lastHistory.firstObject {
-                var dose = object as! History
+                var dose = object as! Dose
                 
-                for next in lastHistory.array as! [History] {
+                for next in lastHistory.array as! [Dose] {
                     // Ignore if item is set to be deleted
                     if (!next.deleted && dose.date.compare(next.date) == .OrderedAscending) {
                         dose = next
@@ -75,10 +75,10 @@ class Medicine: NSManagedObject {
         return medNotifications
     }
     
-    func historyArray() -> [NSDate: [History]]? {
-        if self.history?.count > 0 {
-            var arr = [NSDate: [History]]()
-            for dose in self.history?.array as! [History] {
+    func doseArray() -> [NSDate: [Dose]]? {
+        if self.doseHistory?.count > 0 {
+            var arr = [NSDate: [Dose]]()
+            for dose in self.doseHistory?.array as! [Dose] {
                 let date = cal.startOfDayForDate(dose.date)
                 if (arr[date] == nil) {
                     arr[date] = []
@@ -145,16 +145,16 @@ class Medicine: NSManagedObject {
      - Returns: Score as Int, or nil if not enough history
      */
     func adherenceScore() -> Int? {
-        if let tempArr = self.history?.array where tempArr.count > 0 {
+        if let tempArr = self.doseHistory?.array where tempArr.count > 0 {
             // Retrieve history
-            var scoreArray = tempArr as! [History]
+            var scoreArray = tempArr as! [Dose]
             
             // Reverse so newest items are at the top
             scoreArray = scoreArray.reverse()
             
             var averageScore: Int = 0
             var averageCount: Int = 0
-            let historyLength = (scoreArray.count < 16) ? (scoreArray.count - 1) : 15
+            let historyLength = (scoreArray.count < 14) ? (scoreArray.count - 1) : 14
             
             switch(intervalUnit) {
             case .Hourly:
@@ -396,7 +396,7 @@ class Medicine: NSManagedObject {
     
     - Throws: 'MedicineError.TooSoon' if another dose has been taken in the previous 5 minutes.
     */
-    func takeDose(dose: History) throws {
+    func takeDose(dose: Dose) throws {
         // Only check for duplicate if attempting to take new dose
         if lastDose?.date.compare(dose.date) == .OrderedAscending {
             
@@ -420,7 +420,7 @@ class Medicine: NSManagedObject {
      
      - Returns: History object
      */
-    func addDose(dose: History) -> History {
+    func addDose(dose: Dose) -> Dose {
         // Calculate the next dose and store in history
         do {
             dose.next = try calculateNextDose(dose.date)
@@ -469,7 +469,7 @@ class Medicine: NSManagedObject {
      - Parameter dose: History object
      - Parameter moc: NSManagedObjectContext object
      */
-    func untakeDose(dose: History, moc: NSManagedObjectContext) {
+    func untakeDose(dose: Dose, moc: NSManagedObjectContext) {
         // Modify prescription count
         if self.refillHistory?.count > 0 {
             self.prescriptionCount += dose.dosage
@@ -494,7 +494,7 @@ class Medicine: NSManagedObject {
     
     - Returns: Prescription element for refill
     */
-    func addRefill(refill: Prescription) {
+    func addRefill(refill: Refill) {
         // Increase prescription count
         self.prescriptionCount += refill.quantity * refill.conversion
         self.refillFlag = true
@@ -509,7 +509,7 @@ class Medicine: NSManagedObject {
      
      - Returns: Prescription element for refill
      */
-    func removeRefill(refill: Prescription, moc: NSManagedObjectContext) {
+    func removeRefill(refill: Refill, moc: NSManagedObjectContext) {
         // Increase prescription count
         self.prescriptionCount -= refill.quantity * refill.conversion
         
@@ -528,7 +528,7 @@ class Medicine: NSManagedObject {
     func refillDaysRemaining() -> Int? {
         // Only calculate if there is a prescription refill history
         if self.prescriptionCount > 0 {
-            if let history = self.historyArray() {
+            if let history = self.doseArray() {
                 // Only calculate the daily consumption average
                 // when medication has more than a week of data
                 if history.count >= 7  {
