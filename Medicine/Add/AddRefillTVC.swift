@@ -335,6 +335,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
     
     @IBAction func cancelRefill(sender: AnyObject) {
         moc.deleteObject(refill)
+        appDelegate.saveContext()
         dismissViewControllerAnimated(true, completion: nil)
     }
     

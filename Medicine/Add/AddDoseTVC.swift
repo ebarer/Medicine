@@ -226,6 +226,7 @@ class AddDoseTVC: UITableViewController {
     
     @IBAction func cancelDose(sender: AnyObject) {
         moc.deleteObject(dose)
+        appDelegate.saveContext()
         dismissViewControllerAnimated(true, completion: nil)
     }
     

@@ -17,7 +17,7 @@ extension Dose {
     @NSManaged var medicine: Medicine?
     
     @NSManaged var date: NSDate
-    @NSManaged var expectedDate: NSDate
+    @NSManaged var expectedDate: NSDate?
     @NSManaged var next: NSDate?
     
     @NSManaged var dosage: Float

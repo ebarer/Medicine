@@ -282,6 +282,8 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             moc.rollback()
         }
         
+        appDelegate.saveContext()
+        
         dismissViewControllerAnimated(true, completion: nil)
     }
     

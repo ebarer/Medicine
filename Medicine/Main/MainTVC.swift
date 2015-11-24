@@ -194,16 +194,23 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     func updateHeader() -> UIView? {
-        
-        // Setup summary labels
+        // Initialize main string
         var string = NSMutableAttributedString(string: "No more doses today")
         string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+        
+        // Setup today widget data
+        var todayData = [String: AnyObject]()
+        todayData["date"] = nil
+        
+        // Remove animation
+        summaryHeader.layer.removeAllAnimations()
+        
+        // Setup summary labels
         headerCounterLabel.attributedText = string
         headerDescriptionLabel.text = nil
         headerMedLabel.text = nil
-        var todayData = [String: AnyObject]()
-        todayData["date"] = nil
 
+        
         // Warn of overdue doses
         let overdueItems = medication.filter({$0.isOverdue().flag})
         if overdueItems.count > 0  {
@@ -218,17 +225,15 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
             headerCounterLabel.attributedText = string
         }
-            
+        
         // Show next scheduled dose
         else if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
             if cal.isDateInToday(nextDose.fireDate!) {
                 if let id = nextDose.userInfo?["id"] {
                     if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
                         headerDescriptionLabel.text = "Next Dose"
-                        
-                        // let dif = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: NSDate(), toDate: nextDose.fireDate!, options: [])
+
                         dateFormatter.dateFormat = "h:mma"
-                        
                         string = NSMutableAttributedString(string: dateFormatter.stringFromDate(nextDose.fireDate!))
                         let len = string.length
                         string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, len-2))
@@ -243,7 +248,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             
             todayData["date"] = nextDose.fireDate!
         }
-            
+        
         // Prompt to take first dose
         else if medication.count > 0 {
             if medication.first?.lastDose == nil {
@@ -253,13 +258,14 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             }
         }
 
+        // Set today widget information
         todayData["descriptionString"] = headerDescriptionLabel.text
         todayData["dateString"] = headerCounterLabel.text
         todayData["medString"] = headerMedLabel.text
-
+        
         defaults.setObject((todayData as NSDictionary), forKey: "todayData")
         defaults.synchronize()
-
+        
         return summaryHeader
     }
     
@@ -279,8 +285,10 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("medicineCell", forIndexPath: indexPath) as! MedicineCell
         let med = medication[indexPath.row]
+        
+        // Configure cell
+        let cell = tableView.dequeueReusableCellWithIdentifier("medicineCell", forIndexPath: indexPath) as! MedicineCell
         
         // Set medication name
         cell.title.text = med.name

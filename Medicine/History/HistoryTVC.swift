@@ -186,7 +186,7 @@ class HistoryTVC: UITableViewController {
             dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
             
             cell.textLabel?.textColor = UIColor.blackColor()
-            cell.textLabel?.text = dateFormatter.stringFromDate(history[indexPath.row].date)
+            cell.textLabel?.text = dateFormatter.stringFromDate(dose.date)
             
             cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
             cell.detailTextLabel?.text = String(format:"%@ - %g %@", med.name!, dose.dosage, med.dosageUnit.units(dose.dosage))

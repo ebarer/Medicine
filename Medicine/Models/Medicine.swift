@@ -421,11 +421,24 @@ class Medicine: NSManagedObject {
      - Returns: History object
      */
     func addDose(dose: Dose) -> Dose {
-        // Calculate the next dose and store in history
+        // Calculate the next dose and store in dose
         do {
             dose.next = try calculateNextDose(dose.date)
         } catch {
             dose.next = nil
+        }
+        
+        // Get expected date and store in dose
+        if let lastDose = lastDose where lastDose.date.compare(dose.date) == .OrderedAscending {
+            if let expected = lastDose.next {
+                dose.expectedDate = expected
+            } else {
+                do {
+                    dose.expectedDate = try calculateNextDose(lastDose.date)
+                } catch {
+                    dose.expectedDate = nil
+                }
+            }
         }
         
         // Modify prescription count
@@ -657,8 +670,6 @@ class Medicine: NSManagedObject {
         notification.fireDate = date
         
         UIApplication.sharedApplication().scheduleLocalNotification(notification)
-        
-        print("Notification:: Date: \(date), Badge: \(badgeCount)")
     }
     
     func scheduleNextNotification() -> Bool {
@@ -820,7 +831,6 @@ class Medicine: NSManagedObject {
                 }
             }
             
-            // Calculate interval based on last dose
             var date = alarm
             let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
             
@@ -842,6 +852,10 @@ class Medicine: NSManagedObject {
             }
             
             // If scheduled dose is in the past, schedule for next interval until it is for the future
+            if let last = lastDose?.date {
+                date = last
+            }
+            
             while date.compare(NSDate()) == .OrderedAscending {
                 date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])!
             }
