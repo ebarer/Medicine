@@ -158,53 +158,65 @@ class Medicine: NSManagedObject {
             
             switch(intervalUnit) {
             case .Hourly:
-                return nil
-//                    for i in 0...historyLength {
-//                        if let expectedDate = scoreArray[i+1].next {
-//                            let scoreDate = scoreArray[i].date
-//                            if cal.isDate(scoreDate, inSameDayAsDate: expectedDate) {
-//                                print("\(scoreArray[i].date) ? \(expectedDate)")
-//                            }
-//                        }
-//                    }
+                for i in 0...historyLength {
+                    if let expectedDate = scoreArray[i].expectedDate {
+                        let date = scoreArray[i].date
+                        let dateComponents = cal.components([.Hour, .Minute], fromDate: date)
+                        let expectedComponents = cal.components([.Hour, .Minute], fromDate: expectedDate)
+                        
+                        // Get difference
+                        let dif = cal.components(.Minute, fromDateComponents: expectedComponents, toDateComponents: dateComponents, options: [])
+                        
+                        // Determine score
+                        if let (score, multiplier) = calculateScore(dif.minute, date: date) {
+                            averageScore += (score * multiplier)
+                            averageCount += multiplier
+                        }
+                    }
+                }
             case .Daily:
                 if let alarm = intervalAlarm {
                     let alarmComponents = cal.components([.Hour, .Minute], fromDate: alarm)
                     for i in 0...historyLength {
                         let date = scoreArray[i].date
                         let dateComponents = cal.components([.Hour, .Minute], fromDate: date)
-                        let dif = cal.components(.Minute, fromDateComponents: dateComponents, toDateComponents: alarmComponents, options: [])
                         
-                        //print("\(name!): \(scoreArray[i].date) : \(dif.minute) = \(calculateScore(dif.minute, date: date))")
-                        let (score, multiplier) = calculateScore(dif.minute, date: date)
-                        averageScore += (score * multiplier)
-                        averageCount += multiplier
+                        // Get difference
+                        let dif = cal.components(.Minute, fromDateComponents: alarmComponents, toDateComponents: dateComponents, options: [])
+                        
+                        // Determine score
+                        if let (score, multiplier) = calculateScore(dif.minute, date: date) {
+                            averageScore += (score * multiplier)
+                            averageCount += multiplier
+                        }
                     }
                 }
             default:
                 return nil
             }
             
-            //print("\(name!) Score: \(averageScore / averageCount)")
+            if averageCount == 0 { return nil }
             return (averageScore / averageCount)
         }
 
         return nil
     }
     
-    func calculateScore(dif: Int, date: NSDate) -> (Score: Int, Multiplier: Int) {
+    func calculateScore(dif: Int, date: NSDate) -> (Score: Int, Multiplier: Int)? {
         var score: Int = 0
         var multiplier: Int = 1
         
         switch(abs(dif)) {
-        case 0...5:
+        case let x where x == 0:
             score = 100
-        case 5...10:
+        case let x where x > -10 && x < 10:
             score = 75
-        case 10...30:
+        case let x where x > -30 && x < 30:
             score = 50
-        default:
+        case let x where x > -60 && x < 60:
             score = 0
+        default:
+            return nil
         }
         
         if date.isDateInWeek() {
@@ -247,7 +259,7 @@ class Medicine: NSManagedObject {
                             return (true, date)
                         }
                         
-                        // If in the passed and not scheduled for today, return true
+                        // If in the past and not scheduled for today, return true
                         if let scheduledDate = scheduledNotifications?.first?.fireDate {
                             if date.compare(NSDate()) == .OrderedAscending && !cal.isDateInToday(scheduledDate) {
                                 return (true, scheduledDate)
@@ -838,26 +850,23 @@ class Medicine: NSManagedObject {
             if lastDose?.date == nil {
                 date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: NSDate(), options: [])!
                 
-                while date.compare(NSDate()) == .OrderedAscending {
+                while date.compare(NSDate()) == .OrderedAscending && cal.isDateInToday(date) == false {
                     date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: 1, toDate: date, options: [])!
                 }
 
                 return date
             }
-            
-            // If last dose was today, schedule for next interval
-            if let last = lastDose?.date where cal.isDateInToday(last) {
-                date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: last, options: [])!
-                date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])!
-            }
-            
             // If scheduled dose is in the past, schedule for next interval until it is for the future
-            if let last = lastDose?.date {
-                date = last
-            }
-            
-            while date.compare(NSDate()) == .OrderedAscending {
-                date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])!
+            else if let last = lastDose?.date {
+                date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: last, options: [])!
+                
+                while date.compare(NSDate()) == .OrderedAscending && cal.isDateInToday(date) == false {
+                    date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])!
+                }
+                
+                if lastDose?.next?.compare(NSDate()) == .OrderedAscending {
+                    lastDose?.next = date
+                }
             }
             
             return date

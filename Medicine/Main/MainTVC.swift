@@ -94,6 +94,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         // Setup refresh timer
         let _ = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(300), target: self, selector: Selector("refreshTable"), userInfo: nil, repeats: true)
+
         
         // Display tutorial on first launch
         let dictionary = NSBundle.mainBundle().infoDictionary!
@@ -143,38 +144,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    
-    func updateTableView() {
-        if medication.count == 0 {
-            navigationItem.leftBarButtonItem?.enabled = false
-            
-            // Create empty message
-            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
-                // Display message
-                tableView.backgroundView = emptyView
-                tableView.separatorStyle = UITableViewCellSeparatorStyle.None
-            }
-            
-            tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Automatic)
-        } else {
-            navigationItem.leftBarButtonItem?.enabled = true
-            tableView.backgroundView = nil
-            tableView.separatorStyle = UITableViewCellSeparatorStyle.SingleLine
-            
-            // If selected, sort by next dosage
-            if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-                medication.sortInPlace(Medicine.sortByNextDose)
-            }
-            
-            // Reschedule notifications
-            NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
-            
-            // Dismiss editing mode
-            setEditing(false, animated: true)
-            
-            tableView.reloadData()
-        }
-    }
 
     override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         // Setup summary header
@@ -193,6 +162,38 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         return updateHeader()
     }
     
+    
+    // MARK: - Update values
+    
+    func refreshMedication() {
+        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+        
+        updateHeader()
+        
+        // Update spotlight index
+        if #available(iOS 9.0, *) {
+            for med in medication {
+                if let attributes = med.attributeSet {
+                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
+                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+                }
+            }
+        }
+        
+        // Update shortcuts
+        self.setDynamicShortcuts()
+        
+        // If selected, sort by next dosage
+        if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+            medication.sortInPlace(Medicine.sortByNextDose)
+        }
+        
+        // Dismiss editing mode
+        setEditing(false, animated: true)
+        
+        tableView.reloadData()
+    }
+    
     func updateHeader() -> UIView? {
         // Initialize main string
         var string = NSMutableAttributedString(string: "No more doses today")
@@ -209,7 +210,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         headerCounterLabel.attributedText = string
         headerDescriptionLabel.text = nil
         headerMedLabel.text = nil
-
+        
         
         // Warn of overdue doses
         let overdueItems = medication.filter({$0.isOverdue().flag})
@@ -225,14 +226,14 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
             headerCounterLabel.attributedText = string
         }
-        
-        // Show next scheduled dose
+            
+            // Show next scheduled dose
         else if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
             if cal.isDateInToday(nextDose.fireDate!) {
                 if let id = nextDose.userInfo?["id"] {
                     if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
                         headerDescriptionLabel.text = "Next Dose"
-
+                        
                         dateFormatter.dateFormat = "h:mma"
                         string = NSMutableAttributedString(string: dateFormatter.stringFromDate(nextDose.fireDate!))
                         let len = string.length
@@ -248,8 +249,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             
             todayData["date"] = nextDose.fireDate!
         }
-        
-        // Prompt to take first dose
+            
+            // Prompt to take first dose
         else if medication.count > 0 {
             if medication.first?.lastDose == nil {
                 string = NSMutableAttributedString(string: "Take first dose")
@@ -257,7 +258,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 headerCounterLabel.attributedText = string
             }
         }
-
+        
         // Set today widget information
         todayData["descriptionString"] = headerDescriptionLabel.text
         todayData["dateString"] = headerCounterLabel.text
@@ -267,6 +268,53 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         defaults.synchronize()
         
         return summaryHeader
+    }
+    
+    func updateTableView() {
+        if medication.count == 0 {
+            navigationItem.leftBarButtonItem?.enabled = false
+            
+            // Create empty message
+            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                // Display message
+                tableView.backgroundView = emptyView
+                tableView.separatorStyle = UITableViewCellSeparatorStyle.None
+            }
+            
+            tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Automatic)
+        } else {
+            navigationItem.leftBarButtonItem?.enabled = true
+            tableView.backgroundView = nil
+            tableView.separatorStyle = UITableViewCellSeparatorStyle.SingleLine
+            
+            // Reschedule notifications
+            NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+            
+            // If selected, sort by next dosage
+            if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+                medication.sortInPlace(Medicine.sortByNextDose)
+            }
+            
+            // Dismiss editing mode
+            setEditing(false, animated: true)
+            
+            tableView.reloadData()
+        }
+    }
+    
+    func refreshTable() {
+        // Reschedule notifications
+        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+        
+        // If selected, sort by next dosage
+        if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+            medication.sortInPlace(Medicine.sortByNextDose)
+        }
+        
+        // Dismiss editing mode
+        setEditing(false, animated: true)
+        
+        tableView.reloadData()
     }
     
     
@@ -300,7 +348,10 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         cell.subtitle.textColor = UIColor.blackColor()
         
         // Set adherence score
-        print("\(med.name!) Score: \(med.adherenceScore())")
+        if let score = med.adherenceScore() {
+            cell.adherenceScore.score = score
+            cell.adherenceScoreLabel.text = "\(score)"
+        }
         
         // If reminders aren't enabled for medication
         if med.reminderEnabled == false {
@@ -347,6 +398,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         return cell
     }
 
+    
+    // MARK: - Table actions
+    
     override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         return true
     }
@@ -385,39 +439,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         return [deleteAction, editAction]
-    }
-    
-    func refreshMedication() {
-        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
-        
-        updateHeader()
-        
-        // Update spotlight index
-        if #available(iOS 9.0, *) {
-            for med in medication {
-                if let attributes = med.attributeSet {
-                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                }
-            }
-        }
-        
-        // Update shortcuts
-        self.setDynamicShortcuts()
-        
-        // If selected, sort by next dosage
-        if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-            medication.sortInPlace(Medicine.sortByNextDose)
-        }
-        
-        // Dismiss editing mode
-        setEditing(false, animated: true)
-        
-        tableView.reloadData()
-    }
-    
-    func refreshTable() {        
-        tableView.reloadData()
     }
     
     

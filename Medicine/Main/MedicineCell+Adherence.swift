@@ -9,13 +9,22 @@
 import UIKit
 
 class MedicineCell_Adherence: UIView {
-
-    /*
-    // Only override drawRect: if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func drawRect(rect: CGRect) {
-        // Drawing code
+    
+    var score: Int?
+    var scoreLabel: UILabel = UILabel()
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        self.backgroundColor = UIColor.whiteColor()
+        
+        if let score = score {
+            scoreLabel.frame = CGRectMake(0, 0, 50, 50)
+            scoreLabel.backgroundColor = UIColor.redColor()
+            scoreLabel.textAlignment = NSTextAlignment.Center
+            scoreLabel.text = "\(score)"
+            self.addSubview(scoreLabel)
+        }
     }
-    */
-
+    
 }

@@ -86,11 +86,21 @@
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="V61-dz-9nY">
+                                        <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="V61-dz-9nY" customClass="MedicineCell_Adherence" customModule="Medicine" customModuleProvider="target">
                                             <rect key="frame" x="15" y="25" width="50" height="50"/>
-                                            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="K3Z-Le-Wc5">
+                                                    <rect key="frame" x="4" y="14.5" width="42" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="50" id="YeR-Y2-HXu"/>
+                                                <constraint firstItem="K3Z-Le-Wc5" firstAttribute="centerY" secondItem="V61-dz-9nY" secondAttribute="centerY" id="bJ4-pS-IOe"/>
+                                                <constraint firstItem="K3Z-Le-Wc5" firstAttribute="centerX" secondItem="V61-dz-9nY" secondAttribute="centerX" id="e59-AV-pRP"/>
                                                 <constraint firstAttribute="width" constant="50" id="eBt-Gv-GRw"/>
                                             </constraints>
                                         </view>
@@ -125,7 +135,8 @@
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <connections>
-                                    <outlet property="adherenceScore" destination="V61-dz-9nY" id="Lqq-tD-Rdq"/>
+                                    <outlet property="adherenceScore" destination="V61-dz-9nY" id="Vhp-lf-4W8"/>
+                                    <outlet property="adherenceScoreLabel" destination="K3Z-Le-Wc5" id="ds5-8Q-c7J"/>
                                     <outlet property="adherenceWidth" destination="eBt-Gv-GRw" id="5oU-Un-FRn"/>
                                     <outlet property="glyphWidth" destination="L7T-FO-Xqh" id="Ga7-fV-WYT"/>
                                     <outlet property="subtitle" destination="yMx-kf-26h" id="cTB-W0-u5h"/>
@@ -1217,12 +1228,12 @@
         <image name="SettingsTab" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="boT-ys-MKj"/>
-        <segue reference="aaT-BJ-605"/>
-        <segue reference="HfD-yH-Bkx"/>
         <segue reference="qK7-4Q-NbR"/>
-        <segue reference="y5a-Wh-C29"/>
+        <segue reference="aaT-BJ-605"/>
+        <segue reference="boT-ys-MKj"/>
+        <segue reference="HfD-yH-Bkx"/>
         <segue reference="tHn-tf-kiw"/>
-        <segue reference="0Oe-mX-irt"/>
+        <segue reference="tQz-wz-X6o"/>
+        <segue reference="y5a-Wh-C29"/>
     </inferredMetricsTieBreakers>
 </document>
