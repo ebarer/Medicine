@@ -132,6 +132,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     // MARK: - Action observers
     
     func takeDoseAction(notification: NSNotification) {
+        NSLog("takeDoseAction received", [])
         if let id = notification.userInfo!["id"] as? String {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
                 let entity = NSEntityDescription.entityForName("Dose", inManagedObjectContext: moc)
@@ -154,25 +155,29 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 
                 setDynamicShortcuts()
                 NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+                NSLog("takeDoseAction performed", [])
             }
         }
     }
     
     func snoozeReminderAction(notification: NSNotification) {
+        NSLog("snoozeReminderAction received", [])
         if let id = notification.userInfo!["id"] as? String {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
                 med.snoozeNotification()
                 setDynamicShortcuts()
                 NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+                NSLog("snoozeReminderAction performed", [])
             }
         }
     }
     
     func refillAction(notification: NSNotification) {
+        NSLog("refillAction received", [])
         if let id = notification.userInfo!["id"] as? String {
-            let medQuery = Medicine.getMedicine(arr: medication, id: id)
-            if let med = medQuery {
+            if let med = Medicine.getMedicine(arr: medication, id: id) {
                 performSegueWithIdentifier("refillPrescription", sender: med)
+                NSLog("refillAction performed", [])
             }
         }
     }

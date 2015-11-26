@@ -379,7 +379,11 @@ class Medicine: NSManagedObject {
         
         // Set label time
         if date.isMidnight() {
-            dateString.appendContentsOf("Midnight")
+            if cal.isDateInTomorrow(date) {
+                dateString = "Midnight"
+            } else {
+                dateString.appendContentsOf("Midnight")
+            }
         } else {
             dateFormatter.dateFormat = "h:mm a"
             dateString.appendContentsOf(dateFormatter.stringFromDate(date))

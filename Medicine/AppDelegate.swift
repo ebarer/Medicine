@@ -31,46 +31,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Setup background fetch to reload reschedule notifications
         UIApplication.sharedApplication().setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
         
-        // Reschedule notifications
-        UIApplication.sharedApplication().cancelAllLocalNotifications()
-        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
-        
         // Register for notifications and actions
-        let notificationType: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
-        
-        let takeAction = UIMutableUserNotificationAction()
-            takeAction.identifier = "takeDose"
-            takeAction.title = "Take Dose"
-            takeAction.activationMode = UIUserNotificationActivationMode.Background
-            takeAction.destructive = false
-            takeAction.authenticationRequired = true
-        
-        let snoozeAction = UIMutableUserNotificationAction()
-            snoozeAction.identifier = "snoozeReminder"
-            snoozeAction.title = "Snooze"
-            snoozeAction.activationMode = UIUserNotificationActivationMode.Background
-            snoozeAction.destructive = false
-            snoozeAction.authenticationRequired = false
-        
-        let doseCategory = UIMutableUserNotificationCategory()
-            doseCategory.identifier = "Dose Reminder"
-            doseCategory.setActions([takeAction, snoozeAction], forContext: UIUserNotificationActionContext.Default)
-        
-        let refillAction = UIMutableUserNotificationAction()
-            refillAction.identifier = "refillMed"
-            refillAction.title = "Refill Medication"
-            refillAction.activationMode = UIUserNotificationActivationMode.Foreground
-            refillAction.destructive = false
-            refillAction.authenticationRequired = true
-        
-        let refillCategory = UIMutableUserNotificationCategory()
-            refillCategory.identifier = "Refill Reminder"
-            refillCategory.setActions([refillAction], forContext: UIUserNotificationActionContext.Default)
-        
-        let categories = NSSet(array: [doseCategory, refillCategory])
-        let settings = UIUserNotificationSettings(forTypes: notificationType, categories: categories as? Set<UIUserNotificationCategory>)
-
-        application.registerUserNotificationSettings(settings)
+        application.registerUserNotificationSettings(notificationSettings())
 
         setUserDefaults()
         
@@ -79,6 +41,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if let _ = launchOptions?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
                 launchedShortcutItem = launchOptions
                 return false
+            }
+        }
+        
+        // Handle local notification
+        if let notification = launchOptions?[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
+            if notification.category == "Dose Reminder" {
+                print(notification)
+                print(notification.userInfo)
+                NSNotificationCenter.defaultCenter().postNotificationName("doseNotification", object: nil, userInfo: notification.userInfo)
+                UIApplication.sharedApplication().cancelLocalNotification(notification)
+            } else if notification.category == "Refill Reminder" {
+                NSNotificationCenter.defaultCenter().postNotificationName("refillNotification", object: nil, userInfo: notification.userInfo)
+                UIApplication.sharedApplication().cancelLocalNotification(notification)
             }
         }
         
@@ -184,6 +159,42 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         defaults.synchronize()
     }
     
+    func notificationSettings() -> UIUserNotificationSettings {
+        let notificationType: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
+        
+        let takeAction = UIMutableUserNotificationAction()
+        takeAction.identifier = "takeDose"
+        takeAction.title = "Take Dose"
+        takeAction.activationMode = UIUserNotificationActivationMode.Background
+        takeAction.destructive = false
+        takeAction.authenticationRequired = true
+        
+        let snoozeAction = UIMutableUserNotificationAction()
+        snoozeAction.identifier = "snoozeReminder"
+        snoozeAction.title = "Snooze"
+        snoozeAction.activationMode = UIUserNotificationActivationMode.Background
+        snoozeAction.destructive = false
+        snoozeAction.authenticationRequired = false
+        
+        let doseCategory = UIMutableUserNotificationCategory()
+        doseCategory.identifier = "Dose Reminder"
+        doseCategory.setActions([takeAction, snoozeAction], forContext: UIUserNotificationActionContext.Default)
+        
+        let refillAction = UIMutableUserNotificationAction()
+        refillAction.identifier = "refillMed"
+        refillAction.title = "Refill Medication"
+        refillAction.activationMode = UIUserNotificationActivationMode.Foreground
+        refillAction.destructive = false
+        refillAction.authenticationRequired = true
+        
+        let refillCategory = UIMutableUserNotificationCategory()
+        refillCategory.identifier = "Refill Reminder"
+        refillCategory.setActions([refillAction], forContext: UIUserNotificationActionContext.Default)
+        
+        let categories = NSSet(array: [doseCategory, refillCategory])
+        return UIUserNotificationSettings(forTypes: notificationType, categories: categories as? Set<UIUserNotificationCategory>)
+    }
+    
     
     // MARK: - Background refresh
     
@@ -233,10 +244,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     
     // MARK: - Push Notifications stack
-    
-    func application(application: UIApplication, didRegisterUserNotificationSettings notificationSettings: UIUserNotificationSettings) {
-        application.registerUserNotificationSettings(notificationSettings)
-    }
     
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
         if notification.category == "Dose Reminder" {
