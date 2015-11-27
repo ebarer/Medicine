@@ -154,7 +154,7 @@ class Medicine: NSManagedObject {
             
             var averageScore: Int = 0
             var averageCount: Int = 0
-            let historyLength = (scoreArray.count < 14) ? (scoreArray.count - 1) : 14
+            let historyLength = (scoreArray.count <= 14) ? (scoreArray.count - 1) : 14
             
             switch(intervalUnit) {
             case .Hourly:
@@ -840,9 +840,9 @@ class Medicine: NSManagedObject {
                 return cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])
             }
             
-            // Handle snooze
+            // Return pre-calculated next dose and handle snooze
             if let date = lastDose?.next {
-                if cal.isDateInToday(date) && date.compare(NSDate()) == .OrderedDescending {
+                if date.compare(NSDate()) == .OrderedDescending {
                     return lastDose?.next
                 }
             }
