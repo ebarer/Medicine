@@ -231,9 +231,9 @@ class Medicine: NSManagedObject {
     /**
      Determines whether the medication is overdue
      
-     - Returns: Tuple: (Overdue value as Bool, NSDate of last dose)
+     - Returns: Tuple: (Overdue value as Bool, NSDate of overdue dose)
      */
-    func isOverdue() -> (flag: Bool, lastDose: NSDate?) {
+    func isOverdue() -> (flag: Bool, overdueDose: NSDate?) {
         // Medicine can't be overdue if reminders are disabled
         if reminderEnabled == true {
             switch(intervalUnit) {
@@ -325,8 +325,8 @@ class Medicine: NSManagedObject {
         
         // Overdue medications should be at the top
         if medA.isOverdue().flag == true {
-            if let overdue2 = medB.isOverdue().lastDose {
-                if let overdue1 = medA.isOverdue().lastDose {
+            if let overdue2 = medB.isOverdue().overdueDose {
+                if let overdue1 = medA.isOverdue().overdueDose {
                     // If both are overdue, return sorted by longest overdue
                     return overdue1.compare(overdue2) == .OrderedAscending
                 }
@@ -381,6 +381,8 @@ class Medicine: NSManagedObject {
         if date.isMidnight() {
             if cal.isDateInTomorrow(date) {
                 dateString = "Midnight"
+            } else if cal.isDateInToday(date) {
+                dateString = "Yesterday, Midnight"
             } else {
                 dateString.appendContentsOf("Midnight")
             }
@@ -812,7 +814,7 @@ class Medicine: NSManagedObject {
                     
                 // If med is overdue
                 else if isOverdue().flag {
-                    return isOverdue().lastDose
+                    return isOverdue().overdueDose
                 }
                 
                 // Calculate next dose based on last dose taken, and update next value
@@ -894,7 +896,7 @@ class Medicine: NSManagedObject {
 }
 
 
-// MARK: - NSDate extensions
+// MARK: - NSDate extension
 extension NSDate {
 
     // Determines if time is set to midnight
@@ -940,6 +942,21 @@ extension NSDate {
         return val
     }
     
+}
+
+
+// MARK: - Array extension
+extension Array {
+    mutating func removeObject<U: Equatable>(object: U) {
+        for (index, compare) in self.enumerate() {
+            if let compare = compare as? U {
+                if object == compare {
+                    self.removeAtIndex(index)
+                    break
+                }
+            }
+        }
+    }
 }
 
 

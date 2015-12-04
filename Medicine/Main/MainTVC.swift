@@ -351,6 +351,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         if let score = med.adherenceScore() {
             cell.adherenceScore.score = score
             cell.adherenceScoreLabel.text = "\(score)"
+        } else {
+            cell.adherenceScoreLabel.text = "—"
         }
         
         // If reminders aren't enabled for medication
@@ -368,7 +370,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 cell.title.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
                 
                 var subtitle = "Overdue"
-                if let date = med.isOverdue().lastDose {
+                if let date = med.isOverdue().overdueDose {
                     subtitle = Medicine.dateString(date)
                 }
                 
@@ -454,6 +456,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             if let date = med.lastDose?.date {
                 if med.reminderEnabled {
                     dateString = "Last Dose: "
+                    //dateString?.appendContentsOf(Medicine.dateString(date))
                     
                     // Set label date, skip if date is today
                     if cal.isDateInToday(date) {

@@ -12,8 +12,8 @@ import CoreData
 class MedicineDetailsTVC: UITableViewController {
     
     weak var med:Medicine!
-    var count = 0
-    var log = [NSDate: [Dose]]()
+    var dates = [NSDate]()
+    var history = [Dose]()
     
     
     // MARK: - Helper variables
@@ -27,16 +27,6 @@ class MedicineDetailsTVC: UITableViewController {
     var normalButtons = [UIBarButtonItem]()
     var editButtons = [UIBarButtonItem]()
     
-    func getSectionDate(section: Int) -> NSDate {
-        var unit = NSCalendarUnit.Day
-        
-        if med.intervalUnit == Intervals.Weekly {
-            unit = NSCalendarUnit.WeekOfYear
-        }
-        
-        return cal.dateByAddingUnit(unit, value: -1 * section, toDate: cal.startOfDayForDate(NSDate()), options: [])!
-    }
-    
     
     // MARK: - View methods
     
@@ -44,10 +34,7 @@ class MedicineDetailsTVC: UITableViewController {
         super.viewDidLoad()
         
         // Modify VC
-        if let name = med.name {
-            self.title = "\(name) History"
-        }
-        
+        self.title = "\(med.name!) History"
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         self.navigationController?.toolbar.translucent = true
         self.navigationController?.toolbar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
@@ -73,7 +60,7 @@ class MedicineDetailsTVC: UITableViewController {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         loadHistory()
-        tableView.reloadData()
+        displayEmptyView()
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -85,195 +72,145 @@ class MedicineDetailsTVC: UITableViewController {
     }
     
     func loadHistory() {
+        // Clear history
+        history.removeAll()
+        
+        // Store doses, sorted, in history array
         if let historySet = med.doseHistory {
-            let history = historySet.array as! [Dose]
-            
-            for index in 0...6 {
-                let sectionDate = getSectionDate(index)
-                
-                // Initialize date log
-                log[sectionDate] = [Dose]()
-                
-                // Store history in log
-                for dose in history {
-                    if (cal.isDate(dose.date, inSameDayAsDate: sectionDate)) {
-                        log[sectionDate]?.insert(dose, atIndex: 0)
-                    }
-                }
-                
-                // Sort each log date
-                log[sectionDate]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
-            }
-            
-            count = history.count
+            history += historySet.array as! [Dose]
         }
         
-        displayEmptyView()
+        // Sort history
+        history.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
+        
+        // Get dates as exclusive elements
+        var temp = Set<NSDate>()
+        for dose in history {
+            temp.insert(cal.startOfDayForDate(dose.date))
+        }
+        
+        // Store dates in array
+        dates = temp.sort({ $0.compare($1) == .OrderedDescending })
     }
     
-    
-    // MARK: - Table view data source
+    func displayEmptyView() {
+        if history.count == 0 {
+            self.editButtonItem().enabled = false
+            
+            // Create empty message
+            if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                tableView.backgroundView = emptyView
+            }
+        } else {
+            self.editButtonItem().enabled = true
+            tableView.backgroundView = nil
+        }
+        
+        tableView.reloadData()
+    }
 
+    
+    // MARK: - Table headers
+    
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        if count == 0 {
-            return 0
-        }
-        
-        return 7
+        return dates.count
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let sectionDate = getSectionDate(section)
-        
-        if let count = log[sectionDate]?.count {
-            // Handle dates with no logged items
-            if count == 0 {
-                return 1
-            }
-            
-            return count
-        }
-        
-        return 0
-    }
-    
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let sectionDate = getSectionDate(section)
-        
-        // Special headers for today/yesterday
-        if (section == 0) {
+        let sectionDate = dates[section]
+
+        if cal.isDateInToday(sectionDate) {
             dateFormatter.timeStyle = NSDateFormatterStyle.NoStyle
             dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
-            return "Today (\(dateFormatter.stringFromDate(sectionDate)))"
-        }
-        
-        if sectionDate.isDateInLastWeek() {
-            if cal.isDateInYesterday(sectionDate) {
-                return "Yesterday"
-            }
-            
-            dateFormatter.dateFormat = "EEEE"
+            return "Today  \(dateFormatter.stringFromDate(sectionDate))"
+        } else if cal.isDateInYesterday(sectionDate) {
+            dateFormatter.timeStyle = NSDateFormatterStyle.NoStyle
+            dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
+            return "Yesterday  \(dateFormatter.stringFromDate(sectionDate))"
+        } else if sectionDate.isDateInLastWeek() {
+            dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
             return dateFormatter.stringFromDate(sectionDate)
         } else {
-            dateFormatter.dateFormat = "MMM d"
+            dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
             return dateFormatter.stringFromDate(sectionDate)
         }
+    }
+    
+    override func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        let header:UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
+        
+        header.textLabel?.frame = header.frame
+        header.textLabel?.textAlignment = NSTextAlignment.Left
+        
+        if let text = header.textLabel?.text {
+            let string = NSMutableAttributedString(string: text)
+            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(13.0), range: NSMakeRange(0, string.length))
+            
+            if (section == 0) {
+                string.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, string.length-1))
+            }
+            
+            if let index = text.characters.indexOf(" ") {
+                let pos = text.startIndex.distanceTo(index)
+                string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(13.0, weight: UIFontWeightSemibold), range: NSMakeRange(0, pos))
+            }
+            
+            header.textLabel?.attributedText = string
+        }
+    }
+
+    
+    // MARK: - Table rows
+    
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let sectionDate = dates[section]
+        let count = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)}).count
+        return (count == 0) ? 1 : count
     }
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        let sectionDate = getSectionDate(indexPath.section)
-        
-        if let history = log[sectionDate] where history.count > 0 {
-            return 55.0
-        }
-        
-        return tableView.rowHeight
+        let sectionDate = dates[indexPath.section]
+        let count = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)}).count
+        return (count > 0) ? 55.0 : tableView.rowHeight
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {        
         let cell = tableView.dequeueReusableCellWithIdentifier("historyCell", forIndexPath: indexPath)
-        let sectionDate = getSectionDate(indexPath.section)
+        let sectionDate = dates[indexPath.section]
+        let dose = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)})[indexPath.row]
+        
+        // Setup date formatter
+        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+        dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
         
         // Specify selection color
         cell.selectedBackgroundView = UIView()
-        
-        if let history = log[sectionDate] where history.count > 0 {
-            let dose = history[indexPath.row]
-            
-            dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-            dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
-            
-            cell.textLabel?.textColor = UIColor.blackColor()
-            cell.textLabel?.text = dateFormatter.stringFromDate(history[indexPath.row].date)
-            
-            cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-            cell.detailTextLabel?.text = String(format:"%g %@", dose.dosage, med.dosageUnit.units(dose.dosage))
-            
-            return cell
-        }
-        
-        cell.textLabel?.textColor = UIColor.lightGrayColor()
-        cell.textLabel?.text = "No doses logged"
-        cell.detailTextLabel?.text?.removeAll()
+
+        // Setup cell
+        cell.textLabel?.textColor = UIColor.blackColor()
+        cell.textLabel?.text = dateFormatter.stringFromDate(dose.date)
+        cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        cell.detailTextLabel?.text = String(format:"%g %@", dose.dosage, med.dosageUnit.units(dose.dosage))
         
         return cell
-    }
-    
-    func refreshTableAndNotifications() {
-        clearOldNotifications()
-        tableView.reloadData()
-    }
-    
-    func clearOldNotifications() {
-        let currentDate = NSDate()
-        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
-        for notification in notifications {
-            if let date = notification.fireDate {
-                if date.compare(currentDate) == .OrderedAscending {
-                    UIApplication.sharedApplication().cancelLocalNotification(notification)
-                }
-            }
-        }
     }
     
     
     // MARK: - Table view delegate
     
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        let sectionDate = getSectionDate(indexPath.section)
-        
-        if log[sectionDate]?.count == 0 {
-            return false
-        }
-        
-        return true
+        let sectionDate = dates[indexPath.section]
+        return history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)}).count != 0
     }
     
     override func tableView(tableView: UITableView, shouldHighlightRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        let sectionDate = getSectionDate(indexPath.section)
-        
-        if log[sectionDate]?.count == 0 {
-            return false
-        }
-        
-        return true
+        let sectionDate = dates[indexPath.section]
+        return history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)}).count != 0
     }
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        let sectionDate = getSectionDate(indexPath.section)
-        
-        if let logItems = log[sectionDate] {
-            let dose = logItems[indexPath.row]
-            
-            if med.lastDose == dose {
-                med.untakeLastDose(moc)
-            } else {
-                med.untakeDose(dose, moc: moc)
-            }
-            
-            log[sectionDate]?.removeAtIndex(indexPath.row)
-            count--
-            
-            if logItems.count == 1 {
-                if let cell = tableView.cellForRowAtIndexPath(indexPath) {
-                    cell.textLabel?.textColor = UIColor.lightGrayColor()
-                    cell.textLabel?.text = "No doses logged"
-                    cell.detailTextLabel?.text?.removeAll()
-                }
-            } else {
-                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-            }
-            
-            updateDeleteButtonLabel()
-            setEditing(false, animated: true)
-            
-            if count == 0 {
-                displayEmptyView()
-            }
-            
-            // Update widget
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
-        }
+        tableView.selectRowAtIndexPath(indexPath, animated: false, scrollPosition: UITableViewScrollPosition.None)
+        deleteDoses()
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -313,62 +250,36 @@ class MedicineDetailsTVC: UITableViewController {
     
     func deleteDoses() {
         if let selectedRowIndexes = tableView.indexPathsForSelectedRows {
-            for index in selectedRowIndexes.reverse() {                
-                let sectionDate = getSectionDate(index.section)
+            for indexPath in selectedRowIndexes.reverse() {
+                let sectionDate = dates[indexPath.section]
+                let dose = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)})[indexPath.row]
                 
-                if let logItems = log[sectionDate] {
-                    if let med = logItems[safe: index.row]?.medicine {
-                        let dose = logItems[index.row]
-                        
-                        if med.lastDose == dose {
-                            med.untakeLastDose(moc)
-                        } else {
-                            med.untakeDose(dose, moc: moc)
-                        }
-                    
-                        log[sectionDate]?.removeAtIndex(index.row)
-                        count--
-                        
-                        if logItems.count == 1 {
-                            let label = tableView.cellForRowAtIndexPath(index)?.textLabel
-                            let detail = tableView.cellForRowAtIndexPath(index)?.detailTextLabel
-
-                            label?.textColor = UIColor.lightGrayColor()
-                            label?.text = "No doses logged"
-                            detail?.text?.removeAll()
-                        } else {
-                            tableView.deleteRowsAtIndexPaths([index], withRowAnimation: .Fade)
-                        }
-                    }
+                history.removeObject(dose)
+                
+                if med.lastDose == dose {
+                    med.untakeLastDose(moc)
+                } else {
+                    med.untakeDose(dose, moc: moc)
                 }
+                
+                if tableView.numberOfRowsInSection(indexPath.section) == 1 {
+                    dates.removeObject(sectionDate)
+                    tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: .Automatic)
+                } else {
+                    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                }
+            }
+
+            if history.count == 0 {
+                displayEmptyView()
             }
             
             updateDeleteButtonLabel()
             setEditing(false, animated: true)
-
-            if count == 0 {
-                displayEmptyView()
-            }
             
             // Update widget
             NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
         }
-    }
-    
-    func displayEmptyView() {
-        if count == 0 {
-            self.editButtonItem().enabled = false
-            
-            // Create empty message
-            if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
-                tableView.backgroundView = emptyView
-            }
-        } else {
-            self.editButtonItem().enabled = true
-            tableView.backgroundView = nil
-        }
-        
-        tableView.reloadData()
     }
     
     
@@ -383,13 +294,36 @@ class MedicineDetailsTVC: UITableViewController {
     }
     
     
-    // MARK: - Preview actions
+    // MARK: - Helper methods
     
+    func refreshTableAndNotifications() {
+        tableView.reloadData()
+        
+        // Clear old notifications
+        let currentDate = NSDate()
+        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
+        for notification in notifications {
+            if let date = notification.fireDate {
+                if date.compare(currentDate) == .OrderedAscending {
+                    UIApplication.sharedApplication().cancelLocalNotification(notification)
+                }
+            }
+        }
+    }
+
+}
+
+
+
+
+
+// MARK: - Preview actions
+
 //    @available(iOS 9.0, *)
 //    override func previewActionItems() -> [UIPreviewActionItem] {
 //        return previewActions
 //    }
-//    
+//
 //    @available(iOS 9.0, *)
 //    lazy var previewActions: [UIPreviewActionItem] = {
 //        func previewActionForTitle(title: String, style: UIPreviewActionStyle = .Default) -> UIPreviewAction {
@@ -399,31 +333,7 @@ class MedicineDetailsTVC: UITableViewController {
 //                return
 //            }
 //        }
-//        
+//
 //        let action1 = previewActionForTitle("Take Dose")
 //        return [action1]
 //    }()
-
-    
-    // MARK: - Unwind methods
-    
-    @IBAction func historyUnwindAdd(unwindSegue: UIStoryboardSegue) {
-        // Log dose
-        let svc = unwindSegue.sourceViewController as! AddDoseTVC
-        
-        // Add to log
-        let index = cal.startOfDayForDate(svc.dose.date)
-        log[index]?.insert(svc.dose, atIndex: 0)
-        log[index]?.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
-        count++
-        
-        // Reload table
-        self.tableView.reloadData()
-
-        // Update widget
-        NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
-    }
-    
-    @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {}
-
-}
