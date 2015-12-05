@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "refillIcon.png",
+      "filename" : "historyRefill.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "refillIcon@2x.png",
+      "filename" : "historyRefill@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "refillIcon@3x.png",
+      "filename" : "historyRefill@3x.png",
       "scale" : "3x"
     }
   ],

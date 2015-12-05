@@ -47,6 +47,7 @@
 		CEA250FF1B903BC200BBE466 /* AddMedicationTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA250FE1B903BC200BBE466 /* AddMedicationTVC.swift */; };
 		CEA251021B903BE400BBE466 /* MainTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA251011B903BE400BBE466 /* MainTVC.swift */; };
 		CEA2510C1B903E7D00BBE466 /* Medicine.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CEA2510A1B903E7D00BBE466 /* Medicine.xcdatamodeld */; };
+		CEA5DFC21C1190F100B9BC99 /* MedicineDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEA5DFC01C1190F100B9BC99 /* MedicineDetails.storyboard */; };
 		CEB36F3F1BE6D02000BCBD87 /* MedicineCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB36F3E1BE6D02000BCBD87 /* MedicineCell.swift */; };
 		CEB36F411BE6EA2100BCBD87 /* MedicineCell+Adherence.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB36F401BE6EA2100BCBD87 /* MedicineCell+Adherence.swift */; };
 		CECD22B41BE94FDB007C5F25 /* AddRefill.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CECD22B21BE94FDB007C5F25 /* AddRefill.storyboard */; };
@@ -139,6 +140,7 @@
 		CEA250FE1B903BC200BBE466 /* AddMedicationTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddMedicationTVC.swift; path = Add/AddMedicationTVC.swift; sourceTree = "<group>"; };
 		CEA251011B903BE400BBE466 /* MainTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainTVC.swift; path = Main/MainTVC.swift; sourceTree = "<group>"; };
 		CEA2510B1B903E7D00BBE466 /* Medicine.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Medicine.xcdatamodel; sourceTree = "<group>"; };
+		CEA5DFC11C1190F100B9BC99 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MedicineDetails.storyboard; sourceTree = "<group>"; };
 		CEA9CA0D1BA87317001395BF /* Medicine - 2.1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2.1.xcdatamodel"; sourceTree = "<group>"; };
 		CEB36F3E1BE6D02000BCBD87 /* MedicineCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MedicineCell.swift; path = Main/MedicineCell.swift; sourceTree = "<group>"; };
 		CEB36F401BE6EA2100BCBD87 /* MedicineCell+Adherence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "MedicineCell+Adherence.swift"; path = "Main/MedicineCell+Adherence.swift"; sourceTree = "<group>"; };
@@ -325,6 +327,7 @@
 		CECD22B11BE94127007C5F25 /* Details */ = {
 			isa = PBXGroup;
 			children = (
+				CEA5DFC01C1190F100B9BC99 /* MedicineDetails.storyboard */,
 				CE0EA1961BAFE2B800F48A09 /* MedicineDetailsTVC.swift */,
 			);
 			name = Details;
@@ -508,6 +511,7 @@
 				CEA250EE1B90396C00BBE466 /* Main.storyboard in Resources */,
 				CE0EA1871BAFDAED00F48A09 /* AddDose.storyboard in Resources */,
 				CE2325841BB1693C0013B72D /* HistoryEmptyView.xib in Resources */,
+				CEA5DFC21C1190F100B9BC99 /* MedicineDetails.storyboard in Resources */,
 				CE0EA1891BAFDAED00F48A09 /* MainEmptyView.xib in Resources */,
 				CE0EA18A1BAFDAED00F48A09 /* Tutorial.storyboard in Resources */,
 				CE0EA1881BAFDAED00F48A09 /* AddMedication.storyboard in Resources */,
@@ -663,6 +667,14 @@
 				CEA250F51B90396C00BBE466 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		CEA5DFC01C1190F100B9BC99 /* MedicineDetails.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CEA5DFC11C1190F100B9BC99 /* Base */,
+			);
+			name = MedicineDetails.storyboard;
 			sourceTree = "<group>";
 		};
 		CECD22B21BE94FDB007C5F25 /* AddRefill.storyboard */ = {

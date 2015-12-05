@@ -615,10 +615,11 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
         
         if segue.identifier == "viewMedicationDetails" {
-            let vc = segue.destinationViewController as! MedicineDetailsTVC
-            if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
-                vc.med = medication[index.row]
-                vc.moc = self.moc
+            if let vc = segue.destinationViewController as? MedicineDetailsTVC {
+                if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
+                    vc.med = medication[index.row]
+                    vc.moc = self.moc
+                }
             }
         }
         

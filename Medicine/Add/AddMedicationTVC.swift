@@ -23,6 +23,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     @IBOutlet var reminderToggle: UISwitch!
     @IBOutlet var intervalLabel: UILabel!
     @IBOutlet var intervalCell: UITableViewCell!
+    @IBOutlet var prescriptionLabel: UILabel!
     
     
     // MARK: - Helper variables
@@ -73,6 +74,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             self.title = "New Medication"
         } else {
             self.title = "Edit Medication"
+            prescriptionLabel.text = "Refill Prescription"
         }
         
         updateLabels()
@@ -139,7 +141,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         switch row {
         case Rows.prescription:
             if med.name != nil && med.name != "" {
-                return tableView.rowHeight
+                return 48.0
             }
         default:
             return tableView.rowHeight

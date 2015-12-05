@@ -134,13 +134,15 @@ class AddDoseTVC: UITableViewController {
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         if indexPath == NSIndexPath(forRow: 0, inSection: 0) {
             return 216.0
+        } else if indexPath == NSIndexPath(forRow: 2, inSection: 0) {
+            return 48.0
         }
         
         return tableView.rowHeight
     }
     
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if let med = med where section == 1 {
+        if let med = med where section == 0 {
             return med.refillStatus()
         }
         

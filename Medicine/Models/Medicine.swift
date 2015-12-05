@@ -503,8 +503,12 @@ class Medicine: NSManagedObject {
     func untakeDose(dose: Dose, moc: NSManagedObjectContext) {
         // Modify prescription count
         if self.refillHistory?.count > 0 {
+            // Only enable refill flag if undoing the dosage puts count in excess
+            if needsRefill() == false {
+                self.refillFlag = true
+            }
+            
             self.prescriptionCount += dose.dosage
-            self.refillFlag = true
         }
         
         moc.deleteObject(dose)

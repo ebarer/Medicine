@@ -28,6 +28,15 @@ class MedicineDetailsTVC: UITableViewController {
     var editButtons = [UIBarButtonItem]()
     
     
+    // MARK: - Initialization
+    
+    required init?(coder aDecoder: NSCoder) {
+        // Setup context
+        moc = appDelegate.managedObjectContext
+        super.init(coder: aDecoder)
+    }
+    
+    
     // MARK: - View methods
     
     override func viewDidLoad() {
