@@ -47,6 +47,8 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     }
     
     override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
         if let index = tableView.indexPathForSelectedRow {
             self.tableView.deselectRowAtIndexPath(index, animated: animated)
         }

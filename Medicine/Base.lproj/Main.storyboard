@@ -26,7 +26,7 @@
         <!--Medicine Manager-->
         <scene sceneID="DrC-QF-zXV">
             <objects>
-                <tableViewController storyboardIdentifier="home" id="Opo-0h-aD1" customClass="MainTVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="Opo-0h-aD1" customClass="MainTVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" sectionIndexMinimumDisplayRowCount="1" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="XNe-sj-IWf">
                         <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -96,7 +96,6 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
-                                            <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="50" id="YeR-Y2-HXu"/>
                                                 <constraint firstItem="K3Z-Le-Wc5" firstAttribute="centerY" secondItem="V61-dz-9nY" secondAttribute="centerY" id="bJ4-pS-IOe"/>
@@ -134,6 +133,7 @@
                                     </constraints>
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <gestureRecognizers/>
                                 <connections>
                                     <outlet property="adherenceScore" destination="V61-dz-9nY" id="Vhp-lf-4W8"/>
                                     <outlet property="adherenceScoreLabel" destination="K3Z-Le-Wc5" id="ds5-8Q-c7J"/>
@@ -185,7 +185,7 @@
         <!--Medication-->
         <scene sceneID="Je1-oK-fKE">
             <objects>
-                <navigationController storyboardIdentifier="MainVC" automaticallyAdjustsScrollViewInsets="NO" id="WH0-Wl-VP6" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="WH0-Wl-VP6" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Medication" image="MedicineTab" selectedImage="MedicineTab+Selected" id="PIi-sd-RMV"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="0Eg-jE-EZT">
@@ -230,7 +230,7 @@
             </objects>
             <point key="canvasLocation" x="2112.5" y="203"/>
         </scene>
-        <!--History-->
+        <!--Dose History-->
         <scene sceneID="QO9-Ky-i0L">
             <objects>
                 <tableViewController id="b7r-JM-HQT" customClass="HistoryTVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
@@ -269,7 +269,7 @@
                             <outlet property="delegate" destination="b7r-JM-HQT" id="9Wt-5c-z19"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="History" id="cCZ-fD-XEa">
+                    <navigationItem key="navigationItem" title="Dose History" id="cCZ-fD-XEa">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="ccd-vs-S26">
                             <connections>
                                 <segue destination="3SL-Re-aut" kind="presentation" identifier="addDose" id="GSg-6m-ogc"/>

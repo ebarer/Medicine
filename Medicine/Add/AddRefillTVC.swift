@@ -69,6 +69,8 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
     }
     
     override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
         // Set values
         if let med = med {
             // Set title
@@ -92,6 +94,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
     }
     
     override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated) 
         quantityInput.becomeFirstResponder()
     }
     

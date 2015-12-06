@@ -46,8 +46,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Handle local notification
         if let notification = launchOptions?[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
             if notification.category == "Dose Reminder" {
-                print(notification)
-                print(notification.userInfo)
                 NSNotificationCenter.defaultCenter().postNotificationName("doseNotification", object: nil, userInfo: notification.userInfo)
                 UIApplication.sharedApplication().cancelLocalNotification(notification)
             } else if notification.category == "Refill Reminder" {

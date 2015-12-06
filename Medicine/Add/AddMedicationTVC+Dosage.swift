@@ -37,10 +37,12 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
     }
     
     override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
         dosageInput.becomeFirstResponder()
     }
     
     override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
         dosageInput.resignFirstResponder()
     }
     

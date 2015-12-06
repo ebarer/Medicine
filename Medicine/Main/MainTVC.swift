@@ -235,10 +235,17 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                         headerDescriptionLabel.text = "Next Dose"
                         
                         dateFormatter.dateFormat = "h:mma"
-                        string = NSMutableAttributedString(string: dateFormatter.stringFromDate(nextDose.fireDate!))
-                        let len = string.length
-                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, len-2))
-                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(len-2, 2))
+                        let date = dateFormatter.stringFromDate(nextDose.fireDate!)
+                        string = NSMutableAttributedString(string: date)
+                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, string.length))
+
+                        // Accomodate 24h times
+                        let range = (date.containsString("AM")) ? date.rangeOfString("AM") : date.rangeOfString("PM")
+                        if let range = range {
+                            let pos = date.startIndex.distanceTo(range.startIndex)
+                            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(pos, 2))
+                        }
+                        
                         headerCounterLabel.attributedText = string
                         
                         let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
@@ -397,6 +404,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             }
         }
         
+        // Add long press gesture recognizer
+        cell.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "takeDose:"))
+        
         return cell
     }
 
@@ -523,10 +533,9 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }))
             
-            alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-                if let name = med.name {
-                    self.presentDeleteAlert(name, indexPath: indexPath)
-                }
+            alert.addAction(UIAlertAction(title: "View Details", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+                let cell = self.tableView.cellForRowAtIndexPath(indexPath)
+                self.performSegueWithIdentifier("viewMedicationDetails", sender: cell)
             }))
             
             alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
@@ -544,6 +553,18 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             presentViewController(alert, animated: true, completion: nil)
         } else {
             performSegueWithIdentifier("editMedication", sender: indexPath.row)
+        }
+    }
+    
+    func takeDose(sender: UILongPressGestureRecognizer) {
+        let point = sender.locationInView(self.tableView)
+        if let indexPath = self.tableView?.indexPathForRowAtPoint(point) {
+            let med = medication[indexPath.row]
+            
+            if (sender.state == .Began) {
+                self.performSegueWithIdentifier("addDose", sender: med)
+                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            }
         }
     }
     
@@ -618,7 +639,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             if let vc = segue.destinationViewController as? MedicineDetailsTVC {
                 if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
                     vc.med = medication[index.row]
-                    vc.moc = self.moc
                 }
             }
         }

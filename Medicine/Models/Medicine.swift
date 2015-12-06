@@ -616,7 +616,7 @@ class Medicine: NSManagedObject {
     }
 
     /**
-     Print out the refill status
+     Return formatted refill status
      
      - Parameter newMed: Bool representing whether this is a new medication
      

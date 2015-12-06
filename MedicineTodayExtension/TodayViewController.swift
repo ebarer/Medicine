@@ -31,6 +31,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     }
     
     override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
         self.preferredContentSize = CGSizeMake(0, size)
         updateLabels()
     }

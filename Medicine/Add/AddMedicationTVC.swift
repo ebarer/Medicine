@@ -65,6 +65,8 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     }
     
     override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
         // Deselect selected row
         if let index = tableView.indexPathForSelectedRow {
             tableView.deselectRowAtIndexPath(index, animated: animated)
@@ -83,6 +85,8 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     }
     
     override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
         if med.name == nil || med.name?.isEmpty == true {
             medicationName.becomeFirstResponder()
         }

@@ -39,6 +39,7 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     }
     
     override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
         requestProductInfo()
     }
 

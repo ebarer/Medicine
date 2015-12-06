@@ -1,5 +1,5 @@
 //
-//  MedicineDetailsTVC.swift
+//  MedicineRefillHistoryTVC.swift
 //  Medicine
 //
 //  Created by Elliot Barer on 2015-08-28.
@@ -9,11 +9,11 @@
 import UIKit
 import CoreData
 
-class MedicineDetailsTVC: UITableViewController {
+class MedicineRefillHistoryTVC: UITableViewController {
     
     weak var med:Medicine!
     var dates = [NSDate]()
-    var history = [Dose]()
+    var history = [Refill]()
     
     
     // MARK: - Helper variables
@@ -43,39 +43,40 @@ class MedicineDetailsTVC: UITableViewController {
         super.viewDidLoad()
         
         // Modify VC
-        self.title = "\(med.name!) History"
+        self.title = "Refill History"
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         self.navigationController?.toolbar.translucent = true
         self.navigationController?.toolbar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         
         // Configure toolbar buttons
         let fixedButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
-        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: "deleteDoses")
+        let exportButton = UIBarButtonItem(title: "Export", style: UIBarButtonItemStyle.Plain, target: self, action: "exportRefills")
+        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: "deleteRefills")
         deleteButton.enabled = false
         
+        normalButtons.append(exportButton)
         normalButtons.append(fixedButton)
         normalButtons.append(self.editButtonItem())
         
         editButtons.append(deleteButton)
         editButtons.append(fixedButton)
         editButtons.append(self.editButtonItem())
-
+        
         setToolbarItems(normalButtons, animated: false)
-
+        
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        
+        self.navigationController?.setToolbarHidden(false, animated: animated)
+        
         loadHistory()
         displayEmptyView()
     }
     
-    override func viewDidAppear(animated: Bool) {
-        self.navigationController?.setToolbarHidden(false, animated: false)
-    }
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -85,8 +86,8 @@ class MedicineDetailsTVC: UITableViewController {
         history.removeAll()
         
         // Store doses, sorted, in history array
-        if let historySet = med.doseHistory {
-            history += historySet.array as! [Dose]
+        if let historySet = med.refillHistory {
+            history += historySet.array as! [Refill]
         }
         
         // Sort history
@@ -117,17 +118,17 @@ class MedicineDetailsTVC: UITableViewController {
         
         tableView.reloadData()
     }
-
+    
     
     // MARK: - Table headers
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return dates.count
     }
-
+    
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let sectionDate = dates[section]
-
+        
         if cal.isDateInToday(sectionDate) {
             dateFormatter.timeStyle = NSDateFormatterStyle.NoStyle
             dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
@@ -146,6 +147,7 @@ class MedicineDetailsTVC: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        let sectionDate = dates[section]
         let header:UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         
         header.textLabel?.frame = header.frame
@@ -155,8 +157,8 @@ class MedicineDetailsTVC: UITableViewController {
             let string = NSMutableAttributedString(string: text)
             string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(13.0), range: NSMakeRange(0, string.length))
             
-            if (section == 0) {
-                string.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, string.length-1))
+            if cal.isDateInToday(sectionDate) {
+                string.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, string.length))
             }
             
             if let index = text.characters.indexOf(" ") {
@@ -167,7 +169,7 @@ class MedicineDetailsTVC: UITableViewController {
             header.textLabel?.attributedText = string
         }
     }
-
+    
     
     // MARK: - Table rows
     
@@ -182,11 +184,11 @@ class MedicineDetailsTVC: UITableViewController {
         let count = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)}).count
         return (count > 0) ? 55.0 : tableView.rowHeight
     }
-
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {        
+    
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("historyCell", forIndexPath: indexPath)
         let sectionDate = dates[indexPath.section]
-        let dose = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)})[indexPath.row]
+        let refill = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)})[indexPath.row]
         
         // Setup date formatter
         dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
@@ -194,12 +196,18 @@ class MedicineDetailsTVC: UITableViewController {
         
         // Specify selection color
         cell.selectedBackgroundView = UIView()
-
+        
         // Setup cell
+        var amount = "\(med.removeTrailingZero(refill.quantity * refill.conversion)) \(med.dosageUnit.units(med.prescriptionCount))"
+        
+        if refill.conversion != 1.0 {
+            amount += " (\(med.removeTrailingZero(refill.quantity)) \(refill.quantityUnit.units(refill.quantity)))"
+        }
+        
         cell.textLabel?.textColor = UIColor.blackColor()
-        cell.textLabel?.text = dateFormatter.stringFromDate(dose.date)
+        cell.textLabel?.text = amount
         cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-        cell.detailTextLabel?.text = String(format:"%g %@", dose.dosage, med.dosageUnit.units(dose.dosage))
+        cell.detailTextLabel?.text = dateFormatter.stringFromDate(refill.date)
         
         return cell
     }
@@ -219,7 +227,7 @@ class MedicineDetailsTVC: UITableViewController {
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         tableView.selectRowAtIndexPath(indexPath, animated: false, scrollPosition: UITableViewScrollPosition.None)
-        deleteDoses()
+        deleteRefills()
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -253,23 +261,19 @@ class MedicineDetailsTVC: UITableViewController {
         }
     }
     
-    @IBAction func addDose() {
-        performSegueWithIdentifier("addDose", sender: self)
+    @IBAction func addRefill() {
+        performSegueWithIdentifier("addRefill", sender: self)
     }
     
-    func deleteDoses() {
+    func deleteRefills() {
         if let selectedRowIndexes = tableView.indexPathsForSelectedRows {
             for indexPath in selectedRowIndexes.reverse() {
                 let sectionDate = dates[indexPath.section]
-                let dose = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)})[indexPath.row]
+                let refill = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)})[indexPath.row]
                 
-                history.removeObject(dose)
+                history.removeObject(refill)
                 
-                if med.lastDose == dose {
-                    med.untakeLastDose(moc)
-                } else {
-                    med.untakeDose(dose, moc: moc)
-                }
+                med.removeRefill(refill, moc: moc)
                 
                 if tableView.numberOfRowsInSection(indexPath.section) == 1 {
                     dates.removeObject(sectionDate)
@@ -278,7 +282,7 @@ class MedicineDetailsTVC: UITableViewController {
                     tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
                 }
             }
-
+            
             if history.count == 0 {
                 displayEmptyView()
             }
@@ -291,12 +295,16 @@ class MedicineDetailsTVC: UITableViewController {
         }
     }
     
+    func exportRefills() {
+        print("Exporting...")
+    }
+    
     
     // MARK: - Navigation methods
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "addDose" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
+        if segue.identifier == "addRefill" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
                 vc.med = med
             }
         }
@@ -319,30 +327,5 @@ class MedicineDetailsTVC: UITableViewController {
             }
         }
     }
-
+    
 }
-
-
-
-
-
-// MARK: - Preview actions
-
-//    @available(iOS 9.0, *)
-//    override func previewActionItems() -> [UIPreviewActionItem] {
-//        return previewActions
-//    }
-//
-//    @available(iOS 9.0, *)
-//    lazy var previewActions: [UIPreviewActionItem] = {
-//        func previewActionForTitle(title: String, style: UIPreviewActionStyle = .Default) -> UIPreviewAction {
-//            return UIPreviewAction(title: title, style: style) { previewAction, viewController in
-//                guard let vc = viewController as? MedicineDetailsTVC else { return }
-//                vc.performSegueWithIdentifier("addDose", sender: nil)
-//                return
-//            }
-//        }
-//
-//        let action1 = previewActionForTitle("Take Dose")
-//        return [action1]
-//    }()

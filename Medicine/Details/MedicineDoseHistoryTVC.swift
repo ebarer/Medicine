@@ -1,5 +1,5 @@
 //
-//  HistoryTVC.swift
+//  MedicineDoseHistoryTVC.swift
 //  Medicine
 //
 //  Created by Elliot Barer on 2015-08-28.
@@ -9,8 +9,9 @@
 import UIKit
 import CoreData
 
-class HistoryTVC: UITableViewController {
-
+class MedicineDoseHistoryTVC: UITableViewController {
+    
+    weak var med:Medicine!
     var dates = [NSDate]()
     var history = [Dose]()
     
@@ -23,6 +24,7 @@ class HistoryTVC: UITableViewController {
     let cal = NSCalendar.currentCalendar()
     let dateFormatter = NSDateFormatter()
     
+    var normalButtons = [UIBarButtonItem]()
     var editButtons = [UIBarButtonItem]()
     
     
@@ -41,27 +43,40 @@ class HistoryTVC: UITableViewController {
         super.viewDidLoad()
         
         // Modify VC
+        self.title = "Dose History"
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         self.navigationController?.toolbar.translucent = true
         self.navigationController?.toolbar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-        self.navigationItem.leftBarButtonItem = self.editButtonItem()
         
         // Configure toolbar buttons
+        let fixedButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
+        let exportButton = UIBarButtonItem(title: "Export", style: UIBarButtonItemStyle.Plain, target: self, action: "exportDoses")
         let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: "deleteDoses")
         deleteButton.enabled = false
-        editButtons.append(deleteButton)
-        setToolbarItems(editButtons, animated: true)
         
+        normalButtons.append(exportButton)
+        normalButtons.append(fixedButton)
+        normalButtons.append(self.editButtonItem())
+        
+        editButtons.append(deleteButton)
+        editButtons.append(fixedButton)
+        editButtons.append(self.editButtonItem())
+
+        setToolbarItems(normalButtons, animated: false)
+
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        
+        self.navigationController?.setToolbarHidden(false, animated: animated)
+        
         loadHistory()
         displayEmptyView()
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -71,10 +86,8 @@ class HistoryTVC: UITableViewController {
         history.removeAll()
         
         // Store doses, sorted, in history array
-        for med in medication {
-            if let historySet = med.doseHistory {
-                history += historySet.array as! [Dose]
-            }
+        if let historySet = med.doseHistory {
+            history += historySet.array as! [Dose]
         }
         
         // Sort history
@@ -89,39 +102,33 @@ class HistoryTVC: UITableViewController {
         // Store dates in array
         dates = temp.sort({ $0.compare($1) == .OrderedDescending })
     }
-
+    
     func displayEmptyView() {
-        if medication.count == 0 {
-            navigationItem.rightBarButtonItem?.enabled = false
-            
-            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
-                tableView.backgroundView = emptyView
-            }
-        } else if history.count == 0 {
-            navigationItem.rightBarButtonItem?.enabled = true
+        if history.count == 0 {
+            self.editButtonItem().enabled = false
             
             // Create empty message
             if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
                 tableView.backgroundView = emptyView
             }
         } else {
-            navigationItem.leftBarButtonItem?.enabled = true
+            self.editButtonItem().enabled = true
             tableView.backgroundView = nil
         }
         
         tableView.reloadData()
     }
-    
+
     
     // MARK: - Table headers
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return dates.count
     }
-    
+
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let sectionDate = dates[section]
-        
+
         if cal.isDateInToday(sectionDate) {
             dateFormatter.timeStyle = NSDateFormatterStyle.NoStyle
             dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
@@ -162,7 +169,7 @@ class HistoryTVC: UITableViewController {
             header.textLabel?.attributedText = string
         }
     }
-    
+
     
     // MARK: - Table rows
     
@@ -177,25 +184,24 @@ class HistoryTVC: UITableViewController {
         let count = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)}).count
         return (count > 0) ? 55.0 : tableView.rowHeight
     }
-    
+
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {        
         let cell = tableView.dequeueReusableCellWithIdentifier("historyCell", forIndexPath: indexPath)
         let sectionDate = dates[indexPath.section]
         let dose = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)})[indexPath.row]
-        if let med = dose.medicine {
-            // Setup date formatter
-            dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-            dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
-            
-            // Specify selection color
-            cell.selectedBackgroundView = UIView()
-            
-            // Setup cell
-            cell.textLabel?.textColor = UIColor.blackColor()
-            cell.textLabel?.text = dateFormatter.stringFromDate(dose.date)
-            cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-            cell.detailTextLabel?.text = String(format:"%@ - %g %@", med.name!, dose.dosage, med.dosageUnit.units(dose.dosage))
-        }
+        
+        // Setup date formatter
+        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+        dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
+        
+        // Specify selection color
+        cell.selectedBackgroundView = UIView()
+
+        // Setup cell
+        cell.textLabel?.textColor = UIColor.blackColor()
+        cell.textLabel?.text = dateFormatter.stringFromDate(dose.date)
+        cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        cell.detailTextLabel?.text = String(format:"%g %@", dose.dosage, med.dosageUnit.units(dose.dosage))
         
         return cell
     }
@@ -231,16 +237,11 @@ class HistoryTVC: UITableViewController {
     
     override func setEditing(editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
-
-        if let tBC = self.tabBarController {
-            if editing == true {
-                self.navigationController?.setToolbarHidden(false, animated: false)
-                tBC.setTabBarVisible(false, animated: false)
-            } else {
-                self.navigationController?.setToolbarHidden(true, animated: false)
-                tBC.setTabBarVisible(true, animated: false)
-                updateDeleteButtonLabel()
-            }
+        
+        if editing == true {
+            setToolbarItems(editButtons, animated: true)
+        } else {
+            setToolbarItems(normalButtons, animated: true)
         }
     }
     
@@ -254,7 +255,7 @@ class HistoryTVC: UITableViewController {
         }
     }
     
-    func addDose() {
+    @IBAction func addDose() {
         performSegueWithIdentifier("addDose", sender: self)
     }
     
@@ -263,24 +264,23 @@ class HistoryTVC: UITableViewController {
             for indexPath in selectedRowIndexes.reverse() {
                 let sectionDate = dates[indexPath.section]
                 let dose = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)})[indexPath.row]
-                if let med = dose.medicine {
-                    history.removeObject(dose)
-                    
-                    if med.lastDose == dose {
-                        med.untakeLastDose(moc)
-                    } else {
-                        med.untakeDose(dose, moc: moc)
-                    }
-                    
-                    if tableView.numberOfRowsInSection(indexPath.section) == 1 {
-                        dates.removeObject(sectionDate)
-                        tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: .Automatic)
-                    } else {
-                        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
-                    }
+                
+                history.removeObject(dose)
+                
+                if med.lastDose == dose {
+                    med.untakeLastDose(moc)
+                } else {
+                    med.untakeDose(dose, moc: moc)
+                }
+                
+                if tableView.numberOfRowsInSection(indexPath.section) == 1 {
+                    dates.removeObject(sectionDate)
+                    tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: .Automatic)
+                } else {
+                    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
                 }
             }
-            
+
             if history.count == 0 {
                 displayEmptyView()
             }
@@ -293,13 +293,17 @@ class HistoryTVC: UITableViewController {
         }
     }
     
+    func exportDoses() {
+        print("Exporting...")
+    }
+    
     
     // MARK: - Navigation methods
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "addDose" {
             if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
-                vc.globalHistory = true
+                vc.med = med
             }
         }
     }
@@ -321,13 +325,30 @@ class HistoryTVC: UITableViewController {
             }
         }
     }
-    
+
 }
 
 
-// Protect against invalid arguments when deleting
-extension Array {
-    subscript (safe index: Int) -> Element? {
-        return indices ~= index ? self[index] : nil
-    }
-}
+
+
+
+// MARK: - Preview actions
+
+//    @available(iOS 9.0, *)
+//    override func previewActionItems() -> [UIPreviewActionItem] {
+//        return previewActions
+//    }
+//
+//    @available(iOS 9.0, *)
+//    lazy var previewActions: [UIPreviewActionItem] = {
+//        func previewActionForTitle(title: String, style: UIPreviewActionStyle = .Default) -> UIPreviewAction {
+//            return UIPreviewAction(title: title, style: style) { previewAction, viewController in
+//                guard let vc = viewController as? MedicineDetailsTVC else { return }
+//                vc.performSegueWithIdentifier("addDose", sender: nil)
+//                return
+//            }
+//        }
+//
+//        let action1 = previewActionForTitle("Take Dose")
+//        return [action1]
+//    }()

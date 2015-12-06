@@ -28,6 +28,8 @@ class SettingsTVC_Console: UITableViewController {
     }
     
     override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
         if loadNotifications() {
             tableView.reloadData()
         }

@@ -40,7 +40,6 @@ class AddDoseTVC: UITableViewController {
     
     // MARK: - Initialization
 
-    
     required init?(coder aDecoder: NSCoder) {
         // Setup context
         moc = appDelegate.managedObjectContext
@@ -51,6 +50,7 @@ class AddDoseTVC: UITableViewController {
         
         let entity = NSEntityDescription.entityForName("Dose", inManagedObjectContext: moc)
         dose = Dose(entity: entity!, insertIntoManagedObjectContext: moc)
+        dose.date = NSDate()
         
         super.init(coder: aDecoder)
     }
@@ -79,11 +79,14 @@ class AddDoseTVC: UITableViewController {
     }
     
     override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
         // Deselect selected row
         if let index = tableView.indexPathForSelectedRow {
             tableView.deselectRowAtIndexPath(index, animated: animated)
         }
 
+        updateDoseValues()
         updateLabels()
         
         tableView.reloadData()
@@ -95,12 +98,10 @@ class AddDoseTVC: UITableViewController {
     
     func updateDoseValues() {
         if let med = self.med {
-            dose.date = NSDate()
             dose.dosage = med.dosage
             dose.dosageUnitInt = med.dosageUnitInt
         } else if let med = medication.first {
             self.med = med
-            dose.date = NSDate()
             dose.dosage = med.dosage
             dose.dosageUnitInt = med.dosageUnitInt
         }
@@ -116,6 +117,8 @@ class AddDoseTVC: UITableViewController {
             prescriptionCell.selectionStyle = .None
             saveButton.enabled = false
         } else {
+            picker.setDate(dose.date, animated: true)
+            
             medLabel.text = med?.name
             doseLabel.text = String(format:"%g %@", dose.dosage, dose.dosageUnit.units(dose.dosage))
             
