@@ -89,6 +89,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UIApplication.sharedApplication().cancelAllLocalNotifications()
         NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
         NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshDetails", object: nil, userInfo: nil)
     }
     
     func applicationDidBecomeActive(application: UIApplication) {

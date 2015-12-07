@@ -13,10 +13,12 @@ class MedicineDetailsTVC: UITableViewController {
     
     weak var med:Medicine!
     
-    
     // MARK: - Outlets
     
     @IBOutlet var nameLabel: UILabel!
+    @IBOutlet var reminderToggle: UISwitch!
+    @IBOutlet var nextDoseCell: UITableViewCell!
+    @IBOutlet var nextDoseLabel: UILabel!
     @IBOutlet var prescriptionLabel: UILabel!
     
     
@@ -46,6 +48,9 @@ class MedicineDetailsTVC: UITableViewController {
         // Setup edit button
         let editButton = UIBarButtonItem(title: "Edit", style: .Plain, target: self, action: "editMedication")
         self.navigationItem.rightBarButtonItem = editButton
+        
+        // Add observeres for notifications
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateLabels", name: "refreshDetails", object: nil)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -66,12 +71,114 @@ class MedicineDetailsTVC: UITableViewController {
     }
     
     func updateLabels() {
+        nameLabel.textColor = UIColor.blackColor()
         nameLabel.text = med.name
         
-        if med.prescriptionCount.isNormal {
-            prescriptionLabel.text = "\(med.removeTrailingZero(med.prescriptionCount)) \(med.dosageUnit.units(med.prescriptionCount))"
+        reminderToggle.on  = med.reminderEnabled
+        
+        if med.refillHistory?.count > 0 {
+            prescriptionLabel.text = "\(med.removeTrailingZero(med.prescriptionCount)) \(med.dosageUnit.units(med.prescriptionCount)) remaining"
         } else {
             prescriptionLabel.text = "None"
+        }
+        
+        //updateNextDose()
+    }
+    
+    func updateNextDose() {
+        // Set subtitle
+        nextDoseCell.imageView?.image = UIImage(named: "NextDoseIcon")
+        nextDoseLabel.textColor = UIColor.blackColor()
+        
+        // If no doses taken
+        if med.doseHistory?.count == 0 {
+            nextDoseCell.imageView?.image = UIImage(named: "AddDoseIcon")
+            nextDoseLabel.textColor = UIColor.lightGrayColor()
+            nextDoseLabel.text = "Tap to take first dose"
+        }
+            
+            // If reminders aren't enabled for medication
+        else if med.reminderEnabled == false {
+            if let date = med.lastDose?.next {
+                if date.compare(NSDate()) == .OrderedDescending {
+                    nextDoseCell.imageView?.image = nil
+                    nextDoseLabel.textColor = UIColor.lightGrayColor()
+                    nextDoseLabel.text = "Unscheduled, \(Medicine.dateString(date))"
+                } else {
+                    nextDoseCell.imageView?.image = UIImage(named: "AddDoseIcon")
+                    nextDoseLabel.textColor = UIColor.lightGrayColor()
+                    nextDoseLabel.text = "Tap to take next dose"
+                }
+            }
+        }
+            
+        else {
+            // If medication is overdue, set subtitle to next dosage date and tint red
+            if med.isOverdue().flag {
+                nameLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                
+                var subtitle = "Overdue"
+                if let date = med.isOverdue().overdueDose {
+                    subtitle = Medicine.dateString(date)
+                }
+                
+                nextDoseCell.imageView?.image = UIImage(named: "OverdueIcon")
+                nextDoseLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                nextDoseLabel.text = subtitle
+            }
+                
+            // If notification scheduled, set date to next scheduled fire date
+            else if let date = med.scheduledNotifications?.first?.fireDate {
+                nextDoseLabel.text = Medicine.dateString(date)
+            }
+                
+            // Set subtitle to next dosage date
+            else if let date = med.nextDose {
+                nextDoseLabel.text = Medicine.dateString(date)
+            }
+                
+            // If no other conditions met, instruct user on how to take dose
+            else {
+                nextDoseCell.imageView?.image = UIImage(named: "AddDoseIcon")
+                nextDoseLabel.textColor = UIColor.lightGrayColor()
+                nextDoseLabel.text = "Tap to take first dose"
+            }
+        }
+    }
+    
+    
+    // MARK: - Table view data source
+    
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        let row = Rows(index: indexPath)
+        
+        switch row {
+        case Rows.name:
+            return 60.0
+        case Rows.addDose:
+            if med.reminderEnabled {
+                return tableView.rowHeight
+            }
+        default:
+            return tableView.rowHeight
+        }
+        
+        return 0
+    }
+    
+    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        let row = Rows(index: indexPath)
+        
+        cell.preservesSuperviewLayoutMargins = false
+        cell.layoutMargins = UIEdgeInsetsZero
+        cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
+        
+        switch row {
+        case Rows.reminderEnable:
+            if med.reminderEnabled == false {
+                cell.separatorInset = UIEdgeInsetsZero
+            }
+        default: break
         }
     }
     
@@ -79,13 +186,33 @@ class MedicineDetailsTVC: UITableViewController {
     // MARK: - Table view delegates
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if indexPath == NSIndexPath(forRow: 0, inSection: 1) {
+        let row = Rows(index: indexPath)
+        
+        switch row {
+        case Rows.name:
+            print("editing...")
+            performSegueWithIdentifier("editMedication", sender: nil)
+        case Rows.delete:
             presentDeleteAlert(indexPath)
+        default: break
         }
     }
 
 
     // MARK: - Actions
+    
+    @IBAction func toggleReminder(sender: UISwitch) {
+        med.reminderEnabled = sender.on
+        updateLabels()
+        
+        // Reload labels
+        let labels = [Rows.name.index(), Rows.reminderEnable.index()]
+        tableView.reloadRowsAtIndexPaths(labels, withRowAnimation: .None)
+        
+        // Reload table
+        tableView.beginUpdates()
+        tableView.endUpdates()
+    }
     
     func editMedication() {
         performSegueWithIdentifier("editMedication", sender: nil)
@@ -138,6 +265,18 @@ class MedicineDetailsTVC: UITableViewController {
             }
         }
         
+        if segue.identifier == "addDose" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
+                vc.med = self.med
+            }
+        }
+        
+        if segue.identifier == "addRefill" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
+                vc.med = self.med
+            }
+        }
+        
         if segue.identifier == "viewDoseHistory" {
             if let vc = segue.destinationViewController as? MedicineDoseHistoryTVC {
                 vc.med = self.med
@@ -151,4 +290,62 @@ class MedicineDetailsTVC: UITableViewController {
         }
     }
 
+}
+
+
+private enum Rows: Int {
+    case none = -1
+    case name
+    case reminderEnable
+    case addDose
+    case addRefill
+    case doseHistory
+    case refillHistory
+    case delete
+    
+    init(index: NSIndexPath) {
+        var row = Rows.none
+        
+        switch (index.section, index.row) {
+        case (0, 0):
+            row = Rows.name
+        case (0, 1):
+            row = Rows.reminderEnable
+        case (1, 0):
+            row = Rows.addDose
+        case (1, 1):
+            row = Rows.addRefill
+        case (2, 0):
+            row = Rows.doseHistory
+        case (2, 1):
+            row = Rows.refillHistory
+        case (3, 0):
+            row = Rows.delete
+        default:
+            row = Rows.none
+        }
+        
+        self = row
+    }
+    
+    func index() -> NSIndexPath {
+        switch self {
+        case .name:
+            return NSIndexPath(forRow: 0, inSection: 0)
+        case .reminderEnable:
+            return NSIndexPath(forRow: 1, inSection: 0)
+        case .addDose:
+            return NSIndexPath(forRow: 0, inSection: 1)
+        case .addRefill:
+            return NSIndexPath(forRow: 1, inSection: 1)
+        case .doseHistory:
+            return NSIndexPath(forRow: 0, inSection: 2)
+        case .refillHistory:
+            return NSIndexPath(forRow: 1, inSection: 2)
+        case .delete:
+            return NSIndexPath(forRow: 0, inSection: 3)
+        default:
+            return NSIndexPath(forRow: 0, inSection: 0)
+        }
+    }
 }

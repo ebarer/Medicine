@@ -105,14 +105,19 @@ class MedicineDoseHistoryTVC: UITableViewController {
     
     func displayEmptyView() {
         if history.count == 0 {
-            self.editButtonItem().enabled = false
+            for button in self.normalButtons {
+                button.enabled = false
+            }
             
             // Create empty message
             if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
                 tableView.backgroundView = emptyView
             }
         } else {
-            self.editButtonItem().enabled = true
+            for button in self.normalButtons {
+                button.enabled = true
+            }
+            
             tableView.backgroundView = nil
         }
         
@@ -199,7 +204,7 @@ class MedicineDoseHistoryTVC: UITableViewController {
 
         // Setup cell
         cell.textLabel?.textColor = UIColor.blackColor()
-        cell.textLabel?.text = dateFormatter.stringFromDate(dose.date)
+        cell.textLabel?.text = "\(dateFormatter.stringFromDate(dose.date))"
         cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         cell.detailTextLabel?.text = String(format:"%g %@", dose.dosage, med.dosageUnit.units(dose.dosage))
         

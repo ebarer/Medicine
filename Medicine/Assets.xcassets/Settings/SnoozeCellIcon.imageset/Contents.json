@@ -2,7 +2,7 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "snoozeIcon.png",
+      "filename" : "SnoozeIcon.png",
       "scale" : "1x"
     },
     {
@@ -12,7 +12,7 @@
     },
     {
       "idiom" : "universal",
-      "filename" : "snoozeIcon@3x.png",
+      "filename" : "SnoozeIcon@3x.png",
       "scale" : "3x"
     }
   ],

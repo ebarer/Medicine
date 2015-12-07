@@ -1188,7 +1188,7 @@
         <image name="Logo" width="250" height="213"/>
         <image name="MedicineTab" width="28" height="25"/>
         <image name="MedicineTab+Selected" width="28" height="25"/>
-        <image name="OverdueIcon" width="28" height="28"/>
+        <image name="OverdueIcon" width="20" height="20"/>
         <image name="RefillCellIcon" width="29" height="29"/>
         <image name="SettingsTab" width="25" height="25"/>
         <image name="SnoozeCellIcon" width="29" height="29"/>

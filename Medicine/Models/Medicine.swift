@@ -546,7 +546,12 @@ class Medicine: NSManagedObject {
      */
     func removeRefill(refill: Refill, moc: NSManagedObjectContext) {
         // Increase prescription count
-        self.prescriptionCount -= refill.quantity * refill.conversion
+        let amount = refill.quantity * refill.conversion
+        if self.prescriptionCount < amount {
+            self.prescriptionCount = 0
+        } else {
+            self.prescriptionCount -= amount
+        }
         
         moc.deleteObject(refill)
         
@@ -820,6 +825,11 @@ class Medicine: NSManagedObject {
                 else if isOverdue().flag {
                     return isOverdue().overdueDose
                 }
+                    
+                // If reminders are disable
+                else if reminderEnabled == false {
+                    return lastDose.next
+                }
                 
                 // Calculate next dose based on last dose taken, and update next value
                 else {
@@ -945,6 +955,14 @@ extension NSDate {
 
         return val
     }
+    
+//    public override var description : String {
+//        let dateFormatter = NSDateFormatter()
+//        dateFormatter.timeZone = NSTimeZone.systemTimeZone()
+//        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+//        dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
+//        return dateFormatter.stringFromDate(self)
+//    }
     
 }
 

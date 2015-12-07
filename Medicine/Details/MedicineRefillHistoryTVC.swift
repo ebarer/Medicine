@@ -105,14 +105,19 @@ class MedicineRefillHistoryTVC: UITableViewController {
     
     func displayEmptyView() {
         if history.count == 0 {
-            self.editButtonItem().enabled = false
+            for button in self.normalButtons {
+                button.enabled = false
+            }
             
             // Create empty message
             if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
                 tableView.backgroundView = emptyView
             }
         } else {
-            self.editButtonItem().enabled = true
+            for button in self.normalButtons {
+                button.enabled = true
+            }
+            
             tableView.backgroundView = nil
         }
         

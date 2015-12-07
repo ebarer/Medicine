@@ -349,11 +349,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         cell.title.text = med.name
         cell.title.textColor = UIColor.blackColor()
         
-        // Set subtitle
-        cell.hideGlyph(false)
-        cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
-        cell.subtitle.textColor = UIColor.blackColor()
-        
         // Set adherence score
         if let score = med.adherenceScore() {
             cell.adherenceScore.score = score
@@ -362,16 +357,34 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             cell.adherenceScoreLabel.text = "—"
         }
         
+        // Set subtitle
+        cell.hideGlyph(false)
+        cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
+        cell.subtitle.textColor = UIColor.blackColor()
+        
+        // If no doses taken
+        if med.doseHistory?.count == 0 {
+            cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
+            cell.subtitle.textColor = UIColor.lightGrayColor()
+            cell.subtitle.text = "Tap to take first dose"
+        }
+        
         // If reminders aren't enabled for medication
-        if med.reminderEnabled == false {
+        else if med.reminderEnabled == false {
             if let date = med.lastDose?.next {
                 if date.compare(NSDate()) == .OrderedDescending {
                     cell.hideGlyph(true)
                     cell.subtitle.textColor = UIColor.lightGrayColor()
                     cell.subtitle.text = "Unscheduled, \(Medicine.dateString(date))"
+                } else {
+                    cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
+                    cell.subtitle.textColor = UIColor.lightGrayColor()
+                    cell.subtitle.text = "Tap to take next dose"
                 }
             }
-        } else {
+        }
+        
+        else {
             // If medication is overdue, set subtitle to next dosage date and tint red
             if med.isOverdue().flag {
                 cell.title.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
@@ -396,7 +409,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 cell.subtitle.text = Medicine.dateString(date)
             }
                 
-            // If no doses taken, or other conditions met, instruct user on how to take dose
+            // If no other conditions met, instruct user on how to take dose
             else {
                 cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
                 cell.subtitle.textColor = UIColor.lightGrayColor()

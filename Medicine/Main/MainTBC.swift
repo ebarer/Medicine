@@ -87,6 +87,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                             if let med = Medicine.getMedicine(arr: medication, id: id) {
                                 med.snoozeNotification()
                                 NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+                                NSNotificationCenter.defaultCenter().postNotificationName("refreshDetails", object: nil, userInfo: nil)
                             }
                         }
                     }))
@@ -94,6 +95,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 
                 alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
                     NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+                    NSNotificationCenter.defaultCenter().postNotificationName("refreshDetails", object: nil, userInfo: nil)
                 }))
                 
                 alert.view.tintColor = UIColor.grayColor()
