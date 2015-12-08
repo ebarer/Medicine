@@ -93,13 +93,19 @@ class MedicineDetailsTVC: UITableViewController {
         }
         
         updateDose()
+        
+        // Correct inset
+        tableView.reloadRowsAtIndexPaths([Rows.name.index()], withRowAnimation: .None)
     }
     
     func updateDose() {
         // Set defaults
         nameCell.imageView?.image = nil
         nameLabel.textColor = UIColor.blackColor()
+        
         doseTitle.textColor = UIColor.lightGrayColor()
+        doseTitle.text = "Next Dose"
+        
         doseLabel.textColor = UIColor.blackColor()
         
         // If reminders aren't enabled for medication
@@ -138,7 +144,7 @@ class MedicineDetailsTVC: UITableViewController {
             else {
                 doseLabel.textColor = UIColor.lightGrayColor()
                 doseTitle.text = "No doses logged"
-                doseLabel.text = ""
+                doseLabel.text?.removeAll()
             }
         }
     }
@@ -146,12 +152,20 @@ class MedicineDetailsTVC: UITableViewController {
     
     // MARK: - Table view data source
     
+    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 0 {
+            return 20.0
+        }
+        
+        return 5.0
+    }
+    
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         let row = Rows(index: indexPath)
         
         switch row {
         case Rows.name:
-            return 60.0
+            return 70.0
         case Rows.actions:
             return 50.0
         case Rows.doseHistory: fallthrough
@@ -160,6 +174,20 @@ class MedicineDetailsTVC: UITableViewController {
             return 50.0
         default:
             return tableView.rowHeight
+        }
+    }
+    
+    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        let row = Rows(index: indexPath)
+        
+        cell.preservesSuperviewLayoutMargins = false
+        cell.layoutMargins = UIEdgeInsetsZero
+        
+        switch(row) {
+        case Rows.doseDetails:
+            cell.separatorInset = UIEdgeInsetsZero
+            // cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
+        default: break
         }
     }
     
