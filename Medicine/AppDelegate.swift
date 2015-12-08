@@ -24,63 +24,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
             if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
                 SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainTVC)
-                (vc as! MainTVC).moc = self.managedObjectContext
             }
         }
         
         // Setup background fetch to reload reschedule notifications
         UIApplication.sharedApplication().setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
         
-        // Reschedule notifications
-        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
-        
         // Register for notifications and actions
-        let notificationType: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
-        
-        let takeAction = UIMutableUserNotificationAction()
-            takeAction.identifier = "takeDose"
-            takeAction.title = "Take Dose"
-            takeAction.activationMode = UIUserNotificationActivationMode.Background
-            takeAction.destructive = false
-            takeAction.authenticationRequired = true
-        
-        let snoozeAction = UIMutableUserNotificationAction()
-            snoozeAction.identifier = "snoozeReminder"
-            snoozeAction.title = "Snooze"
-            snoozeAction.activationMode = UIUserNotificationActivationMode.Background
-            snoozeAction.destructive = false
-            snoozeAction.authenticationRequired = false
-        
-        let category = UIMutableUserNotificationCategory()
-            category.identifier = "Reminder"
-            category.setActions([takeAction, snoozeAction], forContext: UIUserNotificationActionContext.Default)
-        
-        let categories = NSSet(array: [category])
-        let settings = UIUserNotificationSettings(forTypes: notificationType, categories: categories as? Set<UIUserNotificationCategory>)
+        application.registerUserNotificationSettings(notificationSettings())
 
-        application.registerUserNotificationSettings(settings)
-
-        // Set user preferences
-        guard let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine") else { fatalError("No user defaults") }
-        
-        if !defaults.boolForKey("firstLaunch") {
-            defaults.setInteger(SortOrder.NextDosage.rawValue, forKey: "sortOrder")         // Set sort order to "next dosage"
-            defaults.setInteger(5, forKey: "snoozeLength")      // Set snooze duration to 5 minutes
-            defaults.setBool(false, forKey: "debug")            // Disable debug
-            defaults.synchronize()
-        }
-
-        if  UIDevice.currentDevice().identifierForVendor?.UUIDString == "104AFCAA-C1C8-4628-8B81-7ED680C8157B" ||
-            UIDevice.currentDevice().identifierForVendor?.UUIDString == "3CF28B81-5657-465E-96B4-1E094CE335B3" ||
-            UIDevice.currentDevice().identifierForVendor?.UUIDString == "A2AD279E-6719-4BAD-B5FA-250D90285D08" {
-            defaults.setBool(true, forKey: "debug")      // Turn on debug mode for approved devices
-        }
+        setUserDefaults()
         
         // Handle application shortcut
         if #available(iOS 9.0, *) {
             if let _ = launchOptions?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
                 launchedShortcutItem = launchOptions
                 return false
+            }
+        }
+        
+        // Handle local notification
+        if let notification = launchOptions?[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
+            if notification.category == "Dose Reminder" {
+                NSNotificationCenter.defaultCenter().postNotificationName("doseNotification", object: nil, userInfo: notification.userInfo)
+                UIApplication.sharedApplication().cancelLocalNotification(notification)
+            } else if notification.category == "Refill Reminder" {
+                NSNotificationCenter.defaultCenter().postNotificationName("refillNotification", object: nil, userInfo: notification.userInfo)
+                UIApplication.sharedApplication().cancelLocalNotification(notification)
             }
         }
         
@@ -94,6 +64,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 SKPaymentQueue.defaultQueue().removeTransactionObserver(vc as! MainTVC)
             }
         }
+        
+        UIApplication.sharedApplication().cancelAllLocalNotifications()
+        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
     }
     
     func applicationDidEnterBackground(application: UIApplication) {
@@ -113,8 +86,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
+        UIApplication.sharedApplication().cancelAllLocalNotifications()
         NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
         NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshDetails", object: nil, userInfo: nil)
     }
     
     func applicationDidBecomeActive(application: UIApplication) {
@@ -139,15 +114,83 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Saves changes in the application's managed object context before the application terminates.
         self.saveContext()
         
-        // Reschedule notifications
-        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
-        
         // Remove IAP observers
         if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
             if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
                 SKPaymentQueue.defaultQueue().removeTransactionObserver(vc as! MainTVC)
             }
         }
+        
+        UIApplication.sharedApplication().cancelAllLocalNotifications()
+        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+    }
+    
+    
+    // MARK: - Application helper methods
+    
+    func setUserDefaults() {
+        guard let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine") else { fatalError("No user defaults") }
+        
+        if defaults.valueForKey("sortOrder") == nil {
+            // Set sort order to "next dosage"
+            defaults.setInteger(SortOrder.NextDosage.rawValue, forKey: "sortOrder")
+        }
+        
+        if (defaults.valueForKey("snoozeLength") == nil) {
+            // Set snooze duration to 5 minutes
+            defaults.setInteger(5, forKey: "snoozeLength")
+        }
+        
+        if (defaults.valueForKey("refillTime") == nil) {
+            // Set refill time to 3 days
+            defaults.setInteger(3, forKey: "refillTime")
+        }
+        
+        if  UIDevice.currentDevice().identifierForVendor?.UUIDString == "104AFCAA-C1C8-4628-8B81-7ED680C8157B" ||
+            UIDevice.currentDevice().identifierForVendor?.UUIDString == "3CF28B81-5657-465E-96B4-1E094CE335B3" ||
+            UIDevice.currentDevice().identifierForVendor?.UUIDString == "A2AD279E-6719-4BAD-B5FA-250D90285D08" {
+                defaults.setBool(true, forKey: "debug")      // Turn on debug mode for approved devices
+        } else {
+            defaults.setBool(false, forKey: "debug")         // Disable debug
+        }
+        
+        defaults.synchronize()
+    }
+    
+    func notificationSettings() -> UIUserNotificationSettings {
+        let notificationType: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
+        
+        let takeAction = UIMutableUserNotificationAction()
+        takeAction.identifier = "takeDose"
+        takeAction.title = "Take Dose"
+        takeAction.activationMode = UIUserNotificationActivationMode.Background
+        takeAction.destructive = false
+        takeAction.authenticationRequired = true
+        
+        let snoozeAction = UIMutableUserNotificationAction()
+        snoozeAction.identifier = "snoozeReminder"
+        snoozeAction.title = "Snooze"
+        snoozeAction.activationMode = UIUserNotificationActivationMode.Background
+        snoozeAction.destructive = false
+        snoozeAction.authenticationRequired = false
+        
+        let doseCategory = UIMutableUserNotificationCategory()
+        doseCategory.identifier = "Dose Reminder"
+        doseCategory.setActions([takeAction, snoozeAction], forContext: UIUserNotificationActionContext.Default)
+        
+        let refillAction = UIMutableUserNotificationAction()
+        refillAction.identifier = "refillMed"
+        refillAction.title = "Refill Medication"
+        refillAction.activationMode = UIUserNotificationActivationMode.Foreground
+        refillAction.destructive = false
+        refillAction.authenticationRequired = true
+        
+        let refillCategory = UIMutableUserNotificationCategory()
+        refillCategory.identifier = "Refill Reminder"
+        refillCategory.setActions([refillAction], forContext: UIUserNotificationActionContext.Default)
+        
+        let categories = NSSet(array: [doseCategory, refillCategory])
+        return UIUserNotificationSettings(forTypes: notificationType, categories: categories as? Set<UIUserNotificationCategory>)
     }
     
     
@@ -200,19 +243,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: - Push Notifications stack
     
-    func application(application: UIApplication, didRegisterUserNotificationSettings notificationSettings: UIUserNotificationSettings) {
-        application.registerUserNotificationSettings(notificationSettings)
-    }
-    
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
-        NSNotificationCenter.defaultCenter().postNotificationName("medNotification", object: nil, userInfo: notification.userInfo)
+        if notification.category == "Dose Reminder" {
+            NSNotificationCenter.defaultCenter().postNotificationName("doseNotification", object: nil, userInfo: notification.userInfo)
+            UIApplication.sharedApplication().cancelLocalNotification(notification)
+        } else if notification.category == "Refill Reminder" {
+            NSNotificationCenter.defaultCenter().postNotificationName("refillNotification", object: nil, userInfo: notification.userInfo)
+            UIApplication.sharedApplication().cancelLocalNotification(notification)
+        }
     }
     
     func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {
         if identifier == "takeDose" {
-            NSNotificationCenter.defaultCenter().postNotificationName("takeDoseNotification", object: nil, userInfo: notification.userInfo)
-        } else if identifier == "snoozeReminder" {
-            NSNotificationCenter.defaultCenter().postNotificationName("snoozeReminderNotification", object: nil, userInfo: notification.userInfo)
+            NSNotificationCenter.defaultCenter().postNotificationName("takeDoseAction", object: nil, userInfo: notification.userInfo)
+            UIApplication.sharedApplication().cancelLocalNotification(notification)
+        }
+        
+        if identifier == "snoozeReminder" {
+            NSNotificationCenter.defaultCenter().postNotificationName("snoozeReminderAction", object: nil, userInfo: notification.userInfo)
+            UIApplication.sharedApplication().cancelLocalNotification(notification)
+        }
+        
+        if identifier == "refillMed" {
+            NSNotificationCenter.defaultCenter().postNotificationName("refillAction", object: nil, userInfo: notification.userInfo)
+            UIApplication.sharedApplication().cancelLocalNotification(notification)
         }
         
         completionHandler()

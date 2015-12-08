@@ -31,7 +31,8 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     }
     
     override func viewWillAppear(animated: Bool) {
-        self.preferredContentSize = CGSizeMake(0, size);
+        super.viewWillAppear(animated)
+        self.preferredContentSize = CGSizeMake(0, size)
         updateLabels()
     }
     
@@ -63,7 +64,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
                     doseMedLabel.text = (data["medString"] as? String)
                     size = 130.0
                     
-                    self.preferredContentSize = CGSizeMake(0, size);
+                    self.preferredContentSize = CGSizeMake(0, size)
                     return NCUpdateResult.NewData
                 }
             }
@@ -76,7 +77,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             doseMedLabel.text = nil
             size = 75.0
             
-            self.preferredContentSize = CGSizeMake(0, size);
+            self.preferredContentSize = CGSizeMake(0, size)
             return NCUpdateResult.NewData
         }
         
@@ -88,7 +89,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         doseMedLabel.text = nil
         size = 75.0
         
-        self.preferredContentSize = CGSizeMake(0, size);
+        self.preferredContentSize = CGSizeMake(0, size)
         return NCUpdateResult.NewData
     }
     

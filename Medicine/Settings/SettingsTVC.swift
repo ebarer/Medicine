@@ -20,6 +20,7 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     @IBOutlet var sortLabel: UILabel!
     @IBOutlet var snoozeLabel: UILabel!
+    @IBOutlet var refillLabel: UILabel!
     @IBOutlet var versionString: UILabel!
     @IBOutlet var copyrightString: UILabel!
 
@@ -46,11 +47,15 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     }
     
     override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
         if let index = tableView.indexPathForSelectedRow {
             self.tableView.deselectRowAtIndexPath(index, animated: animated)
         }
         
         setLabels()
+        
+        tableView.reloadData()
     }
 
     override func didReceiveMemoryWarning() {
@@ -68,15 +73,26 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         }
         
         // Set snooze label
-        var amount = defaults.integerForKey("snoozeLength")
+        var snoozeLength = defaults.integerForKey("snoozeLength")
         
-        if amount == 0 {
-            amount = 5
+        if snoozeLength == 0 {
+            snoozeLength = 5
         }
         
-        var string = "\(amount) minute"
-        if (amount < 1 || amount >= 2) { string += "s" }
-        snoozeLabel.text = string
+        var snoozeString = "\(snoozeLength) minute"
+        if (snoozeLength < 1 || snoozeLength >= 2) { snoozeString += "s" }
+        snoozeLabel.text = snoozeString
+        
+        // Set refill label
+        var refillTime = defaults.integerForKey("refillTime")
+        
+        if refillTime == 0 {
+            refillTime = 3
+        }
+        
+        var refillString = "\(refillTime) day"
+        if (refillTime < 1 || refillTime >= 2) { refillString += "s" }
+        refillLabel.text = refillString
     }
     
     
@@ -85,6 +101,21 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // Hide console and help buttons if debug disabled
         return defaults.boolForKey("debug") == true ? 4 : 3
+    }
+    
+    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        switch section {
+        case 0:
+            if let amount = refillLabel.text {
+                return "You will be reminded to refill your medication when you have \(amount) worth of medication remaining."
+            } else {
+                return nil
+            }
+        case 1:
+            return "Got a great idea, or seeing a pesky bug? Let us know!"
+        default:
+            return nil
+        }
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {

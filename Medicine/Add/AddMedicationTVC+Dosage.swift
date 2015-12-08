@@ -10,7 +10,8 @@ import UIKit
 
 class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
     
-    weak var med: Medicine?
+    var med: Medicine!
+    var editMode: Bool = false
     
     
     // MARK: - Outlets
@@ -29,19 +30,19 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         
         // Set values
-        if let medicine = med {
-            dosageInput.text = String(format:"%g", medicine.dosage)
+        dosageInput.text = String(format:"%g", med.dosage)
 
-            dosageUnitLabel.text = medicine.dosageUnit.units(medicine.dosage)
-            dosageUnitPicker.selectRow(Int(medicine.dosageUnitInt), inComponent: 0, animated: false)
-        }
+        dosageUnitLabel.text = med.dosageUnit.description
+        dosageUnitPicker.selectRow(Int(med.dosageUnitInt), inComponent: 0, animated: false)
     }
     
     override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
         dosageInput.becomeFirstResponder()
     }
     
     override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
         dosageInput.resignFirstResponder()
     }
     
@@ -52,8 +53,31 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
     
     // MARK: - Table view data source
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        switch indexPath {
+        case NSIndexPath(forRow: 2, inSection: 0):
+            if editMode == false {
+                return 162
+            }
+        default:
+            return tableView.rowHeight
+        }
+        
+        return 0
+    }
+    
+    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        cell.preservesSuperviewLayoutMargins = false
+        cell.layoutMargins = UIEdgeInsetsZero
+        cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
+        
+        switch indexPath {
+        case NSIndexPath(forRow: 1, inSection: 0):
+            if editMode == true {
+                cell.separatorInset = UIEdgeInsetsZero
+            }
+        default: break
+        }
     }
     
     
@@ -80,8 +104,8 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if let unit = Doses(rawValue: Int16(row)) {
-            med?.dosageUnit = unit
-            dosageUnitLabel.text = unit.units(med?.dosage)
+            med.dosageUnit = unit
+            dosageUnitLabel.text = unit.description
         }
     }
     
@@ -90,9 +114,7 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
     
     @IBAction func updateDosage(sender: UITextField) {
         if let value = sender.text {
-            let val = (value as NSString).floatValue            
-            med?.dosage = val
-            dosageUnitLabel.text = med?.dosageUnit.units(med?.dosage)
+            med.dosage = (value as NSString).floatValue
         }
     }
     

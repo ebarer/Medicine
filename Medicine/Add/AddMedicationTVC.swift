@@ -11,7 +11,7 @@ import CoreData
 
 class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
     
-    weak var med: Medicine?
+    var med: Medicine!
     var editMode: Bool = false
     
     
@@ -23,45 +23,77 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     @IBOutlet var reminderToggle: UISwitch!
     @IBOutlet var intervalLabel: UILabel!
     @IBOutlet var intervalCell: UITableViewCell!
+    @IBOutlet var prescriptionLabel: UILabel!
     
     
     // MARK: - Helper variables
     
+    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    var moc: NSManagedObjectContext
     let cal = NSCalendar.currentCalendar()
     let dateFormatter = NSDateFormatter()
     
+    
+    // MARK: - Initialization
+    
+    required init?(coder aDecoder: NSCoder) {
+        // Setup context
+        moc = appDelegate.managedObjectContext
+        
+        // Setup date formatter
+        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+        dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
+        
+        super.init(coder: aDecoder)
+    }
+
     
     // MARK: - View methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.clearsSelectionOnViewWillAppear = true
+        
+        // Modify VC
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         
-        if med == nil {
-            let moc = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+        // Setup medicine object
+        if editMode == false {
             let entity = NSEntityDescription.entityForName("Medicine", inManagedObjectContext: moc)
             med = Medicine(entity: entity!, insertIntoManagedObjectContext: moc)
         }
     }
     
-    override func viewDidAppear(animated: Bool) {
-        if let medicine = med {
-            if medicine.name == nil || medicine.name?.isEmpty == true {
-                medicationName.becomeFirstResponder()
-            }
-        }
-    }
-    
     override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Deselect selected row
         if let index = tableView.indexPathForSelectedRow {
             tableView.deselectRowAtIndexPath(index, animated: animated)
         }
         
+        if !editMode {
+            self.title = "New Medication"
+        } else {
+            self.title = "Edit Medication"
+            prescriptionLabel.text = "Refill Prescription"
+        }
+        
         updateLabels()
+
+        tableView.reloadData()
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if med.name == nil || med.name?.isEmpty == true {
+            medicationName.becomeFirstResponder()
+        }
     }
     
     override func viewWillDisappear(animated: Bool) {
-        medicationName.resignFirstResponder()
+        self.view.endEditing(true)
     }
     
     override func didReceiveMemoryWarning() {
@@ -69,70 +101,123 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     }
     
     func updateLabels() {
-        if let medicine = med {
-            medicationName.text = medicine.name
-            
-            // If medication has no name, disable save button
-            if medicine.name == nil || medicine.name?.isEmpty == true {
-                saveButton.enabled = false
-                self.navigationItem.backBarButtonItem?.title = "Back"
+        // Set name label
+        medicationName.text = med.name
+        
+        // Set dosage label
+        dosageLabel.text = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
+        
+        // Set reminder toggle
+        reminderToggle.on = med.reminderEnabled
+        
+        // Set interval label
+        intervalLabel.text = "Every " + med.intervalLabel()
+        
+        // If medication has no name, disable save button
+        if med.name == nil || med.name?.isEmpty == true {
+            saveButton.enabled = false
+            self.navigationItem.backBarButtonItem?.title = "Back"
+        } else {
+            saveButton.enabled = true
+            self.navigationItem.backBarButtonItem?.title = med.name
+        }
+    }
+    
+    
+    // MARK: - Table view data source
+    
+    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        switch section {
+        case Rows.prescription.index().section:
+            if med.name != nil && med.name != "" {
+                return tableView.rowHeight
+            }
+        default:
+            return UITableViewAutomaticDimension
+        }
+        
+        return 0
+    }
+    
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        let row = Rows(index: indexPath)
+        
+        switch row {
+        case Rows.prescription:
+            if med.name != nil && med.name != "" {
+                return 48.0
+            }
+        case Rows.interval:
+            if med.reminderEnabled == true {
+                return tableView.rowHeight
+            }
+        default:
+            return tableView.rowHeight
+        }
+        
+        return 0
+    }
+    
+    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        let row = Rows(index: indexPath)
+        
+        cell.preservesSuperviewLayoutMargins = false
+        cell.layoutMargins = UIEdgeInsetsZero
+        
+        switch(row) {
+        case Rows.name:
+            cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
+        case Rows.dosage:
+            if med.reminderEnabled == true {
+                cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
             } else {
-                saveButton.enabled = true
-                self.navigationItem.backBarButtonItem?.title = med?.name
+                cell.separatorInset = UIEdgeInsetsZero
             }
-            
-            // Set dosage label
-            dosageLabel.text = String(format:"%g %@", medicine.dosage, medicine.dosageUnit.units(medicine.dosage))
-            
-            // Set reminder toggle
-            if let enabled = med?.reminderEnabled {
-                reminderToggle.on = enabled
+        default: break
+        }
+    }
+    
+    override func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        switch section {
+        case Rows.prescription.index().section:
+            if med.name != nil && med.name != "" {
+                return tableView.rowHeight
             }
-            
-            // Set interval label
-            // Change interval label if reminders disabled
-            let hr = Int(medicine.interval)
-            let min = Int(60 * (medicine.interval % 1))
-            let hrUnit = medicine.intervalUnit.units(medicine.interval)
-            
-            if hr == 1 && min == 0 {
-                intervalLabel.text = String(format:"Every %@", hrUnit.capitalizedString)
-            } else if min == 0 {
-                intervalLabel.text = String(format:"Every %d %@", hr, hrUnit)
-            } else if hr == 0 {
-                intervalLabel.text = String(format:"Every %d min", min)
-            } else {
-                intervalLabel.text = String(format:"Every %d %@ %d min", hr, hrUnit, min)
-            }
-            
-            // Append alarm time for daily interval
-            if medicine.intervalUnit == .Daily {
-                if let alarm = medicine.intervalAlarm {
-                    if alarm.isMidnight() {
-                        intervalLabel.text?.appendContentsOf(" at Midnight")
-                    } else {
-                        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-                        dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
-                        intervalLabel.text?.appendContentsOf(String(format:" at %@", dateFormatter.stringFromDate(alarm)))
-                    }
-                }
+        default:
+            return UITableViewAutomaticDimension
+        }
+        
+        return 0
+    }
+    
+    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        if section == Rows.prescription.index().section {
+            if med.refillHistory?.count > 0 {
+                return med.refillStatus()
+            } else if med.name != nil && med.name != "" {
+                return "Keep track of your prescription levels, and be reminded to refill when running low."
             }
         }
+        
+        return nil
     }
     
     
     // MARK: - Table view delegate
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 2
-    }
-    
-    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if section == Rows.prescription.index().section {
-            return "Keep track of your prescription levels, and be reminded to refill when running low."
+    override func tableView(tableView: UITableView, shouldHighlightRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        let row = Rows(index: indexPath)
+        
+        switch row {
+        case Rows.prescription:
+            if med.name == nil || med.name == "" {
+                return false
+            }
+        default:
+            return true
         }
         
-        return nil
+        return true
     }
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
@@ -141,36 +226,103 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     }
     
     
-    // MARK: - Set medicine values
+    // MARK: - Actions
     
     @IBAction func updateName(sender: UITextField) {
-        med?.name = sender.text
+        let temp = med.name
+        med.name = sender.text
         updateLabels()
+        
+        // Reload table view
+        if temp == nil || temp == "" || sender.text!.isEmpty {
+            tableView.reloadSections(NSIndexSet(index: Rows.prescription.index().section), withRowAnimation: .Automatic)
+            tableView.beginUpdates()
+            tableView.endUpdates()
+        }
     }
     
     @IBAction func toggleReminder(sender: UISwitch) {
-        med?.reminderEnabled = sender.on
-        tableView.reloadRowsAtIndexPaths([Rows.reminderEnable.index()], withRowAnimation: .None)
-        
-        // Reload table
+        med.reminderEnabled = sender.on
+
+        // Update rows
+        tableView.reloadRowsAtIndexPaths([Rows.dosage.index()], withRowAnimation: UITableViewRowAnimation.None)
         tableView.beginUpdates()
         tableView.endUpdates()
     }
     
+    
     // MARK: - Navigation
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if let vc = segue.destinationViewController as? AddMedicationTVC_Dosage {
-            vc.med = self.med
+    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+        if med.name == nil || med.name == "" {
+            if identifier == "refillPrescription" {
+                return false
+            }
         }
         
-        if let vc = segue.destinationViewController as? AddMedicationTVC_Interval {
-            vc.med = self.med
-            vc.editMode = self.editMode
+        return true
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "setDosage" {
+            if let vc = segue.destinationViewController as? AddMedicationTVC_Dosage {
+                vc.med = self.med
+                vc.editMode = self.editMode
+            }
+        }
+        
+        if segue.identifier == "setInterval" {
+            if let vc = segue.destinationViewController as? AddMedicationTVC_Interval {
+                vc.med = self.med
+                vc.editMode = self.editMode
+            }
+        }
+        
+        if segue.identifier == "refillPrescription" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
+                vc.med = self.med
+            }
         }
     }
     
+    @IBAction func saveMedication(sender: AnyObject) {
+        if !editMode {
+            let insertIndex = NSIndexPath(forRow: medication.count, inSection: 0)
+            med.sortOrder = Int16(insertIndex.row)
+            medication.append(med)
+        } else {
+            if let lastDose = med.lastDose {
+                do {
+                    lastDose.next = try med.calculateNextDose(lastDose.date)
+                } catch {
+                    print("Unable to update last dose")
+                }
+            }
+        }
+        
+        appDelegate.saveContext()
+        
+        // Reschedule next notification
+        med.scheduleNextNotification()
+        
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    @IBAction func cancelMedication(sender: AnyObject) {
+        if !editMode {
+            moc.deleteObject(med)
+        } else {
+            moc.rollback()
+        }
+        
+        appDelegate.saveContext()
+        
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
 }
+
 
 private enum Rows: Int {
     case none = -1

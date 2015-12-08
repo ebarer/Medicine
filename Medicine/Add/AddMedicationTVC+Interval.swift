@@ -10,7 +10,7 @@ import UIKit
 
 class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
 
-    weak var med: Medicine?
+    var med: Medicine!
     var editMode: Bool = false
     
     
@@ -48,43 +48,41 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
             selectedRow = Rows.intervalLabel
         }
         
-        // Set values
-        if let medicine = med {
-            // Set interval unit
-            intervalUnitLabel.text = medicine.intervalUnit.description
-            intervalUnitPicker.selectRow(Int(medicine.intervalUnit.rawValue), inComponent: 0, animated: false)
+        // Set interval unit
+        intervalUnitLabel.text = med.intervalUnit.description
+        intervalUnitPicker.selectRow(Int(med.intervalUnit.rawValue), inComponent: 0, animated: false)
+        
+        // Set interval
+        updateIntervalLabel()
+        if (med.intervalUnit == Intervals.Hourly) {
+            let hr = Int(med.interval)
+            let min = String(Int(60 * (med.interval % 1)))
             
-            // Set interval
-            updateIntervalLabel()
-            if (med?.intervalUnit == Intervals.Hourly) {
-                let hr = Int(medicine.interval)
-                let min = String(Int(60 * (medicine.interval % 1)))
-                
-                intervalPicker.selectRow(hr, inComponent: 0, animated: false)
-                
-                if let minIndex = minutes.indexOf(min) {
-                    intervalPicker.selectRow(minIndex, inComponent: 2, animated: false)
-                } else {
-                    intervalPicker.selectRow(0, inComponent: 2, animated: false)
-                }
+            intervalPicker.selectRow(hr, inComponent: 0, animated: false)
+            
+            if let minIndex = minutes.indexOf(min) {
+                intervalPicker.selectRow(minIndex, inComponent: 2, animated: false)
             } else {
-                intervalPicker.selectRow(Int(medicine.interval) - 1, inComponent: 0, animated: false)
+                intervalPicker.selectRow(0, inComponent: 2, animated: false)
             }
-            
-            if let alarm = medicine.intervalAlarm {
-                if alarm.isMidnight() {
-                    alarmLabel.text = "Midnight"
-                } else {
-                    alarmLabel.text = dateFormatter.stringFromDate(alarm)
-                }
-
-                let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
-                alarmPicker.date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: NSDate(), options: [])!
+        } else {
+            intervalPicker.selectRow(Int(med.interval) - 1, inComponent: 0, animated: false)
+        }
+        
+        // Set alarm
+        if let alarm = med.intervalAlarm {
+            if alarm.isMidnight() {
+                alarmLabel.text = "Midnight"
             } else {
-                if let date = cal.dateBySettingUnit(NSCalendarUnit.Minute, value: 0, ofDate: NSDate(), options: []) {
-                    alarmPicker.date = date
-                    alarmLabel.text = dateFormatter.stringFromDate(date)
-                }
+                alarmLabel.text = dateFormatter.stringFromDate(alarm)
+            }
+
+            let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
+            alarmPicker.date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: NSDate(), options: [])!
+        } else {
+            if let date = cal.dateBySettingUnit(NSCalendarUnit.Minute, value: 0, ofDate: NSDate(), options: []) {
+                alarmPicker.date = date
+                alarmLabel.text = dateFormatter.stringFromDate(date)
             }
         }
     }
@@ -109,7 +107,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
                 return 175
             }
         case Rows.alarmLabel:
-            if med?.intervalUnit == Intervals.Daily {
+            if med.intervalUnit == Intervals.Daily {
                 return tableView.rowHeight
             }
         case Rows.alarmPicker:
@@ -179,7 +177,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         }
         
         if (pickerView == intervalPicker) {
-            if (med?.intervalUnit == Intervals.Hourly) {
+            if (med.intervalUnit == Intervals.Hourly) {
                 return 4
             } else {
                 return 2
@@ -195,7 +193,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         }
         
         if (pickerView == intervalPicker) {
-            if (med?.intervalUnit == Intervals.Hourly) {
+            if (med.intervalUnit == Intervals.Hourly) {
                 switch(component) {
                 case 0:
                     return 24
@@ -223,7 +221,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         }
         
         if (pickerView == intervalPicker) {
-            if (med?.intervalUnit == Intervals.Hourly) {
+            if (med.intervalUnit == Intervals.Hourly) {
                 switch(component) {
                 case 1:
                     return 80.0
@@ -257,16 +255,15 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         }
         
         if (pickerView == intervalPicker) {
-            if (med?.intervalUnit == Intervals.Hourly) {
+            if (med.intervalUnit == Intervals.Hourly) {
                 switch(component) {
                 case 0:
                     return NSAttributedString(string: "\(row)")
                 case 1:
-                    if let unit = med?.intervalUnit.units(med?.interval) {
-                        let label = NSMutableAttributedString(string: unit)
-                        label.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, label.length))
-                        return label
-                    }
+                    let unit = med.intervalUnit.units(med.interval)
+                    let label = NSMutableAttributedString(string: unit)
+                    label.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, label.length))
+                    return label
                 case 2:
                     return NSAttributedString(string: minutes[row % 4])
                 case 3:
@@ -281,11 +278,10 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
                 case 0:
                     return NSAttributedString(string: "\(row+1)")
                 default:
-                    if let unit = med?.intervalUnit.units(med?.interval) {
-                        let label = NSMutableAttributedString(string: unit)
-                        label.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, label.length))
-                        return label
-                    }
+                    let unit = med.intervalUnit.units(med.interval)
+                    let label = NSMutableAttributedString(string: unit)
+                    label.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, label.length))
+                    return label
                 }
             }
         }
@@ -297,96 +293,89 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
     // MARK: - Picker delegate
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if let medicine = med {
-            if (pickerView == intervalUnitPicker) {
-                if let unit = Intervals(rawValue: Int16(row)) {
-                    medicine.intervalUnit = unit
-                    medicine.interval = 1.0
-                    
-                    intervalUnitLabel.text = unit.description
-                    updateIntervalLabel()
+        if (pickerView == intervalUnitPicker) {
+            if let unit = Intervals(rawValue: Int16(row)) {
+                med.intervalUnit = unit
+                med.interval = 1.0
                 
-                    switch(medicine.intervalUnit) {
-                    case .Hourly:
-                        intervalPicker.selectRow(1, inComponent: 0, animated: false)
-                        medicine.intervalAlarm = nil
-                    case .Daily:
-                        intervalPicker.selectRow(0, inComponent: 0, animated: false)
-                        medicine.intervalAlarm = alarmPicker.date
-                    default: break
-                    }
-                    
-                    // Reload interval picker to account for changed units
-                    intervalPicker.reloadAllComponents()
-                }
-            }
-            
-            if (pickerView == intervalPicker) {
-                if (medicine.intervalUnit == Intervals.Hourly) {
-                    // Prevent selection of 0 hours and minutes
-                    if (row == 0 && component == 0 && pickerView.selectedRowInComponent(2) == 0) {
-                        pickerView.selectRow(1, inComponent: 2, animated: true)
-                    } else if (row == 0 && component == 2 && pickerView.selectedRowInComponent(0) == 0) {
-                        pickerView.selectRow(1, inComponent: 0, animated: true)
-                    }
-                    
-                    let hr = Float(pickerView.selectedRowInComponent(0))
-                    let min = (minutes[pickerView.selectedRowInComponent(2)] as NSString).floatValue / 60
-                    medicine.interval = hr + min
-                } else {
-                    medicine.interval = Float(row) + 1
-                }
-                
+                intervalUnitLabel.text = unit.description
                 updateIntervalLabel()
+            
+                switch(med.intervalUnit) {
+                case .Hourly:
+                    intervalPicker.selectRow(1, inComponent: 0, animated: false)
+                    med.intervalAlarm = nil
+                case .Daily:
+                    intervalPicker.selectRow(0, inComponent: 0, animated: false)
+                    med.intervalAlarm = alarmPicker.date
+                default: break
+                }
                 
                 // Reload interval picker to account for changed units
                 intervalPicker.reloadAllComponents()
             }
-            
-            // Reload table view
-            tableView.beginUpdates()
-            tableView.endUpdates()
         }
+        
+        if (pickerView == intervalPicker) {
+            if (med.intervalUnit == Intervals.Hourly) {
+                // Prevent selection of 0 hours and minutes
+                if (row == 0 && component == 0 && pickerView.selectedRowInComponent(2) == 0) {
+                    pickerView.selectRow(1, inComponent: 2, animated: true)
+                } else if (row == 0 && component == 2 && pickerView.selectedRowInComponent(0) == 0) {
+                    pickerView.selectRow(1, inComponent: 0, animated: true)
+                }
+                
+                let hr = Float(pickerView.selectedRowInComponent(0))
+                let min = (minutes[pickerView.selectedRowInComponent(2)] as NSString).floatValue / 60
+                med.interval = hr + min
+            } else {
+                med.interval = Float(row) + 1
+            }
+            
+            updateIntervalLabel()
+            
+            // Reload interval picker to account for changed units
+            intervalPicker.reloadAllComponents()
+        }
+        
+        // Reload table view
+        tableView.beginUpdates()
+        tableView.endUpdates()
     }
     
     
     // MARK: - Update interval values
     
     func updateIntervalLabel() {
-        if let medicine = med {
-            let hr = Int(medicine.interval)
-            let min = Int(60 * (medicine.interval % 1))
-            let hrUnit = medicine.intervalUnit.units(medicine.interval)
-            
-            if (hr == 1 && min == 0) {
-                intervalLabel.text = String(format:"%@", hrUnit.capitalizedString)
-            } else if (min == 0) {
-                intervalLabel.text = String(format:"%d %@", hr, hrUnit)
-            } else if (hr == 0) {
-                intervalLabel.text = String(format:"%d min", min)
-            } else {
-                intervalLabel.text = String(format:"%d %@ %d min", hr, hrUnit, min)
-            }
+        let hr = Int(med.interval)
+        let min = Int(60 * (med.interval % 1))
+        let hrUnit = med.intervalUnit.units(med.interval)
+        
+        if (hr == 1 && min == 0) {
+            intervalLabel.text = String(format:"%@", hrUnit.capitalizedString)
+        } else if (min == 0) {
+            intervalLabel.text = String(format:"%d %@", hr, hrUnit)
+        } else if (hr == 0) {
+            intervalLabel.text = String(format:"%d min", min)
+        } else {
+            intervalLabel.text = String(format:"%d %@ %d min", hr, hrUnit, min)
         }
     }
     
     @IBAction func updateAlert(sender: UIDatePicker) {
-        if let medicine = med {
-            
-            let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: sender.date)
-            var date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: NSDate(), options: [])!
-            
-            while date.compare(NSDate()) == .OrderedAscending {
-                date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: 1, toDate: date, options: [])!
-            }
-            
-            medicine.intervalAlarm = date
-            
-            if sender.date.isMidnight() {
-                alarmLabel.text = "Midnight"
-            } else {
-                alarmLabel.text = dateFormatter.stringFromDate(sender.date)
-            }
+        let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: sender.date)
+        var date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: NSDate(), options: [])!
+        
+        while date.compare(NSDate()) == .OrderedAscending {
+            date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: 1, toDate: date, options: [])!
+        }
+        
+        med.intervalAlarm = date
+        
+        if sender.date.isMidnight() {
+            alarmLabel.text = "Midnight"
+        } else {
+            alarmLabel.text = dateFormatter.stringFromDate(sender.date)
         }
     }
 

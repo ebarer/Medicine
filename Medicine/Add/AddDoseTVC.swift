@@ -1,5 +1,5 @@
 //
-//  HistoryAddTVC.swift
+//  AddDoseTVC.swift
 //  Medicine
 //
 //  Created by Elliot Barer on 2015-08-31.
@@ -11,17 +11,49 @@ import CoreData
 
 class AddDoseTVC: UITableViewController {
     
-    var med:Medicine?
-    
-    var globalHistory: Bool = false
-    var date = NSDate()
-    let cal = NSCalendar.currentCalendar()
+    var med: Medicine?
+    var dose: Dose
+
     
     // MARK: - Outlets
     
-    @IBOutlet var medLabel: UILabel!
-    @IBOutlet var doseLabel: UILabel!
+    @IBOutlet var saveButton: UIBarButtonItem!
     @IBOutlet var picker: UIDatePicker!
+    @IBOutlet var medCell: UITableViewCell!
+    @IBOutlet var medLabel: UILabel!
+    @IBOutlet var doseCell: UITableViewCell!
+    @IBOutlet var doseLabel: UILabel!
+    @IBOutlet var prescriptionCell: UITableViewCell!
+    
+    
+    // MARK: - Helper variables
+    
+    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    
+    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    var moc: NSManagedObjectContext
+    
+    let cal = NSCalendar.currentCalendar()
+    let dateFormatter = NSDateFormatter()
+    var globalHistory: Bool = false
+    
+    
+    // MARK: - Initialization
+
+    required init?(coder aDecoder: NSCoder) {
+        // Setup context
+        moc = appDelegate.managedObjectContext
+        
+        // Setup date formatter
+        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+        dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
+        
+        let entity = NSEntityDescription.entityForName("Dose", inManagedObjectContext: moc)
+        dose = Dose(entity: entity!, insertIntoManagedObjectContext: moc)
+        dose.date = NSDate()
+        
+        super.init(coder: aDecoder)
+    }
     
     
     // MARK: - View methods
@@ -29,101 +61,205 @@ class AddDoseTVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.clearsSelectionOnViewWillAppear = true
-        
+
+        // Modify VC
+        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        tableView.tableHeaderView = UIView(frame: CGRectMake(0.0, 0.0, tableView.bounds.size.width, 0.01))  // Remove tableView gap
+
+        // Prevent modification of medication when not in global history
+        if !globalHistory {
+            medCell.accessoryType = UITableViewCellAccessoryType.None
+            medCell.selectionStyle = UITableViewCellSelectionStyle.None
+        }
+
         // Set picker min/max values
         picker.maximumDate = NSDate()
-
-        // Remove tableView gap
-        tableView.tableHeaderView = UIView(frame: CGRectMake(0.0, 0.0, tableView.bounds.size.width, 0.01))
+        
+        updateDoseValues()
     }
     
     override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Deselect selected row
         if let index = tableView.indexPathForSelectedRow {
             tableView.deselectRowAtIndexPath(index, animated: animated)
         }
-        
-        // Display med name in prompt when not in global history
-        if let name = med?.name where !globalHistory {
-            self.navigationItem.prompt = name
-        }
-        
+
+        updateDoseValues()
         updateLabels()
+        
+        tableView.reloadData()
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
-    func updateLabels() {
-        // Set medicine label
-        if let med = med {
-            medLabel.text = med.name
-            doseLabel.text = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
-            self.navigationItem.rightBarButtonItem?.enabled = true
-        } else {
-            if let med = medication.first {
-                self.med = med
-                medLabel.text = med.name
-                doseLabel.text = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
-                self.navigationItem.rightBarButtonItem?.enabled = true
-            } else {
-                medLabel.text = "None"
-                doseLabel.text = "None"
-                self.navigationItem.rightBarButtonItem?.enabled = false
-            }
+    func updateDoseValues() {
+        if let med = self.med {
+            dose.dosage = med.dosage
+            dose.dosageUnitInt = med.dosageUnitInt
+        } else if let med = medication.first {
+            self.med = med
+            dose.dosage = med.dosage
+            dose.dosageUnitInt = med.dosageUnitInt
         }
     }
     
-    @IBAction func updateDate(sender: UIDatePicker) {
-        date = sender.date
+    func updateLabels() {
+        // If no medication selected, force user to select a medication
+        if med == nil {
+            medLabel.text = "None"
+            doseLabel.text = "None"
+            
+            doseCell.selectionStyle = .None
+            prescriptionCell.selectionStyle = .None
+            saveButton.enabled = false
+        } else {
+            picker.setDate(dose.date, animated: true)
+            
+            medLabel.text = med?.name
+            doseLabel.text = String(format:"%g %@", dose.dosage, dose.dosageUnit.units(dose.dosage))
+            
+            doseCell.selectionStyle = .Default
+            prescriptionCell.selectionStyle = .Default
+            saveButton.enabled = true
+        }
+        
+        // If insufficient prescription levels,
+        // if dose.dosage > dose.medicine?.prescriptionCount {
     }
     
     
     // MARK: - Table view data source
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        switch(indexPath) {
-        case NSIndexPath(forRow: 0, inSection: 1):
-            if globalHistory {
-                return tableView.rowHeight
-            } else {
-                return 0.0
-            }
-        case NSIndexPath(forRow: 0, inSection: 0):
+        if indexPath == NSIndexPath(forRow: 0, inSection: 0) {
             return 216.0
-        default:
-            return tableView.rowHeight
+        } else if indexPath == NSIndexPath(forRow: 2, inSection: 0) {
+            return 48.0
         }
+        
+        return tableView.rowHeight
+    }
+    
+    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        if let med = med where section == 0 {
+            return med.refillStatus()
+        }
+        
+        return nil
+    }
+    
+    
+    // MARK: - Actions
+    
+    @IBAction func updateDate(sender: UIDatePicker) {
+        dose.date = sender.date
     }
     
     
     // MARK: - Navigation
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if let vc = segue.destinationViewController as? AddDoseTVC_Medicine {
-            vc.selectedMed = med
+    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+        // Prevent segues if no medication selected (except to select a medication)
+        if med == nil && identifier != "selectMedicine" {
+            return false
         }
         
-        if let vc = segue.destinationViewController as? AddMedicationTVC_Dosage {
-            vc.med = med
-            
-            // Display med name in prompt when not in global history
-            if let name = med?.name where !globalHistory {
-                vc.navigationItem.prompt = name
+        // Prevent changing medicine unless adding dose from global history view
+        if !globalHistory && identifier == "selectMedicine" {
+            return false
+        }
+        
+        return true
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "selectMedicine" {
+            if let vc = segue.destinationViewController as? AddDoseTVC_Medicine {
+                vc.selectedMed = med
+            }
+        }
+
+        if segue.identifier == "setDosage" {
+            if let vc = segue.destinationViewController as? AddMedicationTVC_Dosage {
+                vc.med = med
+                vc.editMode = true
+            }
+        }
+        
+        if segue.identifier == "refillPrescription" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
+                vc.med = med
             }
         }
     }
     
     @IBAction func medicationUnwindSelect(unwindSegue: UIStoryboardSegue) {
-        if let svc = unwindSegue.sourceViewController as? AddDoseTVC_Medicine, selectedMed = svc.selectedMed {
-            med = selectedMed
-            medLabel.text = selectedMed.name
-            doseLabel.text = String(format:"%g %@", med!.dosage, med!.dosageUnit.units(med!.dosage))
-            self.navigationItem.rightBarButtonItem?.enabled = true
+        if let vc = unwindSegue.sourceViewController as? AddDoseTVC_Medicine {
+            self.med = vc.selectedMed
         }
+    }
+    
+    @IBAction func saveDose(sender: AnyObject) {
+        if let med = self.med {
+            do {
+                // Save dose
+                try med.takeDose(dose)
+                dose.medicine = med
+                
+                // Check if medication needs to be refilled
+                let refillTime = defaults.integerForKey("refillTime")
+                if med.needsRefill(limit: refillTime) {
+                    med.sendRefillNotification()
+                }
+                
+                appDelegate.saveContext()
+                
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+                
+                dismissViewControllerAnimated(true, completion: nil)
+            } catch {
+                presentDoseAlert()
+            }
+        } else {
+            presentMedAlert()
+        }
+    }
+    
+    @IBAction func cancelDose(sender: AnyObject) {
+        moc.deleteObject(dose)
+        appDelegate.saveContext()
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    
+    // MARK: - Error handling
+
+    func presentMedAlert() {
+            globalHistory = true
         
-        if let svc = unwindSegue.sourceViewController as? AddMedicationTVC_Dosage, med = svc.med {
-            doseLabel.text = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
+            let alert = UIAlertController(title: "Invalid Medication", message: "You have to select a valid medication.", preferredStyle: UIAlertControllerStyle.Alert)
+            alert.view.tintColor = UIColor.grayColor()
+            self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func presentDoseAlert() {
+        if let med = self.med {
+            let doseAlert = UIAlertController(title: "Repeat Dose?", message: "You have logged a dose for \(med.name!) within the passed 5 minutes, do you wish to log another dose?", preferredStyle: UIAlertControllerStyle.Alert)
+            
+            doseAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
+            
+            doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
+                self.appDelegate.saveContext()
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+                self.dismissViewControllerAnimated(true, completion: nil)
+            }))
+            
+            doseAlert.view.tintColor = UIColor.grayColor()
+            self.presentViewController(doseAlert, animated: true, completion: nil)
         }
     }
 

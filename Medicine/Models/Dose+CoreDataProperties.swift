@@ -1,8 +1,8 @@
 //
-//  Prescription+CoreDataProperties.swift
+//  Dose+CoreDataProperties.swift
 //  Medicine
 //
-//  Created by Elliot Barer on 2015-09-03.
+//  Created by Elliot Barer on 2015-08-28.
 //  Copyright © 2015 Elliot Barer. All rights reserved.
 //
 //  Choose "Create NSManagedObject Subclass…" from the Core Data editor menu
@@ -12,11 +12,15 @@
 import Foundation
 import CoreData
 
-extension Prescription {
+extension Dose {
 
-    @NSManaged var conversion: Int16
-    @NSManaged var date: NSTimeInterval
-    @NSManaged var quantity: Int16
     @NSManaged var medicine: Medicine?
+    
+    @NSManaged var date: NSDate
+    @NSManaged var expectedDate: NSDate?
+    @NSManaged var next: NSDate?
+    
+    @NSManaged var dosage: Float
+    @NSManaged var dosageUnitInt: Int16
 
 }

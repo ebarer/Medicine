@@ -39,18 +39,12 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     }
     
     override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
         requestProductInfo()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-    }
-
-    
-    // MARK: - Navigation
-    
-    @IBAction func cancel(sender: AnyObject?) {
-        dismissViewControllerAnimated(true, completion: nil)
     }
     
     
@@ -109,6 +103,12 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
         }
     }
     
+
+    // MARK: - Navigation
+    
+    @IBAction func cancel(sender: AnyObject?) {
+        dismissViewControllerAnimated(true, completion: nil)
+    }    
 
 }
 

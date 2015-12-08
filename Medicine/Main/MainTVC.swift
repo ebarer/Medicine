@@ -7,13 +7,13 @@
 //
 
 import UIKit
-import StoreKit
 import CoreData
+import StoreKit
 import CoreSpotlight
 import MobileCoreServices
 
 class MainTVC: UITableViewController, SKPaymentTransactionObserver {
-    
+
     // MARK: - Outlets
     
     @IBOutlet var addMedicationButton: UIBarButtonItem!
@@ -22,34 +22,41 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     @IBOutlet var headerCounterLabel: UILabel!
     @IBOutlet var headerMedLabel: UILabel!
     
-    
+
     // MARK: - Helper variables
     
     let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
-    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-    var moc: NSManagedObjectContext!
     var launchedShortcutItem: [NSObject: AnyObject]?
-
+    
+    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    var moc: NSManagedObjectContext
+    
     let cal = NSCalendar.currentCalendar()
     let dateFormatter = NSDateFormatter()
     
-    let productID = "com.ebarer.Medicine.Unlock"
-    var mvc: UpgradeVC?
-    
     
     // MARK: - IAP variables
-
+    
+    let productID = "com.ebarer.Medicine.Unlock"
     let trialLimit = 2
     var productLock = true
+    var mvc: UpgradeVC?
+
+    
+    // MARK: - Initialization
+    
+    required init?(coder aDecoder: NSCoder) {
+        // Setup context
+        moc = appDelegate.managedObjectContext
+        
+        super.init(coder: aDecoder)
+    }
     
     
     // MARK: - View methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Set mananged object context
-        moc = appDelegate.managedObjectContext
         
         // If selected, sort by next dosage
         if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
@@ -59,19 +66,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateHeader", name: "refreshWidget", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshMedication", name: "refreshMedication", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "internalNotification:", name: "medNotification", object: nil)
         
         // Register for 3D touch if available
         if #available(iOS 9.0, *) {
             if traitCollection.forceTouchCapability == .Available {
                 registerForPreviewingWithDelegate(self, sourceView: view)
             }
-        }
-        
-        // Display tutorial on first launch
-        if !defaults.boolForKey("firstLaunch") {
-            defaults.setBool(true, forKey: "firstLaunch")
-            appDelegate.window!.rootViewController?.performSegueWithIdentifier("tutorial", sender: self)
         }
         
         // Setup IAP
@@ -94,13 +94,22 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         // Setup refresh timer
         let _ = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(300), target: self, selector: Selector("refreshTable"), userInfo: nil, repeats: true)
+
+        
+        // Display tutorial on first launch
+        let dictionary = NSBundle.mainBundle().infoDictionary!
+        let version = dictionary["CFBundleShortVersionString"] as! String
+        if defaults.stringForKey("version") != version {
+            defaults.setValue(version, forKey: "version")
+            self.performSegueWithIdentifier("tutorial", sender: self)
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(true, animated: true)
         
-        // Handle application shortcuts
+        // Handle homescreen shortcuts (selected by user)
         if #available(iOS 9.0, *) {
             if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
                 if let action = shortcutItem.userInfo?["action"] {
@@ -117,22 +126,25 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             }
         }
         
-        // Reschedule notifications
-        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+        if #available(iOS 9.0, *) {
+            // Update spotlight index values
+            for med in medication {
+                if let attributes = med.attributeSet {
+                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
+                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+                }
+            }
+            
+            setDynamicShortcuts()
+        }
         
-        // If no medications, display empty message
-        displayEmptyView()
-        
-        self.tableView.reloadData()
+        updateTableView()
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
 
-    
-    // Create banner
-    
     override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         // Setup summary header
         if section == 0 {
@@ -150,17 +162,56 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         return updateHeader()
     }
     
-    func updateHeader() -> UIView? {
+    
+    // MARK: - Update values
+    
+    func refreshMedication() {
+        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
         
-        // Setup summary labels
+        updateHeader()
+        
+        // Update spotlight index
+        if #available(iOS 9.0, *) {
+            for med in medication {
+                if let attributes = med.attributeSet {
+                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
+                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+                }
+            }
+        }
+        
+        // Update shortcuts
+        self.setDynamicShortcuts()
+        
+        // If selected, sort by next dosage
+        if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+            medication.sortInPlace(Medicine.sortByNextDose)
+        }
+        
+        // Dismiss editing mode
+        setEditing(false, animated: true)
+        
+        tableView.reloadData()
+    }
+    
+    func updateHeader() -> UIView? {
+        // Initialize main string
         var string = NSMutableAttributedString(string: "No more doses today")
         string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+        
+        // Setup today widget data
+        var todayData = [String: AnyObject]()
+        todayData["date"] = nil
+        
+        // Remove animation
+        summaryHeader.layer.removeAllAnimations()
+        
+        // Setup summary labels
         headerCounterLabel.attributedText = string
         headerDescriptionLabel.text = nil
         headerMedLabel.text = nil
-        var todayData = [String: AnyObject]()
-        todayData["date"] = nil
-
+        
+        
         // Warn of overdue doses
         let overdueItems = medication.filter({$0.isOverdue().flag})
         if overdueItems.count > 0  {
@@ -176,20 +227,25 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             headerCounterLabel.attributedText = string
         }
             
-        // Show next scheduled dose
+            // Show next scheduled dose
         else if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
             if cal.isDateInToday(nextDose.fireDate!) {
                 if let id = nextDose.userInfo?["id"] {
                     if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
                         headerDescriptionLabel.text = "Next Dose"
                         
-                        // let dif = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: NSDate(), toDate: nextDose.fireDate!, options: [])
                         dateFormatter.dateFormat = "h:mma"
+                        let date = dateFormatter.stringFromDate(nextDose.fireDate!)
+                        string = NSMutableAttributedString(string: date)
+                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, string.length))
+
+                        // Accomodate 24h times
+                        let range = (date.containsString("AM")) ? date.rangeOfString("AM") : date.rangeOfString("PM")
+                        if let range = range {
+                            let pos = date.startIndex.distanceTo(range.startIndex)
+                            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(pos, 2))
+                        }
                         
-                        string = NSMutableAttributedString(string: dateFormatter.stringFromDate(nextDose.fireDate!))
-                        let len = string.length
-                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, len-2))
-                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(len-2, 2))
                         headerCounterLabel.attributedText = string
                         
                         let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
@@ -201,7 +257,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             todayData["date"] = nextDose.fireDate!
         }
             
-        // Prompt to take first dose
+            // Prompt to take first dose
         else if medication.count > 0 {
             if medication.first?.lastDose == nil {
                 string = NSMutableAttributedString(string: "Take first dose")
@@ -209,15 +265,63 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 headerCounterLabel.attributedText = string
             }
         }
-
+        
+        // Set today widget information
         todayData["descriptionString"] = headerDescriptionLabel.text
         todayData["dateString"] = headerCounterLabel.text
         todayData["medString"] = headerMedLabel.text
-
+        
         defaults.setObject((todayData as NSDictionary), forKey: "todayData")
         defaults.synchronize()
-
+        
         return summaryHeader
+    }
+    
+    func updateTableView() {
+        if medication.count == 0 {
+            navigationItem.leftBarButtonItem?.enabled = false
+            
+            // Create empty message
+            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                // Display message
+                tableView.backgroundView = emptyView
+                tableView.separatorStyle = UITableViewCellSeparatorStyle.None
+            }
+            
+            tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Automatic)
+        } else {
+            navigationItem.leftBarButtonItem?.enabled = true
+            tableView.backgroundView = nil
+            tableView.separatorStyle = UITableViewCellSeparatorStyle.SingleLine
+            
+            // Reschedule notifications
+            NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+            
+            // If selected, sort by next dosage
+            if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+                medication.sortInPlace(Medicine.sortByNextDose)
+            }
+            
+            // Dismiss editing mode
+            setEditing(false, animated: true)
+            
+            tableView.reloadData()
+        }
+    }
+    
+    func refreshTable() {
+        // Reschedule notifications
+        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+        
+        // If selected, sort by next dosage
+        if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+            medication.sortInPlace(Medicine.sortByNextDose)
+        }
+        
+        // Dismiss editing mode
+        setEditing(false, animated: true)
+        
+        tableView.reloadData()
     }
     
     
@@ -236,72 +340,80 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("medicationCell", forIndexPath: indexPath)
         let med = medication[indexPath.row]
         
-        // Set cell tint
-        cell.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        // Configure cell
+        let cell = tableView.dequeueReusableCellWithIdentifier("medicineCell", forIndexPath: indexPath) as! MedicineCell
         
         // Set medication name
-        cell.textLabel?.text = med.name
-        cell.textLabel?.textColor = UIColor.blackColor()
+        cell.title.text = med.name
+        cell.title.textColor = UIColor.blackColor()
+        
+        // Set adherence score
+        if let score = med.adherenceScore() {
+            cell.adherenceScore.score = score
+            cell.adherenceScoreLabel.text = "\(score)"
+        } else {
+            cell.adherenceScoreLabel.text = "—"
+        }
+        
+        // Set subtitle
+        cell.hideGlyph(false)
+        cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
+        cell.subtitle.textColor = UIColor.blackColor()
+        
+        // If no doses taken
+        if med.doseHistory?.count == 0 {
+            cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
+            cell.subtitle.textColor = UIColor.lightGrayColor()
+            cell.subtitle.text = "Tap to take first dose"
+        }
         
         // If reminders aren't enabled for medication
-        if med.reminderEnabled == false {
-            if let date = med.lastDose?.next {
-                var subtitle:NSMutableAttributedString!
+        else if med.reminderEnabled == false {
+            if let date = med.lastDose?.date {
+                cell.subtitleGlyph.image = UIImage(named: "LastDoseIcon")
+                cell.subtitle.textColor = UIColor.lightGrayColor()
+                cell.subtitle.text = Medicine.dateString(date)
+            }
+        } else {
+            // If medication is overdue, set subtitle to next dosage date and tint red
+            if med.isOverdue().flag {
+                cell.title.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                cell.subtitleGlyph.image = UIImage(named: "OverdueIcon")
                 
-                if date.compare(NSDate()) == .OrderedDescending {
-                    subtitle = NSMutableAttributedString(string: "Earliest next dose: \(Medicine.dateString(date))")
-                    subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 20))
-                } else {
-                    cell.textLabel?.textColor = UIColor.lightGrayColor()
-                    subtitle = NSMutableAttributedString(string: "Last dose: \(Medicine.dateString(med.lastDose?.date))")
-                    subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, subtitle.length))
+                if let date = med.isOverdue().overdueDose {
+                    cell.subtitle.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                    cell.subtitle.text = Medicine.dateString(date)
                 }
+            }
                 
-                cell.detailTextLabel?.attributedText = subtitle
-                return cell
+            // If notification scheduled, set date to next scheduled fire date
+            else if let date = med.scheduledNotifications?.first?.fireDate {
+                cell.subtitle.text = Medicine.dateString(date)
+            }
+                
+            // Set subtitle to next dosage date
+            else if let date = med.nextDose {
+                cell.subtitle.text = Medicine.dateString(date)
+            }
+                
+            // If no other conditions met, instruct user on how to take dose
+            else {
+                cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
+                cell.subtitle.textColor = UIColor.lightGrayColor()
+                cell.subtitle.text = "Tap to take first dose"
             }
         }
         
-        // If medication is overdue, set subtitle to next dosage date and tint red
-        if med.isOverdue().flag {
-            cell.textLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-            var subtitle = NSMutableAttributedString(string: "Overdue")
-            
-            if let date = med.isOverdue().lastDose {
-                subtitle = NSMutableAttributedString(string: "Overdue: \(Medicine.dateString(date))")
-            }
- 
-            subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, subtitle.length))
-            subtitle.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(15.0), range: NSMakeRange(0, 7))
-            cell.detailTextLabel?.attributedText = subtitle
-            return cell
-        }
+        // Add long press gesture recognizer
+        cell.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "takeDose:"))
         
-        // If notiifcation scheduled, set date to next scheduled fire date
-        if let date = med.scheduledNotification?.fireDate {
-            let subtitle = NSMutableAttributedString(string: "Next dose: \(Medicine.dateString(date))")
-            subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
-            cell.detailTextLabel?.attributedText = subtitle
-            return cell
-        }
-        
-        // Set subtitle to next dosage date
-        if let date = med.nextDose {
-            let subtitle = NSMutableAttributedString(string: "Next dose: \(Medicine.dateString(date))")
-            subtitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGrayColor(), range: NSMakeRange(0, 10))
-            cell.detailTextLabel?.attributedText = subtitle
-            return cell
-        }
-        
-        // If no doses taken, or other conditions met, instruct user on how to take dose
-        else  {
-            cell.detailTextLabel?.attributedText = NSAttributedString(string: "Tap to take first dose", attributes: [NSForegroundColorAttributeName: UIColor.lightGrayColor()])
-            return cell
-        }
+        return cell
     }
+
+    
+    // MARK: - Table actions
     
     override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         return true
@@ -343,36 +455,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         return [deleteAction, editAction]
     }
     
-    func refreshMedication() {
-        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
-        
-        updateHeader()
-        
-        // Update spotlight index
-        if #available(iOS 9.0, *) {
-            for med in medication {
-                if let attributes = med.attributeSet {
-                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                }
-            }
-        }
-        
-        // Update shortcuts
-        self.setDynamicShortcuts()
-        
-        // If selected, sort by next dosage
-        if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-            medication.sortInPlace(Medicine.sortByNextDose)
-        }
-        
-        tableView.reloadData()
-    }
-    
-    func refreshTable() {        
-        tableView.reloadData()
-    }
-    
     
     // MARK: - Table view delegate
     
@@ -386,6 +468,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             if let date = med.lastDose?.date {
                 if med.reminderEnabled {
                     dateString = "Last Dose: "
+                    //dateString?.appendContentsOf(Medicine.dateString(date))
                     
                     // Set label date, skip if date is today
                     if cal.isDateInToday(date) {
@@ -414,14 +497,13 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             
             alert.addAction(UIAlertAction(title: "Take Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
                 self.performSegueWithIdentifier("addDose", sender: med)
+                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }))
             
             // If last dose is set, allow user to clear notification
             if (med.lastDose != nil) {
                 alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
                     if (med.untakeLastDose(self.moc)) {
-                        self.appDelegate.saveContext()
-                        
                         // If selected, sort by next dosage
                         if self.defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
                             medication.sortInPlace(Medicine.sortByNextDose)
@@ -448,10 +530,14 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 }))
             }
             
-            alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-                if let name = med.name {
-                    self.presentDeleteAlert(name, indexPath: indexPath)
-                }
+            alert.addAction(UIAlertAction(title: "Refill Prescription", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+                self.performSegueWithIdentifier("refillPrescription", sender: med)
+                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            }))
+            
+            alert.addAction(UIAlertAction(title: "View Details", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+                let cell = self.tableView.cellForRowAtIndexPath(indexPath)
+                self.performSegueWithIdentifier("viewMedicationDetails", sender: cell)
             }))
             
             alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
@@ -472,8 +558,20 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         }
     }
     
+    func takeDose(sender: UILongPressGestureRecognizer) {
+        let point = sender.locationInView(self.tableView)
+        if let indexPath = self.tableView?.indexPathForRowAtPoint(point) {
+            let med = medication[indexPath.row]
+            
+            if (sender.state == .Began) {
+                self.performSegueWithIdentifier("addDose", sender: med)
+                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            }
+        }
+    }
     
-    // MARK: - Delete methods
+    
+    // MARK: - Actions
     
     func presentDeleteAlert(name: String, indexPath: NSIndexPath) {
         let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.Alert)
@@ -512,7 +610,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         setDynamicShortcuts()
         
         if medication.count == 0 {
-            displayEmptyView()
+            updateTableView()
         } else {
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
         }
@@ -520,31 +618,11 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         updateHeader()
     }
     
-    func displayEmptyView() {
-        if medication.count == 0 {
-            navigationItem.leftBarButtonItem?.enabled = false
-            
-            // Create empty message
-            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
-                // Display message
-                tableView.backgroundView = emptyView
-                tableView.separatorStyle = UITableViewCellSeparatorStyle.None
-            }
-            
-            tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Automatic)
-        } else {
-            navigationItem.leftBarButtonItem?.enabled = true
-            tableView.backgroundView = nil
-            tableView.separatorStyle = UITableViewCellSeparatorStyle.SingleLine
-            tableView.reloadData()
-        }
-    }
-    
     
     // MARK: - Navigation methods
     
     @IBAction func addMedication(sender: UIBarButtonItem) {
-        if getLockStatus() == false {
+        if appLocked() == false {
             performSegueWithIdentifier("addMedication", sender: self)
         } else {
             performSegueWithIdentifier("upgrade", sender: self)
@@ -552,31 +630,18 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "addMedication" {
-            let vc = segue.destinationViewController as! UINavigationController
-            let addVC = vc.topViewController as! AddMedicationTVC
-            addVC.title = "New Medication"
-        }
-        
         if segue.identifier == "editMedication" {
-            let vc = segue.destinationViewController as! UINavigationController
-            let addVC = vc.topViewController as! AddMedicationTVC
-            addVC.title = "Edit Medication"
-            addVC.med = medication[sender as! Int]
-            addVC.editMode = true
-        }
-        
-        if segue.identifier == "viewMedicationDetails" {
-            let vc = segue.destinationViewController as! MedicineDetailsTVC
-            if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
-                vc.med = medication[index.row]
-                vc.moc = self.moc
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddMedicationTVC {
+                vc.med = medication[sender as! Int]
+                vc.editMode = true
             }
         }
         
-        if segue.identifier == "upgrade" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? UpgradeVC {
-                mvc = vc
+        if segue.identifier == "viewMedicationDetails" {
+            if let vc = segue.destinationViewController as? MedicineDetailsTVC {
+                if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
+                    vc.med = medication[index.row]
+                }
             }
         }
         
@@ -587,154 +652,28 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 }
             }
         }
-    }
-    
-    
-    // MARK: - Unwind methods
-    
-    @IBAction func medicationUnwindAdd(unwindSegue: UIStoryboardSegue) {
-        if let svc = unwindSegue.sourceViewController as? AddMedicationTVC, addMed = svc.med {
-            // Editing existing medication
-            if let selectedIndex = tableView.indexPathForSelectedRow {
-                appDelegate.saveContext()
-                
-                // Update last dose properties
-                do {
-                    addMed.lastDose?.dosage = addMed.dosage
-                    addMed.lastDose?.dosageUnitInt = addMed.dosageUnitInt
-                    addMed.lastDose?.next = try addMed.calculateNextDose(addMed.lastDose?.date)
-                } catch {
-                    print("Unable to update last dose")
-                }
-                
-                tableView.reloadRowsAtIndexPaths([selectedIndex], withRowAnimation: .None)
-            }
-            // Adding new medication
-            else {
-                let newIndex = NSIndexPath(forRow: medication.count, inSection: 0)
-                addMed.sortOrder = Int16(newIndex.row)
-                medication.append(addMed)
-                
-                appDelegate.saveContext()
-                tableView.insertRowsAtIndexPaths([newIndex], withRowAnimation: .None)
-            }
-            
-            // If selected, sort by next dosage
-            if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-                medication.sortInPlace(Medicine.sortByNextDose)
-            }
-            
-            // Reschedule next notification
-            addMed.scheduleNextNotification()
-            
-            // Update spotlight index
-            if #available(iOS 9.0, *) {
-                if let attributes = addMed.attributeSet {
-                    let item = CSSearchableItem(uniqueIdentifier: addMed.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                }
-            }
-            
-            // Update shortcuts
-            setDynamicShortcuts()
-            
-            // Return to normal mode
-            setEditing(false, animated: true)
-        }
-    }
-    
-    @IBAction func medicationUnwindCancel(unwindSegue: UIStoryboardSegue) {
-        moc.rollback()
-        setEditing(false, animated: true)
-        self.tableView.reloadData()
-    }
-    
-    @IBAction func historyUnwindAdd(unwindSegue: UIStoryboardSegue) {
-        let svc = unwindSegue.sourceViewController as! AddDoseTVC
         
-        do {
-            try svc.med?.takeDose(moc, date: svc.date)
-            appDelegate.saveContext()
-            
-            // If selected, sort by next dosage
-            if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-                medication.sortInPlace(Medicine.sortByNextDose)
-            }
-            
-            // Reload table
-            if let index = self.tableView.indexPathForSelectedRow {
-                updateHeader()
-                self.tableView.reloadRowsAtIndexPaths([index], withRowAnimation: .Automatic)
-            } else {
-                self.tableView.reloadData()
-            }
-            
-            // Update spotlight index
-            if #available(iOS 9.0, *) {
-                if let attributes = svc.med!.attributeSet {
-                    let item = CSSearchableItem(uniqueIdentifier: svc.med?.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+        if segue.identifier == "refillPrescription" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
+                if let med = sender as? Medicine {
+                    vc.med = med
                 }
             }
-            
-            // Update shortcuts
-            setDynamicShortcuts()
-        } catch {
-            dismissViewControllerAnimated(true, completion: { () -> Void in
-                if let med = svc.med {
-                    self.presentDoseAlert(med, date: svc.date)
-                }
-            })
+        }
+        
+        if segue.identifier == "upgrade" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? UpgradeVC {
+                mvc = vc
+            }
         }
     }
     
     @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {
-        if unwindSegue.sourceViewController.restorationIdentifier == "welcomeScreen" {
-            self.tableView.reloadData()
-        }
-    }
-    
-    
-    // MARK: - Observers
-    
-    func internalNotification(notification: NSNotification) {
-        if let id = notification.userInfo!["id"] as? String {
-            let medQuery = Medicine.getMedicine(arr: medication, id: id)
-            if let med = medQuery {
-                if let name = med.name {
-                    let message = String(format:"Time to take %g %@ of %@", med.dosage, med.dosageUnit.units(med.dosage), name)
-                    
-                    let alert = UIAlertController(title: "Take \(name)", message: message, preferredStyle: .Alert)
-                    
-                    alert.addAction(UIAlertAction(title: "Take Dose", style:  UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-                        self.performSegueWithIdentifier("addDose", sender: med)
-                    }))
-                    
-                    if med.lastDose != nil {
-                        alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-                            if let id = notification.userInfo!["id"] as? String {
-                                if let med = Medicine.getMedicine(arr: medication, id: id) {
-                                    med.snoozeNotification()
-                                    self.appDelegate.saveContext()
-                                    self.refreshMedication()
-                                }
-                            }
-                        }))
-                    }
-                    
-                    alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Cancel, handler:  {(action) -> Void in
-                        self.refreshMedication()
-                    }))
-
-                    alert.view.tintColor = UIColor.grayColor()
-                    appDelegate.window!.rootViewController?.presentViewController(alert, animated: true, completion: nil)
-                }
-            }
-            
+        if let _ = unwindSegue.sourceViewController as? WelcomeVC {
             refreshMedication()
         }
     }
-    
+
     
     // MARK: - IAP methods
     
@@ -815,7 +754,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         continueToAdd()
     }
     
-    func getLockStatus() -> Bool {
+    func appLocked() -> Bool {
         // If debug device, disable medication limit
         if defaults.boolForKey("debug") == true {
             return false
@@ -840,38 +779,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     // MARK: - Helper methods
     
-    func presentDoseAlert(med: Medicine, date: NSDate) {
-        let doseAlert = UIAlertController(title: "Repeat Dose?", message: "You have logged a dose for \(med.name!) within the passed 5 minutes, do you wish to log another dose?", preferredStyle: UIAlertControllerStyle.Alert)
-        
-        doseAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
-
-        doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-            med.addDose(self.moc, date: date)
-            self.appDelegate.saveContext()
-            
-            // If selected, sort by next dosage
-            if self.defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-                medication.sortInPlace(Medicine.sortByNextDose)
-            }
-            
-            self.tableView.reloadData()
-
-            // Update spotlight index
-            if #available(iOS 9.0, *) {
-                if let attributes = med.attributeSet {
-                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                }
-            }
-            
-            // Update shortcuts
-            self.setDynamicShortcuts()
-        }))
-        
-        doseAlert.view.tintColor = UIColor.grayColor()
-        self.presentViewController(doseAlert, animated: true, completion: nil)
-    }
-    
     func setDynamicShortcuts() {
         if #available(iOS 9.0, *) {
             let overdueItems = medication.filter({$0.isOverdue().flag})
@@ -884,7 +791,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 if overdueItems.count > 1 {
                     text += "s"
                 }
-                // Otherwise set subtitle to overdue med
+                    // Otherwise set subtitle to overdue med
                 else {
                     let med = overdueItems.first!
                     subtitle = med.name!
