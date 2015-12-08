@@ -55,11 +55,6 @@ class MedicineDetailsTVC: UITableViewController {
         
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateLabels", name: "refreshDetails", object: nil)
-        
-        // Update borders
-        actionCell.backgroundColor = tableView.separatorColor
-        takeDoseButton.backgroundColor = UIColor.whiteColor()
-        refillButton.backgroundColor = UIColor.whiteColor()
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -72,6 +67,11 @@ class MedicineDetailsTVC: UITableViewController {
         
         self.navigationController?.setToolbarHidden(true, animated: animated)
         
+        // Update actions
+        actionCell.backgroundColor = tableView.separatorColor
+        takeDoseButton.backgroundColor = UIColor.whiteColor()
+        refillButton.backgroundColor = UIColor.whiteColor()
+        
         updateLabels()
     }
 
@@ -83,8 +83,12 @@ class MedicineDetailsTVC: UITableViewController {
         nameLabel.textColor = UIColor.blackColor()
         nameLabel.text = med.name
         
-        doseDetailsLabel.text = "\(med.removeTrailingZero(med.dosage)) \(med.dosageUnit.units(med.dosage)), " +
-                                "every \(med.removeTrailingZero(med.interval)) \(med.intervalUnit.units(med.interval))"
+        var detailsString = "\(med.removeTrailingZero(med.dosage)) \(med.dosageUnit.units(med.dosage))"
+        if med.reminderEnabled == true {
+            detailsString += ", every \(med.removeTrailingZero(med.interval)) \(med.intervalUnit.units(med.interval))"
+        }
+        
+        doseDetailsLabel.text = detailsString
         
         if med.refillHistory?.count > 0 {
             prescriptionLabel.text = "\(med.removeTrailingZero(med.prescriptionCount)) \(med.dosageUnit.units(med.prescriptionCount)) remaining"
@@ -107,12 +111,22 @@ class MedicineDetailsTVC: UITableViewController {
         doseTitle.text = "Next Dose"
         
         doseLabel.textColor = UIColor.blackColor()
+        doseLabel.font = UIFont.systemFontOfSize(14.0, weight: UIFontWeightRegular)
+        
+        // If no doses taken
+        if med.doseHistory?.count == 0 {
+            doseTitle.text = "No doses logged"
+            doseLabel.text?.removeAll()
+        }
         
         // If reminders aren't enabled for medication
-        if med.reminderEnabled == false {
+        else if med.reminderEnabled == false {
             if let date = med.lastDose?.date {
                 doseTitle.text = "Last Dose"
                 doseLabel.text = Medicine.dateString(date)
+            } else {
+                doseTitle.text = "No doses logged"
+                doseLabel.text?.removeAll()
             }
         } else {
             // If medication is overdue, set subtitle to next dosage date and tint red
@@ -142,7 +156,6 @@ class MedicineDetailsTVC: UITableViewController {
                 
             // If no other conditions met, instruct user on how to take dose
             else {
-                doseLabel.textColor = UIColor.lightGrayColor()
                 doseTitle.text = "No doses logged"
                 doseLabel.text?.removeAll()
             }
@@ -166,6 +179,10 @@ class MedicineDetailsTVC: UITableViewController {
         switch row {
         case Rows.name:
             return 70.0
+        case Rows.prescriptionCount:
+            if med.refillHistory?.count > 0 {
+                return tableView.rowHeight
+            }
         case Rows.actions:
             return 50.0
         case Rows.doseHistory: fallthrough
@@ -175,6 +192,8 @@ class MedicineDetailsTVC: UITableViewController {
         default:
             return tableView.rowHeight
         }
+        
+        return 0.0
     }
     
     override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
@@ -217,6 +236,14 @@ class MedicineDetailsTVC: UITableViewController {
         performSegueWithIdentifier("editMedication", sender: nil)
     }
     
+    @IBAction func actionSelected(sender: UIButton) {
+        sender.backgroundColor = tableView.separatorColor
+    }
+    
+    @IBAction func actionDeselected(sender: UIButton) {
+        sender.backgroundColor = UIColor.whiteColor()
+    }
+
     func presentDeleteAlert(indexPath: NSIndexPath) {
         if let name = med.name {
             let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.Alert)

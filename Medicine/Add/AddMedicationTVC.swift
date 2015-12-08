@@ -147,11 +147,34 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             if med.name != nil && med.name != "" {
                 return 48.0
             }
+        case Rows.interval:
+            if med.reminderEnabled == true {
+                return tableView.rowHeight
+            }
         default:
             return tableView.rowHeight
         }
         
         return 0
+    }
+    
+    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        let row = Rows(index: indexPath)
+        
+        cell.preservesSuperviewLayoutMargins = false
+        cell.layoutMargins = UIEdgeInsetsZero
+        
+        switch(row) {
+        case Rows.name:
+            cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
+        case Rows.dosage:
+            if med.reminderEnabled == true {
+                cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
+            } else {
+                cell.separatorInset = UIEdgeInsetsZero
+            }
+        default: break
+        }
     }
     
     override func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
@@ -220,6 +243,11 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     @IBAction func toggleReminder(sender: UISwitch) {
         med.reminderEnabled = sender.on
+
+        // Update rows
+        tableView.reloadRowsAtIndexPaths([Rows.dosage.index()], withRowAnimation: UITableViewRowAnimation.None)
+        tableView.beginUpdates()
+        tableView.endUpdates()
     }
     
     

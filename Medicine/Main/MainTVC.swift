@@ -371,20 +371,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         
         // If reminders aren't enabled for medication
         else if med.reminderEnabled == false {
-            if let date = med.lastDose?.next {
-                if date.compare(NSDate()) == .OrderedDescending {
-                    cell.hideGlyph(true)
-                    cell.subtitle.textColor = UIColor.lightGrayColor()
-                    cell.subtitle.text = "Unscheduled, \(Medicine.dateString(date))"
-                } else {
-                    cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
-                    cell.subtitle.textColor = UIColor.lightGrayColor()
-                    cell.subtitle.text = "Tap to take next dose"
-                }
+            if let date = med.lastDose?.date {
+                cell.subtitleGlyph.image = UIImage(named: "LastDoseIcon")
+                cell.subtitle.textColor = UIColor.lightGrayColor()
+                cell.subtitle.text = Medicine.dateString(date)
             }
-        }
-        
-        else {
+        } else {
             // If medication is overdue, set subtitle to next dosage date and tint red
             if med.isOverdue().flag {
                 cell.title.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)

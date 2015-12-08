@@ -354,15 +354,17 @@ class Medicine: NSManagedObject {
         return medA.sortOrder < medB.sortOrder
     }
     
-    class func dateString(date: NSDate?) -> String {
+    class func dateString(date: NSDate?, today: Bool = true) -> String {
         guard let date = date else { return "" }
         
         let cal = NSCalendar.currentCalendar()
         let dateFormatter = NSDateFormatter()
         var dateString = String()
         
-        // Set label date, skip if date is today
-        if !cal.isDateInToday(date) {
+        // Set label date, skip if date is today (parameter)
+        if today == true && cal.isDateInToday(date) {
+            dateString = "Today, "
+        } else if !cal.isDateInToday(date) {
             if cal.isDateInYesterday(date) {
                 dateString = "Yesterday, "
             } else if cal.isDateInTomorrow(date) {
