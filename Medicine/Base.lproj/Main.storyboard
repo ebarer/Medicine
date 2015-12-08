@@ -90,7 +90,7 @@
                                             <rect key="frame" x="15" y="25" width="50" height="50"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="K3Z-Le-Wc5">
-                                                    <rect key="frame" x="4" y="14.5" width="42" height="21"/>
+                                                    <rect key="frame" x="4" y="15" width="42" height="20.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -111,7 +111,7 @@
                                             </constraints>
                                         </imageView>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yMx-kf-26h">
-                                            <rect key="frame" x="100" y="56" width="437" height="20"/>
+                                            <rect key="frame" x="103" y="56" width="434" height="20"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="20" id="EJw-cq-0SH"/>
                                             </constraints>
@@ -120,7 +120,7 @@
                                         </label>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="yMx-kf-26h" firstAttribute="leading" secondItem="pE0-9f-j7n" secondAttribute="trailing" constant="5" id="9vg-46-IEr"/>
+                                        <constraint firstItem="yMx-kf-26h" firstAttribute="leading" secondItem="pE0-9f-j7n" secondAttribute="trailing" constant="8" id="9vg-46-IEr"/>
                                         <constraint firstItem="V61-dz-9nY" firstAttribute="leading" secondItem="w8C-NI-NAx" secondAttribute="leadingMargin" constant="7" id="F9U-77-r1w"/>
                                         <constraint firstItem="pE0-9f-j7n" firstAttribute="top" secondItem="aeo-WW-mwr" secondAttribute="bottom" constant="4" id="IHh-z7-Htr"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="aeo-WW-mwr" secondAttribute="trailing" constant="8" id="bwv-sX-hh2"/>

@@ -388,15 +388,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             // If medication is overdue, set subtitle to next dosage date and tint red
             if med.isOverdue().flag {
                 cell.title.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                
-                var subtitle = "Overdue"
-                if let date = med.isOverdue().overdueDose {
-                    subtitle = Medicine.dateString(date)
-                }
-                
                 cell.subtitleGlyph.image = UIImage(named: "OverdueIcon")
-                cell.subtitle.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                cell.subtitle.text = subtitle
+                
+                if let date = med.isOverdue().overdueDose {
+                    cell.subtitle.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                    cell.subtitle.text = Medicine.dateString(date)
+                }
             }
                 
             // If notification scheduled, set date to next scheduled fire date

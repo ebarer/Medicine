@@ -44,12 +44,9 @@ class MedicineCell: UITableViewCell {
             titleLeading.constant = 0.0
             subtitleLeading.constant = glyphHidden ? -5.0 : 0.0
         } else {
-            // Width to display adherence score
             adherenceWidth.constant = 50.0
-            
-            //adherenceWidth.constant = 0.0
             titleLeading.constant = 10.0
-            subtitleLeading.constant = glyphHidden ? 5.0 : 10.0
+            subtitleLeading.constant = glyphHidden ? 8.0 : 10.0
         }
         
         self.setNeedsUpdateConstraints()
