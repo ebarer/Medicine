@@ -299,7 +299,7 @@ class MedicineDoseHistoryTVC: UITableViewController {
     }
     
     func exportDoses() {
-        print("Exporting...")
+        print("Exporting dose history...")
     }
     
     
