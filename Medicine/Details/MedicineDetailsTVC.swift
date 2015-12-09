@@ -90,11 +90,21 @@ class MedicineDetailsTVC: UITableViewController {
         
         doseDetailsLabel.text = detailsString
         
+        var prescriptionString = ""
         if med.refillHistory?.count > 0 {
-            prescriptionLabel.text = "\(med.removeTrailingZero(med.prescriptionCount)) \(med.dosageUnit.units(med.prescriptionCount)) remaining"
+            
+            let count = med.prescriptionCount
+            let numberFormatter = NSNumberFormatter()
+            numberFormatter.numberStyle = NSNumberFormatterStyle.DecimalStyle
+            
+            if let count = numberFormatter.stringFromNumber(count) {
+                prescriptionString = "\(count) \(med.dosageUnit.units(med.prescriptionCount)) remaining"
+            }
         } else {
-            prescriptionLabel.text = "None"
+            prescriptionString = "None"
         }
+        
+        prescriptionLabel.text = prescriptionString
         
         updateDose()
         
@@ -166,11 +176,14 @@ class MedicineDetailsTVC: UITableViewController {
     // MARK: - Table view data source
     
     override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section == 0 {
+        switch section {
+        case 0:
             return 20.0
+        case 1:
+            return 20.0
+        default:
+            return 5.0
         }
-        
-        return 5.0
     }
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
@@ -208,6 +221,29 @@ class MedicineDetailsTVC: UITableViewController {
             // cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
         default: break
         }
+    }
+    
+    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        if section == Rows.prescriptionCount.index().section {
+            var status = ""
+            
+            if med.prescriptionCount < med.dosage {
+                status = "You do not appear to have enough \(med.name!) remaining to take the next dose. " +
+                         "Tap \"Refill Prescription\" to update your prescription amount. "
+            } else {                
+                if let days = med.refillDaysRemaining() {
+                    if days <= 1 {
+                        status = "You will need to refill after the next dose. "
+                    } else {
+                        status = "Based on current usage, your prescription should last approximately \(days) \(Intervals.Daily.units(Float(days))). "
+                    }
+                }
+            }
+            
+            return status
+        }
+        
+        return nil
     }
     
     
