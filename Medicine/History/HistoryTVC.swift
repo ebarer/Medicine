@@ -106,6 +106,7 @@ class HistoryTVC: UITableViewController {
             navigationItem.rightBarButtonItem?.enabled = false
             
             if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                tableView.separatorStyle = UITableViewCellSeparatorStyle.None
                 tableView.backgroundView = emptyView
             }
         } else if history.count == 0 {
@@ -113,10 +114,12 @@ class HistoryTVC: UITableViewController {
             
             // Create empty message
             if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                tableView.separatorStyle = UITableViewCellSeparatorStyle.None
                 tableView.backgroundView = emptyView
             }
         } else {
             navigationItem.leftBarButtonItem?.enabled = true
+            tableView.separatorStyle = UITableViewCellSeparatorStyle.SingleLine
             tableView.backgroundView = nil
         }
         
@@ -153,9 +156,22 @@ class HistoryTVC: UITableViewController {
     override func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let sectionDate = dates[section]
         let header:UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
-        
-        header.textLabel?.frame = header.frame
-        header.textLabel?.textAlignment = NSTextAlignment.Left
+
+//        header.contentView.backgroundColor = UIColor.groupTableViewBackgroundColor()
+//
+//        // Add top seperator
+//        let topSeperator = UIView(frame: CGRectMake(0, 0, header.frame.width, 0.5))
+//        topSeperator.backgroundColor = UIColor(white: 0.67, alpha: 1.0)
+//        header.addSubview(topSeperator)
+//        
+//        // Add bottom seperator
+//        let bottomSeperator = UIView(frame: CGRectMake(0, header.frame.height-0.5, header.frame.width, 0.5))
+//        bottomSeperator.backgroundColor = UIColor(white: 0.67, alpha: 1.0)
+//        header.addSubview(bottomSeperator)
+
+        // Set header title
+        header.textLabel?.text = header.textLabel?.text?.uppercaseString
+        header.textLabel?.textColor = UIColor(white: 0.43, alpha: 1.0)
         
         if let text = header.textLabel?.text {
             let string = NSMutableAttributedString(string: text)

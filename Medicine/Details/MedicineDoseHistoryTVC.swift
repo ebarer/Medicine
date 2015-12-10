@@ -122,6 +122,7 @@ class MedicineDoseHistoryTVC: UITableViewController {
             
             // Create empty message
             if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                tableView.separatorStyle = UITableViewCellSeparatorStyle.None
                 tableView.backgroundView = emptyView
             }
         } else {
@@ -129,6 +130,7 @@ class MedicineDoseHistoryTVC: UITableViewController {
                 button.enabled = true
             }
             
+            tableView.separatorStyle = UITableViewCellSeparatorStyle.SingleLine
             tableView.backgroundView = nil
         }
         
@@ -166,8 +168,9 @@ class MedicineDoseHistoryTVC: UITableViewController {
         let sectionDate = dates[section]
         let header:UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
         
-        header.textLabel?.frame = header.frame
-        header.textLabel?.textAlignment = NSTextAlignment.Left
+        // Set header title
+        header.textLabel?.text = header.textLabel?.text?.uppercaseString
+        header.textLabel?.textColor = UIColor(white: 0.43, alpha: 1.0)
         
         if let text = header.textLabel?.text {
             let string = NSMutableAttributedString(string: text)
@@ -326,6 +329,7 @@ class MedicineDoseHistoryTVC: UITableViewController {
     }
     
     func exportDoses() {
+        // http://stackoverflow.com/questions/33349139/create-csv-file-in-swift-and-write-to-file
         print("Exporting...")
     }
     
@@ -359,8 +363,6 @@ class MedicineDoseHistoryTVC: UITableViewController {
     }
 
 }
-
-
 
 
 

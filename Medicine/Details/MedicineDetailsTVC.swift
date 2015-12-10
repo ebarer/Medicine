@@ -73,6 +73,8 @@ class MedicineDetailsTVC: UITableViewController {
         refillButton.backgroundColor = UIColor.whiteColor()
         
         updateLabels()
+        
+        tableView.reloadSections(NSIndexSet(index: Rows.name.index().section), withRowAnimation: .None)
     }
 
     override func didReceiveMemoryWarning() {
@@ -180,7 +182,11 @@ class MedicineDetailsTVC: UITableViewController {
         case 0:
             return 20.0
         case 1:
-            return 20.0
+            if med.prescriptionCount > 0 {
+                return 20.0
+            } else {
+                return 5.0
+            }
         default:
             return 5.0
         }
@@ -224,12 +230,11 @@ class MedicineDetailsTVC: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if section == Rows.prescriptionCount.index().section {
+        if section == Rows.prescriptionCount.index().section && med.prescriptionCount > 0 {
             var status = ""
             
             if med.prescriptionCount < med.dosage {
-                status = "You do not appear to have enough \(med.name!) remaining to take the next dose. " +
-                         "Tap \"Refill Prescription\" to update your prescription amount. "
+                status = "You do not appear to have enough \(med.name!) remaining to take the next dose. "
             } else {                
                 if let days = med.refillDaysRemaining() {
                     if days <= 1 {
@@ -359,8 +364,8 @@ private enum Rows: Int {
     case none = -1
     case name
     case nextDose
-    case prescriptionCount
     case doseDetails
+    case prescriptionCount
     case actions
     case doseHistory
     case refillHistory
@@ -375,9 +380,9 @@ private enum Rows: Int {
         case (0, 1):
             row = Rows.nextDose
         case (0, 2):
-            row = Rows.prescriptionCount
-        case (0, 3):
             row = Rows.doseDetails
+        case (0, 3):
+            row = Rows.prescriptionCount
         case (1, 0):
             row = Rows.actions
         case (2, 0):
@@ -399,9 +404,9 @@ private enum Rows: Int {
             return NSIndexPath(forRow: 0, inSection: 0)
         case .nextDose:
             return NSIndexPath(forRow: 1, inSection: 0)
-        case .prescriptionCount:
-            return NSIndexPath(forRow: 2, inSection: 0)
         case .doseDetails:
+            return NSIndexPath(forRow: 2, inSection: 0)
+        case .prescriptionCount:
             return NSIndexPath(forRow: 3, inSection: 0)
         case .actions:
             return NSIndexPath(forRow: 0, inSection: 1)
