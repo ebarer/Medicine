@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="ev4-3j-vgd">
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -230,7 +231,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="249" horizontalCompressionResistancePriority="749" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Detail" textAlignment="right" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="9aJ-tH-z7H">
-                                                    <rect key="frame" x="80" y="12" width="505" height="20.5"/>
+                                                    <rect key="frame" x="97" y="12.5" width="488" height="20"/>
                                                     <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="calibratedRGB"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
@@ -246,13 +247,11 @@
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="trailingMargin" secondItem="9aJ-tH-z7H" secondAttribute="trailing" id="8Kr-Uy-gu6"/>
-                                                <constraint firstItem="9aJ-tH-z7H" firstAttribute="leading" secondItem="L6Z-9O-aSK" secondAttribute="trailing" constant="8" id="QZP-Qj-Ds4"/>
-                                                <constraint firstItem="9aJ-tH-z7H" firstAttribute="centerY" secondItem="v3Y-2R-ylr" secondAttribute="centerY" id="Rj4-5L-6D4"/>
-                                                <constraint firstItem="9aJ-tH-z7H" firstAttribute="top" secondItem="v3Y-2R-ylr" secondAttribute="topMargin" constant="2" id="UJd-iM-PHb"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="9aJ-tH-z7H" secondAttribute="bottom" constant="1.5" id="f5d-Cz-Kgr"/>
-                                                <constraint firstItem="L6Z-9O-aSK" firstAttribute="leading" secondItem="v3Y-2R-ylr" secondAttribute="leadingMargin" id="lQR-Vz-Da8"/>
-                                                <constraint firstItem="L6Z-9O-aSK" firstAttribute="centerY" secondItem="v3Y-2R-ylr" secondAttribute="centerY" id="p0G-cm-4bz"/>
+                                                <constraint firstItem="9aJ-tH-z7H" firstAttribute="centerY" secondItem="v3Y-2R-ylr" secondAttribute="centerY" id="GzY-MD-Nzt"/>
+                                                <constraint firstItem="L6Z-9O-aSK" firstAttribute="centerY" secondItem="v3Y-2R-ylr" secondAttribute="centerY" id="InH-An-LvN"/>
+                                                <constraint firstItem="9aJ-tH-z7H" firstAttribute="leading" secondItem="L6Z-9O-aSK" secondAttribute="trailing" constant="25" id="arU-EU-nLO"/>
+                                                <constraint firstItem="L6Z-9O-aSK" firstAttribute="leading" secondItem="v3Y-2R-ylr" secondAttribute="leadingMargin" id="cu5-yZ-ZWt"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="9aJ-tH-z7H" secondAttribute="trailing" id="nTI-hl-On3"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -269,18 +268,19 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eLn-dN-uCP">
-                                                    <rect key="frame" x="543.5" y="12" width="41.5" height="19.5"/>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalHuggingPriority="249" horizontalCompressionResistancePriority="749" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eLn-dN-uCP">
+                                                    <rect key="frame" x="70.5" y="12" width="514.5" height="19.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="trailingMargin" secondItem="eLn-dN-uCP" secondAttribute="trailing" id="fZv-gm-RQD"/>
-                                                <constraint firstItem="iNu-l2-1r2" firstAttribute="centerY" secondItem="MjQ-dM-6IH" secondAttribute="centerY" id="gPt-CX-WaQ"/>
-                                                <constraint firstItem="eLn-dN-uCP" firstAttribute="centerY" secondItem="MjQ-dM-6IH" secondAttribute="centerY" id="rlm-AI-GaO"/>
-                                                <constraint firstItem="iNu-l2-1r2" firstAttribute="leading" secondItem="MjQ-dM-6IH" secondAttribute="leadingMargin" id="sDO-42-Gbw"/>
+                                                <constraint firstItem="iNu-l2-1r2" firstAttribute="centerY" secondItem="MjQ-dM-6IH" secondAttribute="centerY" id="1my-Du-liP"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="eLn-dN-uCP" secondAttribute="trailing" id="8zg-1N-8xm"/>
+                                                <constraint firstItem="eLn-dN-uCP" firstAttribute="leading" secondItem="iNu-l2-1r2" secondAttribute="trailing" constant="25" id="EBb-B8-qtZ"/>
+                                                <constraint firstItem="iNu-l2-1r2" firstAttribute="leading" secondItem="MjQ-dM-6IH" secondAttribute="leadingMargin" id="TcK-9F-hsc"/>
+                                                <constraint firstItem="eLn-dN-uCP" firstAttribute="centerY" secondItem="MjQ-dM-6IH" secondAttribute="centerY" id="bsG-af-99t"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>

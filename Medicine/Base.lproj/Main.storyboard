@@ -81,7 +81,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aeo-WW-mwr">
-                                            <rect key="frame" x="75" y="19" width="462" height="32.5"/>
+                                            <rect key="frame" x="75" y="19" width="49.5" height="32.5"/>
                                             <fontDescription key="fontDescription" type="system" weight="light" pointSize="27"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
@@ -104,14 +104,14 @@
                                             </constraints>
                                         </view>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="OverdueIcon" translatesAutoresizingMaskIntoConstraints="NO" id="pE0-9f-j7n">
-                                            <rect key="frame" x="75" y="55.5" width="20" height="20"/>
+                                            <rect key="frame" x="75" y="55" width="20" height="20"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="20" id="L7T-FO-Xqh"/>
                                                 <constraint firstAttribute="height" constant="20" id="mF1-fj-fNU"/>
                                             </constraints>
                                         </imageView>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yMx-kf-26h">
-                                            <rect key="frame" x="103" y="56" width="434" height="20"/>
+                                            <rect key="frame" x="103" y="55" width="434" height="20"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="20" id="EJw-cq-0SH"/>
                                             </constraints>
@@ -123,7 +123,6 @@
                                         <constraint firstItem="yMx-kf-26h" firstAttribute="leading" secondItem="pE0-9f-j7n" secondAttribute="trailing" constant="8" id="9vg-46-IEr"/>
                                         <constraint firstItem="V61-dz-9nY" firstAttribute="leading" secondItem="w8C-NI-NAx" secondAttribute="leadingMargin" constant="7" id="F9U-77-r1w"/>
                                         <constraint firstItem="pE0-9f-j7n" firstAttribute="top" secondItem="aeo-WW-mwr" secondAttribute="bottom" constant="4" id="IHh-z7-Htr"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="aeo-WW-mwr" secondAttribute="trailing" constant="8" id="bwv-sX-hh2"/>
                                         <constraint firstItem="aeo-WW-mwr" firstAttribute="top" secondItem="w8C-NI-NAx" secondAttribute="topMargin" constant="11" id="c2r-7e-5Po"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="yMx-kf-26h" secondAttribute="trailing" constant="8" id="eGo-p9-MYe"/>
                                         <constraint firstItem="pE0-9f-j7n" firstAttribute="leading" secondItem="V61-dz-9nY" secondAttribute="trailing" constant="10" id="lLG-Xd-gLx"/>

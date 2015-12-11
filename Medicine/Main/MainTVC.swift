@@ -545,12 +545,14 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             }))
             
             // Set popover for iPad
-            if let view = tableView.cellForRowAtIndexPath(indexPath)?.textLabel {
-                alert.popoverPresentationController?.sourceView = view
-                alert.popoverPresentationController?.sourceRect = view.bounds
+            if let cell = tableView.cellForRowAtIndexPath(indexPath) as? MedicineCell {
+                alert.popoverPresentationController?.sourceView = cell.title
+                let rect = CGRectMake(cell.title.bounds.origin.x, cell.title.bounds.origin.y, cell.title.bounds.width + 5, cell.title.bounds.height)
+                alert.popoverPresentationController?.sourceRect = rect
                 alert.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.Left
             }
-            
+
+            alert.view.layoutIfNeeded()
             alert.view.tintColor = UIColor.grayColor()
             presentViewController(alert, animated: true, completion: nil)
         } else {
