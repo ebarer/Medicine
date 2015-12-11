@@ -183,9 +183,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
     override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
         let row = Rows(index: indexPath)
         
-        cell.preservesSuperviewLayoutMargins = false
-        cell.layoutMargins = UIEdgeInsetsZero
-        cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
+        cell.preservesSuperviewLayoutMargins = true
         
         if selectedRow == Rows(index: indexPath) {
             cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
@@ -196,15 +194,24 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
         switch(row) {
         case Rows.quantityUnit:
             if row != selectedRow {
+                cell.preservesSuperviewLayoutMargins = false
+                cell.layoutMargins = UIEdgeInsetsZero
                 cell.separatorInset = UIEdgeInsetsZero
+                cell.contentView.layoutMargins = tableView.separatorInset
             }
         case Rows.quantityUnitPicker:
             if med?.dosageUnit == refill.quantityUnit {
+                cell.preservesSuperviewLayoutMargins = false
+                cell.layoutMargins = UIEdgeInsetsZero
                 cell.separatorInset = UIEdgeInsetsZero
+                cell.contentView.layoutMargins = tableView.separatorInset
             }
         case Rows.date:
             if row != selectedRow {
+                cell.preservesSuperviewLayoutMargins = false
+                cell.layoutMargins = UIEdgeInsetsZero
                 cell.separatorInset = UIEdgeInsetsZero
+                cell.contentView.layoutMargins = tableView.separatorInset
             }
         default: break
         }

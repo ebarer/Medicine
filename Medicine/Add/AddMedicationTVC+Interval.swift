@@ -124,24 +124,34 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
     override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
         let row = Rows(index: indexPath)
         
-        cell.preservesSuperviewLayoutMargins = false
-        cell.layoutMargins = UIEdgeInsetsZero
-        cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
-        
-        if selectedRow == Rows(index: indexPath) {
-            cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-        } else {
-            cell.detailTextLabel?.textColor = UIColor.grayColor()
-        }
+        cell.preservesSuperviewLayoutMargins = true
         
         switch(row) {
+        case Rows.intervalUnitLabel:
+            if row == selectedRow {
+                intervalUnitLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+            } else {
+                intervalUnitLabel.textColor = UIColor.grayColor()
+            }
         case Rows.intervalLabel:
             if row != selectedRow {
+                intervalLabel.textColor = UIColor.grayColor()
+                cell.preservesSuperviewLayoutMargins = false
+                cell.layoutMargins = UIEdgeInsetsZero
                 cell.separatorInset = UIEdgeInsetsZero
+                cell.contentView.layoutMargins = UIEdgeInsetsMake(0, tableView.separatorInset.left, 0, tableView.separatorInset.left)
+            } else {
+                intervalLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
             }
         case Rows.alarmLabel:
             if row != selectedRow {
+                alarmLabel.textColor = UIColor.grayColor()
+                cell.preservesSuperviewLayoutMargins = false
+                cell.layoutMargins = UIEdgeInsetsZero
                 cell.separatorInset = UIEdgeInsetsZero
+                cell.contentView.layoutMargins = UIEdgeInsetsMake(0, tableView.separatorInset.left, 0, tableView.separatorInset.left)
+            } else {
+                alarmLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
             }
         default: break
         }

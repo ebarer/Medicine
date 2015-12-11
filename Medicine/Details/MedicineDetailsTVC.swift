@@ -11,7 +11,7 @@ import CoreData
 
 class MedicineDetailsTVC: UITableViewController {
     
-    weak var med:Medicine!
+    weak var med:Medicine?
     
     // MARK: - Outlets
     
@@ -82,94 +82,98 @@ class MedicineDetailsTVC: UITableViewController {
     }
     
     func updateLabels() {
-        nameLabel.textColor = UIColor.blackColor()
-        nameLabel.text = med.name
-        
-        var detailsString = "\(med.removeTrailingZero(med.dosage)) \(med.dosageUnit.units(med.dosage))"
-        if med.reminderEnabled == true {
-            detailsString += ", every \(med.removeTrailingZero(med.interval)) \(med.intervalUnit.units(med.interval))"
-        }
-        
-        doseDetailsLabel.text = detailsString
-        
-        var prescriptionString = ""
-        if med.refillHistory?.count > 0 {
+        if let med = med {
+            nameLabel.textColor = UIColor.blackColor()
+            nameLabel.text = med.name
             
-            let count = med.prescriptionCount
-            let numberFormatter = NSNumberFormatter()
-            numberFormatter.numberStyle = NSNumberFormatterStyle.DecimalStyle
-            
-            if let count = numberFormatter.stringFromNumber(count) {
-                prescriptionString = "\(count) \(med.dosageUnit.units(med.prescriptionCount)) remaining"
+            var detailsString = "\(med.removeTrailingZero(med.dosage)) \(med.dosageUnit.units(med.dosage))"
+            if med.reminderEnabled == true {
+                detailsString += ", every \(med.removeTrailingZero(med.interval)) \(med.intervalUnit.units(med.interval))"
             }
-        } else {
-            prescriptionString = "None"
+            
+            doseDetailsLabel.text = detailsString
+            
+            var prescriptionString = ""
+            if med.refillHistory?.count > 0 {
+                
+                let count = med.prescriptionCount
+                let numberFormatter = NSNumberFormatter()
+                numberFormatter.numberStyle = NSNumberFormatterStyle.DecimalStyle
+                
+                if let count = numberFormatter.stringFromNumber(count) {
+                    prescriptionString = "\(count) \(med.dosageUnit.units(med.prescriptionCount)) remaining"
+                }
+            } else {
+                prescriptionString = "None"
+            }
+            
+            prescriptionLabel.text = prescriptionString
+            
+            updateDose()
+            
+            // Correct inset
+            tableView.reloadRowsAtIndexPaths([Rows.name.index()], withRowAnimation: .None)
         }
-        
-        prescriptionLabel.text = prescriptionString
-        
-        updateDose()
-        
-        // Correct inset
-        tableView.reloadRowsAtIndexPaths([Rows.name.index()], withRowAnimation: .None)
     }
     
     func updateDose() {
-        // Set defaults
-        nameCell.imageView?.image = nil
-        nameLabel.textColor = UIColor.blackColor()
-        
-        doseTitle.textColor = UIColor.lightGrayColor()
-        doseTitle.text = "Next Dose"
-        
-        doseLabel.textColor = UIColor.blackColor()
-        doseLabel.font = UIFont.systemFontOfSize(14.0, weight: UIFontWeightRegular)
-        
-        // If no doses taken
-        if med.doseHistory?.count == 0 {
-            doseTitle.text = "No doses logged"
-            doseLabel.text?.removeAll()
-        }
-        
-        // If reminders aren't enabled for medication
-        else if med.reminderEnabled == false {
-            if let date = med.lastDose?.date {
-                doseTitle.text = "Last Dose"
-                doseLabel.text = Medicine.dateString(date)
-            } else {
+        if let med = med {
+            // Set defaults
+            nameCell.imageView?.image = nil
+            nameLabel.textColor = UIColor.blackColor()
+            
+            doseTitle.textColor = UIColor.lightGrayColor()
+            doseTitle.text = "Next Dose"
+            
+            doseLabel.textColor = UIColor.blackColor()
+            doseLabel.font = UIFont.systemFontOfSize(14.0, weight: UIFontWeightRegular)
+            
+            // If no doses taken
+            if med.doseHistory?.count == 0 {
                 doseTitle.text = "No doses logged"
                 doseLabel.text?.removeAll()
             }
-        } else {
-            // If medication is overdue, set subtitle to next dosage date and tint red
-            if med.isOverdue().flag {
-                nameCell.imageView?.image = UIImage(named: "OverdueIcon")
-                nameLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                
-                doseTitle.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                doseTitle.text = "Overdue"
+            
+            // If reminders aren't enabled for medication
+            else if med.reminderEnabled == false {
+                if let date = med.lastDose?.date {
+                    doseTitle.text = "Last Dose"
+                    doseLabel.text = Medicine.dateString(date)
+                } else {
+                    doseTitle.text = "No doses logged"
+                    doseLabel.text?.removeAll()
+                }
+            } else {
+                // If medication is overdue, set subtitle to next dosage date and tint red
+                if med.isOverdue().flag {
+                    nameCell.imageView?.image = UIImage(named: "OverdueIcon")
+                    nameLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                    
+                    doseTitle.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                    doseTitle.text = "Overdue"
 
-                if let date = med.isOverdue().overdueDose {
-                    doseLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                    doseLabel.font = UIFont.systemFontOfSize(14.0, weight: UIFontWeightSemibold)
+                    if let date = med.isOverdue().overdueDose {
+                        doseLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                        doseLabel.font = UIFont.systemFontOfSize(14.0, weight: UIFontWeightSemibold)
+                        doseLabel.text = Medicine.dateString(date)
+                    }
+                }
+                    
+                // If notification scheduled, set date to next scheduled fire date
+                else if let date = med.scheduledNotifications?.first?.fireDate {
                     doseLabel.text = Medicine.dateString(date)
                 }
-            }
-                
-            // If notification scheduled, set date to next scheduled fire date
-            else if let date = med.scheduledNotifications?.first?.fireDate {
-                doseLabel.text = Medicine.dateString(date)
-            }
-                
-            // Set subtitle to next dosage date
-            else if let date = med.nextDose {
-                doseLabel.text = Medicine.dateString(date)
-            }
-                
-            // If no other conditions met, instruct user on how to take dose
-            else {
-                doseTitle.text = "No doses logged"
-                doseLabel.text?.removeAll()
+                    
+                // Set subtitle to next dosage date
+                else if let date = med.nextDose {
+                    doseLabel.text = Medicine.dateString(date)
+                }
+                    
+                // If no other conditions met, instruct user on how to take dose
+                else {
+                    doseTitle.text = "No doses logged"
+                    doseLabel.text?.removeAll()
+                }
             }
         }
     }
@@ -182,7 +186,7 @@ class MedicineDetailsTVC: UITableViewController {
         case 0:
             return 20.0
         case 1:
-            if med.prescriptionCount > 0 {
+            if med?.prescriptionCount > 0 {
                 return 20.0
             } else {
                 return 5.0
@@ -197,9 +201,9 @@ class MedicineDetailsTVC: UITableViewController {
         
         switch row {
         case Rows.name:
-            return 70.0
+            return 60.0
         case Rows.prescriptionCount:
-            if med.refillHistory?.count > 0 {
+            if med?.refillHistory?.count > 0 {
                 return tableView.rowHeight
             }
         case Rows.actions:
@@ -218,34 +222,39 @@ class MedicineDetailsTVC: UITableViewController {
     override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
         let row = Rows(index: indexPath)
         
-        cell.preservesSuperviewLayoutMargins = false
-        cell.layoutMargins = UIEdgeInsetsZero
+        cell.preservesSuperviewLayoutMargins = true
         
         switch(row) {
         case Rows.doseDetails:
-            cell.separatorInset = UIEdgeInsetsZero
-            // cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
+            if med?.refillHistory?.count == 0 {
+                cell.preservesSuperviewLayoutMargins = false
+                cell.layoutMargins = UIEdgeInsetsZero
+                cell.separatorInset = UIEdgeInsetsZero
+                cell.contentView.layoutMargins = tableView.separatorInset
+            }
         default: break
         }
     }
     
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if section == Rows.prescriptionCount.index().section && med.prescriptionCount > 0 {
-            var status = ""
-            
-            if med.prescriptionCount < med.dosage {
-                status = "You do not appear to have enough \(med.name!) remaining to take the next dose. "
-            } else {                
-                if let days = med.refillDaysRemaining() {
-                    if days <= 1 {
-                        status = "You will need to refill after the next dose. "
-                    } else {
-                        status = "Based on current usage, your prescription should last approximately \(days) \(Intervals.Daily.units(Float(days))). "
+        if let med = med {
+            if section == Rows.prescriptionCount.index().section && med.prescriptionCount > 0 {
+                var status = ""
+                
+                if med.prescriptionCount < med.dosage {
+                    status = "You do not appear to have enough \(med.name!) remaining to take the next dose. "
+                } else {                
+                    if let days = med.refillDaysRemaining() {
+                        if days <= 1 {
+                            status = "You will need to refill after the next dose. "
+                        } else {
+                            status = "Based on current usage, your prescription should last approximately \(days) \(Intervals.Daily.units(Float(days))). "
+                        }
                     }
                 }
+                
+                return status
             }
-            
-            return status
         }
         
         return nil
@@ -278,7 +287,9 @@ class MedicineDetailsTVC: UITableViewController {
     }
     
     @IBAction func actionSelected(sender: UIButton) {
-        sender.backgroundColor = tableView.separatorColor
+        if med != nil {
+            sender.backgroundColor = tableView.separatorColor
+        }
     }
     
     @IBAction func actionDeselected(sender: UIButton) {
@@ -286,73 +297,94 @@ class MedicineDetailsTVC: UITableViewController {
     }
 
     func presentDeleteAlert(indexPath: NSIndexPath) {
-        if let name = med.name {
-            let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.Alert)
-            
-            deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
-                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            }))
-            
-            deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
-                self.deleteMed()
-            }))
-            
-            deleteAlert.view.tintColor = UIColor.grayColor()
-            self.presentViewController(deleteAlert, animated: true, completion: nil)
+        if let med = med {
+            if let name = med.name {
+                let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.Alert)
+                
+                deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
+                    self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                }))
+                
+                deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
+                    self.deleteMed()
+                }))
+                
+                deleteAlert.view.tintColor = UIColor.grayColor()
+                self.presentViewController(deleteAlert, animated: true, completion: nil)
+            }
+        } else {
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
         }
     }
     
     func deleteMed() {
-        // Cancel all notifications for medication
-        med.cancelNotification()
-        
-        // Remove medication from array
-        medication.removeObject(med)
-        
-        // Remove medication from persistent store
-        moc.deleteObject(med)
-        appDelegate.saveContext()
+        if let med = med {
+            // Cancel all notifications for medication
+            med.cancelNotification()
+            
+            // Remove medication from array
+            medication.removeObject(med)
+            
+            // Remove medication from persistent store
+            moc.deleteObject(med)
+            appDelegate.saveContext()
 
-        NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
-        
-        // Dismiss view
-        self.navigationController?.popViewControllerAnimated(true)
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+            
+            // Dismiss view
+            self.navigationController?.popViewControllerAnimated(true)
+        }
     }
     
     
     // MARK: - Navigation
+    
+    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+        if med != nil {
+            return true
+        }
+        
+        // Deselect selected row
+        if let index = tableView.indexPathForSelectedRow {
+            tableView.deselectRowAtIndexPath(index, animated: true)
+        }
+        
+        return false
+    }
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        self.navigationItem.backBarButtonItem?.title = med.name
-        
-        if segue.identifier == "editMedication" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? AddMedicationTVC {
-                vc.med = self.med
-                vc.editMode = true
+        if let med = med {
+            self.navigationItem.backBarButtonItem?.title = med.name
+            
+            if segue.identifier == "editMedication" {
+                if let vc = segue.destinationViewController.childViewControllers[0] as? AddMedicationTVC {
+                    vc.med = self.med
+                    vc.editMode = true
+                }
             }
-        }
-        
-        if segue.identifier == "addDose" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
-                vc.med = self.med
+            
+            if segue.identifier == "addDose" {
+                if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
+                    vc.med = self.med
+                }
             }
-        }
-        
-        if segue.identifier == "refillPrescription" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
-                vc.med = self.med
+            
+            if segue.identifier == "refillPrescription" {
+                if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
+                    vc.med = self.med
+                }
             }
-        }
-        
-        if segue.identifier == "viewDoseHistory" {
-            if let vc = segue.destinationViewController as? MedicineDoseHistoryTVC {
-                vc.med = self.med
+            
+            if segue.identifier == "viewDoseHistory" {
+                if let vc = segue.destinationViewController as? MedicineDoseHistoryTVC {
+                    vc.med = self.med
+                }
             }
-        }
-        
-        if segue.identifier == "viewRefillHistory" {
-            if let vc = segue.destinationViewController as? MedicineRefillHistoryTVC {
-                vc.med = self.med
+            
+            if segue.identifier == "viewRefillHistory" {
+                if let vc = segue.destinationViewController as? MedicineRefillHistoryTVC {
+                    vc.med = self.med
+                }
             }
         }
     }

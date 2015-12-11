@@ -22,7 +22,6 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     @IBOutlet var dosageLabel: UILabel!
     @IBOutlet var reminderToggle: UISwitch!
     @IBOutlet var intervalLabel: UILabel!
-    @IBOutlet var intervalCell: UITableViewCell!
     @IBOutlet var prescriptionLabel: UILabel!
     
     
@@ -156,25 +155,6 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         }
         
         return 0
-    }
-    
-    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        let row = Rows(index: indexPath)
-        
-        cell.preservesSuperviewLayoutMargins = false
-        cell.layoutMargins = UIEdgeInsetsZero
-        
-        switch(row) {
-        case Rows.name:
-            cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
-        case Rows.dosage:
-            if med.reminderEnabled == true {
-                cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
-            } else {
-                cell.separatorInset = UIEdgeInsetsZero
-            }
-        default: break
-        }
     }
     
     override func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {

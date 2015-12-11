@@ -67,14 +67,15 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
     }
     
     override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        cell.preservesSuperviewLayoutMargins = false
-        cell.layoutMargins = UIEdgeInsetsZero
-        cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0)
-        
+        cell.preservesSuperviewLayoutMargins = true
+
         switch indexPath {
         case NSIndexPath(forRow: 1, inSection: 0):
             if editMode == true {
+                cell.preservesSuperviewLayoutMargins = false
+                cell.layoutMargins = UIEdgeInsetsZero
                 cell.separatorInset = UIEdgeInsetsZero
+                cell.contentView.layoutMargins = UIEdgeInsetsMake(0, tableView.separatorInset.left, 0, tableView.separatorInset.left)
             }
         default: break
         }
