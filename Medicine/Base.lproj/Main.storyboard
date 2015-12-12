@@ -1194,11 +1194,11 @@
         <image name="SortCellIcon" width="29" height="29"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="qK7-4Q-NbR"/>
-        <segue reference="HfD-yH-Bkx"/>
         <segue reference="boT-ys-MKj"/>
         <segue reference="aaT-BJ-605"/>
-        <segue reference="tHn-tf-kiw"/>
+        <segue reference="HfD-yH-Bkx"/>
+        <segue reference="qK7-4Q-NbR"/>
+        <segue reference="5Gy-on-iGP"/>
         <segue reference="k34-60-bfJ"/>
     </inferredMetricsTieBreakers>
 </document>

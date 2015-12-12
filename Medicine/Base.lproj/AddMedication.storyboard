@@ -96,58 +96,66 @@
                             </tableViewSection>
                             <tableViewSection headerTitle="Dosage Details" footerTitle="" id="AQS-yx-aE0" userLabel="Details">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="intervalCell" textLabel="nsD-vA-9fv" detailTextLabel="ORp-9a-7HQ" style="IBUITableViewCellStyleValue1" id="p9k-6p-cjW">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="dosageCell" id="ZeT-Ur-Fh8">
                                         <rect key="frame" x="0.0" y="165" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="p9k-6p-cjW" id="3lh-a5-apV">
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="ZeT-Ur-Fh8" id="bjv-GS-7L9">
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Dosage" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="nsD-vA-9fv">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Dosage" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Eie-gq-arT">
                                                     <rect key="frame" x="15" y="12" width="55.5" height="19.5"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ORp-9a-7HQ">
-                                                    <rect key="frame" x="523.5" y="12" width="41.5" height="19.5"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pwe-o4-vQM">
+                                                    <rect key="frame" x="517.5" y="12" width="41.5" height="19.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
+                                            <constraints>
+                                                <constraint firstItem="Eie-gq-arT" firstAttribute="leading" secondItem="bjv-GS-7L9" secondAttribute="leadingMargin" id="TsY-Ah-oET"/>
+                                                <constraint firstItem="Pwe-o4-vQM" firstAttribute="centerY" secondItem="bjv-GS-7L9" secondAttribute="centerY" id="Wol-QM-eeu"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="Pwe-o4-vQM" secondAttribute="trailing" id="jfh-jh-mfB"/>
+                                                <constraint firstItem="Eie-gq-arT" firstAttribute="centerY" secondItem="bjv-GS-7L9" secondAttribute="centerY" id="xbq-e0-jSt"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <segue destination="kZ7-qR-OR1" kind="show" identifier="setDosage" id="DSF-Ny-BmT"/>
+                                            <segue destination="kZ7-qR-OR1" kind="show" identifier="setDosage" id="xAj-k9-pw5"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="intervalCell" textLabel="V5u-PI-sSd" detailTextLabel="bX8-Vm-mrz" style="IBUITableViewCellStyleValue1" id="cGf-70-86i">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="intervalCell" id="4A1-1d-Zax">
                                         <rect key="frame" x="0.0" y="209" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="cGf-70-86i" id="ZUl-Fj-SPe">
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="4A1-1d-Zax" id="KFU-uU-aKJ">
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Repeat" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="V5u-PI-sSd">
-                                                    <rect key="frame" x="15" y="12" width="51.5" height="19.5"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Repeat" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Opn-4a-hth">
+                                                    <rect key="frame" x="15" y="12.5" width="51.5" height="19.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="bX8-Vm-mrz">
-                                                    <rect key="frame" x="523.5" y="12" width="41.5" height="19.5"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VVV-NY-cRi">
+                                                    <rect key="frame" x="517.5" y="12" width="41.5" height="19.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
+                                            <constraints>
+                                                <constraint firstItem="Opn-4a-hth" firstAttribute="leading" secondItem="KFU-uU-aKJ" secondAttribute="leadingMargin" id="DD2-DY-vke"/>
+                                                <constraint firstItem="Opn-4a-hth" firstAttribute="centerY" secondItem="KFU-uU-aKJ" secondAttribute="centerY" id="Tcl-zo-uud"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="VVV-NY-cRi" secondAttribute="trailing" id="gk8-8g-7kp"/>
+                                                <constraint firstItem="VVV-NY-cRi" firstAttribute="centerY" secondItem="KFU-uU-aKJ" secondAttribute="centerY" id="loM-dK-c3n"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <segue destination="SMH-XP-zzs" kind="show" identifier="setInterval" id="XlO-yg-LSZ"/>
+                                            <segue destination="SMH-XP-zzs" kind="show" identifier="setInterval" id="hEP-YC-1oU"/>
                                         </connections>
                                     </tableViewCell>
                                 </cells>
@@ -200,8 +208,8 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="dosageLabel" destination="ORp-9a-7HQ" id="7Wn-eH-YTQ"/>
-                        <outlet property="intervalLabel" destination="bX8-Vm-mrz" id="muq-dl-LnM"/>
+                        <outlet property="dosageLabel" destination="Pwe-o4-vQM" id="OF6-cT-InS"/>
+                        <outlet property="intervalLabel" destination="VVV-NY-cRi" id="928-e7-D9b"/>
                         <outlet property="medicationName" destination="vij-F6-HGc" id="zd2-9O-azE"/>
                         <outlet property="prescriptionLabel" destination="BcE-8L-MqT" id="RP8-71-PjE"/>
                         <outlet property="reminderToggle" destination="2XB-DH-Mdu" id="pMb-4D-8tY"/>

@@ -157,6 +157,23 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         return 0
     }
     
+    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        let row = Rows(index: indexPath)
+        
+        cell.preservesSuperviewLayoutMargins = true
+        
+        switch(row) {
+        case Rows.dosage:
+            if med.reminderEnabled == false {
+                cell.preservesSuperviewLayoutMargins = false
+                cell.layoutMargins = UIEdgeInsetsZero
+                cell.separatorInset = UIEdgeInsetsZero
+                cell.contentView.layoutMargins = tableView.separatorInset
+            }
+        default: break
+        }
+    }
+    
     override func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         switch section {
         case Rows.prescription.index().section:
