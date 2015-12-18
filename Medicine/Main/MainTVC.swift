@@ -366,7 +366,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         if med.doseHistory?.count == 0 {
             cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
             cell.subtitle.textColor = UIColor.lightGrayColor()
-            cell.subtitle.text = "Tap to take first dose"
+            cell.subtitle.text = "Hold to take first dose"
         }
         
         // If reminders aren't enabled for medication
@@ -402,7 +402,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             else {
                 cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
                 cell.subtitle.textColor = UIColor.lightGrayColor()
-                cell.subtitle.text = "Tap to take first dose"
+                cell.subtitle.text = "Told to take first dose"
             }
         }
         
@@ -458,39 +458,14 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     // MARK: - Table view delegate
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let med = medication[indexPath.row]
-        
-        if (tableView.editing == false) {
+    @IBAction func selectAddButton(sender: UIButton) {
+        let cell = (sender.superview?.superview as! MedicineCell)
+        if let indexPath = self.tableView.indexPathForCell(cell) {
+            let med = medication[indexPath.row]
             var dateString:String? = nil
             
-            // Format string for previous dose
             if let date = med.lastDose?.date {
-                if med.reminderEnabled {
-                    dateString = "Last Dose: "
-                    //dateString?.appendContentsOf(Medicine.dateString(date))
-                    
-                    // Set label date, skip if date is today
-                    if cal.isDateInToday(date) {
-                        dateString?.appendContentsOf("Today, ")
-                    } else if cal.isDateInYesterday(date) {
-                        dateString?.appendContentsOf("Yesterday, ")
-                    } else if date.isDateInWeek() {
-                        dateFormatter.dateFormat = "EEEE, "
-                        dateString?.appendContentsOf(dateFormatter.stringFromDate(date))
-                    } else {
-                        dateFormatter.dateFormat = "MMM d, "
-                        dateString?.appendContentsOf(dateFormatter.stringFromDate(date))
-                    }
-                    
-                    // Set label time
-                    if date.isMidnight() {
-                        dateString?.appendContentsOf("Midnight")
-                    } else {
-                        dateFormatter.dateFormat = "h:mm a"
-                        dateString?.appendContentsOf(dateFormatter.stringFromDate(date))
-                    }
-                }
+                dateString = "Last Dose: \(Medicine.dateString(date, today: true))"
             }
             
             let alert = UIAlertController(title: med.name, message: dateString, preferredStyle: UIAlertControllerStyle.ActionSheet)
@@ -535,11 +510,6 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }))
             
-            alert.addAction(UIAlertAction(title: "View Details", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-                let cell = self.tableView.cellForRowAtIndexPath(indexPath)
-                self.performSegueWithIdentifier("viewMedicationDetails", sender: cell)
-            }))
-            
             alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
                 self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }))
@@ -551,12 +521,10 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 alert.popoverPresentationController?.sourceRect = rect
                 alert.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.Left
             }
-
+            
             alert.view.layoutIfNeeded()
             alert.view.tintColor = UIColor.grayColor()
             presentViewController(alert, animated: true, completion: nil)
-        } else {
-            performSegueWithIdentifier("editMedication", sender: indexPath.row)
         }
     }
     
