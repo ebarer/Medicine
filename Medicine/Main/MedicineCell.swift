@@ -18,6 +18,7 @@ class MedicineCell: UITableViewCell {
     @IBOutlet var subtitle: UILabel!
     @IBOutlet var subtitleGlyph: UIImageView!
     var glyphHidden = false
+    var buttonHidden = false
 
     
     // MARK: - Constraints
@@ -27,10 +28,10 @@ class MedicineCell: UITableViewCell {
     @IBOutlet var glyphWidth: NSLayoutConstraint!
     @IBOutlet weak var glyphLeading: NSLayoutConstraint!
     @IBOutlet var subtitleLeading: NSLayoutConstraint!
-    @IBOutlet weak var addButtonWidth: NSLayoutConstraint!
+    @IBOutlet weak var addButton: UIButton!
+    @IBOutlet weak var addButtonTrailing: NSLayoutConstraint!
     
-    
-    // MARK: - General
+    // MARK: - View methods
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -46,14 +47,16 @@ class MedicineCell: UITableViewCell {
     override func setEditing(editing: Bool, animated: Bool) {
         if editing {
             adherenceWidth.constant = 0.0
-            titleLeading.constant = 0.0
-            glyphLeading.constant = 0.0
+            titleLeading.constant = 5.0
+            glyphLeading.constant = 5.0
             subtitleLeading.constant = glyphHidden ? 0.0 : 8.0
+            addButtonTrailing.constant = 0.0
         } else {
             adherenceWidth.constant = 0.0 // 50.0
             titleLeading.constant = 5.0 // 10.0
-            glyphLeading.constant = 5.0
-            subtitleLeading.constant = glyphHidden ? 0.0 : 8.0 // 8.0 : 10.0
+            glyphLeading.constant = 5.0 // 10.0
+            subtitleLeading.constant = glyphHidden ? 0.0 : 8.0
+            addButtonTrailing.constant = 5.0
         }
         
         self.setNeedsUpdateConstraints()
@@ -76,6 +79,11 @@ class MedicineCell: UITableViewCell {
         
         self.setNeedsUpdateConstraints()
         self.layoutIfNeeded()
+    }
+    
+    func hideButton(val: Bool) {
+        addButton.hidden = val
+        buttonHidden = val
     }
 
 }

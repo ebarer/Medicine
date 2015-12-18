@@ -103,6 +103,7 @@ class HistoryTVC: UITableViewController {
 
     func displayEmptyView() {
         if medication.count == 0 {
+            navigationItem.leftBarButtonItem?.enabled = false
             navigationItem.rightBarButtonItem?.enabled = false
             
             if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
@@ -110,6 +111,7 @@ class HistoryTVC: UITableViewController {
                 tableView.backgroundView = emptyView
             }
         } else if history.count == 0 {
+            navigationItem.leftBarButtonItem?.enabled = false
             navigationItem.rightBarButtonItem?.enabled = true
             
             // Create empty message
@@ -118,6 +120,7 @@ class HistoryTVC: UITableViewController {
                 tableView.backgroundView = emptyView
             }
         } else {
+            navigationItem.leftBarButtonItem?.enabled = true
             navigationItem.leftBarButtonItem?.enabled = true
             tableView.separatorStyle = UITableViewCellSeparatorStyle.SingleLine
             tableView.backgroundView = nil

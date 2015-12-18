@@ -234,7 +234,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                     if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
                         headerDescriptionLabel.text = "Next Dose"
                         
-                        dateFormatter.dateFormat = "h:mma"
+                        dateFormatter.dateFormat = "h:mm a"
                         let date = dateFormatter.stringFromDate(nextDose.fireDate!)
                         string = NSMutableAttributedString(string: date)
                         string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, string.length))
@@ -243,7 +243,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                         let range = (date.containsString("AM")) ? date.rangeOfString("AM") : date.rangeOfString("PM")
                         if let range = range {
                             let pos = date.startIndex.distanceTo(range.startIndex)
-                            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(pos, 2))
+                            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(pos-1, 3))
                         }
                         
                         headerCounterLabel.attributedText = string
@@ -357,16 +357,18 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             cell.adherenceScoreLabel.text = "—"
         }
         
-        // Set subtitle
+        // Set subtitle and attributes
         cell.hideGlyph(false)
         cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
         cell.subtitle.textColor = UIColor.blackColor()
+        cell.hideButton(false)
         
         // If no doses taken
         if med.doseHistory?.count == 0 {
+            cell.hideButton(true)
             cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
             cell.subtitle.textColor = UIColor.lightGrayColor()
-            cell.subtitle.text = "Hold to take first dose"
+            cell.subtitle.text = "Tap to take first dose"
         }
         
         // If reminders aren't enabled for medication
@@ -400,9 +402,10 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
                 
             // If no other conditions met, instruct user on how to take dose
             else {
+                cell.hideButton(true)
                 cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
                 cell.subtitle.textColor = UIColor.lightGrayColor()
-                cell.subtitle.text = "Told to take first dose"
+                cell.subtitle.text = "Tap to take first dose"
             }
         }
         
@@ -461,71 +464,75 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     @IBAction func selectAddButton(sender: UIButton) {
         let cell = (sender.superview?.superview as! MedicineCell)
         if let indexPath = self.tableView.indexPathForCell(cell) {
-            let med = medication[indexPath.row]
-            var dateString:String? = nil
-            
-            if let date = med.lastDose?.date {
-                dateString = "Last Dose: \(Medicine.dateString(date, today: true))"
-            }
-            
-            let alert = UIAlertController(title: med.name, message: dateString, preferredStyle: UIAlertControllerStyle.ActionSheet)
-            
-            alert.addAction(UIAlertAction(title: "Take Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-                self.performSegueWithIdentifier("addDose", sender: med)
-                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            }))
-            
-            // If last dose is set, allow user to clear notification
-            if (med.lastDose != nil) {
-                alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-                    if (med.untakeLastDose(self.moc)) {
-                        // If selected, sort by next dosage
-                        if self.defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-                            medication.sortInPlace(Medicine.sortByNextDose)
-                            self.tableView.reloadData()
-                        } else {
-                            self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.None)
-                        }
-                        
-                        self.updateHeader()
-                        
-                        // Update spotlight index
-                        if #available(iOS 9.0, *) {
-                            if let attributes = med.attributeSet {
-                                let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                                CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                            }
-                        }
-                        
-                        // Update shortcuts
-                        self.setDynamicShortcuts()
-                    } else {
-                        self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
-                    }
-                }))
-            }
-            
-            alert.addAction(UIAlertAction(title: "Refill Prescription", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-                self.performSegueWithIdentifier("refillPrescription", sender: med)
-                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            }))
-            
-            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
-                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            }))
-            
-            // Set popover for iPad
-            if let cell = tableView.cellForRowAtIndexPath(indexPath) as? MedicineCell {
-                alert.popoverPresentationController?.sourceView = cell.title
-                let rect = CGRectMake(cell.title.bounds.origin.x, cell.title.bounds.origin.y, cell.title.bounds.width + 5, cell.title.bounds.height)
-                alert.popoverPresentationController?.sourceRect = rect
-                alert.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.Left
-            }
-            
-            alert.view.layoutIfNeeded()
-            alert.view.tintColor = UIColor.grayColor()
-            presentViewController(alert, animated: true, completion: nil)
+            presentActionMenu(indexPath)
         }
+    }
+    
+    func presentActionMenu(index: NSIndexPath) {
+        let med = medication[index.row]
+        var dateString:String? = nil
+        
+        if let date = med.lastDose?.date {
+            dateString = "Last Dose: \(Medicine.dateString(date, today: true))"
+        }
+        
+        let alert = UIAlertController(title: med.name, message: dateString, preferredStyle: UIAlertControllerStyle.ActionSheet)
+        
+        alert.addAction(UIAlertAction(title: "Take Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+            self.performSegueWithIdentifier("addDose", sender: med)
+            self.tableView.deselectRowAtIndexPath(index, animated: true)
+        }))
+        
+        // If last dose is set, allow user to clear notification
+        if (med.lastDose != nil) {
+            alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
+                if (med.untakeLastDose(self.moc)) {
+                    // If selected, sort by next dosage
+                    if self.defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+                        medication.sortInPlace(Medicine.sortByNextDose)
+                        self.tableView.reloadData()
+                    } else {
+                        self.tableView.reloadRowsAtIndexPaths([index], withRowAnimation: UITableViewRowAnimation.None)
+                    }
+                    
+                    self.updateHeader()
+                    
+                    // Update spotlight index
+                    if #available(iOS 9.0, *) {
+                        if let attributes = med.attributeSet {
+                            let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
+                            CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+                        }
+                    }
+                    
+                    // Update shortcuts
+                    self.setDynamicShortcuts()
+                } else {
+                    self.tableView.deselectRowAtIndexPath(index, animated: true)
+                }
+            }))
+        }
+        
+        alert.addAction(UIAlertAction(title: "Refill Prescription", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+            self.performSegueWithIdentifier("refillPrescription", sender: med)
+            self.tableView.deselectRowAtIndexPath(index, animated: true)
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
+            self.tableView.deselectRowAtIndexPath(index, animated: true)
+        }))
+        
+        // Set popover for iPad
+        if let cell = tableView.cellForRowAtIndexPath(index) as? MedicineCell {
+            alert.popoverPresentationController?.sourceView = cell.title
+            let rect = CGRectMake(cell.title.bounds.origin.x, cell.title.bounds.origin.y, cell.title.bounds.width + 5, cell.title.bounds.height)
+            alert.popoverPresentationController?.sourceRect = rect
+            alert.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.Left
+        }
+        
+        alert.view.layoutIfNeeded()
+        alert.view.tintColor = UIColor.grayColor()
+        presentViewController(alert, animated: true, completion: nil)
     }
     
     func takeDose(sender: UILongPressGestureRecognizer) {
@@ -591,12 +598,18 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     // MARK: - Navigation methods
     
-    @IBAction func addMedication(sender: UIBarButtonItem) {
-        if appLocked() == false {
-            performSegueWithIdentifier("addMedication", sender: self)
-        } else {
-            performSegueWithIdentifier("upgrade", sender: self)
+    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+        if identifier == "viewMedicationDetails" {
+            if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
+                let med = medication[index.row]
+                if med.doseHistory?.count == 0 {
+                    presentActionMenu(index)
+                    return false
+                }
+            }
         }
+        
+        return true
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -635,6 +648,14 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             if let vc = segue.destinationViewController.childViewControllers[0] as? UpgradeVC {
                 mvc = vc
             }
+        }
+    }
+    
+    @IBAction func addMedication(sender: UIBarButtonItem) {
+        if appLocked() == false {
+            performSegueWithIdentifier("addMedication", sender: self)
+        } else {
+            performSegueWithIdentifier("upgrade", sender: self)
         }
     }
     
