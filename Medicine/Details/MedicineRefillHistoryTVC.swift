@@ -8,8 +8,9 @@
 
 import UIKit
 import CoreData
+import MessageUI
 
-class MedicineRefillHistoryTVC: UITableViewController {
+class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     weak var med:Medicine!
     var dates = [NSDate]()
@@ -247,6 +248,13 @@ class MedicineRefillHistoryTVC: UITableViewController {
     }
     
     
+    // MARK: - Mail delegate
+    
+    func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    
     // MARK: - Toolbar methods
     
     override func setEditing(editing: Bool, animated: Bool) {
@@ -304,7 +312,38 @@ class MedicineRefillHistoryTVC: UITableViewController {
     }
     
     func exportRefills() {
-        print("Exporting...")
+        if MFMailComposeViewController.canSendMail() {
+            if let history = med.refillHistory?.array as? [Refill] {
+                var contents = "\(med.name!)\r"
+                
+                contents += "Date, Amount\r"
+                
+                for refill in history.reverse() {
+                    let dateFormatter = NSDateFormatter()
+                    dateFormatter.dateFormat = "YYYY-MM-dd h:mm:ss a"
+                    
+                    contents += "\(dateFormatter.stringFromDate(refill.date)), "
+                    contents += "\(med.removeTrailingZero(refill.quantity * refill.conversion)) \(med.dosageUnit.units(med.prescriptionCount))"
+                    
+                    if refill.conversion != 1.0 {
+                        contents += " (\(med.removeTrailingZero(refill.quantity)) \(refill.quantityUnit.units(refill.quantity)))"
+                    }
+                    
+                    contents += "\r"
+                }
+                
+                if let data = contents.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
+                    let mc = MFMailComposeViewController()
+                    mc.mailComposeDelegate = self
+                    mc.setSubject("\(med.name!) Refill History")
+                    mc.addAttachmentData(data, mimeType: "text/csv", fileName: "\(med.name!)_Refill_History.csv")
+                    
+                    self.presentViewController(mc, animated: true, completion: nil)
+                }
+            }
+        } else {
+            print("Can't send")
+        }
     }
     
     

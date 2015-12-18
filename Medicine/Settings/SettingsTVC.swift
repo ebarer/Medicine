@@ -120,19 +120,19 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if tableView.cellForRowAtIndexPath(indexPath)?.reuseIdentifier == "feedbackCell" {
-            let mc: MFMailComposeViewController = MFMailComposeViewController()
-            mc.mailComposeDelegate = self
-            mc.setToRecipients(["hello@medicinemanagerapp.com"])
-            mc.setSubject("Feedback for Medicine Manager")
-
-            let deviceInfo = generateDeviceInfo().dataUsingEncoding(NSUTF8StringEncoding)
-            if let deviceEncode = deviceInfo?.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0)) {
-                if let infoFile = NSData(base64EncodedString: deviceEncode, options: []) {
-                    mc.addAttachmentData(infoFile, mimeType: "text/plain", fileName: "device_information.txt")
+            if MFMailComposeViewController.canSendMail() {
+                if let deviceInfo = generateDeviceInfo().dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
+                    let mc = MFMailComposeViewController()
+                    mc.mailComposeDelegate = self
+                    mc.setToRecipients(["hello@medicinemanagerapp.com"])
+                    mc.setSubject("Feedback for Medicine Manager")
+                    mc.addAttachmentData(deviceInfo, mimeType: "text/plain", fileName: "device_information.txt")
+                    
+                    self.presentViewController(mc, animated: true, completion: nil)
                 }
+            } else {
+                print("Can't send")
             }
-            
-            self.presentViewController(mc, animated: true, completion: nil)
         }
         
         if tableView.cellForRowAtIndexPath(indexPath)?.reuseIdentifier == "resetCell" {
@@ -207,14 +207,33 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         let version = dictionary["CFBundleShortVersionString"] as! String
         let build = dictionary["CFBundleVersion"] as! String
         
-        var deviceInfo = "App Information:\n"
-        deviceInfo += "App Name: \(name)\n"
-        deviceInfo += "App Version: \(version) (\(build))\n\n"
+        var deviceInfo = "App Information:\r"
+        deviceInfo += "App Name: \(name)\r"
+        deviceInfo += "App Version: \(version) (\(build))\r\r"
 
-        deviceInfo += "Device Information:\n"
-        deviceInfo += "Device: \(deviceName())\n"
-        deviceInfo += "iOS Version: \(device.systemVersion)\n"
-        deviceInfo += "Timezone: \(NSTimeZone.localTimeZone().name) (\(NSTimeZone.localTimeZone().abbreviation!))\n"
+        deviceInfo += "Device Information:\r"
+        deviceInfo += "Device: \(deviceName())\r"
+        deviceInfo += "iOS Version: \(device.systemVersion)\r"
+        deviceInfo += "Timezone: \(NSTimeZone.localTimeZone().name) (\(NSTimeZone.localTimeZone().abbreviation!))\r\r"
+        
+        deviceInfo += "Obfuscated Medicine Information:\r"
+        
+        for (index, med) in medication.enumerate() {
+            if let score = med.adherenceScore() {
+                deviceInfo += "Medicine \(index) (\(score)%): "
+            } else {
+                deviceInfo += "Medicine \(index) (-%): "
+            }
+            
+            deviceInfo += "\(med.removeTrailingZero(med.dosage)) \(med.dosageUnit.units(med.dosage)), every " +
+                          "\(med.removeTrailingZero(med.interval)) \(med.intervalUnit.units(med.interval)) "
+            
+            if med.refillHistory?.count == 0 {
+                deviceInfo += "(No refill history)"
+            } else {
+                deviceInfo += "(\(med.removeTrailingZero(med.prescriptionCount)) \(med.dosageUnit.units(med.prescriptionCount)) remaining)\r"
+            }
+        }
         
         return deviceInfo
     }

@@ -142,6 +142,8 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         let row = Rows(index: indexPath)
         
         switch row {
+        case Rows.name:
+            return 60.0
         case Rows.prescription:
             if med.name != nil && med.name != "" {
                 return 48.0

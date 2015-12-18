@@ -184,7 +184,7 @@ class MedicineDetailsTVC: UITableViewController {
     override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch section {
         case 0:
-            return 20.0
+            return tableView.rowHeight
         case 1:
             if med?.prescriptionCount > 0 {
                 return 20.0

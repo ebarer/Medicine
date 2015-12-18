@@ -223,7 +223,7 @@ class HistoryTVC: UITableViewController {
                 cell.textLabel?.textColor = UIColor.blackColor()
                 cell.textLabel?.text = dateFormatter.stringFromDate(dose.date)
                 cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                cell.detailTextLabel?.text = String(format:"%@ - %g %@", med.name!, dose.dosage, med.dosageUnit.units(dose.dosage))
+                cell.detailTextLabel?.text = String(format:"%@ - %g %@", med.name!, dose.dosage, dose.dosageUnit.units(dose.dosage))
             }
         } else {
             cell.textLabel?.textColor = UIColor.lightGrayColor()

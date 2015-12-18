@@ -40,16 +40,16 @@
                         <sections>
                             <tableViewSection id="74z-2z-iku" userLabel="General">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="nameCell" id="vjp-kk-JoL">
-                                        <rect key="frame" x="0.0" y="35" width="600" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="nameCell" rowHeight="60" id="vjp-kk-JoL">
+                                        <rect key="frame" x="0.0" y="35" width="600" height="60"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="vjp-kk-JoL" id="qZ2-FO-WPK">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Medicine Name" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="vij-F6-HGc">
-                                                    <rect key="frame" x="15" y="12" width="570" height="20"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <rect key="frame" x="15" y="12" width="570" height="36"/>
+                                                    <fontDescription key="fontDescription" type="system" weight="light" pointSize="30"/>
                                                     <textInputTraits key="textInputTraits" autocapitalizationType="words"/>
                                                     <connections>
                                                         <action selector="updateName:" destination="p2V-uz-hw7" eventType="editingChanged" id="aHQ-Lc-Y3u"/>
@@ -57,14 +57,14 @@
                                                 </textField>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="vij-F6-HGc" firstAttribute="leading" secondItem="qZ2-FO-WPK" secondAttribute="leadingMargin" id="4RU-hb-PY3"/>
-                                                <constraint firstItem="vij-F6-HGc" firstAttribute="trailing" secondItem="qZ2-FO-WPK" secondAttribute="trailingMargin" id="P1A-RN-hEv"/>
-                                                <constraint firstItem="vij-F6-HGc" firstAttribute="centerY" secondItem="qZ2-FO-WPK" secondAttribute="centerY" id="vYC-Un-XJT"/>
+                                                <constraint firstItem="vij-F6-HGc" firstAttribute="leading" secondItem="qZ2-FO-WPK" secondAttribute="leadingMargin" id="08l-zH-nhS"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="vij-F6-HGc" secondAttribute="trailing" id="9hz-Bv-K4M"/>
+                                                <constraint firstItem="vij-F6-HGc" firstAttribute="centerY" secondItem="qZ2-FO-WPK" secondAttribute="centerY" id="KOz-po-qvN"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="reminderCell" id="Bg3-O8-LLY">
-                                        <rect key="frame" x="0.0" y="79" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="95" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="Bg3-O8-LLY" id="CwE-V5-0ie">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
@@ -78,17 +78,17 @@
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Schedule Reminders" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dAX-jF-zKQ">
-                                                    <rect key="frame" x="15" y="12.5" width="149" height="19.5"/>
+                                                    <rect key="frame" x="15" y="12" width="149" height="19.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="dAX-jF-zKQ" firstAttribute="centerY" secondItem="CwE-V5-0ie" secondAttribute="centerY" id="46H-ko-Xn0"/>
-                                                <constraint firstItem="dAX-jF-zKQ" firstAttribute="leading" secondItem="CwE-V5-0ie" secondAttribute="leadingMargin" id="Ffh-Nb-s8F"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="2XB-DH-Mdu" secondAttribute="trailing" id="YVm-Oq-8yv"/>
-                                                <constraint firstItem="2XB-DH-Mdu" firstAttribute="centerY" secondItem="CwE-V5-0ie" secondAttribute="centerY" id="aMz-q8-raD"/>
+                                                <constraint firstItem="dAX-jF-zKQ" firstAttribute="leading" secondItem="CwE-V5-0ie" secondAttribute="leadingMargin" id="JWu-Uk-WXG"/>
+                                                <constraint firstItem="dAX-jF-zKQ" firstAttribute="centerY" secondItem="CwE-V5-0ie" secondAttribute="centerY" id="VNI-xo-yCh"/>
+                                                <constraint firstItem="2XB-DH-Mdu" firstAttribute="centerY" secondItem="CwE-V5-0ie" secondAttribute="centerY" id="YKu-Zl-WG2"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="2XB-DH-Mdu" secondAttribute="trailing" id="nmk-TC-Xaq"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -97,7 +97,7 @@
                             <tableViewSection headerTitle="Dosage Details" footerTitle="" id="AQS-yx-aE0" userLabel="Details">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="dosageCell" id="ZeT-Ur-Fh8">
-                                        <rect key="frame" x="0.0" y="165" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="181" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="ZeT-Ur-Fh8" id="bjv-GS-7L9">
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
@@ -128,7 +128,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="intervalCell" id="4A1-1d-Zax">
-                                        <rect key="frame" x="0.0" y="209" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="225" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="4A1-1d-Zax" id="KFU-uU-aKJ">
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
@@ -163,7 +163,7 @@
                             <tableViewSection footerTitle="" id="XyG-II-Cdg" userLabel="Details">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="prescriptionCell" textLabel="BcE-8L-MqT" imageView="tkt-1Q-wxz" rowHeight="48" style="IBUITableViewCellStyleDefault" id="Aqg-wL-8Su">
-                                        <rect key="frame" x="0.0" y="273" width="600" height="48"/>
+                                        <rect key="frame" x="0.0" y="289" width="600" height="48"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Aqg-wL-8Su" id="wOq-gF-c5B">
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="47.5"/>

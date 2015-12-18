@@ -244,6 +244,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Push Notifications stack
     
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
+        if let info = notification.userInfo {
+            NSLog("Local notification received: %@", info)
+        } else {
+            NSLog("Local notification received (no info): %@", notification)
+        }
+        
         if notification.category == "Dose Reminder" {
             NSNotificationCenter.defaultCenter().postNotificationName("doseNotification", object: nil, userInfo: notification.userInfo)
             UIApplication.sharedApplication().cancelLocalNotification(notification)
@@ -254,6 +260,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {
+        guard let action = identifier else {
+            NSLog("Local action received: no identifier")
+            completionHandler()
+            return
+        }
+        
+        guard let info = notification.userInfo else {
+            NSLog("Local action (%@) received: no info", action)
+            completionHandler()
+            return
+        }
+        
+        NSLog("Local action (%@) received: %@", action, info)
+        
         if identifier == "takeDose" {
             NSNotificationCenter.defaultCenter().postNotificationName("takeDoseAction", object: nil, userInfo: notification.userInfo)
             UIApplication.sharedApplication().cancelLocalNotification(notification)

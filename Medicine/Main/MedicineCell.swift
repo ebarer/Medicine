@@ -45,8 +45,8 @@ class MedicineCell: UITableViewCell {
             subtitleLeading.constant = glyphHidden ? -5.0 : 0.0
         } else {
             adherenceWidth.constant = 0.0 // 50.0
-            titleLeading.constant = 10.0
-            subtitleLeading.constant = glyphHidden ? 8.0 : 10.0
+            titleLeading.constant = 0.0 // 10.0
+            subtitleLeading.constant = glyphHidden ? -5.0 : 0.0 // 8.0 : 10.0
         }
         
         self.setNeedsUpdateConstraints()
@@ -60,11 +60,11 @@ class MedicineCell: UITableViewCell {
         if val {
             glyphHidden = true
             glyphWidth.constant = 0.0
-            subtitleLeading.constant = 5.0
+            subtitleLeading.constant = 0.0
         } else {
             glyphHidden = false
             glyphWidth.constant = 20.0
-            subtitleLeading.constant = 10.0
+            subtitleLeading.constant = 0.0
         }
         
         self.setNeedsUpdateConstraints()

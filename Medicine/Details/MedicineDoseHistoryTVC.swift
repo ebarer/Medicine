@@ -8,8 +8,9 @@
 
 import UIKit
 import CoreData
+import MessageUI
 
-class MedicineDoseHistoryTVC: UITableViewController {
+class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     weak var med:Medicine!
     let emptyDates = false
@@ -222,7 +223,7 @@ class MedicineDoseHistoryTVC: UITableViewController {
             cell.textLabel?.textColor = UIColor.blackColor()
             cell.textLabel?.text = "\(dateFormatter.stringFromDate(dose.date))"
             cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-            cell.detailTextLabel?.text = String(format:"%g %@", dose.dosage, med.dosageUnit.units(dose.dosage))
+            cell.detailTextLabel?.text = String(format:"%g %@", dose.dosage, dose.dosageUnit.units(dose.dosage))
         } else {
             cell.textLabel?.textColor = UIColor.lightGrayColor()
             cell.textLabel?.text = "No doses logged"
@@ -256,6 +257,13 @@ class MedicineDoseHistoryTVC: UITableViewController {
     
     override func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
         updateDeleteButtonLabel()
+    }
+    
+    
+    // MARK: - Mail delegate
+    
+    func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
+        self.dismissViewControllerAnimated(true, completion: nil)
     }
     
     
@@ -329,8 +337,33 @@ class MedicineDoseHistoryTVC: UITableViewController {
     }
     
     func exportDoses() {
-        // http://stackoverflow.com/questions/33349139/create-csv-file-in-swift-and-write-to-file
-        print("Exporting...")
+        if MFMailComposeViewController.canSendMail() {
+            if let history = med.doseHistory?.array as? [Dose] {
+                var contents = "\(med.name!)\r"
+                    contents += "\(med.removeTrailingZero(med.dosage)) \(med.dosageUnit.units(med.dosage)) every "
+                    contents += "\(med.removeTrailingZero(med.interval)) \(med.intervalUnit.units(med.interval))\r"
+                    contents += "Date, Dosage\r"
+                
+                for dose in history.reverse() {
+                    let dateFormatter = NSDateFormatter()
+                    dateFormatter.dateFormat = "YYYY-MM-dd h:mm:ss a"
+                    
+                    contents += "\(dateFormatter.stringFromDate(dose.date)), "
+                    contents += "\(med.removeTrailingZero(dose.dosage)) \(dose.dosageUnit.units(dose.dosage))\r"
+                }
+                
+                if let data = contents.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
+                    let mc = MFMailComposeViewController()
+                    mc.mailComposeDelegate = self
+                    mc.setSubject("\(med.name!) Dose History")
+                    mc.addAttachmentData(data, mimeType: "text/csv", fileName: "\(med.name!)_Dose_History.csv")
+                    
+                    self.presentViewController(mc, animated: true, completion: nil)
+                }
+            }
+        } else {
+            print("Can't send")
+        }
     }
     
     
