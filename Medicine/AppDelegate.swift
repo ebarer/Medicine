@@ -22,8 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Setup IAP observers and pass moc
         if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
-            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
-                SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainTVC)
+            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainVC)}).first {
+                SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainVC)
             }
         }
         
@@ -60,8 +60,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillResignActive(application: UIApplication) {
         // Remove IAP observers
         if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
-            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
-                SKPaymentQueue.defaultQueue().removeTransactionObserver(vc as! MainTVC)
+            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainVC)}).first {
+                SKPaymentQueue.defaultQueue().removeTransactionObserver(vc as! MainVC)
             }
         }
         
@@ -72,8 +72,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(application: UIApplication) {
         // Remove IAP observers
         if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
-            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
-                SKPaymentQueue.defaultQueue().removeTransactionObserver(vc as! MainTVC)
+            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainVC)}).first {
+                SKPaymentQueue.defaultQueue().removeTransactionObserver(vc as! MainVC)
             }
         }
     }
@@ -81,8 +81,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillEnterForeground(application: UIApplication) {
         // Setup IAP observers and pass moc
         if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
-            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
-                SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainTVC)
+            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainVC)}).first {
+                SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainVC)
             }
         }
         
@@ -95,8 +95,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(application: UIApplication) {
         // Setup IAP observers and pass moc
         if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
-            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
-                SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainTVC)
+            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainVC)}).first {
+                SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainVC)
             }
         }
         
@@ -116,8 +116,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Remove IAP observers
         if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
-            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
-                SKPaymentQueue.defaultQueue().removeTransactionObserver(vc as! MainTVC)
+            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainVC)}).first {
+                SKPaymentQueue.defaultQueue().removeTransactionObserver(vc as! MainVC)
             }
         }
         
@@ -216,7 +216,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let action = shortcutItem.userInfo?["action"] else { return false }
         
         if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
-            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainTVC)}).first {
+            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainVC)}).first {
                 if vc.isViewLoaded() {
                     
                     vc.dismissViewControllerAnimated(false, completion: nil)
@@ -232,7 +232,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     launchedShortcutItem = nil
                     return true
                 } else {
-                    (vc as! MainTVC).launchedShortcutItem = self.launchedShortcutItem
+                    (vc as! MainVC).launchedShortcutItem = self.launchedShortcutItem
                 }
             }
         }

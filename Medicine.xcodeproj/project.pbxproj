@@ -21,6 +21,7 @@
 		CE247B911B96619B00E4EB5F /* AddMedicationTVC+Interval.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE247B901B96619B00E4EB5F /* AddMedicationTVC+Interval.swift */; };
 		CE2497161BAA00DF00627525 /* TutorialPVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2497151BAA00DF00627525 /* TutorialPVC.swift */; };
 		CE24971B1BAA4E7400627525 /* TutorialContentVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE24971A1BAA4E7400627525 /* TutorialContentVC.swift */; };
+		CE2725C31C26B425001CA73A /* MainVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2725C21C26B425001CA73A /* MainVC.swift */; };
 		CE2F6B111BBD492400707951 /* MainTVC+UIViewControllerPreviewing.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2F6B101BBD492400707951 /* MainTVC+UIViewControllerPreviewing.swift */; };
 		CE2F6B181BBD5BA800707951 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2F6B171BBD5BA800707951 /* NotificationCenter.framework */; };
 		CE2F6B1B1BBD5BA800707951 /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2F6B1A1BBD5BA800707951 /* TodayViewController.swift */; };
@@ -46,7 +47,6 @@
 		CEA250F31B90396C00BBE466 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CEA250F21B90396C00BBE466 /* Assets.xcassets */; };
 		CEA250F61B90396C00BBE466 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEA250F41B90396C00BBE466 /* LaunchScreen.storyboard */; };
 		CEA250FF1B903BC200BBE466 /* AddMedicationTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA250FE1B903BC200BBE466 /* AddMedicationTVC.swift */; };
-		CEA251021B903BE400BBE466 /* MainTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA251011B903BE400BBE466 /* MainTVC.swift */; };
 		CEA2510C1B903E7D00BBE466 /* Medicine.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CEA2510A1B903E7D00BBE466 /* Medicine.xcdatamodeld */; };
 		CEA5DFC21C1190F100B9BC99 /* MedicineDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEA5DFC01C1190F100B9BC99 /* MedicineDetails.storyboard */; };
 		CEB36F3F1BE6D02000BCBD87 /* MedicineCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB36F3E1BE6D02000BCBD87 /* MedicineCell.swift */; };
@@ -106,6 +106,7 @@
 		CE247B901B96619B00E4EB5F /* AddMedicationTVC+Interval.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "AddMedicationTVC+Interval.swift"; path = "Add/AddMedicationTVC+Interval.swift"; sourceTree = "<group>"; };
 		CE2497151BAA00DF00627525 /* TutorialPVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TutorialPVC.swift; path = Tutorial/TutorialPVC.swift; sourceTree = "<group>"; };
 		CE24971A1BAA4E7400627525 /* TutorialContentVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TutorialContentVC.swift; path = Tutorial/TutorialContentVC.swift; sourceTree = "<group>"; };
+		CE2725C21C26B425001CA73A /* MainVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainVC.swift; path = Main/MainVC.swift; sourceTree = "<group>"; };
 		CE2F6B101BBD492400707951 /* MainTVC+UIViewControllerPreviewing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "MainTVC+UIViewControllerPreviewing.swift"; path = "Main/MainTVC+UIViewControllerPreviewing.swift"; sourceTree = "<group>"; };
 		CE2F6B161BBD5BA800707951 /* MedicineTodayExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MedicineTodayExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE2F6B171BBD5BA800707951 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
@@ -320,6 +321,7 @@
 				CEA250EC1B90396C00BBE466 /* Main.storyboard */,
 				CE0EA1811BAFDAED00F48A09 /* MainEmptyView.xib */,
 				CE0EA1981BAFF49100F48A09 /* MainTBC.swift */,
+				CE2725C21C26B425001CA73A /* MainVC.swift */,
 				CEA251011B903BE400BBE466 /* MainTVC.swift */,
 				CE2F6B101BBD492400707951 /* MainTVC+UIViewControllerPreviewing.swift */,
 				CEB36F3E1BE6D02000BCBD87 /* MedicineCell.swift */,
@@ -553,6 +555,7 @@
 				CE6E551E1B9040C900805397 /* Medicine.swift in Sources */,
 				CEE849811C13932600880484 /* MedicineDetailsTVC.swift in Sources */,
 				CE6E551D1B9040C900805397 /* Medicine+CoreDataProperties.swift in Sources */,
+				CE2725C31C26B425001CA73A /* MainVC.swift in Sources */,
 				CE6E55201B9040C900805397 /* Dose.swift in Sources */,
 				CE6E551F1B9040C900805397 /* Dose+CoreDataProperties.swift in Sources */,
 				CE30D1581B9856D1007805DB /* Refill.swift in Sources */,
@@ -561,7 +564,6 @@
 				CEA250E91B90396C00BBE466 /* AppDelegate.swift in Sources */,
 				CEE18F381BEECE3700222D92 /* SettingsTVC+Manage.swift in Sources */,
 				CE0EA19D1BAFFDA200F48A09 /* AddDoseTVC+Medicine.swift in Sources */,
-				CEA251021B903BE400BBE466 /* MainTVC.swift in Sources */,
 				CEA250FF1B903BC200BBE466 /* AddMedicationTVC.swift in Sources */,
 				CE6325CA1BA1661C00BAD562 /* UpgradeVC.swift in Sources */,
 				CE75197A1BB00CFE000A2879 /* SettingsTVC+Snooze.swift in Sources */,
