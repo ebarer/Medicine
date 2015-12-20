@@ -1206,7 +1206,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Cho-HC-bOJ"/>
-        <segue reference="boT-ys-MKj"/>
         <segue reference="HfD-yH-Bkx"/>
+        <segue reference="boT-ys-MKj"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -267,16 +267,28 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
                 emptyView.frame = CGRectMake(0, 0, self.view.frame.width, self.view.frame.height)
                 emptyView.tag = 1001
+                emptyView.alpha = 0.0
                 self.view.addSubview(emptyView)
+                
+                UIView.animateWithDuration(0.5,
+                    animations: { () -> Void in
+                        self.summaryHeader.alpha = 0.0
+                        self.tableView.alpha = 0.0
+                        emptyView.alpha = 0.5
+                    }, completion: { (val) -> Void in
+                        self.summaryHeader.hidden = true
+                        self.tableView.hidden = true
+                })
             }
-            
-            summaryHeader.hidden = true
-            tableView.hidden = true
         } else {
             navigationItem.leftBarButtonItem?.enabled = true
             
             // Remove empty message
             self.view.viewWithTag(1001)?.removeFromSuperview()
+            self.summaryHeader.alpha = 1.0
+            summaryHeader.hidden = false
+            self.tableView.alpha = 1.0
+            tableView.hidden = false
             
             // Reschedule notifications
             NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
@@ -289,8 +301,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             // Dismiss editing mode
             setEditing(false, animated: true)
             
-            summaryHeader.hidden = false
-            tableView.hidden = false
             tableView.reloadData()
         }
     }
@@ -454,6 +464,12 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         tableView.setEditing(editing, animated: animated)
     }
     
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if tableView.editing == true {
+            performSegueWithIdentifier("editMedication", sender: medication[indexPath.row])
+        }
+    }
+    
     @IBAction func selectAddButton(sender: UIButton) {
         let cell = (sender.superview?.superview as! MedicineCell)
         if let indexPath = self.tableView.indexPathForCell(cell) {
@@ -592,6 +608,33 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Navigation methods
+    
+    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+        if tableView.editing == true {
+            switch identifier {
+            case "addMedication":
+                return true
+            case "editMedication":
+                return true
+            case "upgrade":
+                return true
+            default:
+                return false
+            }
+        }
+        
+        if identifier == "viewMedicationDetails" {
+            if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
+                let med = medication[index.row]
+                if med.doseHistory?.count == 0 && med.intervalUnit == .Hourly {
+                    presentActionMenu(index)
+                    return false
+                }
+            }
+        }
+        
+        return true
+    }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "editMedication" {
