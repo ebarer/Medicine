@@ -61,6 +61,7 @@ class MedicineCell: UITableViewCell {
         
         self.setNeedsUpdateConstraints()
         UIView.animateWithDuration(NSTimeInterval(0.25)) { () -> Void in
+            self.addButton.hidden = editing
             self.layoutIfNeeded()
             super.setEditing(editing, animated: animated)
         }

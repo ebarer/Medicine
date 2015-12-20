@@ -21,7 +21,6 @@ extension MainTVC: UIViewControllerPreviewingDelegate {
         guard let vc = storyboard?.instantiateViewControllerWithIdentifier("MedicineDetailsTVC") as? MedicineDetailsTVC else { return nil }
         
         vc.med = medication[indexPath.row]
-        vc.moc = self.moc
         
         // Set the source rect to the cell frame, so surrounding elements are blurred.
         previewingContext.sourceRect = cell.frame

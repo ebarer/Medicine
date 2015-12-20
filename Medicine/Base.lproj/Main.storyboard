@@ -27,7 +27,7 @@
         <scene sceneID="DrC-QF-zXV">
             <objects>
                 <tableViewController id="Opo-0h-aD1" customClass="MainTVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" sectionIndexMinimumDisplayRowCount="1" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="XNe-sj-IWf">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" sectionIndexMinimumDisplayRowCount="1" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="XNe-sj-IWf">
                         <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -151,10 +151,7 @@
                                     <outlet property="subtitleLeading" destination="Lwj-Yd-kWU" id="LTA-uN-TaG"/>
                                     <outlet property="title" destination="aeo-WW-mwr" id="CUt-cd-WWj"/>
                                     <outlet property="titleLeading" destination="IXN-tv-7ta" id="geI-a6-xwh"/>
-                                    <segue destination="v9V-Rx-xXR" kind="show" identifier="viewMedicationDetails" id="beL-aw-eJC">
-                                        <segue key="commit" inheritsFrom="parent" id="95s-53-GDn"/>
-                                        <segue key="preview" inheritsFrom="commit" id="sxL-0t-c5J"/>
-                                    </segue>
+                                    <segue destination="v9V-Rx-xXR" kind="show" identifier="viewMedicationDetails" id="beL-aw-eJC"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -481,10 +478,7 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <segue destination="YTU-zm-Tgv" kind="show" id="aaT-BJ-605">
-                                                <segue key="commit" inheritsFrom="parent" id="fMs-sa-UKL"/>
-                                                <segue key="preview" inheritsFrom="commit" id="vub-qn-IN6"/>
-                                            </segue>
+                                            <segue destination="YTU-zm-Tgv" kind="show" id="aaT-BJ-605"/>
                                         </connections>
                                     </tableViewCell>
                                 </cells>
@@ -508,10 +502,7 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <segue destination="Mrx-hN-gTP" kind="show" id="qK7-4Q-NbR">
-                                                <segue key="commit" inheritsFrom="parent" id="Yvk-b1-VgT"/>
-                                                <segue key="preview" inheritsFrom="commit" id="AUf-uA-eTD"/>
-                                            </segue>
+                                            <segue destination="Mrx-hN-gTP" kind="show" id="qK7-4Q-NbR"/>
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="feedbackCell" textLabel="ixI-Y9-krp" style="IBUITableViewCellStyleDefault" id="2bQ-6j-f22">
@@ -1202,11 +1193,8 @@
         <image name="SortCellIcon" width="29" height="29"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="HfD-yH-Bkx"/>
-        <segue reference="qK7-4Q-NbR"/>
-        <segue reference="aaT-BJ-605"/>
-        <segue reference="boT-ys-MKj"/>
         <segue reference="5Gy-on-iGP"/>
-        <segue reference="beL-aw-eJC"/>
+        <segue reference="boT-ys-MKj"/>
+        <segue reference="HfD-yH-Bkx"/>
     </inferredMetricsTieBreakers>
 </document>

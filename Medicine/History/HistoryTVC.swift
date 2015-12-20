@@ -13,7 +13,7 @@ class HistoryTVC: UITableViewController {
 
     let emptyDates = false
     var dates = [NSDate]()
-    var history = [Dose]()
+    var history = [NSDate: [Dose]]()
     
     
     // MARK: - Helper variables
@@ -71,33 +71,39 @@ class HistoryTVC: UITableViewController {
         // Clear history
         history.removeAll()
         
-        // Store doses, sorted, in history array
+        var historyArray = [Dose]()
         for med in medication {
-            if let historySet = med.doseHistory {
-                history += historySet.array as! [Dose]
+            if let temp = med.doseHistory?.array as? [Dose] {
+                historyArray += temp
             }
         }
         
-        // Sort history
-        history.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
+        // Sort history array
+        historyArray.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
         
-        // Get dates
+        // Get dates in history
         if emptyDates == true {
             // Get all dates from today to last dose, including empty dates
             var date = NSDate()
-            while date.compare(history.last!.date) != .OrderedAscending {
+            while date.compare(historyArray.last!.date) != .OrderedAscending {
                 dates.append(date)
                 date = cal.dateByAddingUnit(.Day, value: -1, toDate: date, options: [])!
             }
         } else {
             // Get dates as exclusive elements from first dose to last
             var temp = Set<NSDate>()
-            for dose in history {
+            for dose in historyArray {
                 temp.insert(cal.startOfDayForDate(dose.date))
             }
             
             // Store dates in array
             dates = temp.sort({ $0.compare($1) == .OrderedDescending })
+        }
+        
+        // Store doses in history dictionary, with dates as keys
+        for date in dates {
+            let doses = historyArray.filter({cal.isDate($0.date, inSameDayAsDate: date)})
+            history.updateValue(doses, forKey: date)
         }
     }
 
@@ -192,46 +198,55 @@ class HistoryTVC: UITableViewController {
             header.textLabel?.attributedText = string
         }
     }
-    
+
     
     // MARK: - Table rows
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let sectionDate = dates[section]
-        let count = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)}).count
-        return (count == 0) ? 1 : count
+        
+        if let count = history[sectionDate]?.count {
+            return (count == 0) ? 1 : count
+        }
+        
+        return 1
     }
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         let sectionDate = dates[indexPath.section]
-        let count = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)}).count
-        return (count > 0) ? 55.0 : tableView.rowHeight
+        
+        if let count = history[sectionDate]?.count {
+            return (count > 0) ? 55.0 : tableView.rowHeight
+        }
+        
+        return tableView.rowHeight
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {        
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("historyCell", forIndexPath: indexPath)
         let sectionDate = dates[indexPath.section]
-        let date = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)})
-        if date.count > indexPath.row {
-            let dose = date[indexPath.row]
-            if let med = dose.medicine {
-                // Setup date formatter
-                dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-                dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
-                
-                // Specify selection color
-                cell.selectedBackgroundView = UIView()
-                
-                // Setup cell
-                cell.textLabel?.textColor = UIColor.blackColor()
-                cell.textLabel?.text = dateFormatter.stringFromDate(dose.date)
-                cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                cell.detailTextLabel?.text = String(format:"%@ - %g %@", med.name!, dose.dosage, dose.dosageUnit.units(dose.dosage))
+        if let date = history[sectionDate] {
+            if date.count > indexPath.row {
+                let dose = date[indexPath.row]
+                if let med = dose.medicine {
+                    // Setup date formatter
+                    dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+                    dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
+                    
+                    // Specify selection color
+                    cell.selectedBackgroundView = UIView()
+                    
+                    // Setup cell
+                    cell.textLabel?.textColor = UIColor.blackColor()
+                    cell.textLabel?.text = dateFormatter.stringFromDate(dose.date)
+                    cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                    cell.detailTextLabel?.text = String(format:"%@ - %g %@", med.name!, dose.dosage, dose.dosageUnit.units(dose.dosage))
+                }
+            } else {
+                cell.textLabel?.textColor = UIColor.lightGrayColor()
+                cell.textLabel?.text = "No doses logged"
+                cell.detailTextLabel?.text?.removeAll()
             }
-        } else {
-            cell.textLabel?.textColor = UIColor.lightGrayColor()
-            cell.textLabel?.text = "No doses logged"
-            cell.detailTextLabel?.text?.removeAll()
         }
         
         return cell
@@ -242,12 +257,12 @@ class HistoryTVC: UITableViewController {
     
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         let sectionDate = dates[indexPath.section]
-        return history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)}).count != 0
+        return history[sectionDate]?.count != 0
     }
     
     override func tableView(tableView: UITableView, shouldHighlightRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         let sectionDate = dates[indexPath.section]
-        return history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)}).count != 0
+        return history[sectionDate]?.count != 0
     }
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
@@ -299,30 +314,32 @@ class HistoryTVC: UITableViewController {
         if let selectedRowIndexes = tableView.indexPathsForSelectedRows {
             for indexPath in selectedRowIndexes.reverse() {
                 let sectionDate = dates[indexPath.section]
-                let dose = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)})[indexPath.row]
-                if let med = dose.medicine {
-                    history.removeObject(dose)
-                    
-                    if med.lastDose == dose {
-                        med.untakeLastDose(moc)
-                    } else {
-                        med.untakeDose(dose, moc: moc)
-                    }
-                    
-                    if tableView.numberOfRowsInSection(indexPath.section) == 1 {
-                        if emptyDates == true {
-                            let label = tableView.cellForRowAtIndexPath(indexPath)?.textLabel
-                            let detail = tableView.cellForRowAtIndexPath(indexPath)?.detailTextLabel
-                            
-                            label?.textColor = UIColor.lightGrayColor()
-                            label?.text = "No doses logged"
-                            detail?.text?.removeAll()
+                if let dose = history[sectionDate]?[indexPath.row] {
+                    if let med = dose.medicine {
+                        history[sectionDate]?.removeObject(dose)
+                        
+                        if med.lastDose == dose {
+                            med.untakeLastDose(moc)
                         } else {
-                            dates.removeObject(sectionDate)
-                            tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: .Automatic)
+                            med.untakeDose(dose, moc: moc)
                         }
-                    } else {
-                        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                        
+                        if tableView.numberOfRowsInSection(indexPath.section) == 1 {
+                            if emptyDates == true {
+                                let label = tableView.cellForRowAtIndexPath(indexPath)?.textLabel
+                                let detail = tableView.cellForRowAtIndexPath(indexPath)?.detailTextLabel
+                                
+                                label?.textColor = UIColor.lightGrayColor()
+                                label?.text = "No doses logged"
+                                detail?.text?.removeAll()
+                            } else {
+                                history.removeValueForKey(sectionDate)
+                                dates.removeObject(sectionDate)
+                                tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: .Automatic)
+                            }
+                        } else {
+                            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                        }
                     }
                 }
             }

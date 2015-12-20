@@ -13,8 +13,9 @@ import MessageUI
 class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     weak var med:Medicine!
+    let emptyDates = false
     var dates = [NSDate]()
-    var history = [Refill]()
+    var history = [NSDate: [Refill]]()
     
     
     // MARK: - Helper variables
@@ -83,25 +84,38 @@ class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControll
     }
     
     func loadHistory() {
-        // Clear history
-        history.removeAll()
-        
-        // Store doses, sorted, in history array
-        if let historySet = med.refillHistory {
-            history += historySet.array as! [Refill]
+        if var historyArray = med.refillHistory?.array as? [Refill] {
+            // Clear history
+            history.removeAll()
+            
+            // Sort history array
+            historyArray.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
+            
+            // Get dates in history
+            if emptyDates == true {
+                // Get all dates from today to last dose, including empty dates
+                var date = NSDate()
+                while date.compare(historyArray.last!.date) != .OrderedAscending {
+                    dates.append(date)
+                    date = cal.dateByAddingUnit(.Day, value: -1, toDate: date, options: [])!
+                }
+            } else {
+                // Get dates as exclusive elements from first dose to last
+                var temp = Set<NSDate>()
+                for dose in historyArray {
+                    temp.insert(cal.startOfDayForDate(dose.date))
+                }
+                
+                // Store dates in array
+                dates = temp.sort({ $0.compare($1) == .OrderedDescending })
+            }
+            
+            // Store doses in history dictionary, with dates as keys
+            for date in dates {
+                let refills = historyArray.filter({cal.isDate($0.date, inSameDayAsDate: date)})
+                history.updateValue(refills, forKey: date)
+            }
         }
-        
-        // Sort history
-        history.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
-        
-        // Get dates as exclusive elements
-        var temp = Set<NSDate>()
-        for dose in history {
-            temp.insert(cal.startOfDayForDate(dose.date))
-        }
-        
-        // Store dates in array
-        dates = temp.sort({ $0.compare($1) == .OrderedDescending })
     }
     
     func displayEmptyView() {
@@ -184,39 +198,51 @@ class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControll
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let sectionDate = dates[section]
-        let count = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)}).count
-        return (count == 0) ? 1 : count
+        
+        if let count = history[sectionDate]?.count {
+            return (count == 0) ? 1 : count
+        }
+        
+        return 1
     }
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         let sectionDate = dates[indexPath.section]
-        let count = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)}).count
-        return (count > 0) ? 55.0 : tableView.rowHeight
+        
+        if let count = history[sectionDate]?.count {
+            return (count > 0) ? 55.0 : tableView.rowHeight
+        }
+        
+        return tableView.rowHeight
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("historyCell", forIndexPath: indexPath)
         let sectionDate = dates[indexPath.section]
-        let refill = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)})[indexPath.row]
-        
-        // Setup date formatter
-        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-        dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
-        
-        // Specify selection color
-        cell.selectedBackgroundView = UIView()
-        
-        // Setup cell
-        var amount = "\(med.removeTrailingZero(refill.quantity * refill.conversion)) \(med.dosageUnit.units(med.prescriptionCount))"
-        
-        if refill.conversion != 1.0 {
-            amount += " (\(med.removeTrailingZero(refill.quantity)) \(refill.quantityUnit.units(refill.quantity)))"
+        if let date = history[sectionDate] {
+            if date.count > indexPath.row {
+                let refill = date[indexPath.row]
+                
+                // Setup date formatter
+                dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+                dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
+                
+                // Specify selection color
+                cell.selectedBackgroundView = UIView()
+                
+                // Setup cell
+                var amount = "\(med.removeTrailingZero(refill.quantity * refill.conversion)) \(med.dosageUnit.units(med.prescriptionCount))"
+                
+                if refill.conversion != 1.0 {
+                    amount += " (\(med.removeTrailingZero(refill.quantity)) \(refill.quantityUnit.units(refill.quantity)))"
+                }
+                
+                cell.textLabel?.textColor = UIColor.blackColor()
+                cell.textLabel?.text = amount
+                cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                cell.detailTextLabel?.text = dateFormatter.stringFromDate(refill.date)
+            }
         }
-        
-        cell.textLabel?.textColor = UIColor.blackColor()
-        cell.textLabel?.text = amount
-        cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-        cell.detailTextLabel?.text = dateFormatter.stringFromDate(refill.date)
         
         return cell
     }
@@ -226,12 +252,12 @@ class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControll
     
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         let sectionDate = dates[indexPath.section]
-        return history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)}).count != 0
+        return history[sectionDate]?.count != 0
     }
     
     override func tableView(tableView: UITableView, shouldHighlightRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         let sectionDate = dates[indexPath.section]
-        return history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)}).count != 0
+        return history[sectionDate]?.count != 0
     }
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
@@ -285,17 +311,27 @@ class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControll
         if let selectedRowIndexes = tableView.indexPathsForSelectedRows {
             for indexPath in selectedRowIndexes.reverse() {
                 let sectionDate = dates[indexPath.section]
-                let refill = history.filter({cal.isDate($0.date, inSameDayAsDate: sectionDate)})[indexPath.row]
-                
-                history.removeObject(refill)
-                
-                med.removeRefill(refill, moc: moc)
-                
-                if tableView.numberOfRowsInSection(indexPath.section) == 1 {
-                    dates.removeObject(sectionDate)
-                    tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: .Automatic)
-                } else {
-                    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                if let refill = history[sectionDate]?[indexPath.row] {
+                    history[sectionDate]?.removeObject(refill)
+                    
+                    med.removeRefill(refill, moc: moc)
+                    
+                    if tableView.numberOfRowsInSection(indexPath.section) == 1 {
+                        if emptyDates == true {
+                            let label = tableView.cellForRowAtIndexPath(indexPath)?.textLabel
+                            let detail = tableView.cellForRowAtIndexPath(indexPath)?.detailTextLabel
+                            
+                            label?.textColor = UIColor.lightGrayColor()
+                            label?.text = "No refills logged"
+                            detail?.text?.removeAll()
+                        } else {
+                            history.removeValueForKey(sectionDate)
+                            dates.removeObject(sectionDate)
+                            tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: .Automatic)
+                        }
+                    } else {
+                        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                    }
                 }
             }
             
