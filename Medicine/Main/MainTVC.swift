@@ -363,8 +363,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         cell.subtitle.textColor = UIColor.blackColor()
         cell.hideButton(false)
         
-        // If no doses taken
-        if med.doseHistory?.count == 0 {
+        // If no doses taken, and medication is hourly
+        if med.doseHistory?.count == 0 && med.intervalUnit == .Hourly {
             cell.hideButton(true)
             cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
             cell.subtitle.textColor = UIColor.lightGrayColor()
@@ -460,6 +460,12 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     
     
     // MARK: - Table view delegate
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if tableView.editing == true {
+            performSegueWithIdentifier("editMedication", sender: medication[indexPath.row])
+        }
+    }
     
     @IBAction func selectAddButton(sender: UIButton) {
         let cell = (sender.superview?.superview as! MedicineCell)
@@ -605,6 +611,8 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
             switch identifier {
             case "addMedication":
                 return true
+            case "editMedication":
+                return true
             case "upgrade":
                 return true
             default:
@@ -615,7 +623,7 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
         if identifier == "viewMedicationDetails" {
             if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
                 let med = medication[index.row]
-                if med.doseHistory?.count == 0 {
+                if med.doseHistory?.count == 0 && med.intervalUnit == .Hourly {
                     presentActionMenu(index)
                     return false
                 }
@@ -628,8 +636,10 @@ class MainTVC: UITableViewController, SKPaymentTransactionObserver {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "editMedication" {
             if let vc = segue.destinationViewController.childViewControllers[0] as? AddMedicationTVC {
-                vc.med = medication[sender as! Int]
-                vc.editMode = true
+                if let med = sender as? Medicine {
+                    vc.med = med
+                    vc.editMode = true
+                }
             }
         }
         

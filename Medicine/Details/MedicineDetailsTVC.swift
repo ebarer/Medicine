@@ -129,7 +129,7 @@ class MedicineDetailsTVC: UITableViewController {
             doseLabel.font = UIFont.systemFontOfSize(14.0, weight: UIFontWeightRegular)
             
             // If no doses taken
-            if med.doseHistory?.count == 0 {
+            if med.doseHistory?.count == 0 && med.intervalUnit == .Hourly {
                 doseTitle.text = "No doses logged"
                 doseLabel.text?.removeAll()
             }

@@ -53,7 +53,6 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         intervalUnitPicker.selectRow(Int(med.intervalUnit.rawValue), inComponent: 0, animated: false)
         
         // Set interval
-        updateIntervalLabel()
         if (med.intervalUnit == Intervals.Hourly) {
             let hr = Int(med.interval)
             let min = String(Int(60 * (med.interval % 1)))
@@ -69,22 +68,20 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
             intervalPicker.selectRow(Int(med.interval) - 1, inComponent: 0, animated: false)
         }
         
+        updateIntervalLabel()
+        
         // Set alarm
         if let alarm = med.intervalAlarm {
-            if alarm.isMidnight() {
-                alarmLabel.text = "Midnight"
-            } else {
-                alarmLabel.text = dateFormatter.stringFromDate(alarm)
-            }
-
             let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
             alarmPicker.date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: NSDate(), options: [])!
         } else {
             if let date = cal.dateBySettingUnit(NSCalendarUnit.Minute, value: 0, ofDate: NSDate(), options: []) {
+                med.intervalAlarm = date
                 alarmPicker.date = date
-                alarmLabel.text = dateFormatter.stringFromDate(date)
             }
         }
+        
+        updateAlertLabel()
     }
 
     override func didReceiveMemoryWarning() {
@@ -382,10 +379,18 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         
         med.intervalAlarm = date
         
-        if sender.date.isMidnight() {
-            alarmLabel.text = "Midnight"
+        updateAlertLabel()
+    }
+    
+    func updateAlertLabel() {
+        if let date = med.intervalAlarm {
+            if date.isMidnight() {
+                alarmLabel.text = "Midnight"
+            } else {
+                alarmLabel.text = dateFormatter.stringFromDate(date)
+            }
         } else {
-            alarmLabel.text = dateFormatter.stringFromDate(sender.date)
+            alarmLabel.text = "None"
         }
     }
 
