@@ -67,19 +67,15 @@ class SettingsTVC_Manage: UITableViewController {
         }
         
         if indexPath.row == 1 {
-            if #available(iOS 9.0, *) {
-                if let request = request {
-                    let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
-                    do {
-                        try appDelegate.persistentStoreCoordinator.executeRequest(deleteRequest, withContext: moc)
-                        appDelegate.saveContext()
-                        print("Deleted all \(set!).")
-                    } catch {
-                        print("Couldn't delete \(set!).")
-                    }
+            if let request = request {
+                let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+                do {
+                    try appDelegate.persistentStoreCoordinator.executeRequest(deleteRequest, withContext: moc)
+                    appDelegate.saveContext()
+                    print("Deleted all \(set!).")
+                } catch {
+                    print("Couldn't delete \(set!).")
                 }
-            } else {
-                print("Couldn't delete.")
             }
         }
         

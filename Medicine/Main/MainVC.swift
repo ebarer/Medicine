@@ -69,10 +69,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshMedication", name: "refreshMedication", object: nil)
         
         // Register for 3D touch if available
-        if #available(iOS 9.0, *) {
-            if traitCollection.forceTouchCapability == .Available {
-                registerForPreviewingWithDelegate(self, sourceView: view)
-            }
+        if traitCollection.forceTouchCapability == .Available {
+            registerForPreviewingWithDelegate(self, sourceView: view)
         }
         
         // Setup IAP
@@ -114,34 +112,29 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
         
         // Handle homescreen shortcuts (selected by user)
-        if #available(iOS 9.0, *) {
-            if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
-                if let action = shortcutItem.userInfo?["action"] {
-                    switch(String(action)) {
-                    case "addMedication":
-                        performSegueWithIdentifier("addMedication", sender: self)
-                    case "takeDose":
-                        performSegueWithIdentifier("addDose", sender: self)
-                    default: break
-                    }
-                }
-                
-                launchedShortcutItem = nil
-            }
-        }
-        
-        if #available(iOS 9.0, *) {
-            // Update spotlight index values
-            for med in medication {
-                if let attributes = med.attributeSet {
-                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+        if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
+            if let action = shortcutItem.userInfo?["action"] {
+                switch(String(action)) {
+                case "addMedication":
+                    performSegueWithIdentifier("addMedication", sender: self)
+                case "takeDose":
+                    performSegueWithIdentifier("addDose", sender: self)
+                default: break
                 }
             }
             
-            setDynamicShortcuts()
+            launchedShortcutItem = nil
+        }
+
+        // Update spotlight index values
+        for med in medication {
+            if let attributes = med.attributeSet {
+                let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
+                CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+            }
         }
         
+        setDynamicShortcuts()
         updateHeader()
         displayEmptyView()
     }
@@ -159,12 +152,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         updateHeader()
         
         // Update spotlight index
-        if #available(iOS 9.0, *) {
-            for med in medication {
-                if let attributes = med.attributeSet {
-                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                }
+        for med in medication {
+            if let attributes = med.attributeSet {
+                let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
+                CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
             }
         }
         
@@ -508,11 +499,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                         self.updateHeader()
                         
                         // Update spotlight index
-                        if #available(iOS 9.0, *) {
-                            if let attributes = med.attributeSet {
-                                let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                                CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                            }
+                        if let attributes = med.attributeSet {
+                            let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
+                            CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
                         }
                         
                         // Update shortcuts
@@ -590,9 +579,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         appDelegate.saveContext()
         
         // Update spotlight index
-        if #available(iOS 9.0, *) {
-            CSSearchableIndex.defaultSearchableIndex().deleteSearchableItemsWithIdentifiers([med.medicineID], completionHandler: nil)
-        }
+        CSSearchableIndex.defaultSearchableIndex().deleteSearchableItemsWithIdentifiers([med.medicineID], completionHandler: nil)
         
         // Update shortcuts
         setDynamicShortcuts()
@@ -637,19 +624,14 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "editMedication" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? AddMedicationTVC {
-                if let med = sender as? Medicine {
-                    vc.med = med
-                    vc.editMode = true
-                }
-            }
-        }
-        
         if segue.identifier == "viewMedicationDetails" {
-            if let vc = segue.destinationViewController as? MedicineDetailsTVC {
-                if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
-                    vc.med = medication[index.row]
+            if let nvc = segue.destinationViewController as? UINavigationController {
+                if let vc = nvc.topViewController as? MedicineDetailsTVC {
+                    if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
+                        vc.med = medication[index.row]
+                        vc.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
+                        vc.navigationItem.leftItemsSupplementBackButton = true
+                    }
                 }
             }
         }
@@ -666,6 +648,15 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
                 if let med = sender as? Medicine {
                     vc.med = med
+                }
+            }
+        }
+        
+        if segue.identifier == "editMedication" {
+            if let vc = segue.destinationViewController.childViewControllers[0] as? AddMedicationTVC {
+                if let med = sender as? Medicine {
+                    vc.med = med
+                    vc.editMode = true
                 }
             }
         }
@@ -797,51 +788,48 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     // MARK: - Helper methods
     
     func setDynamicShortcuts() {
-        if #available(iOS 9.0, *) {
-            let overdueItems = medication.filter({$0.isOverdue().flag})
-            if overdueItems.count > 0  {
-                var text = "Overdue Dose"
-                var subtitle: String? = nil
-                var userInfo = [String:String]()
+        let overdueItems = medication.filter({$0.isOverdue().flag})
+        if overdueItems.count > 0  {
+            var text = "Overdue Dose"
+            var subtitle: String? = nil
+            var userInfo = [String:String]()
+            
+            // Pluralize string if multiple overdue doses
+            if overdueItems.count > 1 {
+                text += "s"
+            }
+                // Otherwise set subtitle to overdue med
+            else {
+                let med = overdueItems.first!
+                subtitle = med.name!
+                userInfo["action"] = "takeDose"
+                userInfo["medID"] = med.medicineID
+            }
+            
+            let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.overdue",
+                localizedTitle: text, localizedSubtitle: subtitle,
+                icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
+                userInfo: userInfo)
+            
+            UIApplication.sharedApplication().shortcutItems = [shortcutItem]
+            return
+        } else if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
+            if let id = nextDose.userInfo?["id"] {
+                guard let med = Medicine.getMedicine(arr: medication, id: id as! String) else { return }
+                let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
+                let date = nextDose.fireDate
+                let subtitle = "\(Medicine.dateString(date)): \(dose) of \(med.name!)"
                 
-                // Pluralize string if multiple overdue doses
-                if overdueItems.count > 1 {
-                    text += "s"
-                }
-                    // Otherwise set subtitle to overdue med
-                else {
-                    let med = overdueItems.first!
-                    subtitle = med.name!
-                    userInfo["action"] = "takeDose"
-                    userInfo["medID"] = med.medicineID
-                }
-                
-                let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.overdue",
-                    localizedTitle: text, localizedSubtitle: subtitle,
-                    icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
-                    userInfo: userInfo)
+                let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
+                    localizedTitle: "Take Next Dose", localizedSubtitle: subtitle,
+                    icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
+                    userInfo: ["action":"takeDose", "medID":med.medicineID])
                 
                 UIApplication.sharedApplication().shortcutItems = [shortcutItem]
                 return
-            } else if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
-                if let id = nextDose.userInfo?["id"] {
-                    guard let med = Medicine.getMedicine(arr: medication, id: id as! String) else { return }
-                    let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
-                    let date = nextDose.fireDate
-                    let subtitle = "\(Medicine.dateString(date)): \(dose) of \(med.name!)"
-                    
-                    let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
-                        localizedTitle: "Take Next Dose", localizedSubtitle: subtitle,
-                        icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
-                        userInfo: ["action":"takeDose", "medID":med.medicineID])
-                    
-                    UIApplication.sharedApplication().shortcutItems = [shortcutItem]
-                    return
-                }
             }
-            
-            UIApplication.sharedApplication().shortcutItems = []
         }
+        
+        UIApplication.sharedApplication().shortcutItems = []
     }
-
 }

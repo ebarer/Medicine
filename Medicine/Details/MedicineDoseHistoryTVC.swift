@@ -73,7 +73,10 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        self.navigationController?.setToolbarHidden(false, animated: animated)
+        if let tBC = self.tabBarController {
+            tBC.setTabBarVisible(false, animated: false)
+            self.navigationController?.setToolbarHidden(false, animated: false)
+        }
         
         loadHistory()
         displayEmptyView()

@@ -11,7 +11,7 @@ import CoreData
 import StoreKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
 
     var window: UIWindow?
     let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
@@ -36,11 +36,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setUserDefaults()
         
         // Handle application shortcut
-        if #available(iOS 9.0, *) {
-            if let _ = launchOptions?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
-                launchedShortcutItem = launchOptions
-                return false
-            }
+        if let _ = launchOptions?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
+            launchedShortcutItem = launchOptions
+            return false
         }
         
         // Handle local notification
@@ -51,6 +49,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             } else if notification.category == "Refill Reminder" {
                 NSNotificationCenter.defaultCenter().postNotificationName("refillNotification", object: nil, userInfo: notification.userInfo)
                 UIApplication.sharedApplication().cancelLocalNotification(notification)
+            }
+        }
+        
+        // Setup split view controller
+        if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
+            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(UISplitViewController)}).first {
+                let svc = vc as! UISplitViewController
+                svc.delegate = self
             }
         }
         
@@ -100,13 +106,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        if #available(iOS 9.0, *) {
-            if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
-                handleShortcut(shortcutItem)
-            }
-            
-            launchedShortcutItem = nil
+        if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
+            handleShortcut(shortcutItem)
         }
+        
+        launchedShortcutItem = nil
     }
 
     func applicationWillTerminate(application: UIApplication) {
@@ -123,6 +127,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         UIApplication.sharedApplication().cancelAllLocalNotifications()
         NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+    }
+    
+    
+    // MARK: - Split view
+    
+    func splitViewController(splitViewController: UISplitViewController, collapseSecondaryViewController secondaryViewController:UIViewController, ontoPrimaryViewController primaryViewController:UIViewController) -> Bool {
+        guard let secondaryAsNavController = secondaryViewController as? UINavigationController else { return false }
+        guard let topAsDetailController = secondaryAsNavController.topViewController as? MedicineDetailsTVC else { return false }
+        if topAsDetailController.med == nil {
+            // Return true to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
+            return true
+        }
+        
+        return false
     }
     
     

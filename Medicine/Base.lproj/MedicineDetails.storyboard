@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="bId-i9-gti">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -9,7 +8,7 @@
         <!--Dose History-->
         <scene sceneID="gAn-QA-A3U">
             <objects>
-                <tableViewController hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="R3Z-8d-hiK" customClass="MedicineDoseHistoryTVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController modalPresentationStyle="formSheet" hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="R3Z-8d-hiK" customClass="MedicineDoseHistoryTVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelection="NO" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="Lla-TN-e90">
                         <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -55,7 +54,7 @@
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <segue destination="daB-gu-nin" kind="presentation" identifier="addDose" id="163-A1-eIl"/>
+                        <segue destination="daB-gu-nin" kind="presentation" identifier="addDose" modalPresentationStyle="formSheet" id="163-A1-eIl"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fBj-72-MB3" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -200,7 +199,7 @@
                                                         <action selector="actionDeselected:" destination="bId-i9-gti" eventType="touchCancel" id="nCt-ZV-LbC"/>
                                                         <action selector="actionSelected:" destination="bId-i9-gti" eventType="touchDragInside" id="mly-z0-aJv"/>
                                                         <action selector="actionSelected:" destination="bId-i9-gti" eventType="touchDown" id="nh6-7S-ajV"/>
-                                                        <segue destination="n11-MU-3fJ" kind="presentation" identifier="addDose" id="9EP-VD-gAR"/>
+                                                        <segue destination="n11-MU-3fJ" kind="presentation" identifier="addDose" modalPresentationStyle="formSheet" id="9EP-VD-gAR"/>
                                                     </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xXh-Of-6Gb">
@@ -214,7 +213,7 @@
                                                         <action selector="actionDeselected:" destination="bId-i9-gti" eventType="touchDragOutside" id="rMf-qE-3VG"/>
                                                         <action selector="actionSelected:" destination="bId-i9-gti" eventType="touchDragInside" id="YDH-3G-4bD"/>
                                                         <action selector="actionSelected:" destination="bId-i9-gti" eventType="touchDown" id="lAD-d1-1JC"/>
-                                                        <segue destination="pyR-Rp-6Sn" kind="presentation" identifier="refillPrescription" id="aZS-QS-W9W"/>
+                                                        <segue destination="pyR-Rp-6Sn" kind="presentation" identifier="refillPrescription" modalPresentationStyle="formSheet" id="aZS-QS-W9W"/>
                                                     </connections>
                                                 </button>
                                             </subviews>
@@ -326,7 +325,7 @@
                         <outlet property="prescriptionLabel" destination="cQ7-ij-I05" id="Fwj-Ml-Lki"/>
                         <outlet property="refillButton" destination="xXh-Of-6Gb" id="phe-fe-Z49"/>
                         <outlet property="takeDoseButton" destination="7Mf-Xz-vhH" id="W1O-aU-sn8"/>
-                        <segue destination="UAg-K2-vPi" kind="presentation" identifier="editMedication" modalTransitionStyle="crossDissolve" id="GOE-ZU-jqY"/>
+                        <segue destination="UAg-K2-vPi" kind="presentation" identifier="editMedication" modalPresentationStyle="currentContext" modalTransitionStyle="crossDissolve" id="GOE-ZU-jqY"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0ju-qm-6jC" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -398,7 +397,7 @@
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <segue destination="ewq-Jb-0Be" kind="presentation" identifier="addRefill" id="NSu-6D-BY7"/>
+                        <segue destination="ewq-Jb-0Be" kind="presentation" identifier="addRefill" modalPresentationStyle="formSheet" id="NSu-6D-BY7"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="o2v-MQ-Erl" userLabel="First Responder" sceneMemberID="firstResponder"/>

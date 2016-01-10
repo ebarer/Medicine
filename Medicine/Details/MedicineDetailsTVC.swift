@@ -65,13 +65,17 @@ class MedicineDetailsTVC: UITableViewController {
             tableView.deselectRowAtIndexPath(index, animated: animated)
         }
         
-        self.navigationController?.setToolbarHidden(true, animated: animated)
+        if let tBC = self.tabBarController {
+            tBC.setTabBarVisible(true, animated: false)
+            self.navigationController?.setToolbarHidden(true, animated: false)
+        }
         
         // Update actions
         actionCell.backgroundColor = tableView.separatorColor
         takeDoseButton.backgroundColor = UIColor.whiteColor()
         refillButton.backgroundColor = UIColor.whiteColor()
         
+        displayEmptyView()
         updateLabels()
         
         tableView.reloadSections(NSIndexSet(index: Rows.name.index().section), withRowAnimation: .None)
@@ -79,6 +83,31 @@ class MedicineDetailsTVC: UITableViewController {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    func displayEmptyView() {
+        if med == nil {
+            // Display empty message
+            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                emptyView.frame = CGRectMake(0, 0, self.view.frame.width, self.view.frame.height)
+                emptyView.tag = 1001
+                emptyView.alpha = 0.0
+                self.view.addSubview(emptyView)
+                
+                UIView.animateWithDuration(0.5,
+                    animations: { () -> Void in
+                        self.tableView.alpha = 0.0
+                        emptyView.alpha = 1.0
+                    }, completion: { (val) -> Void in
+                        self.tableView.hidden = true
+                })
+            }
+        } else {
+            // Remove empty message
+            self.view.viewWithTag(1001)?.removeFromSuperview()
+            self.tableView.alpha = 1.0
+            tableView.hidden = false
+        }
     }
     
     func updateLabels() {

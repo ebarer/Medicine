@@ -246,12 +246,10 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 medication = results
                 
                 // Index results
-                if #available(iOS 9.0, *) {                    
-                    for med in medication  {
-                        if let attributes = med.attributeSet {
-                            let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                            CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                        }
+                for med in medication  {
+                    if let attributes = med.attributeSet {
+                        let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
+                        CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
                     }
                 }
                     
@@ -264,51 +262,49 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     }
     
     func setDynamicShortcuts() {
-        if #available(iOS 9.0, *) {
-            let overdueItems = medication.filter({$0.isOverdue().flag})
-            if overdueItems.count > 0  {
-                var text = "Overdue Dose"
-                var subtitle: String? = nil
-                var userInfo = [String:String]()
+        let overdueItems = medication.filter({$0.isOverdue().flag})
+        if overdueItems.count > 0  {
+            var text = "Overdue Dose"
+            var subtitle: String? = nil
+            var userInfo = [String:String]()
+            
+            // Pluralize string if multiple overdue doses
+            if overdueItems.count > 1 {
+                text += "s"
+            }
+                // Otherwise set subtitle to overdue med
+            else {
+                let med = overdueItems.first!
+                subtitle = med.name!
+                userInfo["action"] = "takeDose"
+                userInfo["medID"] = med.medicineID
+            }
+            
+            let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.overdue",
+                localizedTitle: text, localizedSubtitle: subtitle,
+                icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
+                userInfo: userInfo)
+            
+            UIApplication.sharedApplication().shortcutItems = [shortcutItem]
+            return
+        } else if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
+            if let id = nextDose.userInfo?["id"] {
+                guard let med = Medicine.getMedicine(arr: medication, id: id as! String) else { return }
+                let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
+                let date = nextDose.fireDate
+                let subtitle = "\(Medicine.dateString(date)): \(dose) of \(med.name!)"
                 
-                // Pluralize string if multiple overdue doses
-                if overdueItems.count > 1 {
-                    text += "s"
-                }
-                    // Otherwise set subtitle to overdue med
-                else {
-                    let med = overdueItems.first!
-                    subtitle = med.name!
-                    userInfo["action"] = "takeDose"
-                    userInfo["medID"] = med.medicineID
-                }
-                
-                let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.overdue",
-                    localizedTitle: text, localizedSubtitle: subtitle,
-                    icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
-                    userInfo: userInfo)
+                let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
+                    localizedTitle: "Take Next Dose", localizedSubtitle: subtitle,
+                    icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
+                    userInfo: ["action":"takeDose", "medID":med.medicineID])
                 
                 UIApplication.sharedApplication().shortcutItems = [shortcutItem]
                 return
-            } else if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
-                if let id = nextDose.userInfo?["id"] {
-                    guard let med = Medicine.getMedicine(arr: medication, id: id as! String) else { return }
-                    let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
-                    let date = nextDose.fireDate
-                    let subtitle = "\(Medicine.dateString(date)): \(dose) of \(med.name!)"
-                    
-                    let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
-                        localizedTitle: "Take Next Dose", localizedSubtitle: subtitle,
-                        icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
-                        userInfo: ["action":"takeDose", "medID":med.medicineID])
-                    
-                    UIApplication.sharedApplication().shortcutItems = [shortcutItem]
-                    return
-                }
             }
-            
-            UIApplication.sharedApplication().shortcutItems = []
         }
+        
+        UIApplication.sharedApplication().shortcutItems = []
     }
     
 }
