@@ -236,11 +236,16 @@ class HistoryTVC: UITableViewController {
                     // Specify selection color
                     cell.selectedBackgroundView = UIView()
                     
-                    // Setup cell
-                    cell.textLabel?.textColor = UIColor.blackColor()
-                    cell.textLabel?.text = dateFormatter.stringFromDate(dose.date)
-                    cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                    cell.detailTextLabel?.text = String(format:"%@ - %g %@", med.name!, dose.dosage, dose.dosageUnit.units(dose.dosage))
+                    if dose.dosage > 0 {
+                        cell.textLabel?.textColor = UIColor.blackColor()
+                        cell.textLabel?.text = "\(dateFormatter.stringFromDate(dose.date))"
+                        cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                        cell.detailTextLabel?.text = String(format:"%@ - %g %@", med.name!, dose.dosage, dose.dosageUnit.units(dose.dosage))
+                    } else {
+                        cell.textLabel?.textColor = UIColor.lightGrayColor()
+                        cell.textLabel?.text = "Skipped (\(dateFormatter.stringFromDate(dose.date)))"
+                        cell.detailTextLabel?.text = String(format:"%@", med.name!)
+                    }
                 }
             } else {
                 cell.textLabel?.textColor = UIColor.lightGrayColor()

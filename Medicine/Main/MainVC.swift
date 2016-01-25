@@ -449,10 +449,26 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Table view delegate
+//    
+//    func tableView(tableView: UITableView, willBeginEditingRowAtIndexPath indexPath: NSIndexPath) {
+//        let cell = tableView.cellForRowAtIndexPath(indexPath) as! MedicineCell
+//        cell.addButton.alpha = 0.25
+//    }
+//    
+//    func tableView(tableView: UITableView, didEndEditingRowAtIndexPath indexPath: NSIndexPath) {
+//        let cell = tableView.cellForRowAtIndexPath(indexPath) as! MedicineCell
+//        cell.addButton.alpha = 1.0
+//    }
     
     override func setEditing(editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
+        
         tableView.setEditing(editing, animated: animated)
+        
+        for i in 0..<tableView.numberOfRowsInSection(0) {
+            let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: i, inSection: 0)) as! MedicineCell
+            cell.addButton.hidden = editing
+        }
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -482,6 +498,44 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             alert.addAction(UIAlertAction(title: "Take Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
                 self.performSegueWithIdentifier("addDose", sender: med)
                 self.tableView.deselectRowAtIndexPath(index, animated: true)
+            }))
+            
+            alert.addAction(UIAlertAction(title: "Skip Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
+                let entity = NSEntityDescription.entityForName("Dose", inManagedObjectContext: self.moc)
+                let dose = Dose(entity: entity!, insertIntoManagedObjectContext: self.moc)
+                
+                dose.medicine = med
+                dose.dosage = -1
+                dose.dosageUnitInt = med.dosageUnitInt
+                
+                if let date = med.nextDose {
+                    dose.date = date
+                } else {
+                    dose.date = NSDate()
+                }
+                
+                med.addDose(dose)
+                
+                self.appDelegate.saveContext()
+                
+                // If selected, sort by next dosage
+                if self.defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+                    medication.sortInPlace(Medicine.sortByNextDose)
+                    self.tableView.reloadData()
+                } else {
+                    self.tableView.reloadRowsAtIndexPaths([index], withRowAnimation: UITableViewRowAnimation.None)
+                }
+                
+                self.updateHeader()
+                
+                // Update spotlight index
+                if let attributes = med.attributeSet {
+                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
+                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+                }
+                
+                // Update shortcuts
+                self.setDynamicShortcuts()
             }))
             
             // If last dose is set, allow user to clear notification

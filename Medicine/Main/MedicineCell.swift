@@ -38,33 +38,13 @@ class MedicineCell: UITableViewCell {
         
         // Set tint
         self.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        
+        // Hide adherence field
+        adherenceWidth.constant = 0.0
     }
 
     override func setSelected(selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-    }
-    
-    override func setEditing(editing: Bool, animated: Bool) {
-        if editing {
-            adherenceWidth.constant = 0.0
-            titleLeading.constant = 5.0
-            glyphLeading.constant = 5.0
-            subtitleLeading.constant = glyphHidden ? 0.0 : 8.0
-            addButtonTrailing.constant = 0.0
-        } else {
-            adherenceWidth.constant = 0.0 // 50.0
-            titleLeading.constant = 5.0 // 10.0
-            glyphLeading.constant = 5.0 // 10.0
-            subtitleLeading.constant = glyphHidden ? 0.0 : 8.0
-            addButtonTrailing.constant = 5.0
-        }
-        
-        self.setNeedsUpdateConstraints()
-        UIView.animateWithDuration(NSTimeInterval(0.25)) { () -> Void in
-            self.addButton.hidden = (self.buttonHidden == true) ? true : editing
-            self.layoutIfNeeded()
-            super.setEditing(editing, animated: animated)
-        }
     }
     
     func hideGlyph(val: Bool) {

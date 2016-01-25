@@ -73,10 +73,10 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        if let tBC = self.tabBarController {
-            tBC.setTabBarVisible(false, animated: false)
-            self.navigationController?.setToolbarHidden(false, animated: false)
-        }
+//        if let tBC = self.tabBarController {
+//            tBC.setTabBarVisible(false, animated: false)
+//        }
+        self.navigationController?.setToolbarHidden(false, animated: false)
         
         loadHistory()
         displayEmptyView()
@@ -225,19 +225,24 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
         if let date = history[sectionDate] {
             if date.count > indexPath.row {
                 let dose = date[indexPath.row]
-            
+                
                 // Setup date formatter
                 dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
                 dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
                 
                 // Specify selection color
                 cell.selectedBackgroundView = UIView()
-
-                // Setup cell
-                cell.textLabel?.textColor = UIColor.blackColor()
-                cell.textLabel?.text = "\(dateFormatter.stringFromDate(dose.date))"
-                cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                cell.detailTextLabel?.text = String(format:"%g %@", dose.dosage, dose.dosageUnit.units(dose.dosage))
+                
+                if dose.dosage > 0 {
+                    cell.textLabel?.textColor = UIColor.blackColor()
+                    cell.textLabel?.text = "\(dateFormatter.stringFromDate(dose.date))"
+                    cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                    cell.detailTextLabel?.text = String(format:"%g %@", dose.dosage, dose.dosageUnit.units(dose.dosage))
+                } else {
+                    cell.textLabel?.textColor = UIColor.lightGrayColor()
+                    cell.textLabel?.text = "Skipped (\(dateFormatter.stringFromDate(dose.date)))"
+                    cell.detailTextLabel?.text?.removeAll()
+                }
             } else {
                 cell.textLabel?.textColor = UIColor.lightGrayColor()
                 cell.textLabel?.text = "No doses logged"
@@ -365,7 +370,13 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
                     dateFormatter.dateFormat = "YYYY-MM-dd h:mm:ss a"
                     
                     contents += "\(dateFormatter.stringFromDate(dose.date)), "
-                    contents += "\(med.removeTrailingZero(dose.dosage)) \(dose.dosageUnit.units(dose.dosage))\r"
+                    
+                    if dose.dosage > 0 {
+                        contents += "\(med.removeTrailingZero(dose.dosage)) \(dose.dosageUnit.units(dose.dosage))\r"
+                    } else {
+                        contents += "Skipped\r"
+                    }
+                        
                 }
                 
                 if let data = contents.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {

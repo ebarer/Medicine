@@ -20,10 +20,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     // MARK: - Application methods
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Setup IAP observers and pass moc
-        if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
-            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainVC)}).first {
-                SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainVC)
+        // Handle views on startup
+        if let tbc = self.window!.rootViewController as? UITabBarController {
+            if let splitView = tbc.viewControllers?.filter({$0.isKindOfClass(UISplitViewController)}).first as? UISplitViewController {
+                splitView.delegate = self
+                
+                // Add IAP observer to MainVC
+                let masterVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
+                SKPaymentQueue.defaultQueue().addTransactionObserver(masterVC)
+                
+                // Configure split view on startup
+                let detailNVC = splitView.viewControllers[1] as! UINavigationController
+                detailNVC.topViewController?.navigationItem.leftBarButtonItem = splitView.displayModeButtonItem()
+            }
+            
+            if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
+                if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainVC)}).first {
+                    SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainVC)
+                }
             }
         }
         
@@ -49,14 +63,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             } else if notification.category == "Refill Reminder" {
                 NSNotificationCenter.defaultCenter().postNotificationName("refillNotification", object: nil, userInfo: notification.userInfo)
                 UIApplication.sharedApplication().cancelLocalNotification(notification)
-            }
-        }
-        
-        // Setup split view controller
-        if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
-            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(UISplitViewController)}).first {
-                let svc = vc as! UISplitViewController
-                svc.delegate = self
             }
         }
         
@@ -135,8 +141,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     func splitViewController(splitViewController: UISplitViewController, collapseSecondaryViewController secondaryViewController:UIViewController, ontoPrimaryViewController primaryViewController:UIViewController) -> Bool {
         guard let secondaryAsNavController = secondaryViewController as? UINavigationController else { return false }
         guard let topAsDetailController = secondaryAsNavController.topViewController as? MedicineDetailsTVC else { return false }
+        
+        // If detail view is empty, return true to dismiss on launch
         if topAsDetailController.med == nil {
-            // Return true to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
             return true
         }
         
