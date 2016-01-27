@@ -240,8 +240,8 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
                     cell.detailTextLabel?.text = String(format:"%g %@", dose.dosage, dose.dosageUnit.units(dose.dosage))
                 } else {
                     cell.textLabel?.textColor = UIColor.lightGrayColor()
-                    cell.textLabel?.text = "Skipped (\(dateFormatter.stringFromDate(dose.date)))"
-                    cell.detailTextLabel?.text?.removeAll()
+                    cell.textLabel?.text = "\(dateFormatter.stringFromDate(dose.date))"
+                    cell.detailTextLabel?.text = "Skipped"
                 }
             } else {
                 cell.textLabel?.textColor = UIColor.lightGrayColor()
@@ -296,6 +296,7 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
             setToolbarItems(editButtons, animated: true)
         } else {
             setToolbarItems(normalButtons, animated: true)
+            updateDeleteButtonLabel()
         }
     }
     

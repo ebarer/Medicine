@@ -289,15 +289,11 @@ class HistoryTVC: UITableViewController {
     override func setEditing(editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
 
-        if let tBC = self.tabBarController {
-            if editing == true {
-                self.navigationController?.setToolbarHidden(false, animated: false)
-                tBC.setTabBarVisible(false, animated: false)
-            } else {
-                self.navigationController?.setToolbarHidden(true, animated: false)
-                tBC.setTabBarVisible(true, animated: false)
-                updateDeleteButtonLabel()
-            }
+        if editing == true {
+            self.navigationController?.setToolbarHidden(false, animated: true)
+        } else {
+            self.navigationController?.setToolbarHidden(true, animated: true)
+            updateDeleteButtonLabel()
         }
     }
     

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9520" systemVersion="15C47a" minimumToolsVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="10137.1" systemVersion="15E33e" minimumToolsVersion="Automatic">
     <entity name="Dose" representedClassName=".Dose" elementID="History" syncable="YES">
         <attribute name="date" attributeType="Date" syncable="YES"/>
         <attribute name="dosage" attributeType="Float" defaultValueString="1" syncable="YES"/>

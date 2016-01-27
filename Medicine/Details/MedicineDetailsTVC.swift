@@ -358,10 +358,9 @@ class MedicineDetailsTVC: UITableViewController {
             moc.deleteObject(med)
             appDelegate.saveContext()
 
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
-            
-            // Dismiss view
-            self.navigationController?.popViewControllerAnimated(true)
+            // Send notifications
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("medicationDeleted", object: nil)
         }
     }
     

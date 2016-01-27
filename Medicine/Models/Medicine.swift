@@ -245,9 +245,8 @@ class Medicine: NSManagedObject {
                 }
             case .Daily:
                 if let alarm = intervalAlarm {
-                    
                     // If created today (with no history), overdue depends on alarm
-                    if cal.isDateInToday(alarm) && lastDose == nil{
+                    if cal.isDateInToday(alarm) && lastDose == nil {
                         if alarm.compare(NSDate()) == .OrderedAscending{
                             return (true, alarm)
                         }
@@ -403,6 +402,7 @@ class Medicine: NSManagedObject {
         
         if self.medicineID.isEmpty {
             self.medicineID = NSUUID().UUIDString
+            self.dateCreated = NSDate()
         }
     }
     
@@ -871,9 +871,14 @@ class Medicine: NSManagedObject {
             // If no last dose
             if lastDose?.date == nil {
                 date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: NSDate(), options: [])!
-                
-                while date.compare(NSDate()) == .OrderedAscending && cal.isDateInToday(date) == false {
-                    date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: 1, toDate: date, options: [])!
+
+                // If medicine was created today but the alarm is behind the current time, set for tomorrow
+                if let dateCreated = dateCreated {
+                    if cal.isDateInToday(dateCreated) {
+                        while date.compare(NSDate()) == .OrderedAscending {
+                            date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: 1, toDate: date, options: [])!
+                        }
+                    }
                 }
 
                 return date
@@ -957,14 +962,6 @@ extension NSDate {
 
         return val
     }
-    
-//    public override var description : String {
-//        let dateFormatter = NSDateFormatter()
-//        dateFormatter.timeZone = NSTimeZone.systemTimeZone()
-//        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-//        dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
-//        return dateFormatter.stringFromDate(self)
-//    }
     
 }
 

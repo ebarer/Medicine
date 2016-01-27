@@ -23,15 +23,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         // Handle views on startup
         if let tbc = self.window!.rootViewController as? UITabBarController {
             if let splitView = tbc.viewControllers?.filter({$0.isKindOfClass(UISplitViewController)}).first as? UISplitViewController {
+                
+                // Configure split view on startup
                 splitView.delegate = self
+                let detailNVC = splitView.viewControllers[1] as! UINavigationController
+                detailNVC.topViewController?.navigationItem.leftBarButtonItem = splitView.displayModeButtonItem()
                 
                 // Add IAP observer to MainVC
                 let masterVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
                 SKPaymentQueue.defaultQueue().addTransactionObserver(masterVC)
-                
-                // Configure split view on startup
-                let detailNVC = splitView.viewControllers[1] as! UINavigationController
-                detailNVC.topViewController?.navigationItem.leftBarButtonItem = splitView.displayModeButtonItem()
             }
             
             if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
@@ -337,7 +337,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         // Create the coordinator and store
         let coordinator = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
         let url = self.applicationDocumentsDirectory.URLByAppendingPathComponent("SingleViewCoreData.sqlite")
-        let options = [NSMigratePersistentStoresAutomaticallyOption:true, NSInferMappingModelAutomaticallyOption:true]
+        let options = [NSMigratePersistentStoresAutomaticallyOption:true, NSInferMappingModelAutomaticallyOption:false]
         var failureReason = "There was an error creating or loading the application's saved data."
         do {
             try coordinator.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: options)

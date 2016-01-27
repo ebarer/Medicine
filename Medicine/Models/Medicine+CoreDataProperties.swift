@@ -14,6 +14,8 @@ import CoreData
 
 extension Medicine {
 
+    @NSManaged var dateCreated: NSDate?
+    
     @NSManaged var name: String?
     @NSManaged var medicineID: String
     @NSManaged var sortOrder: Int16

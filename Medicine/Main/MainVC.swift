@@ -67,6 +67,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateHeader", name: "refreshWidget", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshMedication", name: "refreshMedication", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "medicationDeleted", name: "medicationDeleted", object: nil)
         
         // Register for 3D touch if available
         if traitCollection.forceTouchCapability == .Available {
@@ -93,7 +94,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         // Setup refresh timer
         let _ = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(300), target: self, selector: Selector("refreshTable"), userInfo: nil, repeats: true)
         
-        
         // Display tutorial on first launch
         let dictionary = NSBundle.mainBundle().infoDictionary!
         let version = dictionary["CFBundleShortVersionString"] as! String
@@ -108,7 +108,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         self.navigationController?.setToolbarHidden(true, animated: true)
         
         if let index = tableView.indexPathForSelectedRow {
-            tableView.deselectRowAtIndexPath(index, animated: animated)
+            tableView.selectRowAtIndexPath(index, animated: false, scrollPosition: .None)
+            //tableView.deselectRowAtIndexPath(index, animated: animated)
         }
         
         // Handle homescreen shortcuts (selected by user)
@@ -432,8 +433,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
         let editAction = UITableViewRowAction(style: .Default, title: "Edit") { (action, indexPath) -> Void in
-            self.performSegueWithIdentifier("editMedication", sender: indexPath.row)
-            self.tableView.selectRowAtIndexPath(indexPath, animated: false, scrollPosition: UITableViewScrollPosition.None)
+            self.performSegueWithIdentifier("editMedication", sender: medication[indexPath.row])
+            //self.tableView.selectRowAtIndexPath(indexPath, animated: true, scrollPosition: UITableViewScrollPosition.None)
         }
         
         editAction.backgroundColor = UIColor(white: 0.78, alpha: 1.0)
@@ -449,16 +450,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Table view delegate
-//    
-//    func tableView(tableView: UITableView, willBeginEditingRowAtIndexPath indexPath: NSIndexPath) {
-//        let cell = tableView.cellForRowAtIndexPath(indexPath) as! MedicineCell
-//        cell.addButton.alpha = 0.25
-//    }
-//    
-//    func tableView(tableView: UITableView, didEndEditingRowAtIndexPath indexPath: NSIndexPath) {
-//        let cell = tableView.cellForRowAtIndexPath(indexPath) as! MedicineCell
-//        cell.addButton.alpha = 1.0
-//    }
     
     override func setEditing(editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
@@ -507,12 +498,11 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                 dose.medicine = med
                 dose.dosage = -1
                 dose.dosageUnitInt = med.dosageUnitInt
+                dose.date = NSDate()
                 
-                if let date = med.nextDose {
-                    dose.date = date
-                } else {
-                    dose.date = NSDate()
-                }
+//                if let date = med.nextDose {
+//                    dose.date = date
+//                }
                 
                 med.addDose(dose)
                 
@@ -645,6 +635,19 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
         
         updateHeader()
+    }
+    
+    func medicationDeleted() {
+        // Dismiss any modal views
+        if let _ = self.navigationController?.presentedViewController {
+            dismissViewControllerAnimated(true, completion: nil)
+        }
+        
+        if let svc = self.splitViewController {
+            if svc.collapsed {
+                (svc.viewControllers[0] as! UINavigationController).popToRootViewControllerAnimated(true)
+            }
+        }
     }
     
     
