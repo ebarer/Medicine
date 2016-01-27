@@ -32,6 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                 // Add IAP observer to MainVC
                 let masterVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
                 SKPaymentQueue.defaultQueue().addTransactionObserver(masterVC)
+                NSLog("IAP transaction observer added")
             }
             
             if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
@@ -100,7 +101,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         
         UIApplication.sharedApplication().cancelAllLocalNotifications()
         NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
-        NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil, userInfo: nil)
         NSNotificationCenter.defaultCenter().postNotificationName("refreshDetails", object: nil, userInfo: nil)
     }
     
@@ -325,6 +326,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let urls = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
         return urls[urls.count-1]
     }()
+    
+    lazy var applicationGroupDirectory: NSURL = {
+        return NSFileManager.defaultManager().containerURLForSecurityApplicationGroupIdentifier("group.com.ebarer.Medicine")!
+    }()
 
     lazy var managedObjectModel: NSManagedObjectModel = {
         // The managed object model for the application. This property is not optional. It is a fatal error for the application not to be able to find and load its model.
@@ -333,54 +338,63 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }()
 
     lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator = {
-        // The persistent store coordinator for the application. This implementation creates and returns a coordinator, having added the store for the application to it. This property is optional since there are legitimate error conditions that could cause the creation of the store to fail.
+        // The persistent store coordinator for the application. This implementation creates and returns a coordinator, having added the store for the application to it.
+        // This property is optional since there are legitimate error conditions that could cause the creation of the store to fail.
         // Create the coordinator and store
         let coordinator = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
-        let url = self.applicationDocumentsDirectory.URLByAppendingPathComponent("SingleViewCoreData.sqlite")
-        let options = [NSMigratePersistentStoresAutomaticallyOption:true, NSInferMappingModelAutomaticallyOption:false]
+        let oldURL = self.applicationDocumentsDirectory.URLByAppendingPathComponent("SingleViewCoreData.sqlite")
+        let url = self.applicationGroupDirectory.URLByAppendingPathComponent("Medicine.sqlite")
+        let options = [NSMigratePersistentStoresAutomaticallyOption:true, NSInferMappingModelAutomaticallyOption:true]
         var failureReason = "There was an error creating or loading the application's saved data."
+        
         do {
+            guard NSFileManager.defaultManager().fileExistsAtPath(url.path!) else {
+                throw CoreDataError.InvalidPersistentStore
+            }
+            
             try coordinator.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: options)
+            NSLog("Loaded persistent store correctly")
         } catch {
-            // Report any error we got.
-            var dict = [String: AnyObject]()
-            dict[NSLocalizedDescriptionKey] = "Failed to initialize the application's saved data"
-            dict[NSLocalizedFailureReasonErrorKey] = failureReason
+            NSLog("Failed to load persistent store coordinator from group, will attempt to migrate old store")
 
-            dict[NSUnderlyingErrorKey] = error as NSError
-            let wrappedError = NSError(domain: "YOUR_ERROR_DOMAIN", code: 9999, userInfo: dict)
-            // Replace this with code to handle the error appropriately.
-            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            NSLog("Unresolved error \(wrappedError), \(wrappedError.userInfo)")
-            abort()
+            do {
+                let oldStore = try coordinator.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: oldURL, options: options)
+                NSLog("Old store \(oldStore)")
+                let migratedStore = try coordinator.migratePersistentStore(oldStore, toURL: url, options: nil, withType: NSSQLiteStoreType)
+                NSLog("Migrated store \(migratedStore)")
+            } catch {
+                NSLog("Failed to load persistent store after migration attempt")
+                abort()
+            }
         }
         
         return coordinator
     }()
 
     lazy var managedObjectContext: NSManagedObjectContext = {
-        // Returns the managed object context for the application (which is already bound to the persistent store coordinator for the application.) This property is optional since there are legitimate error conditions that could cause the creation of the context to fail.
+        // Returns the managed object context for the application (which is already bound to the persistent store coordinator for the application.)
+        // This property is optional since there are legitimate error conditions that could cause the creation of the context to fail.
         let coordinator = self.persistentStoreCoordinator
         var managedObjectContext = NSManagedObjectContext(concurrencyType: .MainQueueConcurrencyType)
         managedObjectContext.persistentStoreCoordinator = coordinator
         return managedObjectContext
     }()
 
-    // MARK: - Core Data Saving support
-
     func saveContext () {
         if managedObjectContext.hasChanges {
             do {
                 try managedObjectContext.save()
             } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nserror = error as NSError
-                NSLog("Unresolved error \(nserror), \(nserror.userInfo)")
-                // abort()
+                let error = error as! NSError
+                NSLog("Unable to save context: \(error), \(error.userInfo)")
+                abort()
             }
         }
     }
 
 }
 
+// MARK: - Errors Enum
+enum CoreDataError: ErrorType {
+    case InvalidPersistentStore
+}

@@ -41,6 +41,8 @@ class MedicineCell: UITableViewCell {
         
         // Hide adherence field
         adherenceWidth.constant = 0.0
+        titleLeading.constant = 0.0
+        glyphLeading.constant = 0.0
     }
 
     override func setSelected(selected: Bool, animated: Bool) {

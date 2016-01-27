@@ -29,6 +29,33 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     var launchedShortcutItem: [NSObject: AnyObject]?
     
     
+    // MARK: - Load medication
+    
+    func loadMedication() {
+        let request = NSFetchRequest(entityName:"Medicine")
+        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+        
+        do {
+            let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
+            
+            if let results = fetchedResults {
+                // Store results in medication array
+                medication = results
+                
+                // If selected, sort by next dosage
+                if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
+                    medication.sortInPlace(Medicine.sortByNextDose)
+                }
+                
+                indexMedication()
+                setDynamicShortcuts()
+            }
+        } catch {
+            print("Could not fetch medication.")
+        }
+    }
+    
+    
     // MARK: - View methods
     
     override func viewDidLoad() {
@@ -86,7 +113,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                         if let id = notification.userInfo!["id"] as? String {
                             if let med = Medicine.getMedicine(arr: medication, id: id) {
                                 med.snoozeNotification()
-                                NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+                                NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil, userInfo: nil)
                                 NSNotificationCenter.defaultCenter().postNotificationName("refreshDetails", object: nil, userInfo: nil)
                             }
                         }
@@ -94,7 +121,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 }
                 
                 alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
-                    NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+                    NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil, userInfo: nil)
                     NSNotificationCenter.defaultCenter().postNotificationName("refreshDetails", object: nil, userInfo: nil)
                 }))
                 
@@ -156,7 +183,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 appDelegate.saveContext()
                 
                 setDynamicShortcuts()
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil, userInfo: nil)
                 NSLog("takeDoseAction performed", [])
             }
         }
@@ -168,7 +195,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
                 med.snoozeNotification()
                 setDynamicShortcuts()
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil, userInfo: nil)
                 NSLog("snoozeReminderAction performed", [])
             }
         }
@@ -234,33 +261,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     // MARK: - Helper methods
     
-    func loadMedication() {
-        let request = NSFetchRequest(entityName:"Medicine")
-        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-        
-        do {
-            let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
-            
-            if let results = fetchedResults {
-                // Store results in medication array
-                medication = results
-                
-                // Index results
-                for med in medication  {
-                    if let attributes = med.attributeSet {
-                        let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                        CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                    }
-                }
-                    
-                // Update homescreen shortcuts for force touch devices
-                setDynamicShortcuts()
-            }
-        } catch {
-            print("Could not fetch medication.")
-        }
-    }
-    
+    // Update homescreen shortcuts for force touch devices
     func setDynamicShortcuts() {
         let overdueItems = medication.filter({$0.isOverdue().flag})
         if overdueItems.count > 0  {
@@ -305,6 +306,16 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         }
         
         UIApplication.sharedApplication().shortcutItems = []
+    }
+    
+    // Update spotlight index
+    func indexMedication() {
+        for med in medication  {
+            if let attributes = med.attributeSet {
+                let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
+                CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+            }
+        }
     }
     
 }

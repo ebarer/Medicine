@@ -117,7 +117,7 @@ class MedicineDetailsTVC: UITableViewController {
             
             var detailsString = "\(med.removeTrailingZero(med.dosage)) \(med.dosageUnit.units(med.dosage))"
             if med.reminderEnabled == true {
-                detailsString += ", every \(med.removeTrailingZero(med.interval)) \(med.intervalUnit.units(med.interval))"
+                detailsString += ", every \(med.removeTrailingZero(med.interval)) \(med.intervalUnit.units(med.interval)) -- \(med.dateCreated)"
             }
             
             doseDetailsLabel.text = detailsString
@@ -359,7 +359,7 @@ class MedicineDetailsTVC: UITableViewController {
             appDelegate.saveContext()
 
             // Send notifications
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil)
             NSNotificationCenter.defaultCenter().postNotificationName("medicationDeleted", object: nil)
         }
     }

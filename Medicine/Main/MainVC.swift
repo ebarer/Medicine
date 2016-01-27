@@ -66,7 +66,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateHeader", name: "refreshWidget", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshMedication", name: "refreshMedication", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshMainVC", name: "refreshMainVC", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "medicationDeleted", name: "medicationDeleted", object: nil)
         
         // Register for 3D touch if available
@@ -107,10 +107,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(true, animated: true)
         
-        if let index = tableView.indexPathForSelectedRow {
-            tableView.selectRowAtIndexPath(index, animated: false, scrollPosition: .None)
-            //tableView.deselectRowAtIndexPath(index, animated: animated)
-        }
+//        if let index = tableView.indexPathForSelectedRow {
+//            tableView.deselectRowAtIndexPath(index, animated: animated)
+//        }
         
         // Handle homescreen shortcuts (selected by user)
         if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
@@ -147,31 +146,13 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     // MARK: - Update values
     
-    func refreshMedication() {
-        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+    func refreshMainVC() {
+        if let tbc = self.tabBarController as? MainTBC {
+            tbc.loadMedication()
+        }
         
         updateHeader()
-        
-        // Update spotlight index
-        for med in medication {
-            if let attributes = med.attributeSet {
-                let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-            }
-        }
-        
-        // Update shortcuts
-        self.setDynamicShortcuts()
-        
-        // If selected, sort by next dosage
-        if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-            medication.sortInPlace(Medicine.sortByNextDose)
-        }
-        
-        // Dismiss editing mode
-        setEditing(false, animated: true)
-        
-        tableView.reloadData()
+        refreshTable()
     }
     
     func updateHeader() {
@@ -266,7 +247,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                     animations: { () -> Void in
                         self.summaryHeader.alpha = 0.0
                         self.tableView.alpha = 0.0
-                        emptyView.alpha = 0.5
+                        emptyView.alpha = 1.0
                     }, completion: { (val) -> Void in
                         self.summaryHeader.hidden = true
                         self.tableView.hidden = true
@@ -282,18 +263,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             self.tableView.alpha = 1.0
             tableView.hidden = false
             
-            // Reschedule notifications
-            NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
-            
-            // If selected, sort by next dosage
-            if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-                medication.sortInPlace(Medicine.sortByNextDose)
-            }
-            
-            // Dismiss editing mode
-            setEditing(false, animated: true)
-            
-            tableView.reloadData()
+            refreshMainVC()
         }
     }
     
@@ -488,7 +458,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             
             alert.addAction(UIAlertAction(title: "Take Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
                 self.performSegueWithIdentifier("addDose", sender: med)
-                self.tableView.deselectRowAtIndexPath(index, animated: true)
+                self.tableView.deselectRowAtIndexPath(index, animated: false)
             }))
             
             alert.addAction(UIAlertAction(title: "Skip Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
@@ -551,18 +521,18 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                         // Update shortcuts
                         self.setDynamicShortcuts()
                     } else {
-                        self.tableView.deselectRowAtIndexPath(index, animated: true)
+                        self.tableView.deselectRowAtIndexPath(index, animated: false)
                     }
                 }))
             }
             
             alert.addAction(UIAlertAction(title: "Refill Prescription", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
                 self.performSegueWithIdentifier("refillPrescription", sender: med)
-                self.tableView.deselectRowAtIndexPath(index, animated: true)
+                self.tableView.deselectRowAtIndexPath(index, animated: false)
             }))
             
             alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
-                self.tableView.deselectRowAtIndexPath(index, animated: true)
+                self.tableView.deselectRowAtIndexPath(index, animated: false)
             }))
             
             // Set popover for iPad
@@ -586,7 +556,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             
             if (sender.state == .Began) {
                 self.performSegueWithIdentifier("addDose", sender: med)
-                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                self.tableView.deselectRowAtIndexPath(indexPath, animated: false)
             }
         }
     }
@@ -598,7 +568,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.Alert)
         
         deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
-            self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            self.tableView.deselectRowAtIndexPath(indexPath, animated: false)
         }))
         
         deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
@@ -735,7 +705,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {
         if let _ = unwindSegue.sourceViewController as? WelcomeVC {
-            refreshMedication()
+            refreshMainVC()
         }
     }
     

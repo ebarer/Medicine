@@ -343,7 +343,7 @@ class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControll
             setEditing(false, animated: true)
             
             // Update widget
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil, userInfo: nil)
         }
     }
     

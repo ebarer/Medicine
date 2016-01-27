@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Medicine/Main/MainVC.swift"
-            timestampString = "475579295.188107"
+            timestampString = "475582183.567386"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "640"
-            endingLineNumber = "640"
+            startingLineNumber = "610"
+            endingLineNumber = "610"
             landmarkName = "medicationDeleted()"
             landmarkType = "5">
          </BreakpointContent>
@@ -41,13 +41,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Medicine/Models/Migrations/dateCreatedPolicy.swift"
-            timestampString = "475579729.036177"
+            filePath = "Medicine/Main/MainTBC.swift"
+            timestampString = "475590775.376885"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "14"
-            endingLineNumber = "14"
-            landmarkName = "dateFromFirstDose(_:)"
+            startingLineNumber = "39"
+            endingLineNumber = "39"
+            landmarkName = "loadMedication()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
