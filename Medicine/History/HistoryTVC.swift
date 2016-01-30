@@ -351,9 +351,8 @@ class HistoryTVC: UITableViewController {
             
             updateDeleteButtonLabel()
             setEditing(false, animated: true)
-            
-            // Update widget
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil, userInfo: nil)
+
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
         }
     }
     

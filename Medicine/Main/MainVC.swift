@@ -64,9 +64,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             medication.sortInPlace(Medicine.sortByNextDose)
         }
         
-        // Add observeres for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateHeader", name: "refreshWidget", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshMainVC", name: "refreshMainVC", object: nil)
+        // Add observers for notifications
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshMainVC", name: "refreshView", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "medicationDeleted", name: "medicationDeleted", object: nil)
         
         // Register for 3D touch if available
@@ -135,8 +134,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
         
         setDynamicShortcuts()
-        updateHeader()
-        displayEmptyView()
+        refreshMainVC()
     }
     
     override func didReceiveMemoryWarning() {
@@ -151,8 +149,42 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             tbc.loadMedication()
         }
         
+        displayEmptyView()
         updateHeader()
         refreshTable()
+    }
+    
+    func displayEmptyView() {
+        if medication.count == 0 {
+            navigationItem.leftBarButtonItem?.enabled = false
+            
+            // Display empty message
+            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                emptyView.frame = CGRectMake(0, 0, self.view.frame.width, self.view.frame.height)
+                emptyView.tag = 1001
+                emptyView.alpha = 0.0
+                self.view.addSubview(emptyView)
+                
+                UIView.animateWithDuration(0.5,
+                    animations: { () -> Void in
+                        self.summaryHeader.alpha = 0.0
+                        self.tableView.alpha = 0.0
+                        emptyView.alpha = 1.0
+                    }, completion: { (val) -> Void in
+                        self.summaryHeader.hidden = true
+                        self.tableView.hidden = true
+                })
+            }
+        } else {
+            navigationItem.leftBarButtonItem?.enabled = true
+            
+            // Remove empty message
+            self.view.viewWithTag(1001)?.removeFromSuperview()
+            self.summaryHeader.alpha = 1.0
+            summaryHeader.hidden = false
+            self.tableView.alpha = 1.0
+            tableView.hidden = false
+        }
     }
     
     func updateHeader() {
@@ -232,41 +264,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         defaults.synchronize()
     }
     
-    func displayEmptyView() {
-        if medication.count == 0 {
-            navigationItem.leftBarButtonItem?.enabled = false
-            
-            // Display empty message
-            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
-                emptyView.frame = CGRectMake(0, 0, self.view.frame.width, self.view.frame.height)
-                emptyView.tag = 1001
-                emptyView.alpha = 0.0
-                self.view.addSubview(emptyView)
-                
-                UIView.animateWithDuration(0.5,
-                    animations: { () -> Void in
-                        self.summaryHeader.alpha = 0.0
-                        self.tableView.alpha = 0.0
-                        emptyView.alpha = 1.0
-                    }, completion: { (val) -> Void in
-                        self.summaryHeader.hidden = true
-                        self.tableView.hidden = true
-                })
-            }
-        } else {
-            navigationItem.leftBarButtonItem?.enabled = true
-            
-            // Remove empty message
-            self.view.viewWithTag(1001)?.removeFromSuperview()
-            self.summaryHeader.alpha = 1.0
-            summaryHeader.hidden = false
-            self.tableView.alpha = 1.0
-            tableView.hidden = false
-            
-            refreshMainVC()
-        }
-    }
-    
     func refreshTable() {
         // Reschedule notifications
         NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
@@ -280,6 +277,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         setEditing(false, animated: true)
         
         tableView.reloadData()
+        selectMed()
     }
     
     
@@ -430,11 +428,35 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: i, inSection: 0)) as! MedicineCell
             cell.addButton.hidden = editing
         }
+        
+        // Select med "selected" in Detail view
+        if editing == false {
+            selectMed()
+        }
+    }
+    
+    func tableView(tableView: UITableView, didEndEditingRowAtIndexPath indexPath: NSIndexPath) {
+        selectMed()
+    }
+    
+    func selectMed() {
+        if let svc = self.splitViewController where svc.viewControllers.count > 1 {
+            if let detailVC = (svc.viewControllers[1] as? UINavigationController)?.topViewController as? MedicineDetailsTVC {
+                if let med = detailVC.med {
+                    if let row = medication.indexOf(med) {
+                        tableView.selectRowAtIndexPath(NSIndexPath(forRow: row, inSection: 0), animated: false, scrollPosition: .None)
+                    }
+                }
+            }
+        }
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if tableView.editing == true {
             performSegueWithIdentifier("editMedication", sender: medication[indexPath.row])
+        } else {
+            self.splitViewController?.modalInPopover = false
+            
         }
     }
     
@@ -716,13 +738,13 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         for transaction in transactions {
             switch (transaction.transactionState) {
             case SKPaymentTransactionState.Restored:
-                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
+                queue.finishTransaction(transaction)
                 unlockManager()
             case SKPaymentTransactionState.Purchased:
-                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
+                queue.finishTransaction(transaction)
                 unlockManager()
             case SKPaymentTransactionState.Failed:
-                SKPaymentQueue.defaultQueue().finishTransaction(transaction)
+                queue.finishTransaction(transaction)
                 
                 mvc?.purchaseButton.enabled = true
                 mvc?.restoreButton.enabled = true

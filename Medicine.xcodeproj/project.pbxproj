@@ -56,6 +56,7 @@
 		CEE18F361BEEC91800222D92 /* SettingsTVC+Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE18F351BEEC91800222D92 /* SettingsTVC+Collection.swift */; };
 		CEE18F381BEECE3700222D92 /* SettingsTVC+Manage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE18F371BEECE3700222D92 /* SettingsTVC+Manage.swift */; };
 		CEE849811C13932600880484 /* MedicineDetailsTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE849801C13932600880484 /* MedicineDetailsTVC.swift */; };
+		CEEE50DE1C5B4CF3008985A1 /* DetailEmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEEE50DD1C5B4CF3008985A1 /* DetailEmptyView.xib */; };
 		CEF5483C1B9CEA7100C344B4 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */; };
 		CEFE5E211BF1E00C00039302 /* WelcomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFE5E201BF1E00C00039302 /* WelcomeVC.swift */; };
 /* End PBXBuildFile section */
@@ -155,6 +156,7 @@
 		CEE18F351BEEC91800222D92 /* SettingsTVC+Collection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Collection.swift"; path = "Settings/SettingsTVC+Collection.swift"; sourceTree = "<group>"; };
 		CEE18F371BEECE3700222D92 /* SettingsTVC+Manage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Manage.swift"; path = "Settings/SettingsTVC+Manage.swift"; sourceTree = "<group>"; };
 		CEE849801C13932600880484 /* MedicineDetailsTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MedicineDetailsTVC.swift; path = Details/MedicineDetailsTVC.swift; sourceTree = "<group>"; };
+		CEEE50DD1C5B4CF3008985A1 /* DetailEmptyView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DetailEmptyView.xib; path = Details/DetailEmptyView.xib; sourceTree = "<group>"; };
 		CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		CEF5483E1B9CEA8200C344B4 /* Medicine.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Medicine.entitlements; path = Medicine/Medicine.entitlements; sourceTree = "<group>"; };
 		CEFE5E201BF1E00C00039302 /* WelcomeVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WelcomeVC.swift; path = Tutorial/WelcomeVC.swift; sourceTree = "<group>"; };
@@ -334,6 +336,7 @@
 			isa = PBXGroup;
 			children = (
 				CEA5DFC01C1190F100B9BC99 /* MedicineDetails.storyboard */,
+				CEEE50DD1C5B4CF3008985A1 /* DetailEmptyView.xib */,
 				CEE849801C13932600880484 /* MedicineDetailsTVC.swift */,
 				CE0EA1961BAFE2B800F48A09 /* MedicineDoseHistoryTVC.swift */,
 				CE3A42531C13A27C0035E390 /* MedicineRefillHistoryTVC.swift */,
@@ -513,6 +516,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CECD22B41BE94FDB007C5F25 /* AddRefill.storyboard in Resources */,
+				CEEE50DE1C5B4CF3008985A1 /* DetailEmptyView.xib in Resources */,
 				CEA250F31B90396C00BBE466 /* Assets.xcassets in Resources */,
 				CE0EA18B1BAFDAED00F48A09 /* Upgrade.storyboard in Resources */,
 				CEA250F61B90396C00BBE466 /* LaunchScreen.storyboard in Resources */,

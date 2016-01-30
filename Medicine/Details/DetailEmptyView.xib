@@ -10,8 +10,8 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No History" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lBX-Bp-4HC">
-                    <rect key="frame" x="239" y="233.5" width="122" height="33"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Medication Selected" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KY7-Qb-D4q">
+                    <rect key="frame" x="160.5" y="233.5" width="279" height="33"/>
                     <fontDescription key="fontDescription" type="system" weight="light" pointSize="27"/>
                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
@@ -19,10 +19,9 @@
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstItem="lBX-Bp-4HC" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" constant="-50" id="a2O-TD-bEG"/>
-                <constraint firstItem="lBX-Bp-4HC" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="faj-w2-10r"/>
+                <constraint firstItem="KY7-Qb-D4q" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" constant="-50" id="2xT-sq-Nxj"/>
+                <constraint firstItem="KY7-Qb-D4q" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="GcE-on-EuN"/>
             </constraints>
-            <point key="canvasLocation" x="498" y="395"/>
         </view>
     </objects>
 </document>

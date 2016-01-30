@@ -67,6 +67,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         
         // Set tab bar controller
         tabBar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+       
+        loadMedication()
         
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "doseNotification:", name: "doseNotification", object: nil)
@@ -76,11 +78,9 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "takeDoseAction:", name: "takeDoseAction", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "snoozeReminderAction:", name: "snoozeReminderAction", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refillAction:", name: "refillAction", object: nil)
-
+        
         // Add observer for scheduling notifications and updating app badge count
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "rescheduleNotifications:", name: "rescheduleNotifications", object: nil)
-        
-        loadMedication()
         
         // Setup array of reschedule calls
         if let dates = defaults.objectForKey("rescheduleDates") {
@@ -100,6 +100,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         if let id = notification.userInfo!["id"] as? String {
             let medQuery = Medicine.getMedicine(arr: medication, id: id)
             if let med = medQuery {
+                print("doseNotification triggered for \(med.name)")
+                
                 let message = String(format:"Time to take %g %@ of %@", med.dosage, med.dosageUnit.units(med.dosage), med.name!)
                 
                 let alert = UIAlertController(title: "Take \(med.name!)", message: message, preferredStyle: .Alert)
@@ -113,16 +115,14 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                         if let id = notification.userInfo!["id"] as? String {
                             if let med = Medicine.getMedicine(arr: medication, id: id) {
                                 med.snoozeNotification()
-                                NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil, userInfo: nil)
-                                NSNotificationCenter.defaultCenter().postNotificationName("refreshDetails", object: nil, userInfo: nil)
+                                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
                             }
                         }
                     }))
                 }
                 
                 alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
-                    NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil, userInfo: nil)
-                    NSNotificationCenter.defaultCenter().postNotificationName("refreshDetails", object: nil, userInfo: nil)
+                    NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
                 }))
                 
                 alert.view.tintColor = UIColor.grayColor()
@@ -135,6 +135,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         if let id = notification.userInfo!["id"] as? String {
             let medQuery = Medicine.getMedicine(arr: medication, id: id)
             if let med = medQuery {
+                print("refillNotification triggered for \(med.name)")
+                
                 var message = "You are running low on \(med.name!) and should refill soon."
                 
                 if med.prescriptionCount < med.dosage {
@@ -183,7 +185,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 appDelegate.saveContext()
                 
                 setDynamicShortcuts()
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil, userInfo: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
                 NSLog("takeDoseAction performed", [])
             }
         }
@@ -195,7 +197,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
                 med.snoozeNotification()
                 setDynamicShortcuts()
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil, userInfo: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
                 NSLog("snoozeReminderAction performed", [])
             }
         }
@@ -213,7 +215,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     
     // MARK: - Other observers
-    
     func rescheduleNotifications(notification: NSNotification) {        
         // Reschedule notifications
         for med in medication {
@@ -226,9 +227,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         // Update badge count
         let overdueCount = medication.filter({$0.isOverdue().flag}).count
         UIApplication.sharedApplication().applicationIconBadgeNumber = overdueCount
-        
-        // Refresh widget
-        NSNotificationCenter.defaultCenter().postNotificationName("refreshWidget", object: nil, userInfo: nil)
         
         // Only log when rescheduling in background
         if notification.userInfo?["activator"] != nil {

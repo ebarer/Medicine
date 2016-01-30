@@ -8,7 +8,6 @@
 
 import UIKit
 
-@available(iOS 9.0, *)
 extension MainVC: UIViewControllerPreviewingDelegate {
     
     // Create a previewing view controller to be shown at "Peek".

@@ -218,7 +218,7 @@ class AddDoseTVC: UITableViewController {
                 
                 appDelegate.saveContext()
                 
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil, userInfo: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
                 
                 dismissViewControllerAnimated(true, completion: nil)
             } catch {
@@ -254,7 +254,7 @@ class AddDoseTVC: UITableViewController {
             
             doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
                 self.appDelegate.saveContext()
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil, userInfo: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
                 self.dismissViewControllerAnimated(true, completion: nil)
             }))
             

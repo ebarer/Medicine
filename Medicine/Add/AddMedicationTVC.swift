@@ -302,7 +302,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             appDelegate.saveContext()
             
             // Send notifications
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
             NSNotificationCenter.defaultCenter().postNotificationName("medicationDeleted", object: nil)
         }
     }
@@ -362,7 +362,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         // Reschedule next notification
         med.scheduleNextNotification()
         
-        NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil, userInfo: nil)
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
         dismissViewControllerAnimated(true, completion: nil)
     }
     

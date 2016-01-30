@@ -54,7 +54,7 @@ class MedicineDetailsTVC: UITableViewController {
         self.navigationItem.rightBarButtonItem = editButton
         
         // Add observeres for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateLabels", name: "refreshDetails", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshDetails", name: "refreshView", object: nil)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -85,28 +85,24 @@ class MedicineDetailsTVC: UITableViewController {
         super.didReceiveMemoryWarning()
     }
     
+    func refreshDetails() {
+        displayEmptyView()
+        updateLabels()
+    }
+    
     func displayEmptyView() {
         if med == nil {
-            // Display empty message
-            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+            if let emptyView = UINib(nibName: "DetailEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
                 emptyView.frame = CGRectMake(0, 0, self.view.frame.width, self.view.frame.height)
                 emptyView.tag = 1001
-                emptyView.alpha = 0.0
                 self.view.addSubview(emptyView)
-                
-                UIView.animateWithDuration(0.5,
-                    animations: { () -> Void in
-                        self.tableView.alpha = 0.0
-                        emptyView.alpha = 1.0
-                    }, completion: { (val) -> Void in
-                        self.tableView.hidden = true
-                })
+                self.tableView.scrollEnabled = false
+                self.navigationItem.rightBarButtonItem?.enabled = false
             }
         } else {
-            // Remove empty message
             self.view.viewWithTag(1001)?.removeFromSuperview()
-            self.tableView.alpha = 1.0
-            tableView.hidden = false
+            self.tableView.scrollEnabled = true
+            self.navigationItem.rightBarButtonItem?.enabled = true
         }
     }
     
@@ -117,7 +113,7 @@ class MedicineDetailsTVC: UITableViewController {
             
             var detailsString = "\(med.removeTrailingZero(med.dosage)) \(med.dosageUnit.units(med.dosage))"
             if med.reminderEnabled == true {
-                detailsString += ", every \(med.removeTrailingZero(med.interval)) \(med.intervalUnit.units(med.interval)) -- \(med.dateCreated)"
+                detailsString += ", every \(med.removeTrailingZero(med.interval)) \(med.intervalUnit.units(med.interval))"
             }
             
             doseDetailsLabel.text = detailsString
@@ -359,7 +355,7 @@ class MedicineDetailsTVC: UITableViewController {
             appDelegate.saveContext()
 
             // Send notifications
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
             NSNotificationCenter.defaultCenter().postNotificationName("medicationDeleted", object: nil)
         }
     }
@@ -383,6 +379,10 @@ class MedicineDetailsTVC: UITableViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if let med = med {
             self.navigationItem.backBarButtonItem?.title = med.name
+            
+            if let button = sender as? UIButton {
+                actionDeselected(button)
+            }
             
             if segue.identifier == "editMedication" {
                 if let vc = segue.destinationViewController.childViewControllers[0] as? AddMedicationTVC {

@@ -276,7 +276,6 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Spotlight indexing values
-    @available(iOS 9.0, *)
     var attributeSet: CSSearchableItemAttributeSet? {
         let attributeSet = CSSearchableItemAttributeSet(itemContentType: kUTTypeContent as String)
         attributeSet.title = self.name!
@@ -865,35 +864,29 @@ class Medicine: NSManagedObject {
                 }
             }
             
-            var date = alarm
+            var date = NSDate()
             let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
             
-            // If no last dose
             if lastDose?.date == nil {
-                date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: NSDate(), options: [])!
-
-                // If medicine was created today but the alarm is behind the current time, set for tomorrow
-                if let dateCreated = dateCreated {
-                    if cal.isDateInToday(dateCreated) {
-                        while date.compare(NSDate()) == .OrderedAscending {
-                            date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: 1, toDate: date, options: [])!
-                        }
-                    }
-                }
-
-                return date
-            }
-            // If scheduled dose is in the past, schedule for next interval until it is for the future
-            else if let last = lastDose?.date {
+                date = alarm
+            } else if let last = lastDose?.date {
                 date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: last, options: [])!
-                
-                while date.compare(NSDate()) == .OrderedAscending && cal.isDateInToday(date) == false {
-                    date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])!
+            }
+            
+            // If medicine was created today but the alarm is behind the current time, set for tomorrow
+            if let dateCreated = dateCreated where cal.isDateInToday(dateCreated) {
+                while date.compare(NSDate()) == .OrderedAscending {
+                    date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: 1, toDate: date, options: [])!
                 }
-                
-                if lastDose?.next?.compare(NSDate()) == .OrderedAscending {
-                    lastDose?.next = date
-                }
+            }
+            
+            // Schedule for next interval until it is for the future
+            while date.compare(NSDate()) == .OrderedAscending && cal.isDateInToday(date) == false {
+                date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])!
+            }
+            
+            if lastDose?.next?.compare(NSDate()) == .OrderedAscending {
+                lastDose?.next = date
             }
             
             return date

@@ -353,8 +353,7 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
             updateDeleteButtonLabel()
             setEditing(false, animated: true)
             
-            // Update widget
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil, userInfo: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
         }
     }
     
@@ -429,12 +428,10 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
 
 // MARK: - Preview actions
 
-//    @available(iOS 9.0, *)
 //    override func previewActionItems() -> [UIPreviewActionItem] {
 //        return previewActions
 //    }
 //
-//    @available(iOS 9.0, *)
 //    lazy var previewActions: [UIPreviewActionItem] = {
 //        func previewActionForTitle(title: String, style: UIPreviewActionStyle = .Default) -> UIPreviewAction {
 //            return UIPreviewAction(title: title, style: style) { previewAction, viewController in

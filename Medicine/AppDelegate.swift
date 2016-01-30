@@ -18,7 +18,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
     
     // MARK: - Application methods
-    
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Handle views on startup
         if let tbc = self.window!.rootViewController as? UITabBarController {
@@ -58,13 +57,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         
         // Handle local notification
         if let notification = launchOptions?[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
-            if notification.category == "Dose Reminder" {
-                NSNotificationCenter.defaultCenter().postNotificationName("doseNotification", object: nil, userInfo: notification.userInfo)
-                UIApplication.sharedApplication().cancelLocalNotification(notification)
-            } else if notification.category == "Refill Reminder" {
-                NSNotificationCenter.defaultCenter().postNotificationName("refillNotification", object: nil, userInfo: notification.userInfo)
-                UIApplication.sharedApplication().cancelLocalNotification(notification)
-            }
+            // self.application(application, didReceiveLocalNotification: notification)
+            self.performSelector("postNotification:", withObject: notification, afterDelay: 1.0)
         }
         
         return true
@@ -101,8 +95,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         
         UIApplication.sharedApplication().cancelAllLocalNotifications()
         NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
-        NSNotificationCenter.defaultCenter().postNotificationName("refreshMainVC", object: nil, userInfo: nil)
-        NSNotificationCenter.defaultCenter().postNotificationName("refreshDetails", object: nil, userInfo: nil)
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
     }
     
     func applicationDidBecomeActive(application: UIApplication) {
@@ -138,7 +131,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     
     // MARK: - Split view
-    
     func splitViewController(splitViewController: UISplitViewController, collapseSecondaryViewController secondaryViewController:UIViewController, ontoPrimaryViewController primaryViewController:UIViewController) -> Bool {
         guard let secondaryAsNavController = secondaryViewController as? UINavigationController else { return false }
         guard let topAsDetailController = secondaryAsNavController.topViewController as? MedicineDetailsTVC else { return false }
@@ -153,7 +145,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     
     // MARK: - Application helper methods
-    
     func setUserDefaults() {
         guard let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine") else { fatalError("No user defaults") }
         
@@ -221,7 +212,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     
     // MARK: - Background refresh
-    
     func application(application: UIApplication, performFetchWithCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
         NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: ["activator":"background"])
         completionHandler(UIBackgroundFetchResult.NewData)
@@ -229,15 +219,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     
     // MARK: - Application shortcut stack
-    
     var launchedShortcutItem: [NSObject: AnyObject]?
-    
-    @available(iOS 9.0, *)
+
     func application(application: UIApplication, performActionForShortcutItem shortcutItem: UIApplicationShortcutItem, completionHandler: (Bool) -> Void) {
         completionHandler(handleShortcut(shortcutItem))
     }
-    
-    @available(iOS 9.0, *)
+
     func handleShortcut(shortcutItem: UIApplicationShortcutItem) -> Bool {
         guard let action = shortcutItem.userInfo?["action"] else { return false }
         
@@ -268,36 +255,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     
     // MARK: - Push Notifications stack
-    
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
-        if let info = notification.userInfo {
-            NSLog("Local notification received: %@", info)
-        } else {
-            NSLog("Local notification received (no info): %@", notification)
-        }
-        
-        if notification.category == "Dose Reminder" {
-            NSNotificationCenter.defaultCenter().postNotificationName("doseNotification", object: nil, userInfo: notification.userInfo)
-            UIApplication.sharedApplication().cancelLocalNotification(notification)
-        } else if notification.category == "Refill Reminder" {
-            NSNotificationCenter.defaultCenter().postNotificationName("refillNotification", object: nil, userInfo: notification.userInfo)
-            UIApplication.sharedApplication().cancelLocalNotification(notification)
-        }
+        self.performSelector("postNotification:", withObject: notification)
     }
     
     func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {
         guard let action = identifier else {
+            print("Local action received (no identifier)")
             NSLog("Local action received: no identifier")
             completionHandler()
             return
         }
         
         guard let info = notification.userInfo else {
+            print("Local action received (no info)")
             NSLog("Local action (%@) received: no info", action)
             completionHandler()
             return
         }
         
+        print("Local action received")
         NSLog("Local action (%@) received: %@", action, info)
         
         if identifier == "takeDose" {
@@ -318,9 +295,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         completionHandler()
     }
     
+    func postNotification(notification: UILocalNotification) {
+        if let info = notification.userInfo {
+            print("Local notification received")
+            NSLog("Local notification received: %@", info)
+        } else {
+            print("Local notification received (no info)")
+            NSLog("Local notification received (no info): %@", notification)
+        }
+        
+        if notification.category == "Dose Reminder" {
+            NSNotificationCenter.defaultCenter().postNotificationName("doseNotification", object: nil, userInfo: notification.userInfo)
+            UIApplication.sharedApplication().cancelLocalNotification(notification)
+        } else if notification.category == "Refill Reminder" {
+            NSNotificationCenter.defaultCenter().postNotificationName("refillNotification", object: nil, userInfo: notification.userInfo)
+            UIApplication.sharedApplication().cancelLocalNotification(notification)
+        }
+    }
+    
 
     // MARK: - Core Data stack
-
     lazy var applicationDocumentsDirectory: NSURL = {
         // The directory the application uses to store the Core Data store file. This code uses a directory named "com.ebarer.Medicine" in the application's documents Application Support directory.
         let urls = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
@@ -393,6 +387,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }
 
 }
+
 
 // MARK: - Errors Enum
 enum CoreDataError: ErrorType {
