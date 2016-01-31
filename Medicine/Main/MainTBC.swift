@@ -25,6 +25,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     var moc: NSManagedObjectContext!
     var launchedShortcutItem: [NSObject: AnyObject]?
     
+    var selectedVC: UIViewController? = nil
+    
     
     // MARK: - Load medication
     
@@ -82,6 +84,20 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    
+    // MARK: - TabBar delegate
+    
+    func tabBarController(tabBarController: UITabBarController, didSelectViewController viewController: UIViewController) {
+        if viewController == selectedVC {
+            if viewController.isKindOfClass(UISplitViewController) {
+                let navVC = (viewController as! UISplitViewController).childViewControllers[0] as! UINavigationController
+                navVC.popToRootViewControllerAnimated(true)
+            }
+        }
+        
+        selectedVC = viewController
     }
 
     

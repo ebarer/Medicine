@@ -113,7 +113,6 @@ class HistoryTVC: UITableViewController {
             navigationItem.rightBarButtonItem?.enabled = false
             
             if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
-                tableView.separatorStyle = UITableViewCellSeparatorStyle.None
                 tableView.backgroundView = emptyView
             }
         } else if history.count == 0 {
@@ -122,13 +121,11 @@ class HistoryTVC: UITableViewController {
             
             // Create empty message
             if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
-                tableView.separatorStyle = UITableViewCellSeparatorStyle.None
                 tableView.backgroundView = emptyView
             }
         } else {
             navigationItem.leftBarButtonItem?.enabled = true
             navigationItem.leftBarButtonItem?.enabled = true
-            tableView.separatorStyle = UITableViewCellSeparatorStyle.SingleLine
             tableView.backgroundView = nil
         }
         

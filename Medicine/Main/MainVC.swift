@@ -82,8 +82,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         
         // Modify VC tint and Navigation Item
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-        self.navigationItem.rightBarButtonItems?.append(self.editButtonItem())
-        //self.navigationItem.leftBarButtonItem = self.editButtonItem()
         
         // Add logo to navigation bar
         self.navigationItem.titleView = UIImageView(image: UIImage(named: "Logo-Nav"))
@@ -157,8 +155,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     func displayEmptyView() {
         if medication.count == 0 {
-            navigationItem.leftBarButtonItem?.enabled = false
-            
+            // Display edit button
+            self.navigationItem.rightBarButtonItems?.removeObject(self.editButtonItem())
+
             // Display empty message
             if self.view.viewWithTag(1001) == nil {     // Prevent duplicate empty views being added
                 if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
@@ -171,7 +170,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                         animations: { () -> Void in
                             self.summaryHeader.alpha = 0.0
                             self.tableView.alpha = 0.0
-                            emptyView.alpha = 0.5
+                            emptyView.alpha = 1.0
                         }, completion: { (val) -> Void in
                             self.summaryHeader.hidden = true
                             self.tableView.hidden = true
@@ -179,7 +178,12 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                 }
             }
         } else {
-            navigationItem.leftBarButtonItem?.enabled = true
+            // Display edit button
+            if let buttons = self.navigationItem.rightBarButtonItems {
+                if buttons.contains(self.editButtonItem()) == false {
+                    self.navigationItem.rightBarButtonItems?.append(self.editButtonItem())
+                }
+            }
             
             // Remove empty message
             if let emptyView = self.view.viewWithTag(1001) {

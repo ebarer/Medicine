@@ -174,7 +174,7 @@
                         <barButtonItem title="Item" id="aaC-YW-U9D"/>
                     </toolbarItems>
                     <navigationItem key="navigationItem" id="zRn-6T-BDb">
-                        <barButtonItem key="leftBarButtonItem" image="SettingsTab" id="1rM-Fy-B6v">
+                        <barButtonItem key="leftBarButtonItem" image="SettingsNav" id="1rM-Fy-B6v">
                             <connections>
                                 <segue destination="9tF-0m-LzC" kind="presentation" identifier="displaySettings" modalPresentationStyle="formSheet" id="JmR-9L-RTV"/>
                             </connections>
@@ -435,7 +435,7 @@
         <image name="MedicineTab" width="28" height="25"/>
         <image name="MedicineTab+Selected" width="28" height="25"/>
         <image name="OverdueIcon" width="20" height="20"/>
-        <image name="SettingsTab" width="25" height="25"/>
+        <image name="SettingsNav" width="22" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="IaS-jf-2q5"/>
