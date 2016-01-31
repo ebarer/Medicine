@@ -236,37 +236,15 @@ class Medicine: NSManagedObject {
     func isOverdue() -> (flag: Bool, overdueDose: NSDate?) {
         // Medicine can't be overdue if reminders are disabled
         if reminderEnabled == true {
-            switch(intervalUnit) {
-            case .Hourly:
-                if let date = lastDose?.next {
-                    if date.compare(NSDate()) == .OrderedAscending {
-                        return (true, date)
-                    }
+            do {
+                let date = try calculateNextDose()
+                if date?.compare(NSDate()) == .OrderedAscending {
+                    return (true, date)
+                } else {
+                    return (false, date)
                 }
-            case .Daily:
-                if let alarm = intervalAlarm {
-                    // If created today (with no history), overdue depends on alarm
-                    if cal.isDateInToday(alarm) && lastDose == nil {
-                        if alarm.compare(NSDate()) == .OrderedAscending{
-                            return (true, alarm)
-                        }
-                    }
-                    
-                    // If date is in today but behind the current time, return true
-                    else if let date = lastDose?.next {
-                        if cal.isDateInToday(date) && date.compare(NSDate()) == .OrderedAscending {
-                            return (true, date)
-                        }
-                        
-                        // If in the past and not scheduled for today, return true
-                        if let scheduledDate = scheduledNotifications?.first?.fireDate {
-                            if date.compare(NSDate()) == .OrderedAscending && !cal.isDateInToday(scheduledDate) {
-                                return (true, scheduledDate)
-                            }
-                        }
-                    }
-                }
-            default:
+            } catch {
+                NSLog("Couldn't determine if \(name) is overdue; unable to calculate next dose.")
                 return (false, nil)
             }
         }
@@ -817,34 +795,37 @@ class Medicine: NSManagedObject {
             }
             
             // Calculate interval based on last dose
-            if let lastDose = lastDose {
-                // If next dose is in the future, return next dose
-                if lastDose.next?.compare(NSDate()) == .OrderedDescending {
-                    return lastDose.next
-                }
+//            if let lastDose = lastDose {
+            return lastDose?.next
+                
+//                // If next dose is in the future, return next dose
+//                if lastDose.next?.compare(NSDate()) == .OrderedDescending {
+//                    return lastDose.next
+//                }
+                
+//                // If med is overdue
+//                else if isOverdue().flag {
+//                    return isOverdue().overdueDose
+//                }
                     
-                // If med is overdue
-                else if isOverdue().flag {
-                    return isOverdue().overdueDose
-                }
-                    
-                // If reminders are disable
-                else if reminderEnabled == false {
-                    return lastDose.next
-                }
+//                // If reminders are disable
+//                else if reminderEnabled == false {
+//                    return lastDose.next
+//                }
                 
                 // Calculate next dose based on last dose taken, and update next value
-                else {
-                    var next = lastDose.date
-                    while next.compare(NSDate()) == .OrderedAscending {
-                        next = cal.dateByAddingUnit(NSCalendarUnit.Hour, value: hr, toDate: next, options: [])!
-                        next = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: min, toDate: next, options: [])!
-                    }
-                    
-                    lastDose.next = next
-                    return next
-                }
-            }
+//                else {
+//                    var date = lastDose.date
+//                    
+//                    while date.compare(NSDate()) == .OrderedAscending {
+//                        date = cal.dateByAddingUnit(NSCalendarUnit.Hour, value: hr, toDate: date, options: [])!
+//                        date = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: min, toDate: date, options: [])!
+//                    }
+//                    
+//                    lastDose.next = date
+//                    return date
+//                }
+//            }
             
         case .Daily:
             guard let alarm = intervalAlarm else {
@@ -859,10 +840,8 @@ class Medicine: NSManagedObject {
             }
             
             // Return pre-calculated next dose and handle snooze
-            if let date = lastDose?.next {
-                if date.compare(NSDate()) == .OrderedDescending {
-                    return lastDose?.next
-                }
+            if lastDose?.next?.compare(NSDate()) == .OrderedDescending {
+                return lastDose?.next
             }
             
             var date = NSDate()

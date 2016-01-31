@@ -167,14 +167,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             defaults.setInteger(3, forKey: "refillTime")
         }
         
-        if  UIDevice.currentDevice().identifierForVendor?.UUIDString == "104AFCAA-C1C8-4628-8B81-7ED680C8157B" ||
-            UIDevice.currentDevice().identifierForVendor?.UUIDString == "3CF28B81-5657-465E-96B4-1E094CE335B3" ||
-            UIDevice.currentDevice().identifierForVendor?.UUIDString == "A2AD279E-6719-4BAD-B5FA-250D90285D08" {
-                defaults.setBool(true, forKey: "debug")      // Turn on debug mode for approved devices
-        } else {
-            defaults.setBool(false, forKey: "debug")         // Disable debug
-        }
-        
         defaults.synchronize()
     }
     
@@ -217,7 +209,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     // MARK: - Background refresh
     func application(application: UIApplication, performFetchWithCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
-        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: ["activator":"background"])
+        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+        NSLog("Rescheduling notifications in the background")
         completionHandler(UIBackgroundFetchResult.NewData)
     }
     

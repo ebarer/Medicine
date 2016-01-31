@@ -80,12 +80,6 @@ class SettingsTVC_Console: UITableViewController {
             return medication.count
         case 1:
             return console.count
-        case 2:
-            if rescheduleDates.count > 5 {
-                return 5
-            }
-            
-            return rescheduleDates.count
         default:
             return 0
         }
@@ -128,9 +122,6 @@ class SettingsTVC_Console: UITableViewController {
             attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, txt.name.characters.count))
             cell.textLabel?.attributedText = attributedString
             cell.detailTextLabel?.text = txt.id
-        case 2:
-            cell.textLabel?.text = dateFormatter.stringFromDate(rescheduleDates[indexPath.row])
-            cell.detailTextLabel?.text = nil
         default: break
         }
         

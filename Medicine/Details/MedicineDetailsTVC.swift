@@ -94,12 +94,14 @@ class MedicineDetailsTVC: UITableViewController {
     
     func displayEmptyView() {
         if med == nil {
-            if let emptyView = UINib(nibName: "DetailEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
-                emptyView.frame = CGRectMake(0, 0, self.view.frame.width, self.view.frame.height)
-                emptyView.tag = 1001
-                self.view.addSubview(emptyView)
-                self.tableView.scrollEnabled = false
-                self.navigationItem.rightBarButtonItem?.enabled = false
+            if self.view.viewWithTag(1001) == nil {     // Prevent duplicate empty views being added
+                if let emptyView = UINib(nibName: "DetailEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                    emptyView.frame = CGRectMake(0, 0, self.view.frame.width, self.view.frame.height)
+                    emptyView.tag = 1001
+                    self.view.addSubview(emptyView)
+                    self.tableView.scrollEnabled = false
+                    self.navigationItem.rightBarButtonItem?.enabled = false
+                }
             }
         } else {
             self.view.viewWithTag(1001)?.removeFromSuperview()
@@ -353,6 +355,7 @@ class MedicineDetailsTVC: UITableViewController {
             
             // Remove medication from array
             medication.removeObject(med)
+            self.med = nil
             
             // Remove medication from persistent store
             moc.deleteObject(med)

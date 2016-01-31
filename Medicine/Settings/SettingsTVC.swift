@@ -98,11 +98,6 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     // MARK: - Table view delegate
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // Hide console and help buttons if debug disabled
-        return defaults.boolForKey("debug") == true ? 4 : 3
-    }
-    
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         switch section {
         case 0:
@@ -252,6 +247,11 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     
     // MARK: - Navigation
+    
+    @IBAction func dismissSettings(sender: UIBarButtonItem) {
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {}
     

@@ -82,7 +82,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         
         // Modify VC tint and Navigation Item
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-        self.navigationItem.leftBarButtonItem = self.editButtonItem()
+        self.navigationItem.rightBarButtonItems?.append(self.editButtonItem())
+        //self.navigationItem.leftBarButtonItem = self.editButtonItem()
         
         // Add logo to navigation bar
         self.navigationItem.titleView = UIImageView(image: UIImage(named: "Logo-Nav"))
@@ -137,17 +138,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         refreshMainVC()
     }
     
-    override func viewDidAppear(animated: Bool) {
-        // Select first medication
-//        if tableView.indexPathForSelectedRow == nil {
-//            if medication.count > 0 {
-//                let index = NSIndexPath(forRow: 0, inSection: 0)
-//                tableView.selectRowAtIndexPath(index, animated: false, scrollPosition: .None)
-//                performSegueWithIdentifier("viewMedicationDetails", sender: tableView.cellForRowAtIndexPath(index))
-//            }
-//        }
-    }
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -160,9 +150,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             tbc.loadMedication()
         }
         
-        displayEmptyView()
-        updateHeader()
         refreshTable()
+        updateHeader()
+        displayEmptyView()
     }
     
     func displayEmptyView() {
@@ -170,21 +160,23 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             navigationItem.leftBarButtonItem?.enabled = false
             
             // Display empty message
-            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
-                emptyView.frame = CGRectMake(0, 0, self.view.frame.width, self.view.frame.height)
-                emptyView.tag = 1001
-                emptyView.alpha = 0.0
-                self.view.addSubview(emptyView)
-                
-                UIView.animateWithDuration(0.5,
-                    animations: { () -> Void in
-                        self.summaryHeader.alpha = 0.0
-                        self.tableView.alpha = 0.0
-                        emptyView.alpha = 1.0
-                    }, completion: { (val) -> Void in
-                        self.summaryHeader.hidden = true
-                        self.tableView.hidden = true
-                })
+            if self.view.viewWithTag(1001) == nil {     // Prevent duplicate empty views being added
+                if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                    emptyView.frame = CGRectMake(0, 0, self.view.frame.width, self.view.frame.height)
+                    emptyView.tag = 1001
+                    emptyView.alpha = 0.0
+                    self.view.addSubview(emptyView)
+                    
+                    UIView.animateWithDuration(0.5,
+                        animations: { () -> Void in
+                            self.summaryHeader.alpha = 0.0
+                            self.tableView.alpha = 0.0
+                            emptyView.alpha = 0.5
+                        }, completion: { (val) -> Void in
+                            self.summaryHeader.hidden = true
+                            self.tableView.hidden = true
+                    })
+                }
             }
         } else {
             navigationItem.leftBarButtonItem?.enabled = true
@@ -195,10 +187,11 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                 emptyView.removeFromSuperview()
             }
             
-            self.summaryHeader.alpha = 1.0
             summaryHeader.hidden = false
-            self.tableView.alpha = 1.0
+            self.summaryHeader.alpha = 1.0
+            
             tableView.hidden = false
+            self.tableView.alpha = 1.0
         }
     }
     

@@ -14,9 +14,6 @@ import MobileCoreServices
 // Global medication array
 var medication = [Medicine]()
 
-// Array to store background refresh calls
-var rescheduleDates = [NSDate]()
-
 class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     
@@ -81,12 +78,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         
         // Add observer for scheduling notifications and updating app badge count
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "rescheduleNotifications:", name: "rescheduleNotifications", object: nil)
-        
-        // Setup array of reschedule calls
-        if let dates = defaults.objectForKey("rescheduleDates") {
-            rescheduleDates = dates as! [NSDate]
-            rescheduleDates.sortInPlace({$0.compare($1) == .OrderedDescending})
-        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -227,13 +218,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         // Update badge count
         let overdueCount = medication.filter({$0.isOverdue().flag}).count
         UIApplication.sharedApplication().applicationIconBadgeNumber = overdueCount
-        
-        // Only log when rescheduling in background
-        if notification.userInfo?["activator"] != nil {
-            rescheduleDates.insert(NSDate(), atIndex: 0)
-            defaults.setObject(rescheduleDates, forKey: "rescheduleDates")
-            defaults.synchronize()
-        }
     }
     
     

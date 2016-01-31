@@ -53,9 +53,8 @@
 		CEB36F411BE6EA2100BCBD87 /* MedicineCell+Adherence.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB36F401BE6EA2100BCBD87 /* MedicineCell+Adherence.swift */; };
 		CECD22B41BE94FDB007C5F25 /* AddRefill.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CECD22B21BE94FDB007C5F25 /* AddRefill.storyboard */; };
 		CECD22B61BE95088007C5F25 /* AddRefillTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECD22B51BE95088007C5F25 /* AddRefillTVC.swift */; };
-		CEE18F361BEEC91800222D92 /* SettingsTVC+Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE18F351BEEC91800222D92 /* SettingsTVC+Collection.swift */; };
-		CEE18F381BEECE3700222D92 /* SettingsTVC+Manage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE18F371BEECE3700222D92 /* SettingsTVC+Manage.swift */; };
 		CEE849811C13932600880484 /* MedicineDetailsTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE849801C13932600880484 /* MedicineDetailsTVC.swift */; };
+		CEEB07901C5EA9FA00EEF86C /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEEB078E1C5EA9FA00EEF86C /* Settings.storyboard */; };
 		CEEE50DE1C5B4CF3008985A1 /* DetailEmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEEE50DD1C5B4CF3008985A1 /* DetailEmptyView.xib */; };
 		CEF5483C1B9CEA7100C344B4 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */; };
 		CEFE5E211BF1E00C00039302 /* WelcomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFE5E201BF1E00C00039302 /* WelcomeVC.swift */; };
@@ -153,9 +152,8 @@
 		CECD22B31BE94FDB007C5F25 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/AddRefill.storyboard; sourceTree = "<group>"; };
 		CECD22B51BE95088007C5F25 /* AddRefillTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddRefillTVC.swift; path = Add/AddRefillTVC.swift; sourceTree = "<group>"; };
 		CEE18F341BEEC5CF00222D92 /* Medicine - 2.4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2.4.xcdatamodel"; sourceTree = "<group>"; };
-		CEE18F351BEEC91800222D92 /* SettingsTVC+Collection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Collection.swift"; path = "Settings/SettingsTVC+Collection.swift"; sourceTree = "<group>"; };
-		CEE18F371BEECE3700222D92 /* SettingsTVC+Manage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Manage.swift"; path = "Settings/SettingsTVC+Manage.swift"; sourceTree = "<group>"; };
 		CEE849801C13932600880484 /* MedicineDetailsTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MedicineDetailsTVC.swift; path = Details/MedicineDetailsTVC.swift; sourceTree = "<group>"; };
+		CEEB078F1C5EA9FA00EEF86C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
 		CEEE50DD1C5B4CF3008985A1 /* DetailEmptyView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DetailEmptyView.xib; path = Details/DetailEmptyView.xib; sourceTree = "<group>"; };
 		CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		CEF5483E1B9CEA8200C344B4 /* Medicine.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Medicine.entitlements; path = Medicine/Medicine.entitlements; sourceTree = "<group>"; };
@@ -192,13 +190,12 @@
 		CE0EA1921BAFDB6A00F48A09 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				CEEB078E1C5EA9FA00EEF86C /* Settings.storyboard */,
 				CE7519751BB00CA9000A2879 /* SettingsTVC.swift */,
 				CE7519771BB00CB5000A2879 /* SettingsTVC+Sort.swift */,
 				CE7519791BB00CFE000A2879 /* SettingsTVC+Snooze.swift */,
 				CE94A5B51BE8B13B008E58DF /* SettingsTVC+Refill.swift */,
 				CE75197D1BB1607F000A2879 /* SettingsTVC+Console.swift */,
-				CEE18F371BEECE3700222D92 /* SettingsTVC+Manage.swift */,
-				CEE18F351BEEC91800222D92 /* SettingsTVC+Collection.swift */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -526,6 +523,7 @@
 				CEA5DFC21C1190F100B9BC99 /* MedicineDetails.storyboard in Resources */,
 				CE0EA1891BAFDAED00F48A09 /* MainEmptyView.xib in Resources */,
 				CE0EA18A1BAFDAED00F48A09 /* Tutorial.storyboard in Resources */,
+				CEEB07901C5EA9FA00EEF86C /* Settings.storyboard in Resources */,
 				CE0EA1881BAFDAED00F48A09 /* AddMedication.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -566,7 +564,6 @@
 				CE30D1571B9856D1007805DB /* Refill+CoreDataProperties.swift in Sources */,
 				CE0EA1991BAFF49100F48A09 /* MainTBC.swift in Sources */,
 				CEA250E91B90396C00BBE466 /* AppDelegate.swift in Sources */,
-				CEE18F381BEECE3700222D92 /* SettingsTVC+Manage.swift in Sources */,
 				CE0EA19D1BAFFDA200F48A09 /* AddDoseTVC+Medicine.swift in Sources */,
 				CEA250FF1B903BC200BBE466 /* AddMedicationTVC.swift in Sources */,
 				CE6325CA1BA1661C00BAD562 /* UpgradeVC.swift in Sources */,
@@ -584,7 +581,6 @@
 				CE0EA1951BAFE28200F48A09 /* HistoryTVC.swift in Sources */,
 				CE0EA1971BAFE2B800F48A09 /* MedicineDoseHistoryTVC.swift in Sources */,
 				CE3A42541C13A27C0035E390 /* MedicineRefillHistoryTVC.swift in Sources */,
-				CEE18F361BEEC91800222D92 /* SettingsTVC+Collection.swift in Sources */,
 				CE2497161BAA00DF00627525 /* TutorialPVC.swift in Sources */,
 				CE2F6B111BBD492400707951 /* MainTVC+UIViewControllerPreviewing.swift in Sources */,
 			);
@@ -697,6 +693,14 @@
 				CECD22B31BE94FDB007C5F25 /* Base */,
 			);
 			name = AddRefill.storyboard;
+			sourceTree = "<group>";
+		};
+		CEEB078E1C5EA9FA00EEF86C /* Settings.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CEEB078F1C5EA9FA00EEF86C /* Base */,
+			);
+			name = Settings.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
