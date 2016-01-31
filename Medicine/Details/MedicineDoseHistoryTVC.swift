@@ -67,6 +67,7 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
         setToolbarItems(normalButtons, animated: false)
 
         // Add observeres for notifications
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshView", name: "refreshView", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
     }
     
@@ -78,12 +79,16 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
 //        }
         self.navigationController?.setToolbarHidden(false, animated: false)
         
-        loadHistory()
-        displayEmptyView()
+        refreshView()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    func refreshView() {
+        loadHistory()
+        displayEmptyView()
     }
     
     func loadHistory() {

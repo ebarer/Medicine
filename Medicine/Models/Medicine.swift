@@ -464,6 +464,7 @@ class Medicine: NSManagedObject {
         if self.refillHistory?.count > 0 {
             if self.prescriptionCount < dose.dosage {
                 self.prescriptionCount = 0
+                self.refillFlag = true
             } else {
                 self.prescriptionCount -= dose.dosage
             }
@@ -753,7 +754,7 @@ class Medicine: NSManagedObject {
     }
     
     func sendRefillNotification() {
-        if prescriptionCount < dosage || refillFlag {
+        if refillFlag {
             let notification = UILocalNotification()
             
             var message = "You are running low on \(name!) and should refill soon."

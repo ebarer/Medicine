@@ -137,6 +137,17 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         refreshMainVC()
     }
     
+    override func viewDidAppear(animated: Bool) {
+        // Select first medication
+//        if tableView.indexPathForSelectedRow == nil {
+//            if medication.count > 0 {
+//                let index = NSIndexPath(forRow: 0, inSection: 0)
+//                tableView.selectRowAtIndexPath(index, animated: false, scrollPosition: .None)
+//                performSegueWithIdentifier("viewMedicationDetails", sender: tableView.cellForRowAtIndexPath(index))
+//            }
+//        }
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -179,7 +190,11 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             navigationItem.leftBarButtonItem?.enabled = true
             
             // Remove empty message
-            self.view.viewWithTag(1001)?.removeFromSuperview()
+            if let emptyView = self.view.viewWithTag(1001) {
+                emptyView.alpha = 0.0
+                emptyView.removeFromSuperview()
+            }
+            
             self.summaryHeader.alpha = 1.0
             summaryHeader.hidden = false
             self.tableView.alpha = 1.0
@@ -454,9 +469,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if tableView.editing == true {
             performSegueWithIdentifier("editMedication", sender: medication[indexPath.row])
-        } else {
-            self.splitViewController?.modalInPopover = false
-            
         }
     }
     
@@ -607,6 +619,17 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         // Cancel all notifications for medication
         med.cancelNotification()
         
+        // Remove med from details
+        if let svc = self.splitViewController where svc.viewControllers.count > 1 {
+            if let detailVC = (svc.viewControllers[1] as? UINavigationController)?.topViewController as? MedicineDetailsTVC {
+                if let selectedMed = detailVC.med {
+                    if med == selectedMed {
+                        detailVC.med = nil
+                    }
+                }
+            }
+        }
+        
         // Remove medication from array
         medication.removeAtIndex(indexPath.row)
         
@@ -626,7 +649,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
         }
         
-        updateHeader()
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
     }
     
     func medicationDeleted() {
@@ -678,8 +701,13 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                 if let vc = nvc.topViewController as? MedicineDetailsTVC {
                     if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
                         vc.med = medication[index.row]
-                        vc.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
-                        vc.navigationItem.leftItemsSupplementBackButton = true
+                        if let modeButton = self.splitViewController?.displayModeButtonItem() {
+                            vc.navigationItem.leftBarButtonItem = modeButton
+                            vc.navigationItem.leftItemsSupplementBackButton = true
+                        
+                            // Hide master on selection in split view
+                            UIApplication.sharedApplication().sendAction(modeButton.action, to: modeButton.target, from: nil, forEvent: nil)
+                        }
                     }
                 }
             }

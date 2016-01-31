@@ -13,6 +13,7 @@ class MedicineDetailsTVC: UITableViewController {
     
     weak var med:Medicine?
     
+    
     // MARK: - Outlets
     
     @IBOutlet var nameCell: UITableViewCell!
@@ -26,6 +27,7 @@ class MedicineDetailsTVC: UITableViewController {
     @IBOutlet var takeDoseButton: UIButton!
     @IBOutlet var refillButton: UIButton!
 
+    
     // MARK: - Helper variables
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -264,7 +266,7 @@ class MedicineDetailsTVC: UITableViewController {
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         if let med = med {
             if section == Rows.prescriptionCount.index().section && med.prescriptionCount > 0 {
-                var status = ""
+                var status: String? = nil
                 
                 if med.prescriptionCount < med.dosage {
                     status = "You do not appear to have enough \(med.name!) remaining to take the next dose. "
@@ -275,6 +277,8 @@ class MedicineDetailsTVC: UITableViewController {
                         } else {
                             status = "Based on current usage, your prescription should last approximately \(days) \(Intervals.Daily.units(Float(days))). "
                         }
+                    } else {
+                        status = "Continue taking doses to receive a duration approximation for your prescription."
                     }
                 }
                 

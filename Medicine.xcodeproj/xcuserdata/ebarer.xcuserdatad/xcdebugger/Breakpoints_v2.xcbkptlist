@@ -6,15 +6,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Medicine/Models/Medicine.swift"
-            timestampString = "475653007.587803"
+            timestampString = "475928495.328601"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "756"
-            endingLineNumber = "756"
+            startingLineNumber = "757"
+            endingLineNumber = "757"
             landmarkName = "sendRefillNotification()"
             landmarkType = "5">
          </BreakpointContent>
@@ -24,79 +24,14 @@
          <BreakpointContent
             shouldBeEnabled = "No"
             ignoreCount = "0"
-            condition = "name == &quot;WeeklyX&quot;"
-            continueAfterRunningActions = "No"
-            filePath = "Medicine/Models/Medicine.swift"
-            timestampString = "475814173.221931"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "247"
-            endingLineNumber = "247"
-            landmarkName = "isOverdue()"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Medicine.Medicine.isOverdue () -&gt; (flag : Swift.Bool, overdueDose : Swift.Optional&lt;__ObjC.NSDate&gt;)"
-                  moduleName = "Medicine"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ebarer/Developer/Medicine/Medicine/Models/Medicine.swift"
-                  timestampString = "475814209.065891"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "247"
-                  endingLineNumber = "247"
-                  offsetFromSymbolStart = "544">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Medicine.Medicine.isOverdue () -&gt; (flag : Swift.Bool, overdueDose : Swift.Optional&lt;__ObjC.NSDate&gt;)"
-                  moduleName = "Medicine"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ebarer/Developer/Medicine/Medicine/Models/Medicine.swift"
-                  timestampString = "475814209.06607"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "247"
-                  endingLineNumber = "247"
-                  offsetFromSymbolStart = "588">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Medicine/Main/MainVC.swift"
-            timestampString = "475880076.391648"
+            timestampString = "475927793.205652"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "443"
-            endingLineNumber = "443"
-            landmarkName = "selectMed()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Medicine/Main/MainVC.swift"
-            timestampString = "475880558.980462"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "458"
-            endingLineNumber = "458"
-            landmarkName = "tableView(_:didSelectRowAtIndexPath:)"
+            startingLineNumber = "193"
+            endingLineNumber = "193"
+            landmarkName = "displayEmptyView()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
