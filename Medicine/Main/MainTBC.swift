@@ -18,7 +18,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     
     // MARK: - Helper variables
-    
     let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -29,7 +28,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     
     // MARK: - Load medication
-    
     func loadMedication() {
         let request = NSFetchRequest(entityName:"Medicine")
         request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
@@ -56,7 +54,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     
     // MARK: - View methods
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
@@ -87,8 +84,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     }
     
     
-    // MARK: - TabBar delegate
-    
+    // MARK: - Tab delegate
     func tabBarController(tabBarController: UITabBarController, didSelectViewController viewController: UIViewController) {
         if viewController == selectedVC {
             if viewController.isKindOfClass(UISplitViewController) {
@@ -102,7 +98,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
 
     
     // MARK: - Notification observers
-    
     func doseNotification(notification: NSNotification) {
         if let id = notification.userInfo!["id"] as? String {
             let medQuery = Medicine.getMedicine(arr: medication, id: id)
@@ -122,14 +117,16 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                         if let id = notification.userInfo!["id"] as? String {
                             if let med = Medicine.getMedicine(arr: medication, id: id) {
                                 med.snoozeNotification()
-                                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
+                                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+                                NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
                             }
                         }
                     }))
                 }
                 
                 alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
-                    NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
+                    NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+                    NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
                 }))
                 
                 alert.view.tintColor = UIColor.grayColor()
@@ -168,7 +165,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     
     // MARK: - Action observers
-    
     func takeDoseAction(notification: NSNotification) {
         NSLog("takeDoseAction received", [])
         if let id = notification.userInfo!["id"] as? String {
@@ -192,7 +188,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 appDelegate.saveContext()
                 
                 setDynamicShortcuts()
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
                 NSLog("takeDoseAction performed", [])
             }
         }
@@ -204,7 +201,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
                 med.snoozeNotification()
                 setDynamicShortcuts()
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
                 NSLog("snoozeReminderAction performed", [])
             }
         }
@@ -258,9 +256,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     
     // MARK: - Helper methods
-    
-    // Update homescreen shortcuts for force touch devices
     func setDynamicShortcuts() {
+        // Update homescreen shortcuts for force touch devices
         let overdueItems = medication.filter({$0.isOverdue().flag})
         if overdueItems.count > 0  {
             var text = "Overdue Dose"
@@ -305,9 +302,9 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         
         UIApplication.sharedApplication().shortcutItems = []
     }
-    
-    // Update spotlight index
+
     func indexMedication() {
+        // Update spotlight index
         for med in medication  {
             if let attributes = med.attributeSet {
                 let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)

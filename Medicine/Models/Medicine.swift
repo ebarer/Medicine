@@ -672,6 +672,11 @@ class Medicine: NSManagedObject {
         notification.alertBody = String(format:"Time to take %g %@ of %@", dosage, dosageUnit.units(dosage), name)
         notification.soundName = UILocalNotificationDefaultSoundName
         notification.category = "Dose Reminder"
+        
+        if lastDose == nil && intervalUnit == .Daily {
+            notification.category = "Dose Reminder - No Snooze"
+        }
+        
         notification.userInfo = ["id": self.medicineID]
         notification.applicationIconBadgeNumber = badgeCount
         notification.fireDate = date
@@ -767,7 +772,9 @@ class Medicine: NSManagedObject {
     - Returns: Number of overdue items at date
     */
     func getBadgeCount(date: NSDate) -> Int {
-        return medication.filter({$0.nextDose?.compare(date) != .OrderedDescending}).count
+        return medication.filter({
+            $0.reminderEnabled && $0.nextDose?.compare(date) != .OrderedDescending
+        }).count
     }
     
     /**

@@ -256,6 +256,9 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             tableView.reloadSections(NSIndexSet(index: Rows.prescription.index().section), withRowAnimation: .Automatic)
             tableView.beginUpdates()
             tableView.endUpdates()
+        } else {
+            tableView.beginUpdates()
+            tableView.endUpdates()
         }
     }
     
@@ -303,6 +306,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             
             // Send notifications
             NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
             NSNotificationCenter.defaultCenter().postNotificationName("medicationDeleted", object: nil)
         }
     }
@@ -366,7 +370,8 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         // Reschedule next notification
         med.scheduleNextNotification()
         
-        NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
         dismissViewControllerAnimated(true, completion: nil)
     }
     

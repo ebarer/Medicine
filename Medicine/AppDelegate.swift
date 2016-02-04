@@ -95,7 +95,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         
         UIApplication.sharedApplication().cancelAllLocalNotifications()
         NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
-        NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
     }
     
     func applicationDidBecomeActive(application: UIApplication) {
@@ -191,6 +192,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         doseCategory.identifier = "Dose Reminder"
         doseCategory.setActions([takeAction, snoozeAction], forContext: UIUserNotificationActionContext.Default)
         
+        let altDoseCategory = UIMutableUserNotificationCategory()
+        altDoseCategory.identifier = "Dose Reminder - No Snooze"
+        altDoseCategory.setActions([takeAction], forContext: UIUserNotificationActionContext.Default)
+        
         let refillAction = UIMutableUserNotificationAction()
         refillAction.identifier = "refillMed"
         refillAction.title = "Refill Medication"
@@ -202,7 +207,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         refillCategory.identifier = "Refill Reminder"
         refillCategory.setActions([refillAction], forContext: UIUserNotificationActionContext.Default)
         
-        let categories = NSSet(array: [doseCategory, refillCategory])
+        let categories = NSSet(array: [doseCategory, altDoseCategory, refillCategory])
         return UIUserNotificationSettings(forTypes: notificationType, categories: categories as? Set<UIUserNotificationCategory>)
     }
     
@@ -296,7 +301,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             NSLog("Local notification received (no info): %@", notification)
         }
         
-        if notification.category == "Dose Reminder" {
+        if notification.category == "Dose Reminder" || notification.category == "Dose Reminder - No Snooze" {
             NSNotificationCenter.defaultCenter().postNotificationName("doseNotification", object: nil, userInfo: notification.userInfo)
             UIApplication.sharedApplication().cancelLocalNotification(notification)
         } else if notification.category == "Refill Reminder" {

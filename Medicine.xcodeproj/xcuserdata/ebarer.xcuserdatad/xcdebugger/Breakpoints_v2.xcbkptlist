@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Medicine/Models/Medicine.swift"
-            timestampString = "476161542.044061"
+            timestampString = "476249754.566221"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "735"
-            endingLineNumber = "735"
+            startingLineNumber = "740"
+            endingLineNumber = "740"
             landmarkName = "sendRefillNotification()"
             landmarkType = "5">
          </BreakpointContent>
@@ -24,14 +24,15 @@
          <BreakpointContent
             shouldBeEnabled = "No"
             ignoreCount = "0"
+            condition = "name == &quot;Test&quot;"
             continueAfterRunningActions = "No"
             filePath = "Medicine/Models/Medicine.swift"
-            timestampString = "476163222.688184"
+            timestampString = "476249918.435801"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "677"
-            endingLineNumber = "677"
-            landmarkName = "scheduleNotification(_:badgeCount:)"
+            startingLineNumber = "824"
+            endingLineNumber = "824"
+            landmarkName = "calculateNextDose(_:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

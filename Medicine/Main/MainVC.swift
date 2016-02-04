@@ -15,7 +15,6 @@ import MobileCoreServices
 class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPaymentTransactionObserver {
 
     // MARK: - Outlets
-    
     @IBOutlet var addMedicationButton: UIBarButtonItem!
     @IBOutlet var summaryHeader: UIView!
     @IBOutlet var headerDescriptionLabel: UILabel!
@@ -25,7 +24,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Helper variables
-    
     let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
     var launchedShortcutItem: [NSObject: AnyObject]?
     
@@ -39,7 +37,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - IAP variables
-    
     let productID = "com.ebarer.Medicine.Unlock"
     let trialLimit = 2
     var productLock = true
@@ -47,7 +44,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Initialization
-    
     required init?(coder aDecoder: NSCoder) {
         // Setup context
         moc = appDelegate.managedObjectContext
@@ -57,7 +53,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - View methods
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -67,7 +62,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
         
         // Add observers for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshMainVC", name: "refreshView", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshMainVC", name: "refreshMain", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "medicationDeleted", name: "medicationDeleted", object: nil)
         
         // Register for 3D touch if available
@@ -148,7 +143,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Update values
-    
     func refreshMainVC() {
         if let tbc = self.tabBarController as? MainTBC {
             tbc.loadMedication()
@@ -299,7 +293,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Table view data source
-    
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
@@ -394,7 +387,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Table actions
-    
     func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         return true
     }
@@ -438,7 +430,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Table view delegate
-    
     override func setEditing(editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
         
@@ -603,7 +594,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Actions
-    
     func presentDeleteAlert(name: String, indexPath: NSIndexPath) {
         let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.Alert)
         
@@ -652,6 +642,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         if medication.count == 0 {
             displayEmptyView()
         } else {
+            // Remove medication from array
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
         }
         
@@ -673,7 +664,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Navigation methods
-    
     override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
         if tableView.editing == true {
             switch identifier {
@@ -767,7 +757,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - IAP methods
-    
     func paymentQueue(queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         for transaction in transactions {
             switch (transaction.transactionState) {
@@ -869,7 +858,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Helper methods
-    
     func setDynamicShortcuts() {
         let overdueItems = medication.filter({$0.isOverdue().flag})
         if overdueItems.count > 0  {

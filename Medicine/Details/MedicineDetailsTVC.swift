@@ -15,7 +15,6 @@ class MedicineDetailsTVC: UITableViewController {
     
     
     // MARK: - Outlets
-    
     @IBOutlet var nameCell: UITableViewCell!
     @IBOutlet var nameLabel: UILabel!
     @IBOutlet var doseDetailsLabel: UILabel!
@@ -29,7 +28,6 @@ class MedicineDetailsTVC: UITableViewController {
 
     
     // MARK: - Helper variables
-    
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var moc: NSManagedObjectContext!
     
@@ -38,7 +36,6 @@ class MedicineDetailsTVC: UITableViewController {
     
     
     // MARK: - Initialization
-    
     required init?(coder aDecoder: NSCoder) {
         // Setup context
         moc = appDelegate.managedObjectContext
@@ -47,7 +44,6 @@ class MedicineDetailsTVC: UITableViewController {
     
     
     // MARK: - View methods
-
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -57,6 +53,7 @@ class MedicineDetailsTVC: UITableViewController {
         
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshDetails", name: "refreshView", object: nil)
+        
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -210,7 +207,6 @@ class MedicineDetailsTVC: UITableViewController {
     
     
     // MARK: - Table view data source
-    
     override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch section {
         case 0:
@@ -294,7 +290,6 @@ class MedicineDetailsTVC: UITableViewController {
     
     
     // MARK: - Table view delegates
-    
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let row = Rows(index: indexPath)
         
@@ -313,7 +308,6 @@ class MedicineDetailsTVC: UITableViewController {
 
 
     // MARK: - Actions
-    
     func editMedication() {
         performSegueWithIdentifier("editMedication", sender: nil)
     }
@@ -364,13 +358,13 @@ class MedicineDetailsTVC: UITableViewController {
 
             // Send notifications
             NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
             NSNotificationCenter.defaultCenter().postNotificationName("medicationDeleted", object: nil)
         }
     }
     
     
     // MARK: - Navigation
-    
     override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
         if med != nil {
             return true
