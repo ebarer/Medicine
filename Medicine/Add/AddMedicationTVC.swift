@@ -292,7 +292,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     func deleteMed() {
         if let med = med {
             // Cancel all notifications for medication
-            med.cancelNotification()
+            med.cancelNotifications()
             
             // Remove medication from array
             medication.removeObject(med)
@@ -337,6 +337,10 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         
         if segue.identifier == "refillPrescription" {
             if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
+                if let index = self.tableView.indexPathForSelectedRow {
+                    self.tableView.deselectRowAtIndexPath(index, animated: false)
+                }
+                
                 vc.med = self.med
             }
         }

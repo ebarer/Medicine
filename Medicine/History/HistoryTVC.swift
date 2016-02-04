@@ -54,17 +54,21 @@ class HistoryTVC: UITableViewController {
         setToolbarItems(editButtons, animated: true)
         
         // Add observeres for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshView", name: UIApplicationWillEnterForegroundNotification, object: nil)
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        loadHistory()
-        displayEmptyView()
+        refreshView()
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    func refreshView() {
+        loadHistory()
+        displayEmptyView()
     }
     
     func loadHistory() {
@@ -363,25 +367,7 @@ class HistoryTVC: UITableViewController {
             }
         }
     }
-    
-    
-    // MARK: - Helper methods
-    
-    func refreshTableAndNotifications() {
-        tableView.reloadData()
-        
-        // Clear old notifications
-        let currentDate = NSDate()
-        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
-        for notification in notifications {
-            if let date = notification.fireDate {
-                if date.compare(currentDate) == .OrderedAscending {
-                    UIApplication.sharedApplication().cancelLocalNotification(notification)
-                }
-            }
-        }
-    }
-    
+
 }
 
 

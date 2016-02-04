@@ -35,6 +35,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     let cal = NSCalendar.currentCalendar()
     let dateFormatter = NSDateFormatter()
     
+    var selectedMed: Medicine?
+    
     
     // MARK: - IAP variables
     
@@ -105,9 +107,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(true, animated: true)
         
-//        if let index = tableView.indexPathForSelectedRow {
-//            tableView.deselectRowAtIndexPath(index, animated: animated)
-//        }
+        // Deselect selection
+        if let selected = self.tableView.indexPathForSelectedRow {
+            self.tableView.deselectRowAtIndexPath(selected, animated: true)
+        }
         
         // Handle homescreen shortcuts (selected by user)
         if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
@@ -133,6 +136,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
         
         setDynamicShortcuts()
+    }
+    
+    override func viewDidAppear(animated: Bool) {
         refreshMainVC()
     }
     
@@ -289,7 +295,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         setEditing(false, animated: true)
         
         tableView.reloadData()
-        selectMed()
     }
     
     
@@ -330,6 +335,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
         cell.subtitle.textColor = UIColor.blackColor()
         cell.hideButton(false)
+        let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
         
         // If no doses taken, and medication is hourly
         if med.doseHistory?.count == 0 && med.intervalUnit == .Hourly {
@@ -339,12 +345,15 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             cell.subtitle.text = "Tap to take first dose"
         }
             
-            // If reminders aren't enabled for medication
+        // If reminders aren't enabled for medication
         else if med.reminderEnabled == false {
+            cell.subtitleGlyph.image = UIImage(named: "LastDoseIcon")
+            cell.subtitle.textColor = UIColor.lightGrayColor()
+            
             if let date = med.lastDose?.date {
-                cell.subtitleGlyph.image = UIImage(named: "LastDoseIcon")
-                cell.subtitle.textColor = UIColor.lightGrayColor()
-                cell.subtitle.text = Medicine.dateString(date)
+                cell.subtitle.text = "\(dose), \(Medicine.dateString(date))"
+            } else {
+                cell.subtitle.text = "No doses logged"
             }
         } else {
             // If medication is overdue, set subtitle to next dosage date and tint red
@@ -354,21 +363,21 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                 
                 if let date = med.isOverdue().overdueDose {
                     cell.subtitle.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                    cell.subtitle.text = Medicine.dateString(date)
+                    cell.subtitle.text = "\(dose), \(Medicine.dateString(date))"
                 }
             }
                 
-                // If notification scheduled, set date to next scheduled fire date
+            // If notification scheduled, set date to next scheduled fire date
             else if let date = med.scheduledNotifications?.first?.fireDate {
-                cell.subtitle.text = Medicine.dateString(date)
+                cell.subtitle.text = "\(dose), \(Medicine.dateString(date))"
             }
                 
-                // Set subtitle to next dosage date
+            // Set subtitle to next dosage date
             else if let date = med.nextDose {
-                cell.subtitle.text = Medicine.dateString(date)
+                cell.subtitle.text = "\(dose), \(Medicine.dateString(date))"
             }
                 
-                // If no other conditions met, instruct user on how to take dose
+            // If no other conditions met, instruct user on how to take dose
             else {
                 cell.hideButton(true)
                 cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
@@ -414,7 +423,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
         let editAction = UITableViewRowAction(style: .Default, title: "Edit") { (action, indexPath) -> Void in
             self.performSegueWithIdentifier("editMedication", sender: medication[indexPath.row])
-            //self.tableView.selectRowAtIndexPath(indexPath, animated: true, scrollPosition: UITableViewScrollPosition.None)
         }
         
         editAction.backgroundColor = UIColor(white: 0.78, alpha: 1.0)
@@ -451,19 +459,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         selectMed()
     }
     
-    func selectMed() {
-        if let svc = self.splitViewController where svc.viewControllers.count > 1 {
-            if let detailVC = (svc.viewControllers[1] as? UINavigationController)?.topViewController as? MedicineDetailsTVC {
-                if let med = detailVC.med {
-                    if let row = medication.indexOf(med) {
-                        tableView.selectRowAtIndexPath(NSIndexPath(forRow: row, inSection: 0), animated: false, scrollPosition: .None)
-                    }
-                }
-            }
-        }
-    }
-    
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        selectedMed = medication[indexPath.row]
+        
         if tableView.editing == true {
             performSegueWithIdentifier("editMedication", sender: medication[indexPath.row])
         }
@@ -473,6 +471,14 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         let cell = (sender.superview?.superview as! MedicineCell)
         if let indexPath = self.tableView.indexPathForCell(cell) {
             presentActionMenu(indexPath)
+        }
+    }
+    
+    func selectMed() {
+        if let med = selectedMed {
+            if let row = medication.indexOf(med) {
+                tableView.selectRowAtIndexPath(NSIndexPath(forRow: row, inSection: 0), animated: false, scrollPosition: .None)
+            }
         }
     }
     
@@ -492,6 +498,13 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                 self.tableView.deselectRowAtIndexPath(index, animated: false)
             }))
             
+            if med.isOverdue().flag {
+                alert.addAction(UIAlertAction(title: "Snooze Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+                    med.snoozeNotification()
+                    self.tableView.deselectRowAtIndexPath(index, animated: false)
+                }))
+            }
+            
             alert.addAction(UIAlertAction(title: "Skip Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
                 let entity = NSEntityDescription.entityForName("Dose", inManagedObjectContext: self.moc)
                 let dose = Dose(entity: entity!, insertIntoManagedObjectContext: self.moc)
@@ -500,10 +513,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                 dose.dosage = -1
                 dose.dosageUnitInt = med.dosageUnitInt
                 dose.date = NSDate()
-                
-//                if let date = med.nextDose {
-//                    dose.date = date
-//                }
                 
                 med.addDose(dose)
                 
@@ -614,7 +623,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         let med = medication[indexPath.row]
         
         // Cancel all notifications for medication
-        med.cancelNotification()
+        med.cancelNotifications()
         
         // Remove med from details
         if let svc = self.splitViewController where svc.viewControllers.count > 1 {

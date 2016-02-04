@@ -124,12 +124,13 @@ class MedicineDetailsTVC: UITableViewController {
             
             var prescriptionString = ""
             if med.refillHistory?.count > 0 {
-                
                 let count = med.prescriptionCount
                 let numberFormatter = NSNumberFormatter()
                 numberFormatter.numberStyle = NSNumberFormatterStyle.DecimalStyle
                 
-                if let count = numberFormatter.stringFromNumber(count) {
+                if count.isZero {
+                    prescriptionString = "None remaining"
+                } else if let count = numberFormatter.stringFromNumber(count) {
                     prescriptionString = "\(count) \(med.dosageUnit.units(med.prescriptionCount)) remaining"
                 }
             } else {
@@ -351,7 +352,7 @@ class MedicineDetailsTVC: UITableViewController {
     func deleteMed() {
         if let med = med {
             // Cancel all notifications for medication
-            med.cancelNotification()
+            med.cancelNotifications()
             
             // Remove medication from array
             medication.removeObject(med)

@@ -68,7 +68,7 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
 
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshView", name: "refreshView", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshView", name: UIApplicationWillEnterForegroundNotification, object: nil)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -405,24 +405,6 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
         if segue.identifier == "addDose" {
             if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
                 vc.med = med
-            }
-        }
-    }
-    
-    
-    // MARK: - Helper methods
-    
-    func refreshTableAndNotifications() {
-        tableView.reloadData()
-        
-        // Clear old notifications
-        let currentDate = NSDate()
-        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
-        for notification in notifications {
-            if let date = notification.fireDate {
-                if date.compare(currentDate) == .OrderedAscending {
-                    UIApplication.sharedApplication().cancelLocalNotification(notification)
-                }
             }
         }
     }

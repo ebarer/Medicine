@@ -258,20 +258,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {
         guard let action = identifier else {
-            print("Local action received (no identifier)")
             NSLog("Local action received: no identifier")
             completionHandler()
             return
         }
         
         guard let info = notification.userInfo else {
-            print("Local action received (no info)")
             NSLog("Local action (%@) received: no info", action)
             completionHandler()
             return
         }
         
-        print("Local action received")
         NSLog("Local action (%@) received: %@", action, info)
         
         if identifier == "takeDose" {
@@ -294,10 +291,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     func postNotification(notification: UILocalNotification) {
         if let info = notification.userInfo {
-            print("Local notification received")
             NSLog("Local notification received: %@", info)
         } else {
-            print("Local notification received (no info)")
             NSLog("Local notification received (no info): %@", notification)
         }
         

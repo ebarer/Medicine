@@ -680,7 +680,7 @@ class Medicine: NSManagedObject {
     }
     
     func scheduleNextNotification() -> Bool {
-        cancelNotification()
+        cancelNotifications()
         
         guard let date = nextDose else { return false }
         
@@ -713,7 +713,7 @@ class Medicine: NSManagedObject {
         
         // Schedule new notification
         do {
-            cancelNotification()
+            cancelNotifications()
             try scheduleNotification(snoozeDate)
             return true
         } catch {
@@ -721,7 +721,7 @@ class Medicine: NSManagedObject {
         }
     }
     
-    func cancelNotification() {
+    func cancelNotifications() {
         let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
         for notification in notifications {
             let (id, _) = (notification.userInfo?["id"] as? String, notification.userInfo?["snooze"] as? Bool)
@@ -795,37 +795,7 @@ class Medicine: NSManagedObject {
             }
             
             // Calculate interval based on last dose
-//            if let lastDose = lastDose {
             return lastDose?.next
-                
-//                // If next dose is in the future, return next dose
-//                if lastDose.next?.compare(NSDate()) == .OrderedDescending {
-//                    return lastDose.next
-//                }
-                
-//                // If med is overdue
-//                else if isOverdue().flag {
-//                    return isOverdue().overdueDose
-//                }
-                    
-//                // If reminders are disable
-//                else if reminderEnabled == false {
-//                    return lastDose.next
-//                }
-                
-                // Calculate next dose based on last dose taken, and update next value
-//                else {
-//                    var date = lastDose.date
-//                    
-//                    while date.compare(NSDate()) == .OrderedAscending {
-//                        date = cal.dateByAddingUnit(NSCalendarUnit.Hour, value: hr, toDate: date, options: [])!
-//                        date = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: min, toDate: date, options: [])!
-//                    }
-//                    
-//                    lastDose.next = date
-//                    return date
-//                }
-//            }
             
         case .Daily:
             guard let alarm = intervalAlarm else {

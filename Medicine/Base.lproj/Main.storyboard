@@ -314,7 +314,7 @@
         <scene sceneID="R1M-UE-wqt">
             <objects>
                 <tabBarController id="YNu-dM-a51" customClass="MainTBC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
-                    <tabBar key="tabBar" contentMode="scaleToFill" itemPositioning="fill" id="yqC-sp-XeZ">
+                    <tabBar key="tabBar" contentMode="scaleToFill" itemPositioning="centered" id="yqC-sp-XeZ">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
