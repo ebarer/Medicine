@@ -439,7 +439,7 @@ class Medicine: NSManagedObject {
         }
         
         // Modify prescription count
-        if self.refillHistory?.count > 0 {
+        if self.refillHistory?.count > 0 && dose.dosage > 0 {
             if self.prescriptionCount < dose.dosage {
                 self.prescriptionCount = 0
                 self.refillFlag = true
@@ -449,7 +449,7 @@ class Medicine: NSManagedObject {
         }
         
         // Reschedule notification if dose is medications only/latest dose
-        if self.lastDose == nil || dose.date.compare(self.lastDose!.date) == .OrderedDescending {
+        if self.lastDose == nil || dose.date.compare(self.lastDose!.date) != .OrderedAscending {
             scheduleNextNotification()
         }
         

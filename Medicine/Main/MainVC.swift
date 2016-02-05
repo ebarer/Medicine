@@ -62,7 +62,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
         
         // Add observers for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshMainVC", name: "refreshMain", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshMainVC:", name: "refreshMain", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "medicationDeleted", name: "medicationDeleted", object: nil)
         
         // Register for 3D touch if available
@@ -102,9 +102,15 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(true, animated: true)
         
+        updateHeader()
+        
         // Deselect selection
-        if let selected = self.tableView.indexPathForSelectedRow {
-            self.tableView.deselectRowAtIndexPath(selected, animated: true)
+        if let collapsed = self.splitViewController?.collapsed where collapsed == true {
+            selectMed()
+            
+            if let selected = self.tableView.indexPathForSelectedRow {
+                self.tableView.deselectRowAtIndexPath(selected, animated: true)
+            }
         }
         
         // Handle homescreen shortcuts (selected by user)
@@ -123,18 +129,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
 
         // Update spotlight index values
-        for med in medication {
-            if let attributes = med.attributeSet {
-                let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-            }
-        }
+        (self.tabBarController as! MainTBC).indexMedication()
         
         setDynamicShortcuts()
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-        refreshMainVC()
     }
     
     override func didReceiveMemoryWarning() {
@@ -143,13 +140,24 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Update values
-    func refreshMainVC() {
+    func refreshMainVC(notification: NSNotification? = nil) {
+        
         if let tbc = self.tabBarController as? MainTBC {
             tbc.loadMedication()
         }
-        
-        refreshTable()
+
         updateHeader()
+        refreshTable()
+        
+        let reload = notification?.userInfo?["reload"] as? Bool
+        if reload == nil || reload != false {
+            tableView.reloadData()
+        }
+        
+        if let collapsed = self.splitViewController?.collapsed where collapsed == false {
+            selectMed()
+        }
+
         displayEmptyView()
     }
     
@@ -287,8 +295,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         
         // Dismiss editing mode
         setEditing(false, animated: true)
-        
-        tableView.reloadData()
     }
     
     
@@ -447,7 +453,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     }
     
     func tableView(tableView: UITableView, didEndEditingRowAtIndexPath indexPath: NSIndexPath) {
-        selectMed()
+        if let collapsed = self.splitViewController?.collapsed where collapsed == false {
+            selectMed()
+        }
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -517,19 +525,17 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                     self.tableView.reloadRowsAtIndexPaths([index], withRowAnimation: UITableViewRowAnimation.None)
                 }
                 
-                self.updateHeader()
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
                 
-                // Update spotlight index
-                if let attributes = med.attributeSet {
-                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                    CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                }
+                // Update spotlight index values
+                (self.tabBarController as! MainTBC).indexMedication()
                 
                 // Update shortcuts
                 self.setDynamicShortcuts()
             }))
             
-            // If last dose is set, allow user to clear notification
+            // If last dose is set, allow user to undo last dose
             if (med.lastDose != nil) {
                 alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
                     if (med.untakeLastDose(self.moc)) {
@@ -543,11 +549,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                         
                         self.updateHeader()
                         
-                        // Update spotlight index
-                        if let attributes = med.attributeSet {
-                            let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                            CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
-                        }
+                        // Update spotlight index values
+                        (self.tabBarController as! MainTBC).indexMedication()
                         
                         // Update shortcuts
                         self.setDynamicShortcuts()
@@ -646,7 +649,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
         }
         
-        NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil, userInfo: nil)
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil, userInfo: ["reload":false])
     }
     
     func medicationDeleted() {

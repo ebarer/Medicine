@@ -45,8 +45,8 @@ class policyMedDateCreated: NSEntityMigrationPolicy {
 //    return YES;
 //    }
 
-    override func createDestinationInstancesForSourceInstance(sInstance: NSManagedObject, entityMapping mapping: NSEntityMapping, manager: NSMigrationManager) throws {
-        <#code#>
-    }
+//    override func createDestinationInstancesForSourceInstance(sInstance: NSManagedObject, entityMapping mapping: NSEntityMapping, manager: NSMigrationManager) throws {
+//        <#code#>
+//    }
     
 }
