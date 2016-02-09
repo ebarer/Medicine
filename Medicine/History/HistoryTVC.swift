@@ -245,6 +245,7 @@ class HistoryTVC: UITableViewController {
                     } else {
                         cell.textLabel?.textColor = UIColor.lightGrayColor()
                         cell.textLabel?.text = "Skipped (\(dateFormatter.stringFromDate(dose.date)))"
+                        cell.detailTextLabel?.textColor = UIColor.lightGrayColor()
                         cell.detailTextLabel?.text = String(format:"%@", med.name!)
                     }
                 }

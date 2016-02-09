@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10102" systemVersion="15E33e" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="YNu-dM-a51">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10109" systemVersion="15E39c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="YNu-dM-a51">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10080"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10083"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -217,7 +217,7 @@
                 </splitViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mEj-cN-m6H" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1360" y="-638"/>
+            <point key="canvasLocation" x="1236" y="-638"/>
         </scene>
         <!--Medication-->
         <scene sceneID="Je1-oK-fKE">
@@ -368,7 +368,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Hed-qn-OML" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1360" y="619"/>
+            <point key="canvasLocation" x="1236" y="619"/>
         </scene>
         <!--AddDose-->
         <scene sceneID="hlM-7E-p46">
@@ -438,7 +438,7 @@
         <image name="SettingsNav" width="22" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="IaS-jf-2q5"/>
+        <segue reference="hWM-Lf-Cpr"/>
         <segue reference="Cho-HC-bOJ"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -447,8 +447,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
         
         // Select med "selected" in Detail view
-        if editing == false {
-            selectMed()
+        if let collapsed = self.splitViewController?.collapsed where collapsed == false {
+            if editing == false {
+                selectMed()
+            }
         }
     }
     

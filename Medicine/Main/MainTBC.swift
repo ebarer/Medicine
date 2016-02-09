@@ -39,6 +39,18 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 // Store results in medication array
                 medication = results
                 
+                // Populate date created (migrationV22toV30)
+                for med in medication {
+                    if med.dateCreated == nil {
+                        if let firstDose = med.doseHistory?.lastObject as? Dose {
+                            med.dateCreated = firstDose.date
+                        } else {
+                            let cal = NSCalendar.currentCalendar()
+                            med.dateCreated = cal.dateByAddingUnit(.Day, value: -1, toDate: NSDate(), options: [])
+                        }
+                    }
+                }
+                
                 // If selected, sort by next dosage
                 if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
                     medication.sortInPlace(Medicine.sortByNextDose)
