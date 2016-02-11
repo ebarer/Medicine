@@ -411,24 +411,3 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
     }
 
 }
-
-
-
-// MARK: - Preview actions
-
-//    override func previewActionItems() -> [UIPreviewActionItem] {
-//        return previewActions
-//    }
-//
-//    lazy var previewActions: [UIPreviewActionItem] = {
-//        func previewActionForTitle(title: String, style: UIPreviewActionStyle = .Default) -> UIPreviewAction {
-//            return UIPreviewAction(title: title, style: style) { previewAction, viewController in
-//                guard let vc = viewController as? MedicineDetailsTVC else { return }
-//                vc.performSegueWithIdentifier("addDose", sender: nil)
-//                return
-//            }
-//        }
-//
-//        let action1 = previewActionForTitle("Take Dose")
-//        return [action1]
-//    }()

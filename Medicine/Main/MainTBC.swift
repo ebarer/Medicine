@@ -183,8 +183,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
                 let entity = NSEntityDescription.entityForName("Dose", inManagedObjectContext: moc)
                 let dose = Dose(entity: entity!, insertIntoManagedObjectContext: moc)
-                
-                dose.medicine = med
+
                 dose.date = NSDate()
                 dose.dosage = med.dosage
                 dose.dosageUnitInt = med.dosageUnitInt

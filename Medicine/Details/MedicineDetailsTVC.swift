@@ -28,6 +28,8 @@ class MedicineDetailsTVC: UITableViewController {
 
     
     // MARK: - Helper variables
+    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var moc: NSManagedObjectContext!
     
@@ -54,6 +56,10 @@ class MedicineDetailsTVC: UITableViewController {
         // Add observeres for notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshDetails", name: "refreshView", object: nil)
         
+        // Register for 3D touch if available
+        if traitCollection.forceTouchCapability == .Available {
+            registerForPreviewingWithDelegate(self, sourceView: view)
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -362,6 +368,41 @@ class MedicineDetailsTVC: UITableViewController {
             NSNotificationCenter.defaultCenter().postNotificationName("medicationDeleted", object: nil)
         }
     }
+    
+    
+    // MARK: - Peek actions
+    
+    override func previewActionItems() -> [UIPreviewActionItem] {
+        return previewActions
+    }
+
+    lazy var previewActions: [UIPreviewActionItem] = {
+        let takeAction = UIPreviewAction(title: "Take Dose", style: .Default) { (action: UIPreviewAction, vc: UIViewController) -> Void in
+            if let med = self.med {
+                let entity = NSEntityDescription.entityForName("Dose", inManagedObjectContext: self.moc)
+                let dose = Dose(entity: entity!, insertIntoManagedObjectContext: self.moc)
+                
+                dose.date = NSDate()
+                dose.dosage = med.dosage
+                dose.dosageUnit = med.dosageUnit
+                
+                med.addDose(dose)
+                
+                // Check if medication needs to be refilled
+                let refillTime = self.defaults.integerForKey("refillTime")
+                if med.needsRefill(limit: refillTime) {
+                    med.sendRefillNotification()
+                }
+                
+                self.appDelegate.saveContext()
+                
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+            }
+        }
+        
+        return [takeAction]
+    }()
     
     
     // MARK: - Navigation

@@ -67,7 +67,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         
         // Register for 3D touch if available
         if traitCollection.forceTouchCapability == .Available {
-            registerForPreviewingWithDelegate(self, sourceView: view)
+            registerForPreviewingWithDelegate(self, sourceView: tableView)
         }
         
         // Setup IAP
@@ -509,11 +509,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             alert.addAction(UIAlertAction(title: "Skip Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
                 let entity = NSEntityDescription.entityForName("Dose", inManagedObjectContext: self.moc)
                 let dose = Dose(entity: entity!, insertIntoManagedObjectContext: self.moc)
-                
-                dose.medicine = med
-                dose.dosage = -1
-                dose.dosageUnitInt = med.dosageUnitInt
+
                 dose.date = NSDate()
+                dose.dosage = -1
+                dose.dosageUnit = med.dosageUnit
                 
                 med.addDose(dose)
                 

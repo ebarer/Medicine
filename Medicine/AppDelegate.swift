@@ -33,12 +33,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                 SKPaymentQueue.defaultQueue().addTransactionObserver(masterVC)
                 NSLog("IAP transaction observer added")
             }
-            
-            if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
-                if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainVC)}).first {
-                    SKPaymentQueue.defaultQueue().addTransactionObserver(vc as! MainVC)
-                }
-            }
         }
         
         // Setup background fetch to reload reschedule notifications
@@ -230,24 +224,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     func handleShortcut(shortcutItem: UIApplicationShortcutItem) -> Bool {
         guard let action = shortcutItem.userInfo?["action"] else { return false }
         
-        if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKindOfClass(UINavigationController)}).first {
-            if let vc = vcs.childViewControllers.filter({$0.isKindOfClass(MainVC)}).first {
-                if vc.isViewLoaded() {
+        if let tbc = self.window!.rootViewController as? UITabBarController {
+            if let splitView = tbc.viewControllers?.filter({$0.isKindOfClass(UISplitViewController)}).first as? UISplitViewController {
+                let masterVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
+                
+                if masterVC.isViewLoaded() {
                     
-                    vc.dismissViewControllerAnimated(false, completion: nil)
+                    masterVC.dismissViewControllerAnimated(false, completion: nil)
                     
                     switch(String(action)) {
                     case "addMedication":
-                        vc.performSegueWithIdentifier("addMedication", sender: self)
+                        masterVC.performSegueWithIdentifier("addMedication", sender: self)
                     case "takeDose":
-                        vc.performSegueWithIdentifier("addDose", sender: self)
+                        masterVC.performSegueWithIdentifier("addDose", sender: self)
                     default: break
                     }
-
+                    
                     launchedShortcutItem = nil
                     return true
                 } else {
-                    (vc as! MainVC).launchedShortcutItem = self.launchedShortcutItem
+                    masterVC.launchedShortcutItem = self.launchedShortcutItem
                 }
             }
         }

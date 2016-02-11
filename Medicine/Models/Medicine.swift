@@ -418,6 +418,8 @@ class Medicine: NSManagedObject {
      - Returns: History object
      */
     func addDose(dose: Dose) -> Dose {
+        dose.medicine = self
+        
         // Calculate the next dose and store in dose
         do {
             dose.next = try calculateNextDose(dose.date)

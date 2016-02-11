@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10109" systemVersion="15E39c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="YNu-dM-a51">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15E39c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="YNu-dM-a51">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10083"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -421,7 +421,7 @@
         <!--MedicineDetails-->
         <scene sceneID="OSd-GO-5ms">
             <objects>
-                <viewControllerPlaceholder storyboardName="MedicineDetails" id="m5a-xO-Q7x" sceneMemberID="viewController">
+                <viewControllerPlaceholder storyboardIdentifier="medicineDetails" storyboardName="MedicineDetails" id="m5a-xO-Q7x" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="zdQ-ZX-3Ys"/>
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Hlf-VE-diw" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -438,7 +438,7 @@
         <image name="SettingsNav" width="22" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="hWM-Lf-Cpr"/>
+        <segue reference="IaS-jf-2q5"/>
         <segue reference="Cho-HC-bOJ"/>
     </inferredMetricsTieBreakers>
 </document>
