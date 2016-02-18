@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15E39c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="lOp-19-lED">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10109" systemVersion="15E39c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="lOp-19-lED">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10083"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Segues with Peek and Pop" minToolsVersion="7.1"/>
     </dependencies>
@@ -158,7 +158,7 @@
                             <tableViewSection headerTitle="" footerTitle="Got a great idea, or seeing a pesky bug? Let us know!" id="j3g-5s-li4">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="EEU-jL-1bh" style="IBUITableViewCellStyleDefault" id="czY-LS-Ql4">
-                                        <rect key="frame" x="0.0" y="349" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="348.5" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="czY-LS-Ql4" id="tpv-cs-fIC">
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
@@ -180,7 +180,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="feedbackCell" textLabel="hFx-jf-wiI" style="IBUITableViewCellStyleDefault" id="d2g-GH-vjt">
-                                        <rect key="frame" x="0.0" y="393" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="392.5" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="d2g-GH-vjt" id="KWY-vr-U1D">
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
@@ -201,7 +201,7 @@
                             <tableViewSection footerTitle="" id="d6L-5z-rEC">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="resetCell" textLabel="pOP-6d-Itx" style="IBUITableViewCellStyleDefault" id="LB5-NR-dg8">
-                                        <rect key="frame" x="0.0" y="482" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="481" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="LB5-NR-dg8" id="TWB-PO-J3K">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
@@ -238,20 +238,11 @@
                         <outlet property="snoozeLabel" destination="Ulu-qE-RwJ" id="7Sy-TR-07G"/>
                         <outlet property="sortLabel" destination="X5D-if-Bzr" id="rsm-oa-W6u"/>
                         <outlet property="versionString" destination="vST-I3-o3S" id="UNQ-DR-mso"/>
-                        <segue destination="kAE-sw-JIQ" kind="presentation" identifier="reset" id="wsy-aA-gab"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qy8-Sr-wZk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1504" y="-34"/>
-        </scene>
-        <!--Tutorial-->
-        <scene sceneID="Mn8-vI-6ta">
-            <objects>
-                <viewControllerPlaceholder storyboardName="Tutorial" id="kAE-sw-JIQ" sceneMemberID="viewController"/>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="gfF-nf-eU0" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2152.5" y="-34"/>
         </scene>
         <!--Sort Medication By-->
         <scene sceneID="M1x-gV-t36">

@@ -14,7 +14,6 @@ class TutorialPVC: UIPageViewController, UIPageViewControllerDataSource {
     
     
     // MARK: - View methods
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -46,7 +45,6 @@ class TutorialPVC: UIPageViewController, UIPageViewControllerDataSource {
     
     
     // MARK: - Page view controller data source
-    
     func presentationCountForPageViewController(pageViewController: UIPageViewController) -> Int {
         return tutorialPages.count
     }
@@ -102,7 +100,6 @@ class TutorialPVC: UIPageViewController, UIPageViewControllerDataSource {
 
     
     // MARK: - Helper methods
-    
     func getPage(index: Int) -> TutorialContentVC? {
         if index < tutorialPages.count {
             let tutorial = self.storyboard!.instantiateViewControllerWithIdentifier("TutorialContentVC") as! TutorialContentVC

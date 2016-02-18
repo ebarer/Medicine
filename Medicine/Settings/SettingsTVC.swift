@@ -185,11 +185,24 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
             let confirmationAlert = UIAlertController(title: "Reset Complete", message: "All medication, history, and preferences have been reset.", preferredStyle: UIAlertControllerStyle.Alert)
             
             confirmationAlert.addAction(UIAlertAction(title: "Restart", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-                self.performSegueWithIdentifier("reset", sender: self)
+                if let tbc = self.presentingViewController as? MainTBC {
+                    if let splitView = tbc.viewControllers?.filter({$0.isKindOfClass(UISplitViewController)}).first as? UISplitViewController {
+                        NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+                        NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+                        
+                        self.dismissViewControllerAnimated(false, completion: nil)
+                        
+                        let masterVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
+                        masterVC.performSegueWithIdentifier("tutorial", sender: masterVC)
+                    }
+                }
             }))
             
             confirmationAlert.view.tintColor = UIColor.grayColor()
             self.presentViewController(confirmationAlert, animated: true, completion: nil)
+            if let index = self.tableView.indexPathForSelectedRow {
+                self.tableView.deselectRowAtIndexPath(index, animated: false)
+            }
         } catch {
             print("Could not fetch medication.")
         }
@@ -251,10 +264,5 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     @IBAction func dismissSettings(sender: UIBarButtonItem) {
         dismissViewControllerAnimated(true, completion: nil)
     }
-    
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {}
-    
-    @IBAction func settingsUndwind(unwindSegue: UIStoryboardSegue) {}
 
 }

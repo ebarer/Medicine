@@ -103,6 +103,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         self.navigationController?.setToolbarHidden(true, animated: true)
         
         updateHeader()
+        displayEmptyView()
         
         // Deselect selection
         if let collapsed = self.splitViewController?.collapsed where collapsed == true {
@@ -751,12 +752,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             performSegueWithIdentifier("addMedication", sender: self)
         } else {
             performSegueWithIdentifier("upgrade", sender: self)
-        }
-    }
-    
-    @IBAction func unwindCancel(unwindSegue: UIStoryboardSegue) {
-        if let _ = unwindSegue.sourceViewController as? WelcomeVC {
-            refreshMainVC()
         }
     }
     

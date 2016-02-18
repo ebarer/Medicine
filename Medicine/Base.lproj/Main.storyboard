@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15E39c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="YNu-dM-a51">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10109" systemVersion="15E39c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="YNu-dM-a51">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10083"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -11,7 +11,7 @@
                 <viewControllerPlaceholder storyboardName="Upgrade" id="l1N-4I-mqi" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jlM-d8-EFB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3361" y="-861"/>
+            <point key="canvasLocation" x="3281" y="-109"/>
         </scene>
         <!--AddRefill-->
         <scene sceneID="lan-nL-PWk">
@@ -19,7 +19,7 @@
                 <viewControllerPlaceholder storyboardName="AddRefill" id="0rS-bm-Zw4" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="I0U-hY-Aro" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3120.5" y="-411"/>
+            <point key="canvasLocation" x="3040.5" y="341"/>
         </scene>
         <!--MainVC-->
         <scene sceneID="yxL-eS-LeC">
@@ -174,6 +174,7 @@
                         <barButtonItem title="Item" id="aaC-YW-U9D"/>
                     </toolbarItems>
                     <navigationItem key="navigationItem" id="zRn-6T-BDb">
+                        <barButtonItem key="backBarButtonItem" title="Medicine" id="ODd-w6-C8e"/>
                         <barButtonItem key="leftBarButtonItem" image="SettingsNav" id="1rM-Fy-B6v">
                             <connections>
                                 <segue destination="9tF-0m-LzC" kind="presentation" identifier="displaySettings" modalPresentationStyle="formSheet" id="JmR-9L-RTV"/>
@@ -203,7 +204,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JO1-9W-KwB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2864" y="-1011"/>
+            <point key="canvasLocation" x="2784" y="-259"/>
         </scene>
         <!--Medication-->
         <scene sceneID="qg1-2E-MYm">
@@ -217,7 +218,7 @@
                 </splitViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mEj-cN-m6H" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1236" y="-638"/>
+            <point key="canvasLocation" x="1156" y="114"/>
         </scene>
         <!--Medication-->
         <scene sceneID="Je1-oK-fKE">
@@ -241,7 +242,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zNh-Fi-739" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2112" y="-1011"/>
+            <point key="canvasLocation" x="2032" y="-259"/>
         </scene>
         <!--AddMedication-->
         <scene sceneID="pTI-n1-n91">
@@ -249,7 +250,7 @@
                 <viewControllerPlaceholder storyboardName="AddMedication" id="KKX-VQ-lBK" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iW6-yh-2SF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2626" y="-411"/>
+            <point key="canvasLocation" x="2546" y="341"/>
         </scene>
         <!--AddDose-->
         <scene sceneID="V2c-5F-wuu">
@@ -257,7 +258,7 @@
                 <viewControllerPlaceholder storyboardName="AddDose" id="bZR-7Y-tt8" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2P2-5h-dae" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2890.5" y="-411"/>
+            <point key="canvasLocation" x="2810.5" y="341"/>
         </scene>
         <!--Dose History-->
         <scene sceneID="QO9-Ky-i0L">
@@ -308,7 +309,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HCw-k7-25B" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2112" y="619"/>
+            <point key="canvasLocation" x="2032" y="1371"/>
         </scene>
         <!--MainTBC-->
         <scene sceneID="R1M-UE-wqt">
@@ -328,7 +329,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="o8O-sL-lb1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="304" y="155"/>
+            <point key="canvasLocation" x="224" y="907"/>
         </scene>
         <!--Settings-->
         <scene sceneID="YPb-Nf-JZZ">
@@ -336,7 +337,7 @@
                 <viewControllerPlaceholder storyboardName="Settings" id="9tF-0m-LzC" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ooh-0C-F3k" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3401.5" y="-1167"/>
+            <point key="canvasLocation" x="3321.5" y="-415"/>
         </scene>
         <!--Tutorial-->
         <scene sceneID="uJe-Pw-JeJ">
@@ -344,7 +345,7 @@
                 <viewControllerPlaceholder storyboardName="Tutorial" id="omS-jf-M2h" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FD3-8j-bs6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3358.5" y="-1011"/>
+            <point key="canvasLocation" x="3278.5" y="-259"/>
         </scene>
         <!--History-->
         <scene sceneID="fpV-lt-R8E">
@@ -368,7 +369,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Hed-qn-OML" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1236" y="619"/>
+            <point key="canvasLocation" x="1156" y="1371"/>
         </scene>
         <!--AddDose-->
         <scene sceneID="hlM-7E-p46">
@@ -376,7 +377,7 @@
                 <viewControllerPlaceholder storyboardName="AddDose" id="3SL-Re-aut" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XIP-cF-qN4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2610.5" y="619"/>
+            <point key="canvasLocation" x="2530.5" y="1371"/>
         </scene>
         <!--AddDose-->
         <scene sceneID="R1i-eJ-W81">
@@ -384,7 +385,7 @@
                 <viewControllerPlaceholder storyboardName="AddDose" id="jhv-gA-12s" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sZ3-gF-2Uo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="47.5" y="634"/>
+            <point key="canvasLocation" x="-32.5" y="1386"/>
         </scene>
         <!--AddRefill-->
         <scene sceneID="ots-6m-s5S">
@@ -392,7 +393,7 @@
                 <viewControllerPlaceholder storyboardName="AddRefill" id="HGE-ul-mTl" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aKd-87-Sr4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="560.5" y="634"/>
+            <point key="canvasLocation" x="480.5" y="1386"/>
         </scene>
         <!--Medication-->
         <scene sceneID="3JV-bC-sON">
@@ -416,7 +417,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MzO-st-mkQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2112" y="-195"/>
+            <point key="canvasLocation" x="2032" y="557"/>
         </scene>
         <!--MedicineDetails-->
         <scene sceneID="OSd-GO-5ms">
@@ -426,7 +427,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Hlf-VE-diw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2628.5" y="-195"/>
+            <point key="canvasLocation" x="2548.5" y="557"/>
         </scene>
     </scenes>
     <resources>
@@ -439,6 +440,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="IaS-jf-2q5"/>
-        <segue reference="Cho-HC-bOJ"/>
+        <segue reference="ZvU-1l-YKz"/>
     </inferredMetricsTieBreakers>
 </document>
