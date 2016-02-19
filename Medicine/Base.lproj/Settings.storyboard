@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10109" systemVersion="15E39c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="lOp-19-lED">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10109" systemVersion="15E39d" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="lOp-19-lED">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10083"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
-        <capability name="Segues with Peek and Pop" minToolsVersion="7.1"/>
     </dependencies>
     <scenes>
         <!--Settings-->
@@ -79,8 +78,6 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <segue destination="HhI-Il-iN3" kind="show" identifier="setSort" id="aHi-za-nUs">
-                                                <segue key="commit" inheritsFrom="parent" id="33X-ZN-z4n"/>
-                                                <segue key="preview" inheritsFrom="commit" id="ag3-t4-b4T"/>
                                                 <nil key="action"/>
                                             </segue>
                                         </connections>
@@ -114,8 +111,6 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <segue destination="KCY-e4-G9n" kind="show" identifier="setSnooze" id="PEA-jc-8Qo">
-                                                <segue key="commit" inheritsFrom="parent" id="Fxi-wb-qky"/>
-                                                <segue key="preview" inheritsFrom="commit" id="Ct0-dR-Ffj"/>
                                                 <nil key="action"/>
                                             </segue>
                                         </connections>
@@ -158,7 +153,7 @@
                             <tableViewSection headerTitle="" footerTitle="Got a great idea, or seeing a pesky bug? Let us know!" id="j3g-5s-li4">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="EEU-jL-1bh" style="IBUITableViewCellStyleDefault" id="czY-LS-Ql4">
-                                        <rect key="frame" x="0.0" y="348.5" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="349" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="czY-LS-Ql4" id="tpv-cs-fIC">
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
@@ -180,7 +175,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="feedbackCell" textLabel="hFx-jf-wiI" style="IBUITableViewCellStyleDefault" id="d2g-GH-vjt">
-                                        <rect key="frame" x="0.0" y="392.5" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="393" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="d2g-GH-vjt" id="KWY-vr-U1D">
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
@@ -201,7 +196,7 @@
                             <tableViewSection footerTitle="" id="d6L-5z-rEC">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="resetCell" textLabel="pOP-6d-Itx" style="IBUITableViewCellStyleDefault" id="LB5-NR-dg8">
-                                        <rect key="frame" x="0.0" y="481" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="482" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="LB5-NR-dg8" id="TWB-PO-J3K">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
@@ -273,7 +268,7 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <segue destination="zhO-Cg-D4h" kind="unwind" unwindAction="settingsUndwind:" id="95O-Qe-P1j"/>
+                                            <segue destination="zhO-Cg-D4h" kind="unwind" unwindAction="settingsUnwind:" id="rg1-pw-Lqa"/>
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="xYP-Tt-SNX" style="IBUITableViewCellStyleDefault" id="2Nf-iu-t7J">
@@ -293,7 +288,7 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <segue destination="zhO-Cg-D4h" kind="unwind" unwindAction="settingsUndwind:" id="n0T-cn-k4P"/>
+                                            <segue destination="zhO-Cg-D4h" kind="unwind" unwindAction="settingsUnwind:" id="hZB-ci-EiT"/>
                                         </connections>
                                     </tableViewCell>
                                 </cells>
@@ -338,7 +333,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="iQL-9H-nfd" kind="unwind" unwindAction="settingsUndwind:" id="IGp-0N-rzD"/>
+                                    <segue destination="iQL-9H-nfd" kind="unwind" unwindAction="settingsUnwind:" id="TyI-Zf-Urc"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -493,7 +488,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="ETy-bJ-6yY" kind="unwind" unwindAction="settingsUndwind:" id="EJt-jy-g98"/>
+                                    <segue destination="ETy-bJ-6yY" kind="unwind" unwindAction="settingsUnwind:" id="cem-SU-7hP"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -542,8 +537,4 @@
         <image name="SnoozeCellIcon" width="29" height="29"/>
         <image name="SortCellIcon" width="29" height="29"/>
     </resources>
-    <inferredMetricsTieBreakers>
-        <segue reference="PEA-jc-8Qo"/>
-        <segue reference="aHi-za-nUs"/>
-    </inferredMetricsTieBreakers>
 </document>

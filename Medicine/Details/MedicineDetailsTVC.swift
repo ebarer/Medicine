@@ -91,6 +91,13 @@ class MedicineDetailsTVC: UITableViewController {
     }
     
     func refreshDetails() {
+        // Select first medication if none selected
+        if medication.count > 0 && med == nil {
+            if medication[0].lastDose != nil {
+                med = medication[0]
+            }
+        }
+        
         displayEmptyView()
         updateLabels()
     }

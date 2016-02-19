@@ -442,10 +442,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         
         tableView.setEditing(editing, animated: animated)
         
-        for i in 0..<tableView.numberOfRowsInSection(0) {
-            let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: i, inSection: 0)) as! MedicineCell
-            cell.addButton.hidden = editing
-        }
+//        for i in 0..<tableView.numberOfRowsInSection(0) {
+//            let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: i, inSection: 0)) as! MedicineCell
+//            cell.addButton.hidden = editing
+//        }
         
         // Select med "selected" in Detail view
         if let collapsed = self.splitViewController?.collapsed where collapsed == false {

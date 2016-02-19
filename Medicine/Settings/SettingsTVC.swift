@@ -17,7 +17,6 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     
     // MARK: - Outlets
-    
     @IBOutlet var sortLabel: UILabel!
     @IBOutlet var snoozeLabel: UILabel!
     @IBOutlet var refillLabel: UILabel!
@@ -26,7 +25,6 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
 
     
     // MARK: - View methods
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -97,7 +95,6 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     
     // MARK: - Table view delegate
-    
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         switch section {
         case 0:
@@ -152,7 +149,6 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     
     // MARK: - Helper methods
-    
     func resetApp() {
         let moc = appDelegate.managedObjectContext
         let request = NSFetchRequest(entityName:"Medicine")
@@ -260,9 +256,11 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     
     // MARK: - Navigation
-    
     @IBAction func dismissSettings(sender: UIBarButtonItem) {
         dismissViewControllerAnimated(true, completion: nil)
     }
+
+    // Used to dismiss popover selections
+    @IBAction func settingsUnwind(unwindSegue: UIStoryboardSegue) {}
 
 }
