@@ -48,13 +48,13 @@ class HistoryTVC: UITableViewController {
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
         
         // Configure toolbar buttons
-        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: "deleteDoses")
+        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(deleteDoses))
         deleteButton.enabled = false
         editButtons.append(deleteButton)
         setToolbarItems(editButtons, animated: true)
         
         // Add observeres for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshView", name: UIApplicationWillEnterForegroundNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refreshView), name: UIApplicationWillEnterForegroundNotification, object: nil)
     }
     
     override func viewWillAppear(animated: Bool) {

@@ -52,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         // Handle local notification
         if let notification = launchOptions?[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
             // self.application(application, didReceiveLocalNotification: notification)
-            self.performSelector("postNotification:", withObject: notification, afterDelay: 1.0)
+            self.performSelector(#selector(postNotification(_:)), withObject: notification, afterDelay: 1.0)
         }
         
         return true
@@ -254,7 +254,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     // MARK: - Push Notifications stack
     func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
-        self.performSelector("postNotification:", withObject: notification)
+        self.performSelector(#selector(postNotification(_:)), withObject: notification)
     }
     
     func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {

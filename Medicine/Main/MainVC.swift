@@ -62,8 +62,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
         
         // Add observers for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshMainVC:", name: "refreshMain", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "medicationDeleted", name: "medicationDeleted", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refreshMainVC(_:)), name: "refreshMain", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(medicationDeleted), name: "medicationDeleted", object: nil)
         
         // Register for 3D touch if available
         if traitCollection.forceTouchCapability == .Available {
@@ -87,7 +87,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         tableView.tableHeaderView = UIView(frame: CGRectMake(0.0, 0.0, tableView.bounds.size.width, 0.01))
         
         // Setup refresh timer
-        let _ = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(300), target: self, selector: Selector("refreshTable"), userInfo: nil, repeats: true)
+        let _ = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(300), target: self, selector: #selector(refreshTable), userInfo: nil, repeats: true)
         
         // Display tutorial on first launch
         let dictionary = NSBundle.mainBundle().infoDictionary!
@@ -387,7 +387,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
         
         // Add long press gesture recognizer
-        cell.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "takeDose:"))
+        cell.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(takeDose(_:))))
         
         return cell
     }

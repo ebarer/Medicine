@@ -52,8 +52,8 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
         
         // Configure toolbar buttons
         let fixedButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
-        let exportButton = UIBarButtonItem(title: "Export", style: UIBarButtonItemStyle.Plain, target: self, action: "exportDoses")
-        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: "deleteDoses")
+        let exportButton = UIBarButtonItem(title: "Export", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(exportDoses))
+        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(deleteDoses))
         deleteButton.enabled = false
         
         normalButtons.append(exportButton)
@@ -67,8 +67,8 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
         setToolbarItems(normalButtons, animated: false)
 
         // Add observeres for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshView", name: "refreshView", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshView", name: UIApplicationWillEnterForegroundNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refreshView), name: "refreshView", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refreshView), name: UIApplicationWillEnterForegroundNotification, object: nil)
     }
     
     override func viewWillAppear(animated: Bool) {

@@ -50,11 +50,11 @@ class MedicineDetailsTVC: UITableViewController {
         super.viewDidLoad()
         
         // Setup edit button
-        let editButton = UIBarButtonItem(title: "Edit", style: .Plain, target: self, action: "editMedication")
+        let editButton = UIBarButtonItem(title: "Edit", style: .Plain, target: self, action: #selector(editMedication))
         self.navigationItem.rightBarButtonItem = editButton
         
         // Add observeres for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshDetails", name: "refreshView", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refreshDetails), name: "refreshView", object: nil)
         
         // Register for 3D touch if available
         if traitCollection.forceTouchCapability == .Available {
@@ -247,9 +247,9 @@ class MedicineDetailsTVC: UITableViewController {
             }
         case Rows.actions:
             return 50.0
-        case Rows.doseHistory: fallthrough
-        case Rows.refillHistory: fallthrough
-        case Rows.delete:
+        case Rows.doseHistory,
+             Rows.refillHistory,
+             Rows.delete:
             return 50.0
         default:
             return tableView.rowHeight

@@ -79,16 +79,16 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         loadMedication()
         
         // Add observeres for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "doseNotification:", name: "doseNotification", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refillNotification:", name: "refillNotification", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(doseNotification(_:)), name: "doseNotification", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refillNotification(_:)), name: "refillNotification", object: nil)
         
         // Add observers for notification actions
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "takeDoseAction:", name: "takeDoseAction", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "snoozeReminderAction:", name: "snoozeReminderAction", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refillAction:", name: "refillAction", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(takeDoseAction(_:)), name: "takeDoseAction", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(snoozeReminderAction(_:)), name: "snoozeReminderAction", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refillAction(_:)), name: "refillAction", object: nil)
         
         // Add observer for scheduling notifications and updating app badge count
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "rescheduleNotifications:", name: "rescheduleNotifications", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(rescheduleNotifications(_:)), name: "rescheduleNotifications", object: nil)
     }
 
     override func didReceiveMemoryWarning() {
@@ -197,11 +197,13 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 }
                 
                 appDelegate.saveContext()
-                
+                NSLog("takeDoseAction performed", [])
+
                 setDynamicShortcuts()
+                updateBadgeCount()
+                
                 NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
                 NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
-                NSLog("takeDoseAction performed", [])
             }
         }
     }
@@ -237,12 +239,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             med.scheduleNextNotification()
         }
         
-        // Update shortcuts
         setDynamicShortcuts()
-        
-        // Update badge count
-        let overdueCount = medication.filter({$0.isOverdue().flag}).count
-        UIApplication.sharedApplication().applicationIconBadgeNumber = overdueCount
+        updateBadgeCount()
     }
     
     
@@ -314,6 +312,11 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         UIApplication.sharedApplication().shortcutItems = []
     }
 
+    func updateBadgeCount() {
+        let overdueCount = medication.filter({$0.isOverdue().flag}).count
+        UIApplication.sharedApplication().applicationIconBadgeNumber = overdueCount
+    }
+    
     func indexMedication() {
         // Update spotlight index
         for med in medication  {
