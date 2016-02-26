@@ -222,9 +222,9 @@ class MedicineDetailsTVC: UITableViewController {
     // MARK: - Table view data source
     override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch section {
-        case 0:
-            return tableView.rowHeight
-        case 1:
+        case Rows.name.index().section:
+            return 15
+        case Rows.actions.index().section:
             if med?.prescriptionCount > 0 {
                 return 20.0
             } else {

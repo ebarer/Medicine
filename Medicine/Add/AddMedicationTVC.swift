@@ -136,6 +136,8 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch section {
+        case Rows.name.index().section:
+            return 15
         case Rows.prescription.index().section:
             if med.name != nil && med.name != "" {
                 return tableView.rowHeight
