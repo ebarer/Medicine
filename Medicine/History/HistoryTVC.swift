@@ -48,23 +48,27 @@ class HistoryTVC: UITableViewController {
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
         
         // Configure toolbar buttons
-        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: "deleteDoses")
+        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(deleteDoses))
         deleteButton.enabled = false
         editButtons.append(deleteButton)
         setToolbarItems(editButtons, animated: true)
         
         // Add observeres for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refreshView), name: UIApplicationWillEnterForegroundNotification, object: nil)
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        loadHistory()
-        displayEmptyView()
+        refreshView()
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    func refreshView() {
+        loadHistory()
+        displayEmptyView()
     }
     
     func loadHistory() {
@@ -113,7 +117,6 @@ class HistoryTVC: UITableViewController {
             navigationItem.rightBarButtonItem?.enabled = false
             
             if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
-                tableView.separatorStyle = UITableViewCellSeparatorStyle.None
                 tableView.backgroundView = emptyView
             }
         } else if history.count == 0 {
@@ -122,13 +125,11 @@ class HistoryTVC: UITableViewController {
             
             // Create empty message
             if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
-                tableView.separatorStyle = UITableViewCellSeparatorStyle.None
                 tableView.backgroundView = emptyView
             }
         } else {
             navigationItem.leftBarButtonItem?.enabled = true
             navigationItem.leftBarButtonItem?.enabled = true
-            tableView.separatorStyle = UITableViewCellSeparatorStyle.SingleLine
             tableView.backgroundView = nil
         }
         
@@ -236,11 +237,17 @@ class HistoryTVC: UITableViewController {
                     // Specify selection color
                     cell.selectedBackgroundView = UIView()
                     
-                    // Setup cell
-                    cell.textLabel?.textColor = UIColor.blackColor()
-                    cell.textLabel?.text = dateFormatter.stringFromDate(dose.date)
-                    cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                    cell.detailTextLabel?.text = String(format:"%@ - %g %@", med.name!, dose.dosage, dose.dosageUnit.units(dose.dosage))
+                    if dose.dosage > 0 {
+                        cell.textLabel?.textColor = UIColor.blackColor()
+                        cell.textLabel?.text = "\(dateFormatter.stringFromDate(dose.date))"
+                        cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                        cell.detailTextLabel?.text = String(format:"%@ - %g %@", med.name!, dose.dosage, dose.dosageUnit.units(dose.dosage))
+                    } else {
+                        cell.textLabel?.textColor = UIColor.lightGrayColor()
+                        cell.textLabel?.text = "Skipped (\(dateFormatter.stringFromDate(dose.date)))"
+                        cell.detailTextLabel?.textColor = UIColor.lightGrayColor()
+                        cell.detailTextLabel?.text = String(format:"%@", med.name!)
+                    }
                 }
             } else {
                 cell.textLabel?.textColor = UIColor.lightGrayColor()
@@ -284,15 +291,11 @@ class HistoryTVC: UITableViewController {
     override func setEditing(editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
 
-        if let tBC = self.tabBarController {
-            if editing == true {
-                self.navigationController?.setToolbarHidden(false, animated: false)
-                tBC.setTabBarVisible(false, animated: false)
-            } else {
-                self.navigationController?.setToolbarHidden(true, animated: false)
-                tBC.setTabBarVisible(true, animated: false)
-                updateDeleteButtonLabel()
-            }
+        if editing == true {
+            self.navigationController?.setToolbarHidden(false, animated: true)
+        } else {
+            self.navigationController?.setToolbarHidden(true, animated: true)
+            updateDeleteButtonLabel()
         }
     }
     
@@ -350,9 +353,9 @@ class HistoryTVC: UITableViewController {
             
             updateDeleteButtonLabel()
             setEditing(false, animated: true)
-            
-            // Update widget
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
         }
     }
     
@@ -366,25 +369,7 @@ class HistoryTVC: UITableViewController {
             }
         }
     }
-    
-    
-    // MARK: - Helper methods
-    
-    func refreshTableAndNotifications() {
-        tableView.reloadData()
-        
-        // Clear old notifications
-        let currentDate = NSDate()
-        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
-        for notification in notifications {
-            if let date = notification.fireDate {
-                if date.compare(currentDate) == .OrderedAscending {
-                    UIApplication.sharedApplication().cancelLocalNotification(notification)
-                }
-            }
-        }
-    }
-    
+
 }
 
 

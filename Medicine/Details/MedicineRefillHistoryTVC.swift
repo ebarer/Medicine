@@ -52,8 +52,8 @@ class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControll
         
         // Configure toolbar buttons
         let fixedButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
-        let exportButton = UIBarButtonItem(title: "Export", style: UIBarButtonItemStyle.Plain, target: self, action: "exportRefills")
-        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: "deleteRefills")
+        let exportButton = UIBarButtonItem(title: "Export", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(exportRefills))
+        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(deleteRefills))
         deleteButton.enabled = false
         
         normalButtons.append(exportButton)
@@ -67,7 +67,8 @@ class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControll
         setToolbarItems(normalButtons, animated: false)
         
         // Add observeres for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refreshView), name: "refreshView", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refreshView), name: UIApplicationWillEnterForegroundNotification, object: nil)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -81,6 +82,11 @@ class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControll
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    func refreshView() {
+        loadHistory()
+        displayEmptyView()
     }
     
     func loadHistory() {
@@ -342,8 +348,8 @@ class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControll
             updateDeleteButtonLabel()
             setEditing(false, animated: true)
             
-            // Update widget
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
         }
     }
     
@@ -389,24 +395,6 @@ class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControll
         if segue.identifier == "addRefill" {
             if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
                 vc.med = med
-            }
-        }
-    }
-    
-    
-    // MARK: - Helper methods
-    
-    func refreshTableAndNotifications() {
-        tableView.reloadData()
-        
-        // Clear old notifications
-        let currentDate = NSDate()
-        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
-        for notification in notifications {
-            if let date = notification.fireDate {
-                if date.compare(currentDate) == .OrderedAscending {
-                    UIApplication.sharedApplication().cancelLocalNotification(notification)
-                }
             }
         }
     }

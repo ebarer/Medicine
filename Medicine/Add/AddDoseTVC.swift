@@ -16,7 +16,6 @@ class AddDoseTVC: UITableViewController {
 
     
     // MARK: - Outlets
-    
     @IBOutlet var saveButton: UIBarButtonItem!
     @IBOutlet var picker: UIDatePicker!
     @IBOutlet var medCell: UITableViewCell!
@@ -27,7 +26,6 @@ class AddDoseTVC: UITableViewController {
     
     
     // MARK: - Helper variables
-    
     let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -39,7 +37,6 @@ class AddDoseTVC: UITableViewController {
     
     
     // MARK: - Initialization
-
     required init?(coder aDecoder: NSCoder) {
         // Setup context
         moc = appDelegate.managedObjectContext
@@ -57,7 +54,6 @@ class AddDoseTVC: UITableViewController {
     
     
     // MARK: - View methods
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.clearsSelectionOnViewWillAppear = true
@@ -133,7 +129,6 @@ class AddDoseTVC: UITableViewController {
     
     
     // MARK: - Table view data source
-    
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         if indexPath == NSIndexPath(forRow: 0, inSection: 0) {
             return 216.0
@@ -154,14 +149,12 @@ class AddDoseTVC: UITableViewController {
     
     
     // MARK: - Actions
-    
     @IBAction func updateDate(sender: UIDatePicker) {
         dose.date = sender.date
     }
     
     
     // MARK: - Navigation
-    
     override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
         // Prevent segues if no medication selected (except to select a medication)
         if med == nil && identifier != "selectMedicine" {
@@ -208,7 +201,6 @@ class AddDoseTVC: UITableViewController {
             do {
                 // Save dose
                 try med.takeDose(dose)
-                dose.medicine = med
                 
                 // Check if medication needs to be refilled
                 let refillTime = defaults.integerForKey("refillTime")
@@ -218,7 +210,8 @@ class AddDoseTVC: UITableViewController {
                 
                 appDelegate.saveContext()
                 
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
                 
                 dismissViewControllerAnimated(true, completion: nil)
             } catch {
@@ -237,7 +230,6 @@ class AddDoseTVC: UITableViewController {
     
     
     // MARK: - Error handling
-
     func presentMedAlert() {
             globalHistory = true
         
@@ -254,7 +246,8 @@ class AddDoseTVC: UITableViewController {
             
             doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
                 self.appDelegate.saveContext()
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
                 self.dismissViewControllerAnimated(true, completion: nil)
             }))
             

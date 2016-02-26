@@ -9,6 +9,7 @@
         <relationship name="medicine" maxCount="1" deletionRule="Nullify" destinationEntity="Medicine" inverseName="doseHistory" inverseEntity="Medicine" syncable="YES"/>
     </entity>
     <entity name="Medicine" representedClassName=".Medicine" syncable="YES">
+        <attribute name="dateCreated" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="dosage" attributeType="Float" defaultValueString="1" syncable="YES"/>
         <attribute name="dosageUnitInt" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="interval" attributeType="Float" defaultValueString="4" syncable="YES"/>
@@ -32,7 +33,7 @@
     </entity>
     <elements>
         <element name="Dose" positionX="-92" positionY="51" width="128" height="135"/>
-        <element name="Medicine" positionX="-263" positionY="-142" width="128" height="240"/>
+        <element name="Medicine" positionX="-263" positionY="-142" width="128" height="255"/>
         <element name="Refill" positionX="-180" positionY="-27" width="128" height="120"/>
     </elements>
 </model>

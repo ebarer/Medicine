@@ -52,8 +52,8 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
         
         // Configure toolbar buttons
         let fixedButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
-        let exportButton = UIBarButtonItem(title: "Export", style: UIBarButtonItemStyle.Plain, target: self, action: "exportDoses")
-        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: "deleteDoses")
+        let exportButton = UIBarButtonItem(title: "Export", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(exportDoses))
+        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(deleteDoses))
         deleteButton.enabled = false
         
         normalButtons.append(exportButton)
@@ -67,20 +67,28 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
         setToolbarItems(normalButtons, animated: false)
 
         // Add observeres for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshTableAndNotifications", name: UIApplicationWillEnterForegroundNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refreshView), name: "refreshView", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refreshView), name: UIApplicationWillEnterForegroundNotification, object: nil)
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        self.navigationController?.setToolbarHidden(false, animated: animated)
+//        if let tBC = self.tabBarController {
+//            tBC.setTabBarVisible(false, animated: false)
+//        }
+        self.navigationController?.setToolbarHidden(false, animated: false)
         
-        loadHistory()
-        displayEmptyView()
+        refreshView()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    func refreshView() {
+        loadHistory()
+        displayEmptyView()
     }
     
     func loadHistory() {
@@ -222,19 +230,24 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
         if let date = history[sectionDate] {
             if date.count > indexPath.row {
                 let dose = date[indexPath.row]
-            
+                
                 // Setup date formatter
                 dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
                 dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
                 
                 // Specify selection color
                 cell.selectedBackgroundView = UIView()
-
-                // Setup cell
-                cell.textLabel?.textColor = UIColor.blackColor()
-                cell.textLabel?.text = "\(dateFormatter.stringFromDate(dose.date))"
-                cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                cell.detailTextLabel?.text = String(format:"%g %@", dose.dosage, dose.dosageUnit.units(dose.dosage))
+                
+                if dose.dosage > 0 {
+                    cell.textLabel?.textColor = UIColor.blackColor()
+                    cell.textLabel?.text = "\(dateFormatter.stringFromDate(dose.date))"
+                    cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                    cell.detailTextLabel?.text = String(format:"%g %@", dose.dosage, dose.dosageUnit.units(dose.dosage))
+                } else {
+                    cell.textLabel?.textColor = UIColor.lightGrayColor()
+                    cell.textLabel?.text = "Skipped (\(dateFormatter.stringFromDate(dose.date)))"
+                    cell.detailTextLabel?.text?.removeAll()
+                }
             } else {
                 cell.textLabel?.textColor = UIColor.lightGrayColor()
                 cell.textLabel?.text = "No doses logged"
@@ -288,6 +301,7 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
             setToolbarItems(editButtons, animated: true)
         } else {
             setToolbarItems(normalButtons, animated: true)
+            updateDeleteButtonLabel()
         }
     }
     
@@ -344,8 +358,8 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
             updateDeleteButtonLabel()
             setEditing(false, animated: true)
             
-            // Update widget
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
         }
     }
     
@@ -362,7 +376,13 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
                     dateFormatter.dateFormat = "YYYY-MM-dd h:mm:ss a"
                     
                     contents += "\(dateFormatter.stringFromDate(dose.date)), "
-                    contents += "\(med.removeTrailingZero(dose.dosage)) \(dose.dosageUnit.units(dose.dosage))\r"
+                    
+                    if dose.dosage > 0 {
+                        contents += "\(med.removeTrailingZero(dose.dosage)) \(dose.dosageUnit.units(dose.dosage))\r"
+                    } else {
+                        contents += "Skipped\r"
+                    }
+                        
                 }
                 
                 if let data = contents.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
@@ -389,46 +409,5 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
             }
         }
     }
-    
-    
-    // MARK: - Helper methods
-    
-    func refreshTableAndNotifications() {
-        tableView.reloadData()
-        
-        // Clear old notifications
-        let currentDate = NSDate()
-        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
-        for notification in notifications {
-            if let date = notification.fireDate {
-                if date.compare(currentDate) == .OrderedAscending {
-                    UIApplication.sharedApplication().cancelLocalNotification(notification)
-                }
-            }
-        }
-    }
 
 }
-
-
-
-// MARK: - Preview actions
-
-//    @available(iOS 9.0, *)
-//    override func previewActionItems() -> [UIPreviewActionItem] {
-//        return previewActions
-//    }
-//
-//    @available(iOS 9.0, *)
-//    lazy var previewActions: [UIPreviewActionItem] = {
-//        func previewActionForTitle(title: String, style: UIPreviewActionStyle = .Default) -> UIPreviewAction {
-//            return UIPreviewAction(title: title, style: style) { previewAction, viewController in
-//                guard let vc = viewController as? MedicineDetailsTVC else { return }
-//                vc.performSegueWithIdentifier("addDose", sender: nil)
-//                return
-//            }
-//        }
-//
-//        let action1 = previewActionForTitle("Take Dose")
-//        return [action1]
-//    }()

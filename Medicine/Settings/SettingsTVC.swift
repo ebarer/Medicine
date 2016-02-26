@@ -17,7 +17,6 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     
     // MARK: - Outlets
-    
     @IBOutlet var sortLabel: UILabel!
     @IBOutlet var snoozeLabel: UILabel!
     @IBOutlet var refillLabel: UILabel!
@@ -26,7 +25,6 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
 
     
     // MARK: - View methods
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -97,12 +95,6 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     
     // MARK: - Table view delegate
-    
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // Hide console and help buttons if debug disabled
-        return defaults.boolForKey("debug") == true ? 4 : 3
-    }
-    
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         switch section {
         case 0:
@@ -157,7 +149,6 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     
     // MARK: - Helper methods
-    
     func resetApp() {
         let moc = appDelegate.managedObjectContext
         let request = NSFetchRequest(entityName:"Medicine")
@@ -190,11 +181,24 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
             let confirmationAlert = UIAlertController(title: "Reset Complete", message: "All medication, history, and preferences have been reset.", preferredStyle: UIAlertControllerStyle.Alert)
             
             confirmationAlert.addAction(UIAlertAction(title: "Restart", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-                self.performSegueWithIdentifier("reset", sender: self)
+                if let tbc = self.presentingViewController as? MainTBC {
+                    if let splitView = tbc.viewControllers?.filter({$0.isKindOfClass(UISplitViewController)}).first as? UISplitViewController {
+                        NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+                        NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+                        
+                        self.dismissViewControllerAnimated(false, completion: nil)
+                        
+                        let masterVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
+                        masterVC.performSegueWithIdentifier("tutorial", sender: masterVC)
+                    }
+                }
             }))
             
             confirmationAlert.view.tintColor = UIColor.grayColor()
             self.presentViewController(confirmationAlert, animated: true, completion: nil)
+            if let index = self.tableView.indexPathForSelectedRow {
+                self.tableView.deselectRowAtIndexPath(index, animated: false)
+            }
         } catch {
             print("Could not fetch medication.")
         }
@@ -252,9 +256,11 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     
     // MARK: - Navigation
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {}
-    
-    @IBAction func settingsUndwind(unwindSegue: UIStoryboardSegue) {}
+    @IBAction func dismissSettings(sender: UIBarButtonItem) {
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+
+    // Used to dismiss popover selections
+    @IBAction func settingsUnwind(unwindSegue: UIStoryboardSegue) {}
 
 }

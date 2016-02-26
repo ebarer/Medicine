@@ -13,8 +13,8 @@ class MedicineDetailsTVC: UITableViewController {
     
     weak var med:Medicine?
     
-    // MARK: - Outlets
     
+    // MARK: - Outlets
     @IBOutlet var nameCell: UITableViewCell!
     @IBOutlet var nameLabel: UILabel!
     @IBOutlet var doseDetailsLabel: UILabel!
@@ -26,7 +26,9 @@ class MedicineDetailsTVC: UITableViewController {
     @IBOutlet var takeDoseButton: UIButton!
     @IBOutlet var refillButton: UIButton!
 
+    
     // MARK: - Helper variables
+    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var moc: NSManagedObjectContext!
@@ -36,7 +38,6 @@ class MedicineDetailsTVC: UITableViewController {
     
     
     // MARK: - Initialization
-    
     required init?(coder aDecoder: NSCoder) {
         // Setup context
         moc = appDelegate.managedObjectContext
@@ -45,16 +46,20 @@ class MedicineDetailsTVC: UITableViewController {
     
     
     // MARK: - View methods
-
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Setup edit button
-        let editButton = UIBarButtonItem(title: "Edit", style: .Plain, target: self, action: "editMedication")
+        let editButton = UIBarButtonItem(title: "Edit", style: .Plain, target: self, action: #selector(editMedication))
         self.navigationItem.rightBarButtonItem = editButton
         
         // Add observeres for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateLabels", name: "refreshDetails", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refreshDetails), name: "refreshView", object: nil)
+        
+        // Register for 3D touch if available
+        if traitCollection.forceTouchCapability == .Available {
+            registerForPreviewingWithDelegate(self, sourceView: view)
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -65,13 +70,17 @@ class MedicineDetailsTVC: UITableViewController {
             tableView.deselectRowAtIndexPath(index, animated: animated)
         }
         
-        self.navigationController?.setToolbarHidden(true, animated: animated)
+        if let tBC = self.tabBarController {
+            tBC.setTabBarVisible(true, animated: false)
+            self.navigationController?.setToolbarHidden(true, animated: false)
+        }
         
         // Update actions
         actionCell.backgroundColor = tableView.separatorColor
         takeDoseButton.backgroundColor = UIColor.whiteColor()
         refillButton.backgroundColor = UIColor.whiteColor()
         
+        displayEmptyView()
         updateLabels()
         
         tableView.reloadSections(NSIndexSet(index: Rows.name.index().section), withRowAnimation: .None)
@@ -79,6 +88,36 @@ class MedicineDetailsTVC: UITableViewController {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    func refreshDetails() {
+        // Select first medication if none selected
+        if medication.count > 0 && med == nil {
+            if medication[0].lastDose != nil {
+                med = medication[0]
+            }
+        }
+        
+        displayEmptyView()
+        updateLabels()
+    }
+    
+    func displayEmptyView() {
+        if med == nil {
+            if self.view.viewWithTag(1001) == nil {     // Prevent duplicate empty views being added
+                if let emptyView = UINib(nibName: "DetailEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+                    emptyView.frame = CGRectMake(0, 0, self.view.frame.width, self.view.frame.height)
+                    emptyView.tag = 1001
+                    self.view.addSubview(emptyView)
+                    self.tableView.scrollEnabled = false
+                    self.navigationItem.rightBarButtonItem?.enabled = false
+                }
+            }
+        } else {
+            self.view.viewWithTag(1001)?.removeFromSuperview()
+            self.tableView.scrollEnabled = true
+            self.navigationItem.rightBarButtonItem?.enabled = true
+        }
     }
     
     func updateLabels() {
@@ -95,12 +134,13 @@ class MedicineDetailsTVC: UITableViewController {
             
             var prescriptionString = ""
             if med.refillHistory?.count > 0 {
-                
                 let count = med.prescriptionCount
                 let numberFormatter = NSNumberFormatter()
                 numberFormatter.numberStyle = NSNumberFormatterStyle.DecimalStyle
                 
-                if let count = numberFormatter.stringFromNumber(count) {
+                if count.isZero {
+                    prescriptionString = "None remaining"
+                } else if let count = numberFormatter.stringFromNumber(count) {
                     prescriptionString = "\(count) \(med.dosageUnit.units(med.prescriptionCount)) remaining"
                 }
             } else {
@@ -180,7 +220,6 @@ class MedicineDetailsTVC: UITableViewController {
     
     
     // MARK: - Table view data source
-    
     override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch section {
         case 0:
@@ -208,9 +247,9 @@ class MedicineDetailsTVC: UITableViewController {
             }
         case Rows.actions:
             return 50.0
-        case Rows.doseHistory: fallthrough
-        case Rows.refillHistory: fallthrough
-        case Rows.delete:
+        case Rows.doseHistory,
+             Rows.refillHistory,
+             Rows.delete:
             return 50.0
         default:
             return tableView.rowHeight
@@ -239,7 +278,7 @@ class MedicineDetailsTVC: UITableViewController {
     override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         if let med = med {
             if section == Rows.prescriptionCount.index().section && med.prescriptionCount > 0 {
-                var status = ""
+                var status: String? = nil
                 
                 if med.prescriptionCount < med.dosage {
                     status = "You do not appear to have enough \(med.name!) remaining to take the next dose. "
@@ -250,6 +289,8 @@ class MedicineDetailsTVC: UITableViewController {
                         } else {
                             status = "Based on current usage, your prescription should last approximately \(days) \(Intervals.Daily.units(Float(days))). "
                         }
+                    } else {
+                        status = "Continue taking doses to receive a duration approximation for your prescription."
                     }
                 }
                 
@@ -262,7 +303,6 @@ class MedicineDetailsTVC: UITableViewController {
     
     
     // MARK: - Table view delegates
-    
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let row = Rows(index: indexPath)
         
@@ -281,7 +321,6 @@ class MedicineDetailsTVC: UITableViewController {
 
 
     // MARK: - Actions
-    
     func editMedication() {
         performSegueWithIdentifier("editMedication", sender: nil)
     }
@@ -320,25 +359,60 @@ class MedicineDetailsTVC: UITableViewController {
     func deleteMed() {
         if let med = med {
             // Cancel all notifications for medication
-            med.cancelNotification()
+            med.cancelNotifications()
             
             // Remove medication from array
             medication.removeObject(med)
+            self.med = nil
             
             // Remove medication from persistent store
             moc.deleteObject(med)
             appDelegate.saveContext()
 
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
-            
-            // Dismiss view
-            self.navigationController?.popViewControllerAnimated(true)
+            // Send notifications
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("medicationDeleted", object: nil)
         }
     }
     
     
-    // MARK: - Navigation
+    // MARK: - Peek actions
     
+    override func previewActionItems() -> [UIPreviewActionItem] {
+        return previewActions
+    }
+
+    lazy var previewActions: [UIPreviewActionItem] = {
+        let takeAction = UIPreviewAction(title: "Take Dose", style: .Default) { (action: UIPreviewAction, vc: UIViewController) -> Void in
+            if let med = self.med {
+                let entity = NSEntityDescription.entityForName("Dose", inManagedObjectContext: self.moc)
+                let dose = Dose(entity: entity!, insertIntoManagedObjectContext: self.moc)
+                
+                dose.date = NSDate()
+                dose.dosage = med.dosage
+                dose.dosageUnit = med.dosageUnit
+                
+                med.addDose(dose)
+                
+                // Check if medication needs to be refilled
+                let refillTime = self.defaults.integerForKey("refillTime")
+                if med.needsRefill(limit: refillTime) {
+                    med.sendRefillNotification()
+                }
+                
+                self.appDelegate.saveContext()
+                
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+            }
+        }
+        
+        return [takeAction]
+    }()
+    
+    
+    // MARK: - Navigation
     override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
         if med != nil {
             return true
@@ -355,6 +429,10 @@ class MedicineDetailsTVC: UITableViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if let med = med {
             self.navigationItem.backBarButtonItem?.title = med.name
+            
+            if let button = sender as? UIButton {
+                actionDeselected(button)
+            }
             
             if segue.identifier == "editMedication" {
                 if let vc = segue.destinationViewController.childViewControllers[0] as? AddMedicationTVC {

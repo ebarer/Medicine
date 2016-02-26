@@ -126,6 +126,14 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     // MARK: - Table view data source
     
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        if editMode {
+            return 4
+        }
+        
+        return 3
+    }
+    
     override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch section {
         case Rows.prescription.index().section:
@@ -205,6 +213,16 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     // MARK: - Table view delegate
     
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let row = Rows(index: indexPath)
+        
+        switch(row) {
+        case Rows.delete:
+            presentDeleteAlert(indexPath)
+        default: break
+        }
+    }
+    
     override func tableView(tableView: UITableView, shouldHighlightRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         let row = Rows(index: indexPath)
         
@@ -238,6 +256,9 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             tableView.reloadSections(NSIndexSet(index: Rows.prescription.index().section), withRowAnimation: .Automatic)
             tableView.beginUpdates()
             tableView.endUpdates()
+        } else {
+            tableView.beginUpdates()
+            tableView.endUpdates()
         }
     }
     
@@ -248,6 +269,46 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         tableView.reloadRowsAtIndexPaths([Rows.dosage.index()], withRowAnimation: UITableViewRowAnimation.None)
         tableView.beginUpdates()
         tableView.endUpdates()
+    }
+    
+    func presentDeleteAlert(indexPath: NSIndexPath) {
+        if let med = med {
+            if let name = med.name {
+                let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.Alert)
+                
+                deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
+                    self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                }))
+                
+                deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
+                    self.deleteMed()
+                }))
+                
+                deleteAlert.view.tintColor = UIColor.grayColor()
+                self.presentViewController(deleteAlert, animated: true, completion: nil)
+            }
+        } else {
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        }
+    }
+    
+    func deleteMed() {
+        if let med = med {
+            // Cancel all notifications for medication
+            med.cancelNotifications()
+            
+            // Remove medication from array
+            medication.removeObject(med)
+            
+            // Remove medication from persistent store
+            moc.deleteObject(med)
+            appDelegate.saveContext()
+            
+            // Send notifications
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("medicationDeleted", object: nil)
+        }
     }
     
     
@@ -280,6 +341,10 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         
         if segue.identifier == "refillPrescription" {
             if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
+                if let index = self.tableView.indexPathForSelectedRow {
+                    self.tableView.deselectRowAtIndexPath(index, animated: false)
+                }
+                
                 vc.med = self.med
             }
         }
@@ -305,7 +370,8 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         // Reschedule next notification
         med.scheduleNextNotification()
         
-        NSNotificationCenter.defaultCenter().postNotificationName("refreshMedication", object: nil, userInfo: nil)
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+        NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
         dismissViewControllerAnimated(true, completion: nil)
     }
     
@@ -331,6 +397,7 @@ private enum Rows: Int {
     case dosage
     case interval
     case prescription
+    case delete
     
     init(index: NSIndexPath) {
         var row = Rows.none
@@ -346,6 +413,8 @@ private enum Rows: Int {
             row = Rows.interval
         case (2, 0):
             row = Rows.prescription
+        case (3, 0):
+            row = Rows.delete
         default:
             row = Rows.none
         }
@@ -365,6 +434,8 @@ private enum Rows: Int {
             return NSIndexPath(forRow: 1, inSection: 1)
         case .prescription:
             return NSIndexPath(forRow: 0, inSection: 2)
+        case .delete:
+            return NSIndexPath(forRow: 0, inSection: 3)
         default:
             return NSIndexPath(forRow: 0, inSection: 0)
         }

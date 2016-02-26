@@ -8,17 +8,16 @@
 
 import UIKit
 
-@available(iOS 9.0, *)
-extension MainTVC: UIViewControllerPreviewingDelegate {
+extension MainVC: UIViewControllerPreviewingDelegate {
     
     // Create a previewing view controller to be shown at "Peek".
     func previewingContext(previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
         // Obtain the index path and the cell that was pressed.
         guard let indexPath = tableView.indexPathForRowAtPoint(location),
-                  cell = tableView.cellForRowAtIndexPath(indexPath) else { return nil }
+            cell = tableView.cellForRowAtIndexPath(indexPath) else { return nil }
         
         // Create a detail view controller and set its properties.
-        guard let vc = storyboard?.instantiateViewControllerWithIdentifier("MedicineDetailsTVC") as? MedicineDetailsTVC else { return nil }
+        guard let vc = storyboard?.instantiateViewControllerWithIdentifier("medicineDetails") as? MedicineDetailsTVC else { return nil }
         
         vc.med = medication[indexPath.row]
         
