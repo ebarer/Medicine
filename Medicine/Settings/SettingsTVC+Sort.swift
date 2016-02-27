@@ -53,6 +53,9 @@ class SettingsTVC_Sort: UITableViewController {
                 default: break
                 }
             }
+            
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
         }
     }
 

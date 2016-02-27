@@ -183,13 +183,12 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
             confirmationAlert.addAction(UIAlertAction(title: "Restart", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
                 if let tbc = self.presentingViewController as? MainTBC {
                     if let splitView = tbc.viewControllers?.filter({$0.isKindOfClass(UISplitViewController)}).first as? UISplitViewController {
-                        NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
-                        NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
-                        
                         self.dismissViewControllerAnimated(false, completion: nil)
-                        
                         let masterVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
                         masterVC.performSegueWithIdentifier("tutorial", sender: masterVC)
+                        
+                        NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
+                        NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
                     }
                 }
             }))
