@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class MedicineDetailsTVC: UITableViewController {
+class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
     
     weak var med:Medicine?
     
@@ -25,7 +25,8 @@ class MedicineDetailsTVC: UITableViewController {
     @IBOutlet var actionCell: UITableViewCell!
     @IBOutlet var takeDoseButton: UIButton!
     @IBOutlet var refillButton: UIButton!
-
+    @IBOutlet var notesField: UITextView!
+    
     
     // MARK: - Helper variables
     let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
@@ -151,6 +152,8 @@ class MedicineDetailsTVC: UITableViewController {
             
             prescriptionLabel.text = prescriptionString
             
+            notesField.text = med.notes
+            
             updateDose()
             
             // Correct inset
@@ -226,14 +229,12 @@ class MedicineDetailsTVC: UITableViewController {
         switch section {
         case Rows.name.index().section:
             return 15
-        case Rows.actions.index().section:
-            if med?.prescriptionCount > 0 {
-                return 20.0
-            } else {
-                return 5.0
-            }
+        case Rows.actions.index().section where med?.prescriptionCount > 0:
+            return 20.0
+        case Rows.notes.index().section:
+            return 25.0
         default:
-            return 5.0
+            return 1.0
         }
     }
     
@@ -253,6 +254,9 @@ class MedicineDetailsTVC: UITableViewController {
              Rows.refillHistory,
              Rows.delete:
             return 50.0
+        case Rows.notes:
+            let height = notesField.contentSize.height + 30
+            return (height > 75.0) ? height : 75.0
         default:
             return tableView.rowHeight
         }
@@ -320,6 +324,16 @@ class MedicineDetailsTVC: UITableViewController {
         default: break
         }
     }
+    
+    
+    // MARK: - Handle notes field
+    func textViewDidChange(textView: UITextView) {
+        med?.notes = textView.text
+        appDelegate.saveContext()
+
+        tableView.beginUpdates()
+        tableView.endUpdates()
+    }
 
 
     // MARK: - Actions
@@ -380,7 +394,6 @@ class MedicineDetailsTVC: UITableViewController {
     
     
     // MARK: - Peek actions
-    
     override func previewActionItems() -> [UIPreviewActionItem] {
         return previewActions
     }
@@ -481,6 +494,7 @@ private enum Rows: Int {
     case actions
     case doseHistory
     case refillHistory
+    case notes
     case delete
     
     init(index: NSIndexPath) {
@@ -502,6 +516,8 @@ private enum Rows: Int {
         case (2, 1):
             row = Rows.refillHistory
         case (3, 0):
+            row = Rows.notes
+        case (4, 0):
             row = Rows.delete
         default:
             row = Rows.none
@@ -526,8 +542,10 @@ private enum Rows: Int {
             return NSIndexPath(forRow: 0, inSection: 2)
         case .refillHistory:
             return NSIndexPath(forRow: 1, inSection: 2)
-        case .delete:
+        case .notes:
             return NSIndexPath(forRow: 0, inSection: 3)
+        case .delete:
+            return NSIndexPath(forRow: 0, inSection: 4)
         default:
             return NSIndexPath(forRow: 0, inSection: 0)
         }

@@ -129,7 +129,6 @@ class Medicine: NSManagedObject {
                     let dateFormatter = NSDateFormatter()
                     dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
                     dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
-                    
                     label += String(format:" at %@", dateFormatter.stringFromDate(alarm))
                 }
             }
@@ -955,9 +954,10 @@ enum Doses: Int16, CustomStringConvertible {
     case Pills
     case Milligrams
     case Millilitres
+    case Puffs
     
     static var count: Int {
-        return 3
+        return 4
     }
     
     var description: String {
@@ -965,6 +965,7 @@ enum Doses: Int16, CustomStringConvertible {
         case .Pills: return "Pills"
         case .Milligrams: return "Milligrams"
         case .Millilitres: return "Millilitres"
+        case .Puffs: return "Puffs"
         }
     }
     
@@ -978,6 +979,12 @@ enum Doses: Int16, CustomStringConvertible {
             }
         case .Milligrams: return "mg"
         case .Millilitres: return "ml"
+        case .Puffs:
+            if (amount != nil && amount == 1.0) {
+                return "puff"
+            } else {
+                return "puffs"
+            }
         }
     }
 }

@@ -34,4 +34,6 @@ extension Medicine {
     @NSManaged var refillHistory: NSOrderedSet?
     @NSManaged var refillFlag: Bool
     
+    @NSManaged var notes: String?
+    
 }

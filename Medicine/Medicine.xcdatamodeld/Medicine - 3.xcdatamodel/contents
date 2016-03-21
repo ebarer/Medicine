@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="10137.1" systemVersion="15E33e" minimumToolsVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="10158" systemVersion="15E49a" minimumToolsVersion="Automatic">
     <entity name="Dose" representedClassName=".Dose" elementID="History" syncable="YES">
         <attribute name="date" attributeType="Date" syncable="YES"/>
         <attribute name="dosage" attributeType="Float" defaultValueString="1" syncable="YES"/>
@@ -17,6 +17,7 @@
         <attribute name="intervalUnitInt" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="medicineID" attributeType="String" syncable="YES"/>
         <attribute name="name" attributeType="String" minValueString="1" spotlightIndexingEnabled="YES" syncable="YES"/>
+        <attribute name="notes" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="prescriptionCount" attributeType="Float" minValueString="0" defaultValueString="0" syncable="YES"/>
         <attribute name="refillFlag" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="reminderEnabled" attributeType="Boolean" defaultValueString="YES" syncable="YES"/>
@@ -33,7 +34,7 @@
     </entity>
     <elements>
         <element name="Dose" positionX="-92" positionY="51" width="128" height="135"/>
-        <element name="Medicine" positionX="-263" positionY="-142" width="128" height="255"/>
+        <element name="Medicine" positionX="-263" positionY="-142" width="128" height="270"/>
         <element name="Refill" positionX="-180" positionY="-27" width="128" height="120"/>
     </elements>
 </model>
