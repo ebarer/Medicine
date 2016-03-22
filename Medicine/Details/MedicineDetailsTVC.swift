@@ -238,6 +238,14 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         }
     }
     
+    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == Rows.notes.index().section && med != nil {
+            return "Notes"
+        }
+        
+        return nil
+    }
+    
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         let row = Rows(index: indexPath)
         
