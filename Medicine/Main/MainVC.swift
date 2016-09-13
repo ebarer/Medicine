@@ -455,7 +455,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
     }
     
-    func tableView(tableView: UITableView, didEndEditingRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(tableView: UITableView, didEndEditingRowAtIndexPath indexPath: NSIndexPath?) {
         if let collapsed = self.splitViewController?.collapsed where collapsed == false {
             selectMed()
         }

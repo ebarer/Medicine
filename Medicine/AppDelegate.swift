@@ -332,13 +332,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let oldURL = self.applicationDocumentsDirectory.URLByAppendingPathComponent("SingleViewCoreData.sqlite")
         let url = self.applicationGroupDirectory.URLByAppendingPathComponent("Medicine.sqlite")
         
-        print(url.path)
+        print(url!.path)
         
         let options = [NSMigratePersistentStoresAutomaticallyOption:true, NSInferMappingModelAutomaticallyOption:true]
         var failureReason = "There was an error creating or loading the application's saved data."
         
         do {
-            guard NSFileManager.defaultManager().fileExistsAtPath(url.path!) else {
+            guard NSFileManager.defaultManager().fileExistsAtPath(url!.path!) else {
                 throw CoreDataError.InvalidPersistentStore
             }
             
@@ -350,7 +350,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             do {
                 let oldStore = try coordinator.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: oldURL, options: options)
                 NSLog("Old store \(oldStore)")
-                let migratedStore = try coordinator.migratePersistentStore(oldStore, toURL: url, options: nil, withType: NSSQLiteStoreType)
+                let migratedStore = try coordinator.migratePersistentStore(oldStore, toURL: url!, options: nil, withType: NSSQLiteStoreType)
                 NSLog("Migrated store \(migratedStore)")
             } catch {
                 NSLog("Failed to load persistent store after migration attempt")
