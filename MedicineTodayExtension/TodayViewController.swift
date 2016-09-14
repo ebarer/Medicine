@@ -14,11 +14,9 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 
     let cal = NSCalendar.currentCalendar()
     let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
-    var size: CGFloat = 130.0
     
     
     // MARK: - Outlets
-    @IBOutlet var doseDescriptionLabel: UILabel!
     @IBOutlet var doseMainLabel: UILabel!
     @IBOutlet var doseMedLabel: UILabel!
     
@@ -32,7 +30,6 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        self.preferredContentSize = CGSizeMake(0, size)
         updateLabels()
     }
     
@@ -57,39 +54,30 @@ class TodayViewController: UIViewController, NCWidgetProviding {
                 if ((date as! NSDate).compare(NSDate()) == .OrderedDescending && cal.isDateInToday(date as! NSDate)) {
                     let string = NSMutableAttributedString(string: data["dateString"] as! String)
                     string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(50.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, string.length-2))
-                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(string.length-2, 2))
+                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(20.0), range: NSMakeRange(string.length-2, 2))
                     
-                    doseDescriptionLabel.text = (data["descriptionString"] as? String)
                     doseMainLabel.attributedText = string
                     doseMedLabel.text = (data["medString"] as? String)
-                    size = 130.0
-                    
-                    self.preferredContentSize = CGSizeMake(0, size)
+
                     return NCUpdateResult.NewData
                 }
             }
             
             let string = NSMutableAttributedString(string: data["dateString"] as! String)
             string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
-            
-            doseDescriptionLabel.text = nil
+
             doseMainLabel.attributedText = string
             doseMedLabel.text = nil
-            size = 75.0
-            
-            self.preferredContentSize = CGSizeMake(0, size)
+
             return NCUpdateResult.NewData
         }
         
         let string = NSMutableAttributedString(string: "Couldn't update")
         string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
         
-        doseDescriptionLabel.text = nil
         doseMainLabel.attributedText = string
         doseMedLabel.text = nil
-        size = 75.0
-        
-        self.preferredContentSize = CGSizeMake(0, size)
+
         return NCUpdateResult.NewData
     }
     

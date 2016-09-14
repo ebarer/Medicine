@@ -94,10 +94,12 @@ class AddDoseTVC: UITableViewController {
     
     func updateDoseValues() {
         if let med = self.med {
+            dose.medicine = med
             dose.dosage = med.dosage
             dose.dosageUnitInt = med.dosageUnitInt
         } else if let med = medication.first {
             self.med = med
+            dose.medicine = med
             dose.dosage = med.dosage
             dose.dosageUnitInt = med.dosageUnitInt
         }
@@ -186,6 +188,9 @@ class AddDoseTVC: UITableViewController {
         if segue.identifier == "refillPrescription" {
             if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
                 vc.med = med
+                if let index = tableView.indexPathForSelectedRow {
+                    self.tableView.deselectRowAtIndexPath(index, animated: false)
+                }
             }
         }
     }
