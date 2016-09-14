@@ -66,25 +66,29 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     func productsRequest(request: SKProductsRequest, didReceiveResponse response: SKProductsResponse) {
         products = response.products
         
-        // Set purchase label
-        if let upgrade = products?[0] {
-            purchaseButton.setTitle(upgrade.localizedPrice(), forState: UIControlState.Normal)
+        if products?.count > 0 {
+            // Set purchase label
+            if let upgrade = products?[0] {
+                purchaseButton.setTitle(upgrade.localizedPrice(), forState: UIControlState.Normal)
+            }
         }
     }
 
     
     @IBAction func purchaseFullVersion() {
-        if let upgrade = products?[0] {
-            if upgrade.productIdentifier == productID {
-                // Modify UI elements
-                purchaseButton.enabled = false
-                purchaseButton.setTitle("Purchasing...", forState: UIControlState.Disabled)
-                restoreButton.enabled = false
-                purchaseIndicator.startAnimating()
-                
-                // Process transaction
-                if SKPaymentQueue.canMakePayments() {
-                    SKPaymentQueue.defaultQueue().addPayment(SKPayment(product: upgrade))
+        if products?.count > 0 {
+            if let upgrade = products?[0] {
+                if upgrade.productIdentifier == productID {
+                    // Modify UI elements
+                    purchaseButton.enabled = false
+                    purchaseButton.setTitle("Purchasing...", forState: UIControlState.Disabled)
+                    restoreButton.enabled = false
+                    purchaseIndicator.startAnimating()
+                    
+                    // Process transaction
+                    if SKPaymentQueue.canMakePayments() {
+                        SKPaymentQueue.defaultQueue().addPayment(SKPayment(product: upgrade))
+                    }
                 }
             }
         }

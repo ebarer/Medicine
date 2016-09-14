@@ -332,8 +332,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let oldURL = self.applicationDocumentsDirectory.URLByAppendingPathComponent("SingleViewCoreData.sqlite")
         let url = self.applicationGroupDirectory.URLByAppendingPathComponent("Medicine.sqlite")
         
-        print(url!.path)
-        
         let options = [NSMigratePersistentStoresAutomaticallyOption:true, NSInferMappingModelAutomaticallyOption:true]
         var failureReason = "There was an error creating or loading the application's saved data."
         
@@ -367,7 +365,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let coordinator = self.persistentStoreCoordinator
         var managedObjectContext = NSManagedObjectContext(concurrencyType: NSManagedObjectContextConcurrencyType.MainQueueConcurrencyType)
         managedObjectContext.persistentStoreCoordinator = coordinator
-        print(managedObjectContext)
         return managedObjectContext
     }()
 
