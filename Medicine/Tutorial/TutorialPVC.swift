@@ -19,14 +19,14 @@ class TutorialPVC: UIPageViewController, UIPageViewControllerDataSource {
         
         // Setup view, and remove navigation bar shadow
         self.view.backgroundColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), forBarMetrics: .Default)
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController?.navigationBar.shadowImage = UIImage()
         
         // Setup page control
         let appearance = UIPageControl.appearance()
         appearance.pageIndicatorTintColor = UIColor(white: 0, alpha: 0.2)
-        appearance.currentPageIndicatorTintColor = UIColor.whiteColor()
-        appearance.frame.offsetInPlace(dx: 0.0, dy: -100.0)
+        appearance.currentPageIndicatorTintColor = UIColor.white
+        appearance.frame = appearance.frame.offsetBy(dx: 0.0, dy: -100.0)
         
         // Setup page view controller
         dataSource = self
@@ -34,7 +34,7 @@ class TutorialPVC: UIPageViewController, UIPageViewControllerDataSource {
         // Setup first tutorial page
         if tutorialPages.count > 0 {
             if let first = getPage(0) {
-                setViewControllers([first], direction: .Forward, animated: false, completion: nil)
+                setViewControllers([first], direction: .forward, animated: false, completion: nil)
             }
         }
     }
@@ -45,15 +45,15 @@ class TutorialPVC: UIPageViewController, UIPageViewControllerDataSource {
     
     
     // MARK: - Page view controller data source
-    func presentationCountForPageViewController(pageViewController: UIPageViewController) -> Int {
+    func presentationCount(for pageViewController: UIPageViewController) -> Int {
         return tutorialPages.count
     }
     
-    func presentationIndexForPageViewController(pageViewController: UIPageViewController) -> Int {
+    func presentationIndex(for pageViewController: UIPageViewController) -> Int {
         return 0
     }
     
-    func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         let tutorial = viewController as! TutorialContentVC
         let index = tutorial.index + 1
         
@@ -68,7 +68,7 @@ class TutorialPVC: UIPageViewController, UIPageViewControllerDataSource {
         return nil
     }
     
-    func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         let tutorial = viewController as! TutorialContentVC
         let index = tutorial.index - 1
         
@@ -83,15 +83,15 @@ class TutorialPVC: UIPageViewController, UIPageViewControllerDataSource {
         return nil
     }
     
-    func setBackgroundColour(flag: Bool) {
+    func setBackgroundColour(_ flag: Bool) {
         switch (flag) {
         case true:
-            UIView.animateWithDuration(0.5, animations: { () -> Void in
-                self.navigationController?.navigationBar.barTintColor = UIColor.blackColor()
-                self.view.backgroundColor = UIColor.blackColor()
+            UIView.animate(withDuration: 0.5, animations: { () -> Void in
+                self.navigationController?.navigationBar.barTintColor = UIColor.black
+                self.view.backgroundColor = UIColor.black
             })
         default:
-            UIView.animateWithDuration(0.5, animations: { () -> Void in
+            UIView.animate(withDuration: 0.5, animations: { () -> Void in
                 self.navigationController?.navigationBar.barTintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
                 self.view.backgroundColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
             })
@@ -100,9 +100,9 @@ class TutorialPVC: UIPageViewController, UIPageViewControllerDataSource {
 
     
     // MARK: - Helper methods
-    func getPage(index: Int) -> TutorialContentVC? {
+    func getPage(_ index: Int) -> TutorialContentVC? {
         if index < tutorialPages.count {
-            let tutorial = self.storyboard!.instantiateViewControllerWithIdentifier("TutorialContentVC") as! TutorialContentVC
+            let tutorial = self.storyboard!.instantiateViewController(withIdentifier: "TutorialContentVC") as! TutorialContentVC
             tutorial.index = index
             tutorial.tutorialTitle = tutorialPages[index]
             return tutorial

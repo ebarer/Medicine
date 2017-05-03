@@ -26,13 +26,13 @@ class AddDoseTVC: UITableViewController {
     
     
     // MARK: - Helper variables
-    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
-    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var moc: NSManagedObjectContext
     
-    let cal = NSCalendar.currentCalendar()
-    let dateFormatter = NSDateFormatter()
+    let cal = Calendar.current
+    let dateFormatter = DateFormatter()
     var globalHistory: Bool = false
     
     
@@ -42,12 +42,12 @@ class AddDoseTVC: UITableViewController {
         moc = appDelegate.managedObjectContext
         
         // Setup date formatter
-        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-        dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
+        dateFormatter.timeStyle = DateFormatter.Style.short
+        dateFormatter.dateStyle = DateFormatter.Style.none
         
-        let entity = NSEntityDescription.entityForName("Dose", inManagedObjectContext: moc)
-        dose = Dose(entity: entity!, insertIntoManagedObjectContext: moc)
-        dose.date = NSDate()
+        let entity = NSEntityDescription.entity(forEntityName: "Dose", in: moc)
+        dose = Dose(entity: entity!, insertInto: moc)
+        dose.date = Date()
         
         super.init(coder: aDecoder)
     }
@@ -60,26 +60,26 @@ class AddDoseTVC: UITableViewController {
 
         // Modify VC
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-        tableView.tableHeaderView = UIView(frame: CGRectMake(0.0, 0.0, tableView.bounds.size.width, 0.01))  // Remove tableView gap
+        tableView.tableHeaderView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: tableView.bounds.size.width, height: 0.01))  // Remove tableView gap
 
         // Prevent modification of medication when not in global history
         if !globalHistory {
-            medCell.accessoryType = UITableViewCellAccessoryType.None
-            medCell.selectionStyle = UITableViewCellSelectionStyle.None
+            medCell.accessoryType = UITableViewCellAccessoryType.none
+            medCell.selectionStyle = UITableViewCellSelectionStyle.none
         }
 
         // Set picker min/max values
-        picker.maximumDate = NSDate()
+        picker.maximumDate = Date()
         
         updateDoseValues()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         // Deselect selected row
         if let index = tableView.indexPathForSelectedRow {
-            tableView.deselectRowAtIndexPath(index, animated: animated)
+            tableView.deselectRow(at: index, animated: animated)
         }
 
         updateDoseValues()
@@ -111,18 +111,18 @@ class AddDoseTVC: UITableViewController {
             medLabel.text = "None"
             doseLabel.text = "None"
             
-            doseCell.selectionStyle = .None
-            prescriptionCell.selectionStyle = .None
-            saveButton.enabled = false
+            doseCell.selectionStyle = .none
+            prescriptionCell.selectionStyle = .none
+            saveButton.isEnabled = false
         } else {
-            picker.setDate(dose.date, animated: true)
+            picker.setDate(dose.date as Date, animated: true)
             
             medLabel.text = med?.name
             doseLabel.text = String(format:"%g %@", dose.dosage, dose.dosageUnit.units(dose.dosage))
             
-            doseCell.selectionStyle = .Default
-            prescriptionCell.selectionStyle = .Default
-            saveButton.enabled = true
+            doseCell.selectionStyle = .default
+            prescriptionCell.selectionStyle = .default
+            saveButton.isEnabled = true
         }
         
         // If insufficient prescription levels,
@@ -131,18 +131,18 @@ class AddDoseTVC: UITableViewController {
     
     
     // MARK: - Table view data source
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        if indexPath == NSIndexPath(forRow: 0, inSection: 0) {
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath == IndexPath(row: 0, section: 0) {
             return 216.0
-        } else if indexPath == NSIndexPath(forRow: 2, inSection: 0) {
+        } else if indexPath == IndexPath(row: 2, section: 0) {
             return 48.0
         }
         
         return tableView.rowHeight
     }
     
-    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if let med = med where section == 0 {
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        if let med = med, section == 0 {
             return med.refillStatus()
         }
         
@@ -151,13 +151,13 @@ class AddDoseTVC: UITableViewController {
     
     
     // MARK: - Actions
-    @IBAction func updateDate(sender: UIDatePicker) {
+    @IBAction func updateDate(_ sender: UIDatePicker) {
         dose.date = sender.date
     }
     
     
     // MARK: - Navigation
-    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
         // Prevent segues if no medication selected (except to select a medication)
         if med == nil && identifier != "selectMedicine" {
             return false
@@ -171,54 +171,55 @@ class AddDoseTVC: UITableViewController {
         return true
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "selectMedicine" {
-            if let vc = segue.destinationViewController as? AddDoseTVC_Medicine {
+            if let vc = segue.destination as? AddDoseTVC_Medicine {
                 vc.selectedMed = med
             }
         }
-
+        
         if segue.identifier == "setDosage" {
-            if let vc = segue.destinationViewController as? AddMedicationTVC_Dosage {
+            if let vc = segue.destination as? AddMedicationTVC_Dosage {
                 vc.med = med
                 vc.editMode = true
             }
         }
         
         if segue.identifier == "refillPrescription" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
+            if let vc = segue.destination.childViewControllers[0] as? AddRefillTVC {
                 vc.med = med
                 if let index = tableView.indexPathForSelectedRow {
-                    self.tableView.deselectRowAtIndexPath(index, animated: false)
+                    self.tableView.deselectRow(at: index, animated: false)
                 }
             }
         }
     }
+
     
-    @IBAction func medicationUnwindSelect(unwindSegue: UIStoryboardSegue) {
-        if let vc = unwindSegue.sourceViewController as? AddDoseTVC_Medicine {
+    @IBAction func medicationUnwindSelect(_ unwindSegue: UIStoryboardSegue) {
+        if let vc = unwindSegue.source as? AddDoseTVC_Medicine {
             self.med = vc.selectedMed
         }
     }
     
-    @IBAction func saveDose(sender: AnyObject) {
+    @IBAction func saveDose(_ sender: AnyObject) {
         if let med = self.med {
             do {
                 // Save dose
                 try med.takeDose(dose)
                 
                 // Check if medication needs to be refilled
-                let refillTime = defaults.integerForKey("refillTime")
+                let refillTime = defaults.integer(forKey: "refillTime")
                 if med.needsRefill(limit: refillTime) {
                     med.sendRefillNotification()
                 }
                 
                 appDelegate.saveContext()
                 
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                 
-                dismissViewControllerAnimated(true, completion: nil)
+                dismiss(animated: true, completion: nil)
             } catch {
                 presentDoseAlert()
             }
@@ -227,10 +228,10 @@ class AddDoseTVC: UITableViewController {
         }
     }
     
-    @IBAction func cancelDose(sender: AnyObject) {
-        moc.deleteObject(dose)
+    @IBAction func cancelDose(_ sender: AnyObject) {
+        moc.delete(dose)
         appDelegate.saveContext()
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
     
     
@@ -238,28 +239,28 @@ class AddDoseTVC: UITableViewController {
     func presentMedAlert() {
             globalHistory = true
         
-            let alert = UIAlertController(title: "Invalid Medication", message: "You have to select a valid medication.", preferredStyle: UIAlertControllerStyle.Alert)
-            alert.view.tintColor = UIColor.grayColor()
-            self.presentViewController(alert, animated: true, completion: nil)
+            let alert = UIAlertController(title: "Invalid Medication", message: "You have to select a valid medication.", preferredStyle: UIAlertControllerStyle.alert)
+            alert.view.tintColor = UIColor.gray
+            self.present(alert, animated: true, completion: nil)
     }
     
     func presentDoseAlert() {
         if let med = self.med {
-            let doseAlert = UIAlertController(title: "Repeat Dose?", message: "You have logged a dose for \(med.name!) within the passed 5 minutes, do you wish to log another dose?", preferredStyle: UIAlertControllerStyle.Alert)
+            let doseAlert = UIAlertController(title: "Repeat Dose?", message: "You have logged a dose for \(med.name!) within the passed 5 minutes, do you wish to log another dose?", preferredStyle: UIAlertControllerStyle.alert)
             
-            doseAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
+            doseAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil))
             
-            doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
+            doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
                 self.appDelegate.saveContext()
                 
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                 
-                self.dismissViewControllerAnimated(true, completion: nil)
+                self.dismiss(animated: true, completion: nil)
             }))
             
-            doseAlert.view.tintColor = UIColor.grayColor()
-            self.presentViewController(doseAlert, animated: true, completion: nil)
+            doseAlert.view.tintColor = UIColor.gray
+            self.present(doseAlert, animated: true, completion: nil)
         }
     }
 

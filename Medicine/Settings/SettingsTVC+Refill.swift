@@ -10,7 +10,7 @@ import UIKit
 
 class SettingsTVC_Refill: UITableViewController {
     
-    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     let refillArray: [Int] = [ 1, 2, 3, 4, 5, 6, 7]
     
     
@@ -27,21 +27,21 @@ class SettingsTVC_Refill: UITableViewController {
     
     // MARK: - Table view data source
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return refillArray.count
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("refillCell", forIndexPath: indexPath)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "refillCell", for: indexPath)
         
         let amount = refillArray[indexPath.row]
         var string = "\(amount) day"
         if (amount < 1 || amount >= 2) { string += "s" }
         cell.textLabel?.text = string
         
-        let selected = defaults.integerForKey("refillTime")
+        let selected = defaults.integer(forKey: "refillTime")
         if selected == refillArray[indexPath.row] {
-            cell.accessoryType = UITableViewCellAccessoryType.Checkmark
+            cell.accessoryType = UITableViewCellAccessoryType.checkmark
         }
         
         return cell
@@ -50,13 +50,13 @@ class SettingsTVC_Refill: UITableViewController {
     
     // MARK: - Navigation
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let selection = tableView.indexPathForSelectedRow?.row {
             let amount = refillArray[selection]
-            defaults.setInteger(amount, forKey: "refillTime")
+            defaults.set(amount, forKey: "refillTime")
             defaults.synchronize()
             
-            if let dvc = segue.destinationViewController as? SettingsTVC {
+            if let dvc = segue.destination as? SettingsTVC {
                 var string = "\(amount) day"
                 if (amount < 1 || amount >= 2) { string += "s" }
                 dvc.refillLabel.text = string

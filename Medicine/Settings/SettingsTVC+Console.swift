@@ -11,23 +11,23 @@ import CoreData
 
 class SettingsTVC_Console: UITableViewController {
 
-    let cal = NSCalendar.currentCalendar()
-    let dateFormatter = NSDateFormatter()
+    let cal = Calendar.current
+    let dateFormatter = DateFormatter()
 
-    var notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
+    var notifications = UIApplication.shared.scheduledLocalNotifications!
     var console = [(name: String, date: String, id: String)]()
     
-    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
 
     
     // MARK: - View methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadNotifications()
+        _ = loadNotifications()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         if loadNotifications() {
@@ -46,17 +46,17 @@ class SettingsTVC_Console: UITableViewController {
     }
     
     func loadNotifications() -> Bool {
-        notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
+        notifications = UIApplication.shared.scheduledLocalNotifications!
         
         if notifications.count != 0 {
             console.removeAll()
             
-            for (_, notification) in notifications.enumerate() {
+            for (_, notification) in notifications.enumerated() {
                 if let id = notification.userInfo?["id"] {
                     if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
-                        dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
-                        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-                        console.append((med.name!, dateFormatter.stringFromDate(notification.fireDate!), id as! String))
+                        dateFormatter.dateStyle = DateFormatter.Style.medium
+                        dateFormatter.timeStyle = DateFormatter.Style.short
+                        console.append((med.name!, dateFormatter.string(from: notification.fireDate!), id as! String))
                     }
                 }
             }
@@ -70,11 +70,11 @@ class SettingsTVC_Console: UITableViewController {
     
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 3
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch(section) {
         case 0:
             return medication.count
@@ -85,7 +85,7 @@ class SettingsTVC_Console: UITableViewController {
         }
     }
     
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch(section) {
         case 0:
             return "Medication"
@@ -102,12 +102,12 @@ class SettingsTVC_Console: UITableViewController {
         }
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("consoleCell", forIndexPath: indexPath)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "consoleCell", for: indexPath)
         
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
-        dateFormatter.timeStyle = NSDateFormatterStyle.MediumStyle
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = DateFormatter.Style.medium
+        dateFormatter.timeStyle = DateFormatter.Style.medium
         
         switch(indexPath.section) {
         case 0:
@@ -128,7 +128,7 @@ class SettingsTVC_Console: UITableViewController {
         return cell
     }
     
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch(indexPath.section) {
         case 2:
             return 44.0

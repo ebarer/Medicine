@@ -45,11 +45,11 @@ class MedicineCell: UITableViewCell {
         glyphLeading.constant = 0.0
     }
 
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
     
-    func hideGlyph(val: Bool) {
+    func hideGlyph(_ val: Bool) {
         if val {
             glyphHidden = true
             glyphWidth.constant = 0.0
@@ -64,8 +64,8 @@ class MedicineCell: UITableViewCell {
         self.layoutIfNeeded()
     }
     
-    func hideButton(val: Bool) {
-        addButton.hidden = val
+    func hideButton(_ val: Bool) {
+        addButton.isHidden = val
         buttonHidden = val
     }
 

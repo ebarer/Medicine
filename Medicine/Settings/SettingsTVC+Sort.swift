@@ -10,7 +10,7 @@ import UIKit
 
 class SettingsTVC_Sort: UITableViewController {
 
-    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     
     // MARK: - View methods
@@ -26,36 +26,36 @@ class SettingsTVC_Sort: UITableViewController {
     
     // MARK: - Table view data source
     
-    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        if indexPath.row == defaults.integerForKey("sortOrder") {
-            cell.accessoryType = UITableViewCellAccessoryType.Checkmark
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row == defaults.integer(forKey: "sortOrder") {
+            cell.accessoryType = UITableViewCellAccessoryType.checkmark
         } else {
-            cell.accessoryType = UITableViewCellAccessoryType.None
+            cell.accessoryType = UITableViewCellAccessoryType.none
         }
     }
 
     
     // MARK: - Navigation
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let selection = tableView.indexPathForSelectedRow?.row {
-            defaults.setInteger(selection, forKey: "sortOrder")
+            defaults.set(selection, forKey: "sortOrder")
             defaults.synchronize()
             
-            if let dvc = segue.destinationViewController as? SettingsTVC {
-                switch(defaults.integerForKey("sortOrder")) {
-                case SortOrder.Manual.rawValue:
-                    medication.sortInPlace(Medicine.sortByManual)
+            if let dvc = segue.destination as? SettingsTVC {
+                switch(defaults.integer(forKey: "sortOrder")) {
+                case SortOrder.manual.rawValue:
+                    medication.sort(by: Medicine.sortByManual)
                     dvc.sortLabel.text = "Manually"
-                case SortOrder.NextDosage.rawValue:
-                    medication.sortInPlace(Medicine.sortByNextDose)
+                case SortOrder.nextDosage.rawValue:
+                    medication.sort(by: Medicine.sortByNextDose)
                     dvc.sortLabel.text = "Next Dosage"
                 default: break
                 }
             }
             
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
         }
     }
 

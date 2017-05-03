@@ -24,14 +24,14 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Helper variables
-    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
-    var launchedShortcutItem: [NSObject: AnyObject]?
+    let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    var launchedShortcutItem: [AnyHashable: Any]?
     
-    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var moc: NSManagedObjectContext
     
-    let cal = NSCalendar.currentCalendar()
-    let dateFormatter = NSDateFormatter()
+    let cal = Calendar.current
+    let dateFormatter = DateFormatter()
     
     var selectedMed: Medicine?
     
@@ -57,21 +57,21 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         super.viewDidLoad()
         
         // If selected, sort by next dosage
-        if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-            medication.sortInPlace(Medicine.sortByNextDose)
+        if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
+            medication.sort(by: Medicine.sortByNextDose)
         }
         
         // Add observers for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refreshMainVC(_:)), name: "refreshMain", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(medicationDeleted), name: "medicationDeleted", object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshMainVC(_:)), name: NSNotification.Name(rawValue: "refreshMain"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(medicationDeleted), name: NSNotification.Name(rawValue: "medicationDeleted"), object: nil)
         
         // Register for 3D touch if available
-        if traitCollection.forceTouchCapability == .Available {
-            registerForPreviewingWithDelegate(self, sourceView: tableView)
+        if traitCollection.forceTouchCapability == .available {
+            registerForPreviewing(with: self, sourceView: tableView)
         }
         
         // Setup IAP
-        if defaults.boolForKey("managerUnlocked") {
+        if defaults.bool(forKey: "managerUnlocked") {
             productLock = false
         } else {
             productLock = true
@@ -84,21 +84,21 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         self.navigationItem.titleView = UIImageView(image: UIImage(named: "Logo-Nav"))
         
         // Remove tableView gap
-        tableView.tableHeaderView = UIView(frame: CGRectMake(0.0, 0.0, tableView.bounds.size.width, 0.01))
+        tableView.tableHeaderView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: tableView.bounds.size.width, height: 0.01))
         
         // Setup refresh timer
-        let _ = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(300), target: self, selector: #selector(refreshTable), userInfo: nil, repeats: true)
+        let _ = Timer.scheduledTimer(timeInterval: TimeInterval(300), target: self, selector: #selector(refreshTable), userInfo: nil, repeats: true)
         
         // Display tutorial on first launch
-        let dictionary = NSBundle.mainBundle().infoDictionary!
+        let dictionary = Bundle.main.infoDictionary!
         let version = dictionary["CFBundleShortVersionString"] as! String
-        if defaults.stringForKey("version") != version {
+        if defaults.string(forKey: "version") != version {
             defaults.setValue(version, forKey: "version")
-            self.performSegueWithIdentifier("tutorial", sender: self)
+            self.performSegue(withIdentifier: "tutorial", sender: self)
         }
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(true, animated: true)
         
@@ -106,22 +106,22 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         displayEmptyView()
         
         // Deselect selection
-        if let collapsed = self.splitViewController?.collapsed where collapsed == true {
+        if let collapsed = self.splitViewController?.isCollapsed, collapsed == true {
             selectMed()
             
             if let selected = self.tableView.indexPathForSelectedRow {
-                self.tableView.deselectRowAtIndexPath(selected, animated: true)
+                self.tableView.deselectRow(at: selected, animated: true)
             }
         }
         
         // Handle homescreen shortcuts (selected by user)
-        if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsShortcutItemKey] as? UIApplicationShortcutItem {
+        if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
             if let action = shortcutItem.userInfo?["action"] {
-                switch(String(action)) {
+                switch(String(describing: action)) {
                 case "addMedication":
-                    performSegueWithIdentifier("addMedication", sender: self)
+                    performSegue(withIdentifier: "addMedication", sender: self)
                 case "takeDose":
-                    performSegueWithIdentifier("addDose", sender: self)
+                    performSegue(withIdentifier: "addDose", sender: self)
                 default: break
                 }
             }
@@ -141,7 +141,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Update values
-    func refreshMainVC(notification: NSNotification? = nil) {
+    func refreshMainVC(_ notification: Notification? = nil) {
         
         if let tbc = self.tabBarController as? MainTBC {
             tbc.loadMedication()
@@ -155,7 +155,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             tableView.reloadData()
         }
         
-        if let collapsed = self.splitViewController?.collapsed where collapsed == false {
+        if let collapsed = self.splitViewController?.isCollapsed, collapsed == false {
             selectMed()
         }
 
@@ -165,32 +165,32 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     func displayEmptyView() {
         if medication.count == 0 {
             // Display edit button
-            self.navigationItem.rightBarButtonItems?.removeObject(self.editButtonItem())
+            self.navigationItem.rightBarButtonItems?.removeObject(self.editButtonItem)
 
             // Display empty message
             if self.view.viewWithTag(1001) == nil {     // Prevent duplicate empty views being added
-                if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
-                    emptyView.frame = CGRectMake(0, 0, self.view.frame.width, self.view.frame.height)
+                if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiate(withOwner: self, options: nil)[0] as? UIView {
+                    emptyView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
                     emptyView.tag = 1001
                     emptyView.alpha = 0.0
                     self.view.addSubview(emptyView)
                     
-                    UIView.animateWithDuration(0.5,
+                    UIView.animate(withDuration: 0.5,
                         animations: { () -> Void in
                             self.summaryHeader.alpha = 0.0
                             self.tableView.alpha = 0.0
                             emptyView.alpha = 1.0
                         }, completion: { (val) -> Void in
-                            self.summaryHeader.hidden = true
-                            self.tableView.hidden = true
+                            self.summaryHeader.isHidden = true
+                            self.tableView.isHidden = true
                     })
                 }
             }
         } else {
             // Display edit button
             if let buttons = self.navigationItem.rightBarButtonItems {
-                if buttons.contains(self.editButtonItem()) == false {
-                    self.navigationItem.rightBarButtonItems?.append(self.editButtonItem())
+                if buttons.contains(self.editButtonItem) == false {
+                    self.navigationItem.rightBarButtonItems?.append(self.editButtonItem)
                 }
             }
             
@@ -200,10 +200,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                 emptyView.removeFromSuperview()
             }
             
-            summaryHeader.hidden = false
+            summaryHeader.isHidden = false
             self.summaryHeader.alpha = 1.0
             
-            tableView.hidden = false
+            tableView.isHidden = false
             self.tableView.alpha = 1.0
         }
     }
@@ -211,7 +211,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     func updateHeader() {
         // Initialize main string
         var string = NSMutableAttributedString(string: "No more doses today")
-        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+        string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
         
         // Setup today widget data
         var todayData = [String: AnyObject]()
@@ -233,27 +233,27 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             }
             
             string = NSMutableAttributedString(string: text)
-            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+            string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
             headerCounterLabel.attributedText = string
         }
             
         // Show next scheduled dose
-        else if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
+        else if let nextDose = UIApplication.shared.scheduledLocalNotifications?.first {
             if cal.isDateInToday(nextDose.fireDate!) {
                 if let id = nextDose.userInfo?["id"] {
                     if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
                         headerDescriptionLabel.text = "Next Dose"
                         
                         dateFormatter.dateFormat = "h:mm a"
-                        let date = dateFormatter.stringFromDate(nextDose.fireDate!)
+                        let date = dateFormatter.string(from: nextDose.fireDate!)
                         string = NSMutableAttributedString(string: date)
-                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, string.length))
+                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, string.length))
                         
                         // Accomodate 24h times
-                        let range = (date.containsString("AM")) ? date.rangeOfString("AM") : date.rangeOfString("PM")
+                        let range = (date.contains("AM")) ? date.range(of: "AM") : date.range(of: "PM")
                         if let range = range {
-                            let pos = date.startIndex.distanceTo(range.startIndex)
-                            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0), range: NSMakeRange(pos-1, 3))
+                            let pos = date.characters.distance(from: date.startIndex, to: range.lowerBound)
+                            string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 24.0), range: NSMakeRange(pos-1, 3))
                         }
                         
                         headerCounterLabel.attributedText = string
@@ -264,34 +264,34 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                 }
             }
             
-            todayData["date"] = nextDose.fireDate!
+            todayData["date"] = nextDose.fireDate! as AnyObject?
         }
             
         // Prompt to take first dose
         else if medication.count > 0 {
             if medication.first?.lastDose == nil {
                 string = NSMutableAttributedString(string: "Take first dose")
-                string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
                 headerCounterLabel.attributedText = string
             }
         }
         
         // Set today widget information
-        todayData["descriptionString"] = headerDescriptionLabel.text
-        todayData["dateString"] = headerCounterLabel.text
-        todayData["medString"] = headerMedLabel.text
+        todayData["descriptionString"] = headerDescriptionLabel.text as AnyObject?
+        todayData["dateString"] = headerCounterLabel.text as AnyObject?
+        todayData["medString"] = headerMedLabel.text as AnyObject?
         
-        defaults.setObject((todayData as NSDictionary), forKey: "todayData")
+        defaults.set((todayData as NSDictionary), forKey: "todayData")
         defaults.synchronize()
     }
     
     func refreshTable() {
         // Reschedule notifications
-        NSNotificationCenter.defaultCenter().postNotificationName("rescheduleNotifications", object: nil, userInfo: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "rescheduleNotifications"), object: nil, userInfo: nil)
         
         // If selected, sort by next dosage
-        if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-            medication.sortInPlace(Medicine.sortByNextDose)
+        if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
+            medication.sort(by: Medicine.sortByNextDose)
         }
         
         // Dismiss editing mode
@@ -300,27 +300,27 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Table view data source
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return medication.count
     }
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 100.0
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let med = medication[indexPath.row]
         
         // Configure cell
-        let cell = tableView.dequeueReusableCellWithIdentifier("medicineCell", forIndexPath: indexPath) as! MedicineCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "medicineCell", for: indexPath) as! MedicineCell
         
         // Set medication name
         cell.title.text = med.name
-        cell.title.textColor = UIColor.blackColor()
+        cell.title.textColor = UIColor.black
         
         // Set adherence score
         if let score = med.adherenceScore() {
@@ -333,22 +333,22 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         // Set subtitle and attributes
         cell.hideGlyph(false)
         cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
-        cell.subtitle.textColor = UIColor.blackColor()
+        cell.subtitle.textColor = UIColor.black
         cell.hideButton(false)
         let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
         
         // If no doses taken, and medication is hourly
-        if med.doseHistory?.count == 0 && med.intervalUnit == .Hourly {
+        if med.doseHistory?.count == 0 && med.intervalUnit == .hourly {
             cell.hideButton(true)
             cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
-            cell.subtitle.textColor = UIColor.lightGrayColor()
+            cell.subtitle.textColor = UIColor.lightGray
             cell.subtitle.text = "Tap to take first dose"
         }
             
         // If reminders aren't enabled for medication
         else if med.reminderEnabled == false {
             cell.subtitleGlyph.image = UIImage(named: "LastDoseIcon")
-            cell.subtitle.textColor = UIColor.lightGrayColor()
+            cell.subtitle.textColor = UIColor.lightGray
             
             if let date = med.lastDose?.date {
                 cell.subtitle.text = "\(dose), \(Medicine.dateString(date))"
@@ -381,7 +381,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             else {
                 cell.hideButton(true)
                 cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
-                cell.subtitle.textColor = UIColor.lightGrayColor()
+                cell.subtitle.textColor = UIColor.lightGray
                 cell.subtitle.text = "Tap to take first dose"
             }
         }
@@ -394,39 +394,39 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Table actions
-    func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         return true
     }
     
-    func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to toIndexPath: IndexPath) {
         if fromIndexPath != toIndexPath {
             medication[fromIndexPath.row].sortOrder = Int16(toIndexPath.row)
             medication[toIndexPath.row].sortOrder = Int16(fromIndexPath.row)
-            medication.sortInPlace({ $0.sortOrder < $1.sortOrder })
+            medication.sort(by: { $0.sortOrder < $1.sortOrder })
             
             appDelegate.saveContext()
             
             // Set sort order to "manually"
-            defaults.setInteger(0, forKey: "sortOrder")
+            defaults.set(0, forKey: "sortOrder")
             defaults.synchronize()
         }
     }
     
-    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
     
     // Empty implementation required for backwards compatibility (iOS 8.x)
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {}
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {}
     
-    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
-        let editAction = UITableViewRowAction(style: .Default, title: "Edit") { (action, indexPath) -> Void in
-            self.performSegueWithIdentifier("editMedication", sender: medication[indexPath.row])
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let editAction = UITableViewRowAction(style: .default, title: "Edit") { (action, indexPath) -> Void in
+            self.performSegue(withIdentifier: "editMedication", sender: medication[indexPath.row])
         }
         
         editAction.backgroundColor = UIColor(white: 0.78, alpha: 1.0)
         
-        let deleteAction = UITableViewRowAction(style: .Destructive, title: "Delete") { (action, indexPath) -> Void in
+        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) -> Void in
             if let name = medication[indexPath.row].name {
                 self.presentDeleteAlert(name, indexPath: indexPath)
             }
@@ -437,7 +437,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Table view delegate
-    override func setEditing(editing: Bool, animated: Bool) {
+    override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
         
         tableView.setEditing(editing, animated: animated)
@@ -448,44 +448,44 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
 //        }
         
         // Select med "selected" in Detail view
-        if let collapsed = self.splitViewController?.collapsed where collapsed == false {
+        if let collapsed = self.splitViewController?.isCollapsed, collapsed == false {
             if editing == false {
                 selectMed()
             }
         }
     }
     
-    func tableView(tableView: UITableView, didEndEditingRowAtIndexPath indexPath: NSIndexPath?) {
-        if let collapsed = self.splitViewController?.collapsed where collapsed == false {
+    func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
+        if let collapsed = self.splitViewController?.isCollapsed, collapsed == false {
             selectMed()
         }
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         selectedMed = medication[indexPath.row]
         
-        if tableView.editing == true {
-            performSegueWithIdentifier("editMedication", sender: medication[indexPath.row])
+        if tableView.isEditing == true {
+            performSegue(withIdentifier: "editMedication", sender: medication[indexPath.row])
         }
     }
     
-    @IBAction func selectAddButton(sender: UIButton) {
+    @IBAction func selectAddButton(_ sender: UIButton) {
         let cell = (sender.superview?.superview as! MedicineCell)
-        if let indexPath = self.tableView.indexPathForCell(cell) {
+        if let indexPath = self.tableView.indexPath(for: cell) {
             presentActionMenu(indexPath)
         }
     }
     
     func selectMed() {
         if let med = selectedMed {
-            if let row = medication.indexOf(med) {
-                tableView.selectRowAtIndexPath(NSIndexPath(forRow: row, inSection: 0), animated: false, scrollPosition: .None)
+            if let row = medication.index(of: med) {
+                tableView.selectRow(at: IndexPath(row: row, section: 0), animated: false, scrollPosition: .none)
             }
         }
     }
     
-    func presentActionMenu(index: NSIndexPath) {
-        if tableView.editing == false {
+    func presentActionMenu(_ index: IndexPath) {
+        if tableView.isEditing == false {
             let med = medication[index.row]
             var dateString:String? = nil
             
@@ -493,25 +493,25 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                 dateString = "Last Dose: \(Medicine.dateString(date, today: true))"
             }
             
-            let alert = UIAlertController(title: med.name, message: dateString, preferredStyle: UIAlertControllerStyle.ActionSheet)
+            let alert = UIAlertController(title: med.name, message: dateString, preferredStyle: UIAlertControllerStyle.actionSheet)
             
-            alert.addAction(UIAlertAction(title: "Take Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-                self.performSegueWithIdentifier("addDose", sender: med)
-                self.tableView.deselectRowAtIndexPath(index, animated: false)
+            alert.addAction(UIAlertAction(title: "Take Dose", style: UIAlertActionStyle.default, handler: {(action) -> Void in
+                self.performSegue(withIdentifier: "addDose", sender: med)
+                self.tableView.deselectRow(at: index, animated: false)
             }))
             
             if med.isOverdue().flag {
-                alert.addAction(UIAlertAction(title: "Snooze Dose", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+                alert.addAction(UIAlertAction(title: "Snooze Dose", style: UIAlertActionStyle.default, handler: {(action) -> Void in
                     med.snoozeNotification()
-                    self.tableView.deselectRowAtIndexPath(index, animated: false)
+                    self.tableView.deselectRow(at: index, animated: false)
                 }))
             }
             
-            alert.addAction(UIAlertAction(title: "Skip Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-                let entity = NSEntityDescription.entityForName("Dose", inManagedObjectContext: self.moc)
-                let dose = Dose(entity: entity!, insertIntoManagedObjectContext: self.moc)
+            alert.addAction(UIAlertAction(title: "Skip Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
+                let entity = NSEntityDescription.entity(forEntityName: "Dose", in: self.moc)
+                let dose = Dose(entity: entity!, insertInto: self.moc)
 
-                dose.date = NSDate()
+                dose.date = Date()
                 dose.dosage = -1
                 dose.dosageUnit = med.dosageUnit
                 
@@ -520,15 +520,15 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                 self.appDelegate.saveContext()
                 
                 // If selected, sort by next dosage
-                if self.defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-                    medication.sortInPlace(Medicine.sortByNextDose)
+                if self.defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
+                    medication.sort(by: Medicine.sortByNextDose)
                     self.tableView.reloadData()
                 } else {
-                    self.tableView.reloadRowsAtIndexPaths([index], withRowAnimation: UITableViewRowAnimation.None)
+                    self.tableView.reloadRows(at: [index], with: UITableViewRowAnimation.none)
                 }
                 
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                 
                 // Update spotlight index values
                 (self.tabBarController as! MainTBC).indexMedication()
@@ -539,14 +539,14 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             
             // If last dose is set, allow user to undo last dose
             if (med.lastDose != nil) {
-                alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
+                alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
                     if (med.untakeLastDose(self.moc)) {
                         // If selected, sort by next dosage
-                        if self.defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-                            medication.sortInPlace(Medicine.sortByNextDose)
+                        if self.defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
+                            medication.sort(by: Medicine.sortByNextDose)
                             self.tableView.reloadData()
                         } else {
-                            self.tableView.reloadRowsAtIndexPaths([index], withRowAnimation: UITableViewRowAnimation.None)
+                            self.tableView.reloadRows(at: [index], with: UITableViewRowAnimation.none)
                         }
                         
                         self.updateHeader()
@@ -557,71 +557,71 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                         // Update shortcuts
                         self.setDynamicShortcuts()
                     } else {
-                        self.tableView.deselectRowAtIndexPath(index, animated: false)
+                        self.tableView.deselectRow(at: index, animated: false)
                     }
                 }))
             }
             
-            alert.addAction(UIAlertAction(title: "Refill Prescription", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
-                self.performSegueWithIdentifier("refillPrescription", sender: med)
-                self.tableView.deselectRowAtIndexPath(index, animated: false)
+            alert.addAction(UIAlertAction(title: "Refill Prescription", style: UIAlertActionStyle.default, handler: {(action) -> Void in
+                self.performSegue(withIdentifier: "refillPrescription", sender: med)
+                self.tableView.deselectRow(at: index, animated: false)
             }))
             
-            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
-                self.tableView.deselectRowAtIndexPath(index, animated: false)
+            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {(action) -> Void in
+                self.tableView.deselectRow(at: index, animated: false)
             }))
             
             // Set popover for iPad
-            if let cell = tableView.cellForRowAtIndexPath(index) as? MedicineCell {
+            if let cell = tableView.cellForRow(at: index) as? MedicineCell {
                 alert.popoverPresentationController?.sourceView = cell.title
-                let rect = CGRectMake(cell.title.bounds.origin.x, cell.title.bounds.origin.y, cell.title.bounds.width + 5, cell.title.bounds.height)
+                let rect = CGRect(x: cell.title.bounds.origin.x, y: cell.title.bounds.origin.y, width: cell.title.bounds.width + 5, height: cell.title.bounds.height)
                 alert.popoverPresentationController?.sourceRect = rect
-                alert.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.Left
+                alert.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.left
             }
             
             alert.view.layoutIfNeeded()
-            alert.view.tintColor = UIColor.grayColor()
-            presentViewController(alert, animated: true, completion: nil)
+            alert.view.tintColor = UIColor.gray
+            present(alert, animated: true, completion: nil)
         }
     }
     
-    func takeDose(sender: UILongPressGestureRecognizer) {
-        let point = sender.locationInView(self.tableView)
-        if let indexPath = self.tableView?.indexPathForRowAtPoint(point) {
+    func takeDose(_ sender: UILongPressGestureRecognizer) {
+        let point = sender.location(in: self.tableView)
+        if let indexPath = self.tableView?.indexPathForRow(at: point) {
             let med = medication[indexPath.row]
             
-            if (sender.state == .Began) {
-                self.performSegueWithIdentifier("addDose", sender: med)
-                self.tableView.deselectRowAtIndexPath(indexPath, animated: false)
+            if (sender.state == .began) {
+                self.performSegue(withIdentifier: "addDose", sender: med)
+                self.tableView.deselectRow(at: indexPath, animated: false)
             }
         }
     }
     
     
     // MARK: - Actions
-    func presentDeleteAlert(name: String, indexPath: NSIndexPath) {
-        let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.Alert)
+    func presentDeleteAlert(_ name: String, indexPath: IndexPath) {
+        let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.alert)
         
-        deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
-            self.tableView.deselectRowAtIndexPath(indexPath, animated: false)
+        deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {(action) -> Void in
+            self.tableView.deselectRow(at: indexPath, animated: false)
         }))
         
-        deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
+        deleteAlert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: {(action) -> Void in
             self.deleteMed(indexPath)
         }))
         
-        deleteAlert.view.tintColor = UIColor.grayColor()
-        self.presentViewController(deleteAlert, animated: true, completion: nil)
+        deleteAlert.view.tintColor = UIColor.gray
+        self.present(deleteAlert, animated: true, completion: nil)
     }
     
-    func deleteMed(indexPath: NSIndexPath) {
+    func deleteMed(_ indexPath: IndexPath) {
         let med = medication[indexPath.row]
         
         // Cancel all notifications for medication
         med.cancelNotifications()
         
         // Remove med from details
-        if let svc = self.splitViewController where svc.viewControllers.count > 1 {
+        if let svc = self.splitViewController, svc.viewControllers.count > 1 {
             if let detailVC = (svc.viewControllers[1] as? UINavigationController)?.topViewController as? MedicineDetailsTVC {
                 if let selectedMed = detailVC.med {
                     if med == selectedMed {
@@ -632,14 +632,14 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
         
         // Remove medication from array
-        medication.removeAtIndex(indexPath.row)
+        medication.remove(at: indexPath.row)
         
         // Remove medication from persistent store
-        moc.deleteObject(med)
+        moc.delete(med)
         appDelegate.saveContext()
         
         // Update spotlight index
-        CSSearchableIndex.defaultSearchableIndex().deleteSearchableItemsWithIdentifiers([med.medicineID], completionHandler: nil)
+        CSSearchableIndex.default().deleteSearchableItems(withIdentifiers: [med.medicineID], completionHandler: nil)
         
         // Update shortcuts
         setDynamicShortcuts()
@@ -648,30 +648,30 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             displayEmptyView()
         } else {
             // Remove medication from array
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
         }
         
-        NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
-        NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil, userInfo: ["reload":false])
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil, userInfo: ["reload":false])
     }
     
     func medicationDeleted() {
         // Dismiss any modal views
         if let _ = self.navigationController?.presentedViewController {
-            dismissViewControllerAnimated(true, completion: nil)
+            dismiss(animated: true, completion: nil)
         }
         
         if let svc = self.splitViewController {
-            if svc.collapsed {
-                (svc.viewControllers[0] as! UINavigationController).popToRootViewControllerAnimated(true)
+            if svc.isCollapsed {
+                (svc.viewControllers[0] as! UINavigationController).popToRootViewController(animated: true)
             }
         }
     }
     
     
     // MARK: - Navigation methods
-    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
-        if tableView.editing == true {
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        if tableView.isEditing == true {
             switch identifier {
             case "addMedication":
                 return true
@@ -685,9 +685,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
         
         if identifier == "viewMedicationDetails" {
-            if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
+            if let index = self.tableView.indexPath(for: sender as! UITableViewCell) {
                 let med = medication[index.row]
-                if med.doseHistory?.count == 0 && med.intervalUnit == .Hourly {
+                if med.doseHistory?.count == 0 && med.intervalUnit == .hourly {
                     presentActionMenu(index)
                     return false
                 }
@@ -697,18 +697,18 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         return true
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "viewMedicationDetails" {
-            if let nvc = segue.destinationViewController as? UINavigationController {
+            if let nvc = segue.destination as? UINavigationController {
                 if let vc = nvc.topViewController as? MedicineDetailsTVC {
-                    if let index = self.tableView.indexPathForCell(sender as! UITableViewCell) {
+                    if let index = self.tableView.indexPath(for: sender as! UITableViewCell) {
                         vc.med = medication[index.row]
-                        if let modeButton = self.splitViewController?.displayModeButtonItem() {
+                        if let modeButton = self.splitViewController?.displayModeButtonItem {
                             vc.navigationItem.leftBarButtonItem = modeButton
                             vc.navigationItem.leftItemsSupplementBackButton = true
                         
                             // Hide master on selection in split view
-                            UIApplication.sharedApplication().sendAction(modeButton.action, to: modeButton.target, from: nil, forEvent: nil)
+                            UIApplication.shared.sendAction(modeButton.action!, to: modeButton.target, from: nil, for: nil)
                         }
                     }
                 }
@@ -716,7 +716,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
         
         if segue.identifier == "addDose" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
+            if let vc = segue.destination.childViewControllers[0] as? AddDoseTVC {
                 if let med = sender as? Medicine {
                     vc.med = med
                 }
@@ -724,7 +724,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
         
         if segue.identifier == "refillPrescription" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
+            if let vc = segue.destination.childViewControllers[0] as? AddRefillTVC {
                 if let med = sender as? Medicine {
                     vc.med = med
                 }
@@ -732,7 +732,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
         
         if segue.identifier == "editMedication" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? AddMedicationTVC {
+            if let vc = segue.destination.childViewControllers[0] as? AddMedicationTVC {
                 if let med = sender as? Medicine {
                     vc.med = med
                     vc.editMode = true
@@ -741,36 +741,36 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
         
         if segue.identifier == "upgrade" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? UpgradeVC {
+            if let vc = segue.destination.childViewControllers[0] as? UpgradeVC {
                 mvc = vc
             }
         }
     }
     
-    @IBAction func addMedication(sender: UIBarButtonItem) {
+    @IBAction func addMedication(_ sender: UIBarButtonItem) {
         if appLocked() == false {
-            performSegueWithIdentifier("addMedication", sender: self)
+            performSegue(withIdentifier: "addMedication", sender: self)
         } else {
-            performSegueWithIdentifier("upgrade", sender: self)
+            performSegue(withIdentifier: "upgrade", sender: self)
         }
     }
     
     
     // MARK: - IAP methods
-    func paymentQueue(queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
+    func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         for transaction in transactions {
             switch (transaction.transactionState) {
-            case SKPaymentTransactionState.Restored:
+            case SKPaymentTransactionState.restored:
                 queue.finishTransaction(transaction)
                 unlockManager()
-            case SKPaymentTransactionState.Purchased:
+            case SKPaymentTransactionState.purchased:
                 queue.finishTransaction(transaction)
                 unlockManager()
-            case SKPaymentTransactionState.Failed:
+            case SKPaymentTransactionState.failed:
                 queue.finishTransaction(transaction)
                 
-                mvc?.purchaseButton.enabled = true
-                mvc?.restoreButton.enabled = true
+                mvc?.purchaseButton.isEnabled = true
+                mvc?.restoreButton.isEnabled = true
                 mvc?.purchaseIndicator.stopAnimating()
                 
                 presentPurchaseFailureAlert()
@@ -779,7 +779,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
     }
     
-    func paymentQueueRestoreCompletedTransactionsFinished(queue: SKPaymentQueue) {
+    func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
         if queue.transactions.count == 0 {
             presentRestoreFailureAlert()
         }
@@ -794,7 +794,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
     }
     
-    func paymentQueue(queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: NSError) {
+    func paymentQueue(_ queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: Error) {
         for transaction in queue.transactions {
             queue.finishTransaction(transaction)
         }
@@ -803,32 +803,32 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     }
     
     func presentPurchaseFailureAlert() {
-        mvc?.restoreButton.setTitle("Restore Purchase", forState: UIControlState.Normal)
-        mvc?.restoreButton.enabled = true
-        mvc?.purchaseButton.enabled = true
+        mvc?.restoreButton.setTitle("Restore Purchase", for: UIControlState())
+        mvc?.restoreButton.isEnabled = true
+        mvc?.purchaseButton.isEnabled = true
         mvc?.purchaseIndicator.stopAnimating()
         
-        let failAlert = UIAlertController(title: "Purchase Failed", message: "Please try again later.", preferredStyle: UIAlertControllerStyle.Alert)
-        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+        let failAlert = UIAlertController(title: "Purchase Failed", message: "Please try again later.", preferredStyle: UIAlertControllerStyle.alert)
+        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
         
-        failAlert.view.tintColor = UIColor.grayColor()
-        mvc?.presentViewController(failAlert, animated: true, completion: nil)
+        failAlert.view.tintColor = UIColor.gray
+        mvc?.present(failAlert, animated: true, completion: nil)
     }
     
     func presentRestoreFailureAlert() {
-        mvc?.restoreButton.setTitle("Restore Purchase", forState: UIControlState.Normal)
-        mvc?.restoreButton.enabled = true
-        mvc?.purchaseButton.enabled = true
+        mvc?.restoreButton.setTitle("Restore Purchase", for: UIControlState())
+        mvc?.restoreButton.isEnabled = true
+        mvc?.purchaseButton.isEnabled = true
         mvc?.purchaseIndicator.stopAnimating()
         
-        let failAlert = UIAlertController(title: "Restore Failed", message: "Please try again later. If the problem persists, use the purchase button above.", preferredStyle: UIAlertControllerStyle.Alert)
-        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
-        failAlert.view.tintColor = UIColor.grayColor()
-        mvc?.presentViewController(failAlert, animated: true, completion: nil)
+        let failAlert = UIAlertController(title: "Restore Failed", message: "Please try again later. If the problem persists, use the purchase button above.", preferredStyle: UIAlertControllerStyle.alert)
+        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+        failAlert.view.tintColor = UIColor.gray
+        mvc?.present(failAlert, animated: true, completion: nil)
     }
     
     func unlockManager() {
-        defaults.setBool(true, forKey: "managerUnlocked")
+        defaults.set(true, forKey: "managerUnlocked")
         defaults.synchronize()
         productLock = false
         continueToAdd()
@@ -836,7 +836,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     func appLocked() -> Bool {
         // If debug device, disable medication limit
-        if defaults.boolForKey("debug") == true {
+        if defaults.bool(forKey: "debug") == true {
             return false
         }
         
@@ -851,8 +851,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     }
     
     func continueToAdd() {
-        dismissViewControllerAnimated(true) { () -> Void in
-            self.performSegueWithIdentifier("addMedication", sender: self)
+        dismiss(animated: true) { () -> Void in
+            self.performSegue(withIdentifier: "addMedication", sender: self)
         }
     }
     
@@ -882,9 +882,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                 icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
                 userInfo: userInfo)
             
-            UIApplication.sharedApplication().shortcutItems = [shortcutItem]
+            UIApplication.shared.shortcutItems = [shortcutItem]
             return
-        } else if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
+        } else if let nextDose = UIApplication.shared.scheduledLocalNotifications?.first {
             if let id = nextDose.userInfo?["id"] {
                 guard let med = Medicine.getMedicine(arr: medication, id: id as! String) else { return }
                 let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
@@ -896,11 +896,11 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                     icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
                     userInfo: ["action":"takeDose", "medID":med.medicineID])
                 
-                UIApplication.sharedApplication().shortcutItems = [shortcutItem]
+                UIApplication.shared.shortcutItems = [shortcutItem]
                 return
             }
         }
         
-        UIApplication.sharedApplication().shortcutItems = []
+        UIApplication.shared.shortcutItems = []
     }
 }

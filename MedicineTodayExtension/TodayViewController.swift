@@ -12,8 +12,8 @@ import NotificationCenter
 
 class TodayViewController: UIViewController, NCWidgetProviding {
 
-    let cal = NSCalendar.currentCalendar()
-    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    let cal = Calendar.current
+    let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     
     // MARK: - Outlets
@@ -23,67 +23,67 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     // MARK: - View methods
     override func viewDidLoad() {
-        NSNotificationCenter.defaultCenter().addObserverForName(NSUserDefaultsDidChangeNotification, object: nil, queue: NSOperationQueue.mainQueue()) { _ in
-            self.updateLabels()
+        NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: OperationQueue.main) { _ in
+            _ = self.updateLabels()
         }
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        updateLabels()
+        _ = updateLabels()
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
-    func widgetPerformUpdateWithCompletionHandler(completionHandler: ((NCUpdateResult) -> Void)) {
+    func widgetPerformUpdate(completionHandler: (@escaping (NCUpdateResult) -> Void)) {
         completionHandler(updateLabels())
     }
     
-    func widgetMarginInsetsForProposedMarginInsets(defaultMarginInsets: UIEdgeInsets) -> UIEdgeInsets {
-        return UIEdgeInsetsZero
+    func widgetMarginInsets(forProposedMarginInsets defaultMarginInsets: UIEdgeInsets) -> UIEdgeInsets {
+        return UIEdgeInsets.zero
     }
     
     func updateLabels() -> NCUpdateResult {
-        if let todayData = defaults.valueForKey("todayData") {
+        if let todayData = defaults.value(forKey: "todayData") {
             let data = todayData as! [String: AnyObject]
             
             // Show next dose
             if let date = data["date"] {
-                if ((date as! NSDate).compare(NSDate()) == .OrderedDescending && cal.isDateInToday(date as! NSDate)) {
+                if ((date as! Date).compare(Date()) == .orderedDescending && cal.isDateInToday(date as! Date)) {
                     let string = NSMutableAttributedString(string: data["dateString"] as! String)
-                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(50.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, string.length-2))
-                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(20.0), range: NSMakeRange(string.length-2, 2))
+                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 50.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, string.length-2))
+                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 20.0), range: NSMakeRange(string.length-2, 2))
                     
                     doseMainLabel.attributedText = string
                     doseMedLabel.text = (data["medString"] as? String)
 
-                    return NCUpdateResult.NewData
+                    return NCUpdateResult.newData
                 }
             }
             
             let string = NSMutableAttributedString(string: data["dateString"] as! String)
-            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+            string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
 
             doseMainLabel.attributedText = string
             doseMedLabel.text = nil
 
-            return NCUpdateResult.NewData
+            return NCUpdateResult.newData
         }
         
         let string = NSMutableAttributedString(string: "Couldn't update")
-        string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+        string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 12.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
         
         doseMainLabel.attributedText = string
         doseMedLabel.text = nil
 
-        return NCUpdateResult.NewData
+        return NCUpdateResult.newData
     }
     
     @IBAction func launchApp() {
-        if let url = NSURL(string: "medicine://") {
-            self.extensionContext?.openURL(url, completionHandler: nil)
+        if let url = URL(string: "medicine://") {
+            self.extensionContext?.open(url, completionHandler: nil)
         }
     }
 }

@@ -18,8 +18,8 @@ class WelcomeVC: UIViewController {
         super.didReceiveMemoryWarning()
     }
 
-    @IBAction func getStarted(sender: AnyObject) {
+    @IBAction func getStarted(_ sender: AnyObject) {
         //self.performSegueWithIdentifier("displayTutorial", sender: self)
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
 }

@@ -12,17 +12,17 @@ import CoreData
 class HistoryTVC: UITableViewController {
 
     let emptyDates = false
-    var dates = [NSDate]()
-    var history = [NSDate: [Dose]]()
+    var dates = [Date]()
+    var history = [Date: [Dose]]()
     
     
     // MARK: - Helper variables
     
-    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var moc: NSManagedObjectContext!
     
-    let cal = NSCalendar.currentCalendar()
-    let dateFormatter = NSDateFormatter()
+    let cal = Calendar.current
+    let dateFormatter = DateFormatter()
     
     var editButtons = [UIBarButtonItem]()
     
@@ -43,21 +43,21 @@ class HistoryTVC: UITableViewController {
         
         // Modify VC
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-        self.navigationController?.toolbar.translucent = true
+        self.navigationController?.toolbar.isTranslucent = true
         self.navigationController?.toolbar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-        self.navigationItem.leftBarButtonItem = self.editButtonItem()
+        self.navigationItem.leftBarButtonItem = self.editButtonItem
         
         // Configure toolbar buttons
-        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(deleteDoses))
-        deleteButton.enabled = false
+        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.plain, target: self, action: #selector(deleteDoses))
+        deleteButton.isEnabled = false
         editButtons.append(deleteButton)
         setToolbarItems(editButtons, animated: true)
         
         // Add observeres for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refreshView), name: UIApplicationWillEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         refreshView()
     }
@@ -74,7 +74,7 @@ class HistoryTVC: UITableViewController {
     func loadHistory() {
         // Clear history
         history.removeAll()
-        
+
         var historyArray = [Dose]()
         for med in medication {
             if let temp = med.doseHistory?.array as? [Dose] {
@@ -83,53 +83,53 @@ class HistoryTVC: UITableViewController {
         }
         
         // Sort history array
-        historyArray.sortInPlace({ $0.date.compare($1.date) == .OrderedDescending })
+        historyArray.sort(by: { $0.date.compare($1.date as Date) == .orderedDescending })
         
         // Get dates in history
         if emptyDates == true {
             // Get all dates from today to last dose, including empty dates
-            var date = NSDate()
-            while date.compare(historyArray.last!.date) != .OrderedAscending {
+            var date = Date()
+            while date.compare(historyArray.last!.date as Date) != .orderedAscending {
                 dates.append(date)
-                date = cal.dateByAddingUnit(.Day, value: -1, toDate: date, options: [])!
+                date = (cal as NSCalendar).date(byAdding: .day, value: -1, to: date, options: [])!
             }
         } else {
             // Get dates as exclusive elements from first dose to last
-            var temp = Set<NSDate>()
+            var temp = Set<Date>()
             for dose in historyArray {
-                temp.insert(cal.startOfDayForDate(dose.date))
+                temp.insert(cal.startOfDay(for: dose.date as Date))
             }
             
             // Store dates in array
-            dates = temp.sort({ $0.compare($1) == .OrderedDescending })
+            dates = temp.sorted(by: { $0.compare($1) == .orderedDescending })
         }
         
         // Store doses in history dictionary, with dates as keys
         for date in dates {
-            let doses = historyArray.filter({cal.isDate($0.date, inSameDayAsDate: date)})
+            let doses = historyArray.filter({cal.isDate($0.date as Date, inSameDayAs: date)})
             history.updateValue(doses, forKey: date)
         }
     }
 
     func displayEmptyView() {
         if medication.count == 0 {
-            navigationItem.leftBarButtonItem?.enabled = false
-            navigationItem.rightBarButtonItem?.enabled = false
+            navigationItem.leftBarButtonItem?.isEnabled = false
+            navigationItem.rightBarButtonItem?.isEnabled = false
             
-            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+            if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiate(withOwner: self, options: nil)[0] as? UIView {
                 tableView.backgroundView = emptyView
             }
         } else if history.count == 0 {
-            navigationItem.leftBarButtonItem?.enabled = false
-            navigationItem.rightBarButtonItem?.enabled = true
+            navigationItem.leftBarButtonItem?.isEnabled = false
+            navigationItem.rightBarButtonItem?.isEnabled = true
             
             // Create empty message
-            if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
+            if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiate(withOwner: self, options: nil)[0] as? UIView {
                 tableView.backgroundView = emptyView
             }
         } else {
-            navigationItem.leftBarButtonItem?.enabled = true
-            navigationItem.leftBarButtonItem?.enabled = true
+            navigationItem.leftBarButtonItem?.isEnabled = true
+            navigationItem.leftBarButtonItem?.isEnabled = true
             tableView.backgroundView = nil
         }
         
@@ -139,31 +139,31 @@ class HistoryTVC: UITableViewController {
     
     // MARK: - Table headers
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return dates.count
     }
     
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let sectionDate = dates[section]
         
         if cal.isDateInToday(sectionDate) {
-            dateFormatter.timeStyle = NSDateFormatterStyle.NoStyle
-            dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
-            return "Today  \(dateFormatter.stringFromDate(sectionDate))"
+            dateFormatter.timeStyle = DateFormatter.Style.none
+            dateFormatter.dateStyle = DateFormatter.Style.medium
+            return "Today  \(dateFormatter.string(from: sectionDate))"
         } else if cal.isDateInYesterday(sectionDate) {
-            dateFormatter.timeStyle = NSDateFormatterStyle.NoStyle
-            dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
-            return "Yesterday  \(dateFormatter.stringFromDate(sectionDate))"
+            dateFormatter.timeStyle = DateFormatter.Style.none
+            dateFormatter.dateStyle = DateFormatter.Style.medium
+            return "Yesterday  \(dateFormatter.string(from: sectionDate))"
         } else if sectionDate.isDateInLastWeek() {
             dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
-            return dateFormatter.stringFromDate(sectionDate)
+            return dateFormatter.string(from: sectionDate)
         } else {
             dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
-            return dateFormatter.stringFromDate(sectionDate)
+            return dateFormatter.string(from: sectionDate)
         }
     }
     
-    override func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let sectionDate = dates[section]
         let header:UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
 
@@ -180,20 +180,20 @@ class HistoryTVC: UITableViewController {
 //        header.addSubview(bottomSeperator)
 
         // Set header title
-        header.textLabel?.text = header.textLabel?.text?.uppercaseString
+        header.textLabel?.text = header.textLabel?.text?.uppercased()
         header.textLabel?.textColor = UIColor(white: 0.43, alpha: 1.0)
         
         if let text = header.textLabel?.text {
             let string = NSMutableAttributedString(string: text)
-            string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(13.0), range: NSMakeRange(0, string.length))
+            string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 13.0), range: NSMakeRange(0, string.length))
             
             if cal.isDateInToday(sectionDate) {
-                string.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSForegroundColorAttributeName, value: UIColor.red, range: NSMakeRange(0, string.length))
             }
             
-            if let index = text.characters.indexOf(" ") {
-                let pos = text.startIndex.distanceTo(index)
-                string.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(13.0, weight: UIFontWeightSemibold), range: NSMakeRange(0, pos))
+            if let index = text.characters.index(of: " ") {
+                let pos = text.characters.distance(from: text.startIndex, to: index)
+                string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 13.0, weight: UIFontWeightSemibold), range: NSMakeRange(0, pos))
             }
             
             header.textLabel?.attributedText = string
@@ -203,7 +203,7 @@ class HistoryTVC: UITableViewController {
     
     // MARK: - Table rows
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let sectionDate = dates[section]
         
         if let count = history[sectionDate]?.count {
@@ -213,7 +213,7 @@ class HistoryTVC: UITableViewController {
         return 1
     }
     
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let sectionDate = dates[indexPath.section]
         
         if let count = history[sectionDate]?.count {
@@ -223,34 +223,34 @@ class HistoryTVC: UITableViewController {
         return tableView.rowHeight
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("historyCell", forIndexPath: indexPath)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "historyCell", for: indexPath)
         let sectionDate = dates[indexPath.section]
         if let date = history[sectionDate] {
             if date.count > indexPath.row {
                 let dose = date[indexPath.row]
                 if let med = dose.medicine {
                     // Setup date formatter
-                    dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-                    dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
+                    dateFormatter.timeStyle = DateFormatter.Style.short
+                    dateFormatter.dateStyle = DateFormatter.Style.none
                     
                     // Specify selection color
                     cell.selectedBackgroundView = UIView()
                     
                     if dose.dosage > 0 {
-                        cell.textLabel?.textColor = UIColor.blackColor()
-                        cell.textLabel?.text = "\(dateFormatter.stringFromDate(dose.date))"
+                        cell.textLabel?.textColor = UIColor.black
+                        cell.textLabel?.text = "\(dateFormatter.string(from: dose.date as Date))"
                         cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
                         cell.detailTextLabel?.text = String(format:"%@ - %g %@", med.name!, dose.dosage, dose.dosageUnit.units(dose.dosage))
                     } else {
-                        cell.textLabel?.textColor = UIColor.lightGrayColor()
-                        cell.textLabel?.text = "Skipped (\(dateFormatter.stringFromDate(dose.date)))"
-                        cell.detailTextLabel?.textColor = UIColor.lightGrayColor()
+                        cell.textLabel?.textColor = UIColor.lightGray
+                        cell.textLabel?.text = "Skipped (\(dateFormatter.string(from: dose.date as Date)))"
+                        cell.detailTextLabel?.textColor = UIColor.lightGray
                         cell.detailTextLabel?.text = String(format:"%@", med.name!)
                     }
                 }
             } else {
-                cell.textLabel?.textColor = UIColor.lightGrayColor()
+                cell.textLabel?.textColor = UIColor.lightGray
                 cell.textLabel?.text = "No doses logged"
                 cell.detailTextLabel?.text?.removeAll()
             }
@@ -262,33 +262,33 @@ class HistoryTVC: UITableViewController {
     
     // MARK: - Table view delegate
     
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         let sectionDate = dates[indexPath.section]
         return history[sectionDate]?.count != 0
     }
     
-    override func tableView(tableView: UITableView, shouldHighlightRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
         let sectionDate = dates[indexPath.section]
         return history[sectionDate]?.count != 0
     }
     
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        tableView.selectRowAtIndexPath(indexPath, animated: false, scrollPosition: UITableViewScrollPosition.None)
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        tableView.selectRow(at: indexPath, animated: false, scrollPosition: UITableViewScrollPosition.none)
         deleteDoses()
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         updateDeleteButtonLabel()
     }
     
-    override func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         updateDeleteButtonLabel()
     }
     
     
     // MARK: - Toolbar methods
     
-    override func setEditing(editing: Bool, animated: Bool) {
+    override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
 
         if editing == true {
@@ -302,46 +302,46 @@ class HistoryTVC: UITableViewController {
     func updateDeleteButtonLabel() {
         if let selectedRows = tableView.indexPathsForSelectedRows {
             editButtons[0].title = "Delete (\(selectedRows.count))"
-            editButtons[0].enabled = true
+            editButtons[0].isEnabled = true
         } else {
             editButtons[0].title = "Delete"
-            editButtons[0].enabled = false
+            editButtons[0].isEnabled = false
         }
     }
     
     func addDose() {
-        performSegueWithIdentifier("addDose", sender: self)
+        performSegue(withIdentifier: "addDose", sender: self)
     }
     
     func deleteDoses() {
         if let selectedRowIndexes = tableView.indexPathsForSelectedRows {
-            for indexPath in selectedRowIndexes.reverse() {
+            for indexPath in selectedRowIndexes.reversed() {
                 let sectionDate = dates[indexPath.section]
                 if let dose = history[sectionDate]?[indexPath.row] {
                     if let med = dose.medicine {
                         history[sectionDate]?.removeObject(dose)
                         
                         if med.lastDose == dose {
-                            med.untakeLastDose(moc)
+                            _ = med.untakeLastDose(moc)
                         } else {
                             med.untakeDose(dose, moc: moc)
                         }
                         
-                        if tableView.numberOfRowsInSection(indexPath.section) == 1 {
+                        if tableView.numberOfRows(inSection: indexPath.section) == 1 {
                             if emptyDates == true {
-                                let label = tableView.cellForRowAtIndexPath(indexPath)?.textLabel
-                                let detail = tableView.cellForRowAtIndexPath(indexPath)?.detailTextLabel
+                                let label = tableView.cellForRow(at: indexPath)?.textLabel
+                                let detail = tableView.cellForRow(at: indexPath)?.detailTextLabel
                                 
-                                label?.textColor = UIColor.lightGrayColor()
+                                label?.textColor = UIColor.lightGray
                                 label?.text = "No doses logged"
                                 detail?.text?.removeAll()
                             } else {
-                                history.removeValueForKey(sectionDate)
+                                history.removeValue(forKey: sectionDate)
                                 dates.removeObject(sectionDate)
-                                tableView.deleteSections(NSIndexSet(index: indexPath.section), withRowAnimation: .Automatic)
+                                tableView.deleteSections(IndexSet(integer: indexPath.section), with: .automatic)
                             }
                         } else {
-                            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                            tableView.deleteRows(at: [indexPath], with: .automatic)
                         }
                     }
                 }
@@ -354,17 +354,17 @@ class HistoryTVC: UITableViewController {
             updateDeleteButtonLabel()
             setEditing(false, animated: true)
 
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
         }
     }
     
     
     // MARK: - Navigation methods
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "addDose" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
+            if let vc = segue.destination.childViewControllers[0] as? AddDoseTVC {
                 vc.globalHistory = true
             }
         }

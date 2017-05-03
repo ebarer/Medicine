@@ -14,7 +14,7 @@ import CoreData
 
 extension Medicine {
 
-    @NSManaged var dateCreated: NSDate?
+    @NSManaged var dateCreated: Date?
     
     @NSManaged var name: String?
     @NSManaged var medicineID: String
@@ -26,7 +26,7 @@ extension Medicine {
     @NSManaged var reminderEnabled: Bool
     @NSManaged var interval: Float
     @NSManaged var intervalUnitInt: Int16
-    @NSManaged var intervalAlarm: NSDate?
+    @NSManaged var intervalAlarm: Date?
     
     @NSManaged var doseHistory: NSOrderedSet?
     

@@ -34,11 +34,11 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
         // Style purchase button
         purchaseButton.layer.cornerRadius = 4
         purchaseButton.layer.borderWidth = 1
-        purchaseButton.layer.borderColor = purchaseColour.CGColor
+        purchaseButton.layer.borderColor = purchaseColour.cgColor
         purchaseButton.tintColor = purchaseColour
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         requestProductInfo()
     }
@@ -63,55 +63,55 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     
     // Mark: - Purchase methods
     
-    func productsRequest(request: SKProductsRequest, didReceiveResponse response: SKProductsResponse) {
+    func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
         products = response.products
         
-        if products?.count > 0 {
+        if let count = products?.count, count > 0 {
             // Set purchase label
             if let upgrade = products?[0] {
-                purchaseButton.setTitle(upgrade.localizedPrice(), forState: UIControlState.Normal)
+                purchaseButton.setTitle(upgrade.localizedPrice(), for: UIControlState())
             }
         }
     }
 
     
     @IBAction func purchaseFullVersion() {
-        if products?.count > 0 {
+        if let count = products?.count, count > 0 {
             if let upgrade = products?[0] {
                 if upgrade.productIdentifier == productID {
                     // Modify UI elements
-                    purchaseButton.enabled = false
-                    purchaseButton.setTitle("Purchasing...", forState: UIControlState.Disabled)
-                    restoreButton.enabled = false
+                    purchaseButton.isEnabled = false
+                    purchaseButton.setTitle("Purchasing...", for: UIControlState.disabled)
+                    restoreButton.isEnabled = false
                     purchaseIndicator.startAnimating()
                     
                     // Process transaction
                     if SKPaymentQueue.canMakePayments() {
-                        SKPaymentQueue.defaultQueue().addPayment(SKPayment(product: upgrade))
+                        SKPaymentQueue.default().add(SKPayment(product: upgrade))
                     }
                 }
             }
         }
     }
     
-    @IBAction func restoreFullVersion(sender: AnyObject) {
+    @IBAction func restoreFullVersion(_ sender: AnyObject) {
         // Modify UI elements
-        purchaseButton.enabled = false
-        restoreButton.enabled = false
-        restoreButton.setTitle("Restoring...", forState: UIControlState.Disabled)
+        purchaseButton.isEnabled = false
+        restoreButton.isEnabled = false
+        restoreButton.setTitle("Restoring...", for: UIControlState.disabled)
         purchaseIndicator.startAnimating()
         
         // Process transaction
         if SKPaymentQueue.canMakePayments() {
-            SKPaymentQueue.defaultQueue().restoreCompletedTransactions()
+            SKPaymentQueue.default().restoreCompletedTransactions()
         }
     }
     
 
     // MARK: - Navigation
     
-    @IBAction func cancel(sender: AnyObject?) {
-        dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func cancel(_ sender: AnyObject?) {
+        dismiss(animated: true, completion: nil)
     }    
 
 }
@@ -119,10 +119,10 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
 extension SKProduct {
     
     func localizedPrice() -> String {
-        let formatter = NSNumberFormatter()
-        formatter.numberStyle = .CurrencyStyle
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
         formatter.locale = self.priceLocale
-        return formatter.stringFromNumber(self.price)!
+        return formatter.string(from: self.price)!
     }
     
 }

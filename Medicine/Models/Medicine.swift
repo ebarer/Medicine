@@ -15,7 +15,7 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Enum variables
-    private let cal = NSCalendar.currentCalendar()
+    fileprivate let cal = Calendar.current
     
     var dosageUnit: Doses {
         get { return Doses(rawValue: self.dosageUnitInt)! }
@@ -29,7 +29,7 @@ class Medicine: NSManagedObject {
     
 
     // MARK: - Member variables
-    var nextDose: NSDate? {
+    var nextDose: Date? {
         do {
             return try calculateNextDose()
         } catch {
@@ -44,7 +44,7 @@ class Medicine: NSManagedObject {
                 
                 for next in lastHistory.array as! [Dose] {
                     // Ignore if item is set to be deleted
-                    if (!next.deleted && dose.date.compare(next.date) == .OrderedAscending) {
+                    if (!next.isDeleted && dose.date.compare(next.date as Date) == .orderedAscending) {
                         dose = next
                     }
                 }
@@ -59,7 +59,7 @@ class Medicine: NSManagedObject {
     var scheduledNotifications: [UILocalNotification]? {
         var medNotifications = [UILocalNotification]()
         
-        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
+        let notifications = UIApplication.shared.scheduledLocalNotifications!
         for notification in notifications {
             if let id = notification.userInfo?["id"] as? String {
                 if (id == self.medicineID) {
@@ -75,22 +75,20 @@ class Medicine: NSManagedObject {
         return medNotifications
     }
     
-    func doseArray() -> [NSDate: [Dose]]? {
-        if self.doseHistory?.count > 0 {
-            var arr = [NSDate: [Dose]]()
+    func doseArray() -> [Date: [Dose]]? {
+        guard let doseCount = self.doseHistory?.count else {
+            return nil
+        }
+        
+        if doseCount > 0 {
+            var arr = [Date: [Dose]]()
             for dose in self.doseHistory?.array as! [Dose] {
-                let date = cal.startOfDayForDate(dose.date)
+                let date = cal.startOfDay(for: dose.date as Date)
                 if (arr[date] == nil) {
                     arr[date] = []
                 }
                 arr[date]!.append(dose)
             }
-            
-            // return sorted(g.keys) { (a: NSDate, b: NSDate) in
-            //     a.compare(b) == .OrderedAscending // sorting the outer array by 'time'
-            // }
-            // sorting the inner arrays by 'name'
-            // .map { sorted(g[$0]!) { $0.name < $1.name } }
             
             return arr
         }
@@ -107,11 +105,11 @@ class Medicine: NSManagedObject {
         var label = String()
         
         let hr = Int(self.interval)
-        let min = Int(60 * (self.interval % 1))
+        let min = Int(60 * (self.interval.truncatingRemainder(dividingBy: 1)))
         let hrUnit = self.intervalUnit.units(self.interval)
         
         if hr == 1 && min == 0 {
-            label = String(format:"%@", hrUnit.capitalizedString)
+            label = String(format:"%@", hrUnit.capitalized)
         } else if min == 0 {
             label = String(format:"%d %@", hr, hrUnit)
         } else if hr == 0 {
@@ -121,15 +119,15 @@ class Medicine: NSManagedObject {
         }
         
         // Append alarm time for daily interval
-        if self.intervalUnit == .Daily {
+        if self.intervalUnit == .daily {
             if let alarm = self.intervalAlarm {
                 if alarm.isMidnight() {
                     label += " at Midnight"
                 } else {
-                    let dateFormatter = NSDateFormatter()
-                    dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-                    dateFormatter.dateStyle = NSDateFormatterStyle.NoStyle
-                    label += String(format:" at %@", dateFormatter.stringFromDate(alarm))
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.timeStyle = DateFormatter.Style.short
+                    dateFormatter.dateStyle = DateFormatter.Style.none
+                    label += String(format:" at %@", dateFormatter.string(from: alarm as Date))
                 }
             }
         }
@@ -144,47 +142,47 @@ class Medicine: NSManagedObject {
      - Returns: Score as Int, or nil if not enough history
      */
     func adherenceScore() -> Int? {
-        if let tempArr = self.doseHistory?.array where tempArr.count > 0 {
+        if let tempArr = self.doseHistory?.array, tempArr.count > 0 {
             // Retrieve history
             var scoreArray = tempArr as! [Dose]
             
             // Reverse so newest items are at the top
-            scoreArray = scoreArray.reverse()
+            scoreArray = scoreArray.reversed()
             
             var averageScore: Int = 0
             var averageCount: Int = 0
             let historyLength = (scoreArray.count <= 14) ? (scoreArray.count - 1) : 14
             
             switch(intervalUnit) {
-            case .Hourly:
+            case .hourly:
                 for i in 0...historyLength {
                     if let expectedDate = scoreArray[i].expectedDate {
                         let date = scoreArray[i].date
-                        let dateComponents = cal.components([.Hour, .Minute], fromDate: date)
-                        let expectedComponents = cal.components([.Hour, .Minute], fromDate: expectedDate)
+                        let dateComponents = (cal as NSCalendar).components([.hour, .minute], from: date as Date)
+                        let expectedComponents = (cal as NSCalendar).components([.hour, .minute], from: expectedDate as Date)
                         
                         // Get difference
-                        let dif = cal.components(.Minute, fromDateComponents: expectedComponents, toDateComponents: dateComponents, options: [])
+                        let dif = (cal as NSCalendar).components(.minute, from: expectedComponents, to: dateComponents, options: [])
                         
                         // Determine score
-                        if let (score, multiplier) = calculateScore(dif.minute, date: date) {
+                        if let (score, multiplier) = calculateScore(dif.minute!, date: date as Date) {
                             averageScore += (score * multiplier)
                             averageCount += multiplier
                         }
                     }
                 }
-            case .Daily:
+            case .daily:
                 if let alarm = intervalAlarm {
-                    let alarmComponents = cal.components([.Hour, .Minute], fromDate: alarm)
+                    let alarmComponents = (cal as NSCalendar).components([.hour, .minute], from: alarm as Date)
                     for i in 0...historyLength {
                         let date = scoreArray[i].date
-                        let dateComponents = cal.components([.Hour, .Minute], fromDate: date)
+                        let dateComponents = (cal as NSCalendar).components([.hour, .minute], from: date as Date)
                         
                         // Get difference
-                        let dif = cal.components(.Minute, fromDateComponents: alarmComponents, toDateComponents: dateComponents, options: [])
+                        let dif = (cal as NSCalendar).components(.minute, from: alarmComponents, to: dateComponents, options: [])
                         
                         // Determine score
-                        if let (score, multiplier) = calculateScore(dif.minute, date: date) {
+                        if let (score, multiplier) = calculateScore(dif.minute!, date: date as Date) {
                             averageScore += (score * multiplier)
                             averageCount += multiplier
                         }
@@ -201,7 +199,7 @@ class Medicine: NSManagedObject {
         return nil
     }
     
-    func calculateScore(dif: Int, date: NSDate) -> (Score: Int, Multiplier: Int)? {
+    func calculateScore(_ dif: Int, date: Date) -> (Score: Int, Multiplier: Int)? {
         var score: Int = 0
         var multiplier: Int = 1
         
@@ -232,18 +230,18 @@ class Medicine: NSManagedObject {
      
      - Returns: Tuple: (Overdue value as Bool, NSDate of overdue dose)
      */
-    func isOverdue() -> (flag: Bool, overdueDose: NSDate?) {
+    func isOverdue() -> (flag: Bool, overdueDose: Date?) {
         // Medicine can't be overdue if reminders are disabled
         if reminderEnabled == true {
             do {
                 let date = try calculateNextDose()
-                if date?.compare(NSDate()) == .OrderedAscending {
+                if date?.compare(Date()) == .orderedAscending {
                     return (true, date)
                 } else {
                     return (false, date)
                 }
             } catch {
-                NSLog("Couldn't determine if \(name) is overdue; unable to calculate next dose.")
+                NSLog("Couldn't determine if \(name ?? "unknown medicine") is overdue; unable to calculate next dose.")
                 return (false, nil)
             }
         }
@@ -255,19 +253,21 @@ class Medicine: NSManagedObject {
     // MARK: - Spotlight indexing values
     var attributeSet: CSSearchableItemAttributeSet? {
         let attributeSet = CSSearchableItemAttributeSet(itemContentType: kUTTypeContent as String)
-        attributeSet.title = self.name!
-        
-        let dose = String(format:"%g %@", self.dosage, self.dosageUnit.units(self.dosage))
-        
-        if self.isOverdue().flag {
-            let descriptionString = "Overdue\n\(dose)"
-            attributeSet.contentDescription = descriptionString
-        } else if let date = self.lastDose?.next {
-            let descriptionString = "Next dose: \(Medicine.dateString(date))\n\(dose)"
-            attributeSet.contentDescription = descriptionString
-        } else {
-            let descriptionString = "\(dose)"
-            attributeSet.contentDescription = descriptionString
+        if let name = self.name {
+            attributeSet.title = name
+            
+            let dose = String(format:"%g %@", self.dosage, self.dosageUnit.units(self.dosage))
+            
+            if self.isOverdue().flag {
+                let descriptionString = "Overdue\n\(dose)"
+                attributeSet.contentDescription = descriptionString
+            } else if let date = self.lastDose?.next {
+                let descriptionString = "Next dose: \(Medicine.dateString(date as Date))\n\(dose)"
+                attributeSet.contentDescription = descriptionString
+            } else {
+                let descriptionString = "\(dose)"
+                attributeSet.contentDescription = descriptionString
+            }
         }
         
         return attributeSet
@@ -285,12 +285,12 @@ class Medicine: NSManagedObject {
         return nil
     }
     
-    class func sortByNextDose(medA: Medicine, medB: Medicine) -> Bool {
+    class func sortByNextDose(_ medA: Medicine, medB: Medicine) -> Bool {
         // Unscheduled medications should be at the bottom
         if medA.reminderEnabled == false {
             if medB.reminderEnabled == false {
                 // If both are unscheduled, return sorted by name
-                return medA.name!.compare(medB.name!) == .OrderedAscending
+                return medA.name!.compare(medB.name!) == .orderedAscending
             }
             
             return false
@@ -303,7 +303,7 @@ class Medicine: NSManagedObject {
             if let overdue2 = medB.isOverdue().overdueDose {
                 if let overdue1 = medA.isOverdue().overdueDose {
                     // If both are overdue, return sorted by longest overdue
-                    return overdue1.compare(overdue2) == .OrderedAscending
+                    return overdue1.compare(overdue2) == .orderedAscending
                 }
                 
                 return false
@@ -322,18 +322,18 @@ class Medicine: NSManagedObject {
             return true
         }
         
-        return next1.compare(next2) == .OrderedAscending
+        return next1.compare(next2) == .orderedAscending
     }
     
-    class func sortByManual(medA: Medicine, medB: Medicine) -> Bool {
+    class func sortByManual(_ medA: Medicine, medB: Medicine) -> Bool {
         return medA.sortOrder < medB.sortOrder
     }
     
-    class func dateString(date: NSDate?, today: Bool = true) -> String {
+    class func dateString(_ date: Date?, today: Bool = true) -> String {
         guard let date = date else { return "" }
         
-        let cal = NSCalendar.currentCalendar()
-        let dateFormatter = NSDateFormatter()
+        let cal = Calendar.current
+        let dateFormatter = DateFormatter()
         var dateString = String()
         
         // Set label date, skip if date is today (parameter)
@@ -346,11 +346,11 @@ class Medicine: NSManagedObject {
                 dateString = "Tomorrow, "
             } else if date.isDateInWeek() {
                 dateFormatter.dateFormat = "EEEE, "
-                dateString = dateFormatter.stringFromDate(date)
+                dateString = dateFormatter.string(from: date)
             } else {
                 // Default case
                 dateFormatter.dateFormat = "MMM d, "
-                dateString = dateFormatter.stringFromDate(date)
+                dateString = dateFormatter.string(from: date)
             }
         }
         
@@ -361,11 +361,11 @@ class Medicine: NSManagedObject {
             } else if cal.isDateInToday(date) {
                 dateString = "Yesterday, Midnight"
             } else {
-                dateString.appendContentsOf("Midnight")
+                dateString.append("Midnight")
             }
         } else {
             dateFormatter.dateFormat = "h:mm a"
-            dateString.appendContentsOf(dateFormatter.stringFromDate(date))
+            dateString.append(dateFormatter.string(from: date))
         }
         
         return dateString
@@ -373,12 +373,12 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Initialization method
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertInto: context)
         
         if self.medicineID.isEmpty {
-            self.medicineID = NSUUID().UUIDString
-            self.dateCreated = NSDate()
+            self.medicineID = UUID().uuidString
+            self.dateCreated = Date()
         }
     }
     
@@ -392,16 +392,16 @@ class Medicine: NSManagedObject {
     
     - Throws: 'MedicineError.TooSoon' if another dose has been taken in the previous 5 minutes.
     */
-    func takeDose(dose: Dose) throws {
+    func takeDose(_ dose: Dose) throws {
         // Only check for duplicate if attempting to take new dose
-        if lastDose?.date.compare(dose.date) == .OrderedAscending {
+        if lastDose?.date.compare(dose.date as Date) == .orderedAscending {
             
             // Throw error if another dose has been taken within the previous 5 minutes
-            let compareDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: -5, toDate: dose.date, options: [])!
+            let compareDate = (cal as NSCalendar).date(byAdding: NSCalendar.Unit.minute, value: -5, to: dose.date as Date, options: [])!
             
             if lastDose != nil {
-                guard lastDose?.date.compare(compareDate) == .OrderedAscending else {
-                    throw MedicineError.TooSoon
+                guard lastDose?.date.compare(compareDate) == .orderedAscending else {
+                    throw MedicineError.tooSoon
                 }
             }
         }
@@ -416,23 +416,23 @@ class Medicine: NSManagedObject {
      
      - Returns: History object
      */
-    func addDose(dose: Dose) -> Dose {
+    @discardableResult func addDose(_ dose: Dose) -> Dose {
         dose.medicine = self
         
         // Calculate the next dose and store in dose
         do {
-            dose.next = try calculateNextDose(dose.date)
+            dose.next = try calculateNextDose(dose.date as Date)! as Date
         } catch {
             dose.next = nil
         }
         
         // Get expected date and store in dose
-        if let lastDose = lastDose where lastDose.date.compare(dose.date) == .OrderedAscending {
+        if let lastDose = lastDose, lastDose.date.compare(dose.date as Date) == .orderedAscending {
             if let expected = lastDose.next {
                 dose.expectedDate = expected
             } else {
                 do {
-                    dose.expectedDate = try calculateNextDose(lastDose.date)
+                    dose.expectedDate = try calculateNextDose(lastDose.date as Date)! as Date
                 } catch {
                     dose.expectedDate = nil
                 }
@@ -440,17 +440,19 @@ class Medicine: NSManagedObject {
         }
         
         // Modify prescription count
-        if self.refillHistory?.count > 0 && dose.dosage > 0 {
-            if self.prescriptionCount < dose.dosage {
-                self.prescriptionCount = 0
-                self.refillFlag = true
-            } else {
-                self.prescriptionCount -= dose.dosage
+        if let refillCount = self.refillHistory?.count {
+            if refillCount > 0 && dose.dosage > 0 {
+                if self.prescriptionCount < dose.dosage {
+                    self.prescriptionCount = 0
+                    self.refillFlag = true
+                } else {
+                    self.prescriptionCount -= dose.dosage
+                }
             }
         }
         
         // Reschedule notification if dose is medications only/latest dose
-        if self.lastDose == nil || dose.date.compare(self.lastDose!.date) != .OrderedAscending {
+        if self.lastDose == nil || dose.date.compare(self.lastDose!.date as Date) != .orderedAscending {
             scheduleNextNotification()
         }
         
@@ -464,7 +466,7 @@ class Medicine: NSManagedObject {
      
      - Returns: Bool depending on whether action was successful
      */
-    func untakeLastDose(moc: NSManagedObjectContext) -> Bool {
+    func untakeLastDose(_ moc: NSManagedObjectContext) -> Bool {
         if let lastDose = lastDose {
             untakeDose(lastDose, moc: moc)
             
@@ -481,21 +483,23 @@ class Medicine: NSManagedObject {
      - Parameter dose: History object
      - Parameter moc: NSManagedObjectContext object
      */
-    func untakeDose(dose: Dose, moc: NSManagedObjectContext) {
+    func untakeDose(_ dose: Dose, moc: NSManagedObjectContext) {
         // Modify prescription count
-        if self.refillHistory?.count > 0 {
-            // Only enable refill flag if undoing the dosage puts count in excess
-            if needsRefill() == false {
-                self.refillFlag = true
+        if let refillCount = self.refillHistory?.count {
+            if refillCount > 0 {
+                // Only enable refill flag if undoing the dosage puts count in excess
+                if needsRefill() == false {
+                    self.refillFlag = true
+                }
+                
+                self.prescriptionCount += dose.dosage
             }
-            
-            self.prescriptionCount += dose.dosage
         }
         
-        moc.deleteObject(dose)
+        moc.delete(dose)
         
         // Save dose deletion
-        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let delegate = UIApplication.shared.delegate as! AppDelegate
         delegate.saveContext()
     }
     
@@ -510,7 +514,7 @@ class Medicine: NSManagedObject {
     
     - Returns: Prescription element for refill
     */
-    func addRefill(refill: Refill) {
+    func addRefill(_ refill: Refill) {
         // Increase prescription count
         self.prescriptionCount += refill.quantity * refill.conversion
         self.refillFlag = true
@@ -525,7 +529,7 @@ class Medicine: NSManagedObject {
      
      - Returns: Prescription element for refill
      */
-    func removeRefill(refill: Refill, moc: NSManagedObjectContext) {
+    func removeRefill(_ refill: Refill, moc: NSManagedObjectContext) {
         // Increase prescription count
         let amount = refill.quantity * refill.conversion
         if self.prescriptionCount < amount {
@@ -534,10 +538,10 @@ class Medicine: NSManagedObject {
             self.prescriptionCount -= amount
         }
         
-        moc.deleteObject(refill)
+        moc.delete(refill)
         
         // Save refill deletion
-        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let delegate = UIApplication.shared.delegate as! AppDelegate
         delegate.saveContext()
     }
 
@@ -571,7 +575,7 @@ class Medicine: NSManagedObject {
                 }
             }
             
-            if intervalUnit == Intervals.Daily {
+            if intervalUnit == Intervals.daily {
                 let days = Int(floorf(prescriptionCount * (interval / dosage)))
                 return days
             }
@@ -587,14 +591,16 @@ class Medicine: NSManagedObject {
      
      - Returns: Bool indicating whether user needs to be notified to refill
     */
-    func needsRefill(limit limit: Int = 3) -> Bool {
-        if self.refillHistory?.count > 0 {
-            if let days = refillDaysRemaining() where days <= limit {
-                return true
-            }
-            
-            if prescriptionCount < dosage {
-                return true
+    func needsRefill(limit: Int = 3) -> Bool {
+        if let refillCount = self.refillHistory?.count {
+            if refillCount > 0 {
+                if let days = refillDaysRemaining(), days <= limit {
+                    return true
+                }
+                
+                if prescriptionCount < dosage {
+                    return true
+                }
             }
         }
         
@@ -608,7 +614,7 @@ class Medicine: NSManagedObject {
      
      - Returns: String with refill status
      */
-    func refillStatus(entry entry: Bool = false, conversion: Bool = false) -> String {
+    func refillStatus(entry: Bool = false, conversion: Bool = false) -> String {
         var status = ""
         
         // If new medication with prescription count of 0
@@ -639,11 +645,11 @@ class Medicine: NSManagedObject {
             status = "You currently have "
             status += "\(removeTrailingZero(prescriptionCount)) \(dosageUnit.units(prescriptionCount)) of \(name!). "
             
-            if let days = refillDaysRemaining() where !entry {
+            if let days = refillDaysRemaining(), !entry {
                 if days <= 1 {
                     status += "You will need to refill after this dose. "
                 } else {
-                    status += "Based on your current usage, this will last you approximately \(days) \(Intervals.Daily.units(Float(days))). "
+                    status += "Based on your current usage, this will last you approximately \(days) \(Intervals.daily.units(Float(days))). "
                 }
             }
         }
@@ -653,18 +659,18 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Notification methods
-    func scheduleNotification(date: NSDate, badgeCount: Int = 1) throws {
+    func scheduleNotification(_ date: Date, badgeCount: Int = 1) throws {
         // Schedule if the user wants a reminder and the reminder date is in the future
-        guard date.compare(NSDate()) == .OrderedDescending else {
-            throw MedicineError.DatePassed
+        guard date.compare(Date()) == .orderedDescending else {
+            throw MedicineError.datePassed
         }
         
         guard reminderEnabled == true else {
-            throw MedicineError.ReminderDisabled
+            throw MedicineError.reminderDisabled
         }
         
         guard let name = name else {
-            throw MedicineError.InvalidName
+            throw MedicineError.invalidName
         }
 
         let notification = UILocalNotification()
@@ -674,7 +680,7 @@ class Medicine: NSManagedObject {
         notification.soundName = UILocalNotificationDefaultSoundName
         notification.category = "Dose Reminder"
         
-        if lastDose == nil && intervalUnit == .Daily {
+        if lastDose == nil && intervalUnit == .daily {
             notification.category = "Dose Reminder - No Snooze"
         }
         
@@ -682,10 +688,10 @@ class Medicine: NSManagedObject {
         notification.applicationIconBadgeNumber = badgeCount
         notification.fireDate = date
         
-        UIApplication.sharedApplication().scheduleLocalNotification(notification)
+        UIApplication.shared.scheduleLocalNotification(notification)
     }
     
-    func scheduleNextNotification() -> Bool {
+    @discardableResult func scheduleNextNotification() -> Bool {
         cancelNotifications()
         
         guard let date = nextDose else { return false }
@@ -698,23 +704,23 @@ class Medicine: NSManagedObject {
         }
     }
     
-    func snoozeNotification() -> Bool {
-        let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
-        var snoozeDate = NSDate()
+    @discardableResult func snoozeNotification() -> Bool {
+        let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
+        var snoozeDate = Date()
         
         // Set snooze delay to user selection or 5 minutes
-        if defaults.valueForKey("snoozeLength") != nil {
-            let val = defaults.valueForKey("snoozeLength") as! Int
-            snoozeDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: val, toDate: NSDate(), options: [])!
+        if defaults.value(forKey: "snoozeLength") != nil {
+            let val = defaults.value(forKey: "snoozeLength") as! Int
+            snoozeDate = (cal as NSCalendar).date(byAdding: NSCalendar.Unit.minute, value: val, to: Date(), options: [])!
         } else {
-            snoozeDate = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: 5, toDate: NSDate(), options: [])!
+            snoozeDate = (cal as NSCalendar).date(byAdding: NSCalendar.Unit.minute, value: 5, to: Date(), options: [])!
         }
         
         // Update last dose next value in case notifications are rescheduled
         self.lastDose?.next = snoozeDate
         
         // Save modifications to last dose
-        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let delegate = UIApplication.shared.delegate as! AppDelegate
         delegate.saveContext()
         
         // Schedule new notification
@@ -728,11 +734,11 @@ class Medicine: NSManagedObject {
     }
     
     func cancelNotifications() {
-        let notifications = UIApplication.sharedApplication().scheduledLocalNotifications!
+        let notifications = UIApplication.shared.scheduledLocalNotifications!
         for notification in notifications {
             let (id, _) = (notification.userInfo?["id"] as? String, notification.userInfo?["snooze"] as? Bool)
             if (id == self.medicineID) {
-                UIApplication.sharedApplication().cancelLocalNotification(notification)
+                UIApplication.shared.cancelLocalNotification(notification)
             }
         }
     }
@@ -745,7 +751,7 @@ class Medicine: NSManagedObject {
             
             if prescriptionCount < dosage {
                 message = "You don't have enough \(name!) to take your next dose."
-            } else if let count = refillDaysRemaining() where prescriptionCount > 0 && count > 0 {
+            } else if let count = refillDaysRemaining(), prescriptionCount > 0 && count > 0 {
                 message = "You currently have enough \(name!) for about \(count) \(count == 1 ? "day" : "days") and should refill soon."
             }
             
@@ -754,9 +760,9 @@ class Medicine: NSManagedObject {
             notification.soundName = UILocalNotificationDefaultSoundName
             notification.category = "Refill Reminder"
             notification.userInfo = ["id": self.medicineID, "type": "refill"]
-            notification.fireDate = NSDate()
+            notification.fireDate = Date()
             
-            UIApplication.sharedApplication().scheduleLocalNotification(notification)
+            UIApplication.shared.scheduleLocalNotification(notification)
             
             refillFlag = false
         }
@@ -772,9 +778,9 @@ class Medicine: NSManagedObject {
     
     - Returns: Number of overdue items at date
     */
-    func getBadgeCount(date: NSDate) -> Int {
+    func getBadgeCount(_ date: Date) -> Int {
         return medication.filter({
-            $0.reminderEnabled && $0.nextDose?.compare(date) != .OrderedDescending
+            $0.reminderEnabled && $0.nextDose?.compare(date) != .orderedDescending
         }).count
     }
     
@@ -787,63 +793,63 @@ class Medicine: NSManagedObject {
     
     - Throws: 'MedicineError.NoAlarm' if medication has daily interval and no alarm set
     */
-    func calculateNextDose(date: NSDate? = nil) throws -> NSDate? {
+    func calculateNextDose(_ date: Date? = nil) throws -> Date? {
         switch(intervalUnit) {
-        case .None:
+        case .none:
             return nil
-        case .Hourly:
+        case .hourly:
             let hr = Int(interval)
-            let min = Int(60 * (interval % 1))
+            let min = Int(60 * (interval.truncatingRemainder(dividingBy: 1)))
             
             // Calculate interval from date provided
             if let date = date {
-                var next = cal.dateByAddingUnit(NSCalendarUnit.Hour, value: hr, toDate: date, options: [])!
-                next = cal.dateByAddingUnit(NSCalendarUnit.Minute, value: min, toDate: next, options: [])!
+                var next = (cal as NSCalendar).date(byAdding: NSCalendar.Unit.hour, value: hr, to: date, options: [])!
+                next = (cal as NSCalendar).date(byAdding: NSCalendar.Unit.minute, value: min, to: next, options: [])!
                 return next
             }
             
             // Calculate interval based on last dose
-            return lastDose?.next
+            return lastDose?.next as Date?
             
-        case .Daily:
+        case .daily:
             guard let alarm = intervalAlarm else {
-                throw MedicineError.NoAlarm
+                throw MedicineError.noAlarm
             }
             
             // Calculate interval from date provided
             if let date = date {
-                let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
-                let date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: date, options: [])!
-                return cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])
+                let components = (cal as NSCalendar).components([NSCalendar.Unit.hour, NSCalendar.Unit.minute], from: alarm as Date)
+                let date = (cal as NSCalendar).date(bySettingHour: components.hour!, minute: components.minute!, second: 0, of: date, options: [])!
+                return (cal as NSCalendar).date(byAdding: NSCalendar.Unit.day, value: Int(interval), to: date, options: [])
             }
             
             // Return pre-calculated next dose and handle snooze
-            if lastDose?.next?.compare(NSDate()) == .OrderedDescending {
-                return lastDose?.next
+            if lastDose?.next?.compare(Date()) == .orderedDescending {
+                return lastDose?.next as Date?
             }
             
-            var date = NSDate()
-            let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: alarm)
+            var date = Date()
+            let components = (cal as NSCalendar).components([NSCalendar.Unit.hour, NSCalendar.Unit.minute], from: alarm as Date)
             
             if lastDose?.date == nil {
-                date = alarm
+                date = alarm as Date
             } else if let last = lastDose?.date {
-                date = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: last, options: [])!
+                date = (cal as NSCalendar).date(bySettingHour: components.hour!, minute: components.minute!, second: 0, of: last as Date, options: [])!
             }
             
             // If medicine was created today but the alarm is behind the current time, set for tomorrow
-            if let dateCreated = dateCreated where cal.isDateInToday(dateCreated) {
-                while date.compare(NSDate()) == .OrderedAscending {
-                    date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: 1, toDate: date, options: [])!
+            if let dateCreated = dateCreated, cal.isDateInToday(dateCreated as Date) {
+                while date.compare(Date()) == .orderedAscending {
+                    date = (cal as NSCalendar).date(byAdding: NSCalendar.Unit.day, value: 1, to: date, options: [])!
                 }
             }
             
             // Schedule for next interval until it is for the future
-            while date.compare(NSDate()) == .OrderedAscending && cal.isDateInToday(date) == false {
-                date = cal.dateByAddingUnit(NSCalendarUnit.Day, value: Int(interval), toDate: date, options: [])!
+            while date.compare(Date()) == .orderedAscending && cal.isDateInToday(date) == false {
+                date = (cal as NSCalendar).date(byAdding: NSCalendar.Unit.day, value: Int(interval), to: date, options: [])!
             }
             
-            if lastDose?.next?.compare(NSDate()) == .OrderedAscending {
+            if lastDose?.next?.compare(Date()) == .orderedAscending {
                 lastDose?.next = date
             }
             
@@ -861,7 +867,7 @@ class Medicine: NSManagedObject {
      
      Returns: Number as a string with trailing zeroes truncated
      */
-    func removeTrailingZero(num: Float) -> String {
+    func removeTrailingZero(_ num: Float) -> String {
         return String(format: "%g", num)
     }
     
@@ -869,16 +875,16 @@ class Medicine: NSManagedObject {
 
 
 // MARK: - NSDate extension
-extension NSDate {
+extension Date {
 
     // Determines if time is set to midnight
     func isMidnight() -> Bool {
-        let cal = NSCalendar.currentCalendar()
-        let currentDate = NSDate()
-        let components = cal.components([NSCalendarUnit.Hour, NSCalendarUnit.Minute], fromDate: self)
+        let cal = Calendar.current
+        let currentDate = Date()
+        let components = (cal as NSCalendar).components([NSCalendar.Unit.hour, NSCalendar.Unit.minute], from: self)
         
-        if let compare = cal.dateBySettingHour(components.hour, minute: components.minute, second: 0, ofDate: currentDate, options: []) {
-            if (cal.isDate(compare, equalToDate: cal.startOfDayForDate(currentDate), toUnitGranularity: NSCalendarUnit.Minute)) {
+        if let compare = (cal as NSCalendar).date(bySettingHour: components.hour!, minute: components.minute!, second: 0, of: currentDate, options: []) {
+            if ((cal as NSCalendar).isDate(compare, equalTo: cal.startOfDay(for: currentDate), toUnitGranularity: NSCalendar.Unit.minute)) {
                 return true
             }
         }
@@ -887,12 +893,12 @@ extension NSDate {
     }
     
     func isDateInLastWeek() -> Bool {
-        let cal = NSCalendar.currentCalendar()
-        let currentDate = NSDate()
+        let cal = Calendar.current
+        let currentDate = Date()
         var val = false
         
-        if self.compare(cal.dateByAddingUnit(NSCalendarUnit.WeekOfYear, value: -1, toDate: cal.startOfDayForDate(currentDate), options: [])!) == .OrderedDescending {
-            if self.compare(currentDate) == .OrderedAscending {
+        if self.compare((cal as NSCalendar).date(byAdding: NSCalendar.Unit.weekOfYear, value: -1, to: cal.startOfDay(for: currentDate), options: [])!) == .orderedDescending {
+            if self.compare(currentDate) == .orderedAscending {
                 val = true
             }
         }
@@ -901,12 +907,12 @@ extension NSDate {
     }
     
     func isDateInWeek() -> Bool {
-        let cal = NSCalendar.currentCalendar()
-        let currentDate = NSDate()
+        let cal = Calendar.current
+        let currentDate = Date()
         var val = false
         
-        if self.compare(cal.dateByAddingUnit(NSCalendarUnit.WeekOfYear, value: 1, toDate: cal.startOfDayForDate(currentDate), options: [])!) == .OrderedAscending {
-            if self.compare(cal.dateByAddingUnit(NSCalendarUnit.Day, value: -1, toDate: cal.startOfDayForDate(currentDate), options: [])!) == .OrderedDescending {
+        if self.compare((cal as NSCalendar).date(byAdding: NSCalendar.Unit.weekOfYear, value: 1, to: cal.startOfDay(for: currentDate), options: [])!) == .orderedAscending {
+            if self.compare((cal as NSCalendar).date(byAdding: NSCalendar.Unit.day, value: -1, to: cal.startOfDay(for: currentDate), options: [])!) == .orderedDescending {
                 val = true
             }
         }
@@ -919,11 +925,11 @@ extension NSDate {
 
 // MARK: - Array extension
 extension Array {
-    mutating func removeObject<U: Equatable>(object: U) {
-        for (index, compare) in self.enumerate() {
+    mutating func removeObject<U: Equatable>(_ object: U) {
+        for (index, compare) in self.enumerated() {
             if let compare = compare as? U {
                 if object == compare {
-                    self.removeAtIndex(index)
+                    self.remove(at: index)
                     break
                 }
             }
@@ -933,28 +939,28 @@ extension Array {
 
 
 // MARK: - Errors Enum
-enum MedicineError: ErrorType {
-    case InvalidName
-    case TooSoon
-    case DatePassed
-    case ReminderDisabled
-    case NoAlarm
+enum MedicineError: Error {
+    case invalidName
+    case tooSoon
+    case datePassed
+    case reminderDisabled
+    case noAlarm
 }
 
 
 // MARK: - Sort Order Enum
 enum SortOrder: Int {
-    case Manual
-    case NextDosage
+    case manual
+    case nextDosage
 }
 
 
 // MARK: - Units Enum
 enum Doses: Int16, CustomStringConvertible {
-    case Pills
-    case Milligrams
-    case Millilitres
-    case Puffs
+    case pills
+    case milligrams
+    case millilitres
+    case puffs
     
     static var count: Int {
         return 4
@@ -962,24 +968,24 @@ enum Doses: Int16, CustomStringConvertible {
     
     var description: String {
         switch self {
-        case .Pills: return "Pills"
-        case .Milligrams: return "Milligrams"
-        case .Millilitres: return "Millilitres"
-        case .Puffs: return "Puffs"
+        case .pills: return "Pills"
+        case .milligrams: return "Milligrams"
+        case .millilitres: return "Millilitres"
+        case .puffs: return "Puffs"
         }
     }
     
-    func units(amount: Float?) -> String {
+    func units(_ amount: Float?) -> String {
         switch self {
-        case .Pills:
+        case .pills:
             if (amount != nil && amount == 1.0) {
                 return "pill"
             } else {
                 return "pills"
             }
-        case .Milligrams: return "mg"
-        case .Millilitres: return "ml"
-        case .Puffs:
+        case .milligrams: return "mg"
+        case .millilitres: return "ml"
+        case .puffs:
             if (amount != nil && amount == 1.0) {
                 return "puff"
             } else {
@@ -992,10 +998,10 @@ enum Doses: Int16, CustomStringConvertible {
 
 // MARK: - Frequencies Enum
 enum Intervals: Int16, CustomStringConvertible {
-    case None = -1
-    case Hourly = 0
-    case Daily
-    case Weekly
+    case none = -1
+    case hourly = 0
+    case daily
+    case weekly
     
     static var count: Int {
         return 2
@@ -1003,25 +1009,27 @@ enum Intervals: Int16, CustomStringConvertible {
     
     var description: String {
         switch self {
-        case .Hourly: return "Hourly"
-        case .Daily: return "Daily"
-        case .Weekly: return "Weekly"
+        case .hourly: return "Hourly"
+        case .daily: return "Daily"
+        case .weekly: return "Weekly"
         default: return "None"
         }
     }
     
-    func units(amount: Float?) -> String {
+    func units(_ amount: Float?) -> String {
         var string = ""
         
         switch self {
-        case .Hourly: string = "hour"
-        case .Daily: string = "day"
-        case .Weekly: string = "week"
+        case .hourly: string = "hour"
+        case .daily: string = "day"
+        case .weekly: string = "week"
         default: string = "none"
         }
         
-        if (amount < 1 || amount >= 2) {
-            string += "s"
+        if let amt = amount {
+            if (amt < 1 || amt >= 2) {
+                string += "s"
+            }
         }
         
         return string

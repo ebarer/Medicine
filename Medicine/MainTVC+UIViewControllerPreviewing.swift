@@ -11,13 +11,13 @@ import UIKit
 extension MainVC: UIViewControllerPreviewingDelegate {
     
     // Create a previewing view controller to be shown at "Peek".
-    func previewingContext(previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
         // Obtain the index path and the cell that was pressed.
-        guard let indexPath = tableView.indexPathForRowAtPoint(location),
-            cell = tableView.cellForRowAtIndexPath(indexPath) else { return nil }
+        guard let indexPath = tableView.indexPathForRow(at: location),
+            let cell = tableView.cellForRow(at: indexPath) else { return nil }
         
         // Create a detail view controller and set its properties.
-        guard let vc = storyboard?.instantiateViewControllerWithIdentifier("medicineDetails") as? MedicineDetailsTVC else { return nil }
+        guard let vc = storyboard?.instantiateViewController(withIdentifier: "medicineDetails") as? MedicineDetailsTVC else { return nil }
         
         vc.med = medication[indexPath.row]
         
@@ -28,7 +28,7 @@ extension MainVC: UIViewControllerPreviewingDelegate {
     }
     
     // Present the view controller for the "Pop" action.
-    func previewingContext(previewingContext: UIViewControllerPreviewing, commitViewController viewControllerToCommit: UIViewController) {
-        showViewController(viewControllerToCommit, sender: self)
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
+        show(viewControllerToCommit, sender: self)
     }
 }

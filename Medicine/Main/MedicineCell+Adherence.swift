@@ -16,12 +16,12 @@ class MedicineCell_Adherence: UIView {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        self.backgroundColor = UIColor.whiteColor()
+        self.backgroundColor = UIColor.white
         
         if let score = score {
-            scoreLabel.frame = CGRectMake(0, 0, 50, 50)
-            scoreLabel.backgroundColor = UIColor.redColor()
-            scoreLabel.textAlignment = NSTextAlignment.Center
+            scoreLabel.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+            scoreLabel.backgroundColor = UIColor.red
+            scoreLabel.textAlignment = NSTextAlignment.center
             scoreLabel.text = "\(score)"
             self.addSubview(scoreLabel)
         }

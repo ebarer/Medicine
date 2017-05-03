@@ -12,8 +12,8 @@ import MessageUI
 
 class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
 
-    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     
     // MARK: - Outlets
@@ -31,24 +31,24 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         setLabels()
         
         // Set version string
-        let dictionary = NSBundle.mainBundle().infoDictionary!
+        let dictionary = Bundle.main.infoDictionary!
         let version = dictionary["CFBundleShortVersionString"] as! String
         let build = dictionary["CFBundleVersion"] as! String
         versionString.text = "Medicine Manager \(version) (\(build))"
         
         // Set copyright string
-        if let year = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)?.component(NSCalendarUnit.Year, fromDate: NSDate()) {
+        if let year = (Calendar(identifier: Calendar.Identifier.gregorian) as NSCalendar?)?.component(NSCalendar.Unit.year, from: Date()) {
             copyrightString.text = "\(year) © Elliot Barer"
         } else {
             copyrightString.text = "© Elliot Barer"
         }
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         if let index = tableView.indexPathForSelectedRow {
-            self.tableView.deselectRowAtIndexPath(index, animated: animated)
+            self.tableView.deselectRow(at: index, animated: animated)
         }
         
         setLabels()
@@ -62,7 +62,7 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     func setLabels() {
         // Set sort label
-        switch(defaults.integerForKey("sortOrder")) {
+        switch(defaults.integer(forKey: "sortOrder")) {
         case 0:
             sortLabel.text = "Manually"
         case 1:
@@ -71,7 +71,7 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         }
         
         // Set snooze label
-        var snoozeLength = defaults.integerForKey("snoozeLength")
+        var snoozeLength = defaults.integer(forKey: "snoozeLength")
         
         if snoozeLength == 0 {
             snoozeLength = 5
@@ -82,7 +82,7 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         snoozeLabel.text = snoozeString
         
         // Set refill label
-        var refillTime = defaults.integerForKey("refillTime")
+        var refillTime = defaults.integer(forKey: "refillTime")
         
         if refillTime == 0 {
             refillTime = 3
@@ -95,7 +95,7 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     
     // MARK: - Table view delegate
-    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         switch section {
         case 0:
             if let amount = refillLabel.text {
@@ -110,56 +110,56 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         }
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if tableView.cellForRowAtIndexPath(indexPath)?.reuseIdentifier == "feedbackCell" {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if tableView.cellForRow(at: indexPath)?.reuseIdentifier == "feedbackCell" {
             if MFMailComposeViewController.canSendMail() {
-                if let deviceInfo = generateDeviceInfo().dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
+                if let deviceInfo = generateDeviceInfo().data(using: String.Encoding.utf8, allowLossyConversion: false) {
                     let mc = MFMailComposeViewController()
                     mc.mailComposeDelegate = self
                     mc.setToRecipients(["hello@medicinemanagerapp.com"])
                     mc.setSubject("Feedback for Medicine Manager")
                     mc.addAttachmentData(deviceInfo, mimeType: "text/plain", fileName: "device_information.txt")
                     
-                    self.presentViewController(mc, animated: true, completion: nil)
+                    self.present(mc, animated: true, completion: nil)
                 }
             } else {
                 print("Can't send")
             }
         }
         
-        if tableView.cellForRowAtIndexPath(indexPath)?.reuseIdentifier == "resetCell" {
-            let deleteAlert = UIAlertController(title: "Reset Data and Settings?", message: "This will permanently delete all medication, history, and preferences.", preferredStyle: UIAlertControllerStyle.Alert)
+        if tableView.cellForRow(at: indexPath)?.reuseIdentifier == "resetCell" {
+            let deleteAlert = UIAlertController(title: "Reset Data and Settings?", message: "This will permanently delete all medication, history, and preferences.", preferredStyle: UIAlertControllerStyle.alert)
             
-            deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
-                self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {(action) -> Void in
+                self.tableView.deselectRow(at: indexPath, animated: true)
             }))
             
-            deleteAlert.addAction(UIAlertAction(title: "Reset Data and Settings", style: .Destructive, handler: {(action) -> Void in
+            deleteAlert.addAction(UIAlertAction(title: "Reset Data and Settings", style: .destructive, handler: {(action) -> Void in
                 self.resetApp()
             }))
             
-            deleteAlert.view.tintColor = UIColor.grayColor()
-            self.presentViewController(deleteAlert, animated: true, completion: nil)
+            deleteAlert.view.tintColor = UIColor.gray
+            self.present(deleteAlert, animated: true, completion: nil)
         }
     }
     
-    func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        self.dismiss(animated: true, completion: nil)
     }
     
     
     // MARK: - Helper methods
     func resetApp() {
         let moc = appDelegate.managedObjectContext
-        let request = NSFetchRequest(entityName:"Medicine")
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName:"Medicine")
         
         do {
-            let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
+            let fetchedResults = try moc.fetch(request) as? [Medicine]
             
             // Delete all medications and corresponding history
             if let results = fetchedResults {
                 for med in results {
-                    moc.deleteObject(med)
+                    moc.delete(med)
                 }
             }
             
@@ -168,35 +168,35 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
             medication.removeAll()
             
             // Clear scheduled notifications
-            UIApplication.sharedApplication().cancelAllLocalNotifications()
+            UIApplication.shared.cancelAllLocalNotifications()
             
             // Reset preferences
-            defaults.setBool(true, forKey: "firstLaunch")
-            defaults.setInteger(SortOrder.NextDosage.rawValue, forKey: "sortOrder")
-            defaults.setInteger(5, forKey: "snoozeLength")
-            defaults.setObject([], forKey: "todayData")
+            defaults.set(true, forKey: "firstLaunch")
+            defaults.set(SortOrder.nextDosage.rawValue, forKey: "sortOrder")
+            defaults.set(5, forKey: "snoozeLength")
+            defaults.set([], forKey: "todayData")
             defaults.synchronize()
             
             // Show reset confirmation
-            let confirmationAlert = UIAlertController(title: "Reset Complete", message: "All medication, history, and preferences have been reset.", preferredStyle: UIAlertControllerStyle.Alert)
+            let confirmationAlert = UIAlertController(title: "Reset Complete", message: "All medication, history, and preferences have been reset.", preferredStyle: UIAlertControllerStyle.alert)
             
-            confirmationAlert.addAction(UIAlertAction(title: "Restart", style: UIAlertActionStyle.Destructive, handler: {(action) -> Void in
+            confirmationAlert.addAction(UIAlertAction(title: "Restart", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
                 if let tbc = self.presentingViewController as? MainTBC {
-                    if let splitView = tbc.viewControllers?.filter({$0.isKindOfClass(UISplitViewController)}).first as? UISplitViewController {
-                        self.dismissViewControllerAnimated(false, completion: nil)
+                    if let splitView = tbc.viewControllers?.filter({$0.isKind(of: UISplitViewController.self)}).first as? UISplitViewController {
+                        self.dismiss(animated: false, completion: nil)
                         let masterVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
-                        masterVC.performSegueWithIdentifier("tutorial", sender: masterVC)
+                        masterVC.performSegue(withIdentifier: "tutorial", sender: masterVC)
                         
-                        NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
-                        NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                     }
                 }
             }))
             
-            confirmationAlert.view.tintColor = UIColor.grayColor()
-            self.presentViewController(confirmationAlert, animated: true, completion: nil)
+            confirmationAlert.view.tintColor = UIColor.gray
+            self.present(confirmationAlert, animated: true, completion: nil)
             if let index = self.tableView.indexPathForSelectedRow {
-                self.tableView.deselectRowAtIndexPath(index, animated: false)
+                self.tableView.deselectRow(at: index, animated: false)
             }
         } catch {
             print("Could not fetch medication.")
@@ -204,8 +204,8 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     }
     
     func generateDeviceInfo() -> String {
-        let device = UIDevice.currentDevice()
-        let dictionary = NSBundle.mainBundle().infoDictionary!
+        let device = UIDevice.current
+        let dictionary = Bundle.main.infoDictionary!
         let name = dictionary["CFBundleName"] as! String
         let version = dictionary["CFBundleShortVersionString"] as! String
         let build = dictionary["CFBundleVersion"] as! String
@@ -217,11 +217,11 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         deviceInfo += "Device Information:\r"
         deviceInfo += "Device: \(deviceName())\r"
         deviceInfo += "iOS Version: \(device.systemVersion)\r"
-        deviceInfo += "Timezone: \(NSTimeZone.localTimeZone().name) (\(NSTimeZone.localTimeZone().abbreviation!))\r\r"
+        deviceInfo += "Timezone: \(TimeZone.autoupdatingCurrent.identifier) (\(NSTimeZone.local.abbreviation()!))\r\r"
         
         deviceInfo += "Obfuscated Medicine Information:\r"
         
-        for (index, med) in medication.enumerate() {
+        for (index, med) in medication.enumerated() {
             if let score = med.adherenceScore() {
                 deviceInfo += "Medicine \(index) (\(score)%): "
             } else {
@@ -246,7 +246,7 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         uname(&systemInfo)
         let machineMirror = Mirror(reflecting: systemInfo.machine)
         let identifier = machineMirror.children.reduce("") { identifier, element in
-            guard let value = element.value as? Int8 where value != 0 else { return identifier }
+            guard let value = element.value as? Int8, value != 0 else { return identifier }
             return identifier + String(UnicodeScalar(UInt8(value)))
         }
         
@@ -255,11 +255,11 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     
     // MARK: - Navigation
-    @IBAction func dismissSettings(sender: UIBarButtonItem) {
-        dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func dismissSettings(_ sender: UIBarButtonItem) {
+        dismiss(animated: true, completion: nil)
     }
 
     // Used to dismiss popover selections
-    @IBAction func settingsUnwind(unwindSegue: UIStoryboardSegue) {}
+    @IBAction func settingsUnwind(_ unwindSegue: UIStoryboardSegue) {}
 
 }

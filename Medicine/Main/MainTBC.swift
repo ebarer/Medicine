@@ -18,22 +18,22 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     
     // MARK: - Helper variables
-    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
-    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var moc: NSManagedObjectContext!
-    var launchedShortcutItem: [NSObject: AnyObject]?
+    var launchedShortcutItem: [AnyHashable: Any]?
     
     var selectedVC: UIViewController? = nil
     
     
     // MARK: - Load medication
     func loadMedication() {
-        let request = NSFetchRequest(entityName:"Medicine")
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName:"Medicine")
         request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
         
         do {
-            let fetchedResults = try moc.executeFetchRequest(request) as? [Medicine]
+            let fetchedResults = try moc.fetch(request) as? [Medicine]
             
             if let results = fetchedResults {
                 // Store results in medication array
@@ -45,15 +45,15 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                         if let firstDose = med.doseHistory?.lastObject as? Dose {
                             med.dateCreated = firstDose.date
                         } else {
-                            let cal = NSCalendar.currentCalendar()
-                            med.dateCreated = cal.dateByAddingUnit(.Day, value: -1, toDate: NSDate(), options: [])
+                            let cal = Calendar.current
+                            med.dateCreated = cal.date(byAdding: Calendar.Component.day, value: -1, to: Date())
                         }
                     }
                 }
                 
                 // If selected, sort by next dosage
-                if defaults.integerForKey("sortOrder") == SortOrder.NextDosage.rawValue {
-                    medication.sortInPlace(Medicine.sortByNextDose)
+                if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
+                    medication.sort(by: Medicine.sortByNextDose)
                 }
                 
                 indexMedication()
@@ -79,16 +79,16 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         loadMedication()
         
         // Add observeres for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(doseNotification(_:)), name: "doseNotification", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refillNotification(_:)), name: "refillNotification", object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(doseNotification(_:)), name: NSNotification.Name(rawValue: "doseNotification"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refillNotification(_:)), name: NSNotification.Name(rawValue: "refillNotification"), object: nil)
         
         // Add observers for notification actions
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(takeDoseAction(_:)), name: "takeDoseAction", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(snoozeReminderAction(_:)), name: "snoozeReminderAction", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refillAction(_:)), name: "refillAction", object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(takeDoseAction(_:)), name: NSNotification.Name(rawValue: "takeDoseAction"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(snoozeReminderAction(_:)), name: NSNotification.Name(rawValue: "snoozeReminderAction"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refillAction(_:)), name: NSNotification.Name(rawValue: "refillAction"), object: nil)
         
         // Add observer for scheduling notifications and updating app badge count
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(rescheduleNotifications(_:)), name: "rescheduleNotifications", object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(rescheduleNotifications(_:)), name: NSNotification.Name(rawValue: "rescheduleNotifications"), object: nil)
     }
 
     override func didReceiveMemoryWarning() {
@@ -97,11 +97,11 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     
     // MARK: - Tab delegate
-    func tabBarController(tabBarController: UITabBarController, didSelectViewController viewController: UIViewController) {
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         if viewController == selectedVC {
-            if viewController.isKindOfClass(UISplitViewController) {
+            if viewController.isKind(of: UISplitViewController.self) {
                 let navVC = (viewController as! UISplitViewController).childViewControllers[0] as! UINavigationController
-                navVC.popToRootViewControllerAnimated(true)
+                navVC.popToRootViewController(animated: true)
             }
         }
         
@@ -110,88 +110,88 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
 
     
     // MARK: - Notification observers
-    func doseNotification(notification: NSNotification) {
+    func doseNotification(_ notification: Notification) {
         if let id = notification.userInfo!["id"] as? String {
             let medQuery = Medicine.getMedicine(arr: medication, id: id)
             if let med = medQuery {
-                print("doseNotification triggered for \(med.name)")
+                print("doseNotification triggered for \(med.name ?? "unknown medicine")")
                 
                 let message = String(format:"Time to take %g %@ of %@", med.dosage, med.dosageUnit.units(med.dosage), med.name!)
                 
-                let alert = UIAlertController(title: "Take \(med.name!)", message: message, preferredStyle: .Alert)
+                let alert = UIAlertController(title: "Take \(med.name!)", message: message, preferredStyle: .alert)
                 
-                alert.addAction(UIAlertAction(title: "Take Dose", style:  UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-                    self.performSegueWithIdentifier("addDose", sender: med)
+                alert.addAction(UIAlertAction(title: "Take Dose", style:  UIAlertActionStyle.destructive, handler: {(action) -> Void in
+                    self.performSegue(withIdentifier: "addDose", sender: med)
                 }))
                 
                 if med.lastDose != nil {
-                    alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertActionStyle.Default, handler: {(action) -> Void in
+                    alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertActionStyle.default, handler: {(action) -> Void in
                         if let id = notification.userInfo!["id"] as? String {
                             if let med = Medicine.getMedicine(arr: medication, id: id) {
                                 med.snoozeNotification()
-                                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
-                                NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+                                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+                                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                             }
                         }
                     }))
                 }
                 
-                alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
-                    NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
-                    NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+                alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.cancel, handler: {(action) -> Void in
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                 }))
                 
-                alert.view.tintColor = UIColor.grayColor()
-                self.presentViewController(alert, animated: true, completion: nil)
+                alert.view.tintColor = UIColor.gray
+                self.present(alert, animated: true, completion: nil)
             }
         }
     }
     
-    func refillNotification(notification: NSNotification) {
+    func refillNotification(_ notification: Notification) {
         if let id = notification.userInfo!["id"] as? String {
             let medQuery = Medicine.getMedicine(arr: medication, id: id)
             if let med = medQuery {
-                print("refillNotification triggered for \(med.name)")
+                print("refillNotification triggered for \(med.name ?? "unknown medicine")")
                 
                 var message = "You are running low on \(med.name!) and should refill soon."
                 
                 if med.prescriptionCount < med.dosage {
                     message = "You don't have enough \(med.name!) to take your next dose."
-                } else if let count = med.refillDaysRemaining() where med.prescriptionCount > 0 && count > 0 {
+                } else if let count = med.refillDaysRemaining(), med.prescriptionCount > 0 && count > 0 {
                     message = "You currently have enough \(med.name!) for about \(count) \(count == 1 ? "day" : "days") and should refill soon."
                 }
                 
-                let alert = UIAlertController(title: "Reminder to Refill \(med.name!)", message: message, preferredStyle: .Alert)
+                let alert = UIAlertController(title: "Reminder to Refill \(med.name!)", message: message, preferredStyle: .alert)
                 
-                alert.addAction(UIAlertAction(title: "Refill", style:  UIAlertActionStyle.Destructive, handler: {(action) -> Void in
-                    self.performSegueWithIdentifier("refillPrescription", sender: med)
+                alert.addAction(UIAlertAction(title: "Refill", style:  UIAlertActionStyle.destructive, handler: {(action) -> Void in
+                    self.performSegue(withIdentifier: "refillPrescription", sender: med)
                 }))
                 
-                alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Cancel, handler: nil))
+                alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.cancel, handler: nil))
                 
-                alert.view.tintColor = UIColor.grayColor()
-                self.presentViewController(alert, animated: true, completion: nil)
+                alert.view.tintColor = UIColor.gray
+                self.present(alert, animated: true, completion: nil)
             }
         }
     }
     
     
     // MARK: - Action observers
-    func takeDoseAction(notification: NSNotification) {
+    func takeDoseAction(_ notification: Notification) {
         NSLog("takeDoseAction received", [])
         if let id = notification.userInfo!["id"] as? String {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
-                let entity = NSEntityDescription.entityForName("Dose", inManagedObjectContext: moc)
-                let dose = Dose(entity: entity!, insertIntoManagedObjectContext: moc)
+                let entity = NSEntityDescription.entity(forEntityName: "Dose", in: moc)
+                let dose = Dose(entity: entity!, insertInto: moc)
 
-                dose.date = NSDate()
+                dose.date = Date()
                 dose.dosage = med.dosage
                 dose.dosageUnitInt = med.dosageUnitInt
                 
                 med.addDose(dose)
                 
                 // Check if medication needs to be refilled
-                let refillTime = defaults.integerForKey("refillTime")
+                let refillTime = defaults.integer(forKey: "refillTime")
                 if med.needsRefill(limit: refillTime) {
                     med.sendRefillNotification()
                 }
@@ -202,30 +202,30 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 setDynamicShortcuts()
                 updateBadgeCount()
                 
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
             }
         }
     }
     
-    func snoozeReminderAction(notification: NSNotification) {
+    func snoozeReminderAction(_ notification: Notification) {
         NSLog("snoozeReminderAction received", [])
         if let id = notification.userInfo!["id"] as? String {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
                 med.snoozeNotification()
                 setDynamicShortcuts()
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                 NSLog("snoozeReminderAction performed", [])
             }
         }
     }
     
-    func refillAction(notification: NSNotification) {
+    func refillAction(_ notification: Notification) {
         NSLog("refillAction received", [])
         if let id = notification.userInfo!["id"] as? String {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
-                performSegueWithIdentifier("refillPrescription", sender: med)
+                performSegue(withIdentifier: "refillPrescription", sender: med)
                 NSLog("refillAction performed", [])
             }
         }
@@ -233,7 +233,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     
     // MARK: - Other observers
-    func rescheduleNotifications(notification: NSNotification) {        
+    func rescheduleNotifications(_ notification: Notification) {        
         // Reschedule notifications
         for med in medication {
             med.scheduleNextNotification()
@@ -245,9 +245,9 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     
     // MARK: - Navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "addDose" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
+            if let vc = segue.destination.childViewControllers[0] as? AddDoseTVC {
                 if let med = sender as? Medicine {
                     vc.med = med
                 }
@@ -255,7 +255,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         }
         
         if segue.identifier == "refillPrescription" {
-            if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
+            if let vc = segue.destination.childViewControllers[0] as? AddRefillTVC {
                 if let med = sender as? Medicine {
                     vc.med = med
                 }
@@ -290,9 +290,9 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
                 userInfo: userInfo)
             
-            UIApplication.sharedApplication().shortcutItems = [shortcutItem]
+            UIApplication.shared.shortcutItems = [shortcutItem]
             return
-        } else if let nextDose = UIApplication.sharedApplication().scheduledLocalNotifications?.first {
+        } else if let nextDose = UIApplication.shared.scheduledLocalNotifications?.first {
             if let id = nextDose.userInfo?["id"] {
                 guard let med = Medicine.getMedicine(arr: medication, id: id as! String) else { return }
                 let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
@@ -304,17 +304,17 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                     icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
                     userInfo: ["action":"takeDose", "medID":med.medicineID])
                 
-                UIApplication.sharedApplication().shortcutItems = [shortcutItem]
+                UIApplication.shared.shortcutItems = [shortcutItem]
                 return
             }
         }
         
-        UIApplication.sharedApplication().shortcutItems = []
+        UIApplication.shared.shortcutItems = []
     }
 
     func updateBadgeCount() {
         let overdueCount = medication.filter({$0.isOverdue().flag}).count
-        UIApplication.sharedApplication().applicationIconBadgeNumber = overdueCount
+        UIApplication.shared.applicationIconBadgeNumber = overdueCount
     }
     
     func indexMedication() {
@@ -322,7 +322,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         for med in medication  {
             if let attributes = med.attributeSet {
                 let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                CSSearchableIndex.defaultSearchableIndex().indexSearchableItems([item], completionHandler: nil)
+                CSSearchableIndex.default().indexSearchableItems([item], completionHandler: nil)
             }
         }
     }
@@ -331,27 +331,27 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
 
 extension UITabBarController {
     
-    func setTabBarVisible(visible: Bool, animated: Bool) {
+    func setTabBarVisible(_ visible: Bool, animated: Bool) {
         if tabBarIsVisible() != visible {
             // Determine frame calculation
             let frame = self.tabBar.frame
             let height = frame.size.height
             let offsetY = (visible ? -height : height)
 
-            UIView.animateWithDuration(animated ? 0.3 : 0.0) {
+            UIView.animate(withDuration: animated ? 0.3 : 0.0, animations: {
                 // Change frame of TabBar
-                self.tabBar.frame = CGRectOffset(frame, 0, offsetY)
+                self.tabBar.frame = frame.offsetBy(dx: 0, dy: offsetY)
                 
                 // Change frame of UITabBarController
-                self.view.frame = CGRectMake(0, 0, self.view.frame.width, self.view.frame.height + offsetY)
+                self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height + offsetY)
                 self.view.setNeedsDisplay()
                 self.view.layoutIfNeeded()
-            }
+            }) 
         }
     }
     
     func tabBarIsVisible() -> Bool {
-        return self.tabBar.frame.origin.y < CGRectGetMaxY(self.view.frame)
+        return self.tabBar.frame.origin.y < self.view.frame.maxY
     }
     
 }

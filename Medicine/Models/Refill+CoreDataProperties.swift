@@ -16,7 +16,7 @@ extension Refill {
 
     @NSManaged var medicine: Medicine?
     
-    @NSManaged var date: NSDate
+    @NSManaged var date: Date
     
     @NSManaged var quantity: Float
     @NSManaged var quantityUnitInt: Int16

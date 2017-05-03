@@ -29,13 +29,13 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     
     
     // MARK: - Helper variables
-    let defaults = NSUserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
-    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var moc: NSManagedObjectContext!
     
-    let cal = NSCalendar.currentCalendar()
-    let dateFormatter = NSDateFormatter()
+    let cal = Calendar.current
+    let dateFormatter = DateFormatter()
     
     
     // MARK: - Initialization
@@ -51,24 +51,24 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         super.viewDidLoad()
         
         // Setup edit button
-        let editButton = UIBarButtonItem(title: "Edit", style: .Plain, target: self, action: #selector(editMedication))
+        let editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(editMedication))
         self.navigationItem.rightBarButtonItem = editButton
         
         // Add observeres for notifications
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(refreshDetails), name: "refreshView", object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshDetails), name: NSNotification.Name(rawValue: "refreshView"), object: nil)
         
         // Register for 3D touch if available
-        if traitCollection.forceTouchCapability == .Available {
-            registerForPreviewingWithDelegate(self, sourceView: view)
+        if traitCollection.forceTouchCapability == .available {
+            registerForPreviewing(with: self, sourceView: view)
         }
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         // Deselect selected row
         if let index = tableView.indexPathForSelectedRow {
-            tableView.deselectRowAtIndexPath(index, animated: animated)
+            tableView.deselectRow(at: index, animated: animated)
         }
         
         if let tBC = self.tabBarController {
@@ -78,13 +78,13 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         
         // Update actions
         actionCell.backgroundColor = tableView.separatorColor
-        takeDoseButton.backgroundColor = UIColor.whiteColor()
-        refillButton.backgroundColor = UIColor.whiteColor()
+        takeDoseButton.backgroundColor = UIColor.white
+        refillButton.backgroundColor = UIColor.white
         
         displayEmptyView()
         updateLabels()
         
-        tableView.reloadSections(NSIndexSet(index: Rows.name.index().section), withRowAnimation: .None)
+        tableView.reloadSections(IndexSet(integer: Rows.name.index().section), with: .none)
     }
 
     override func didReceiveMemoryWarning() {
@@ -108,24 +108,24 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     func displayEmptyView() {
         if med == nil {
             if self.view.viewWithTag(1001) == nil {     // Prevent duplicate empty views being added
-                if let emptyView = UINib(nibName: "DetailEmptyView", bundle: nil).instantiateWithOwner(self, options: nil)[0] as? UIView {
-                    emptyView.frame = CGRectMake(0, 0, self.view.frame.width, self.view.frame.height)
+                if let emptyView = UINib(nibName: "DetailEmptyView", bundle: nil).instantiate(withOwner: self, options: nil)[0] as? UIView {
+                    emptyView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
                     emptyView.tag = 1001
                     self.view.addSubview(emptyView)
-                    self.tableView.scrollEnabled = false
-                    self.navigationItem.rightBarButtonItem?.enabled = false
+                    self.tableView.isScrollEnabled = false
+                    self.navigationItem.rightBarButtonItem?.isEnabled = false
                 }
             }
         } else {
             self.view.viewWithTag(1001)?.removeFromSuperview()
-            self.tableView.scrollEnabled = true
-            self.navigationItem.rightBarButtonItem?.enabled = true
+            self.tableView.isScrollEnabled = true
+            self.navigationItem.rightBarButtonItem?.isEnabled = true
         }
     }
     
     func updateLabels() {
         if let med = med {
-            nameLabel.textColor = UIColor.blackColor()
+            nameLabel.textColor = UIColor.black
             nameLabel.text = med.name
             
             var detailsString = "\(med.removeTrailingZero(med.dosage)) \(med.dosageUnit.units(med.dosage))"
@@ -136,14 +136,14 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             doseDetailsLabel.text = detailsString
             
             var prescriptionString = ""
-            if med.refillHistory?.count > 0 {
+            if let count = med.refillHistory?.count, count > 0 {
                 let count = med.prescriptionCount
-                let numberFormatter = NSNumberFormatter()
-                numberFormatter.numberStyle = NSNumberFormatterStyle.DecimalStyle
+                let numberFormatter = NumberFormatter()
+                numberFormatter.numberStyle = NumberFormatter.Style.decimal
                 
                 if count.isZero {
                     prescriptionString = "None remaining"
-                } else if let count = numberFormatter.stringFromNumber(count) {
+                } else if let count = numberFormatter.string(from: NSNumber(value: count)) {
                     prescriptionString = "\(count) \(med.dosageUnit.units(med.prescriptionCount)) remaining"
                 }
             } else {
@@ -157,7 +157,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             updateDose()
             
             // Correct inset
-            tableView.reloadRowsAtIndexPaths([Rows.name.index()], withRowAnimation: .None)
+            tableView.reloadRows(at: [Rows.name.index()], with: .none)
         }
     }
     
@@ -165,16 +165,16 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         if let med = med {
             // Set defaults
             nameCell.imageView?.image = nil
-            nameLabel.textColor = UIColor.blackColor()
+            nameLabel.textColor = UIColor.black
             
-            doseTitle.textColor = UIColor.lightGrayColor()
+            doseTitle.textColor = UIColor.lightGray
             doseTitle.text = "Next Dose"
             
-            doseLabel.textColor = UIColor.blackColor()
-            doseLabel.font = UIFont.systemFontOfSize(14.0, weight: UIFontWeightRegular)
+            doseLabel.textColor = UIColor.black
+            doseLabel.font = UIFont.systemFont(ofSize: 14.0, weight: UIFontWeightRegular)
             
             // If no doses taken
-            if med.doseHistory?.count == 0 && med.intervalUnit == .Hourly {
+            if med.doseHistory?.count == 0 && med.intervalUnit == .hourly {
                 doseTitle.text = "No doses logged"
                 doseLabel.text?.removeAll()
             }
@@ -199,7 +199,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
 
                     if let date = med.isOverdue().overdueDose {
                         doseLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                        doseLabel.font = UIFont.systemFontOfSize(14.0, weight: UIFontWeightSemibold)
+                        doseLabel.font = UIFont.systemFont(ofSize: 14.0, weight: UIFontWeightSemibold)
                         doseLabel.text = Medicine.dateString(date)
                     }
                 }
@@ -225,11 +225,11 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     
     
     // MARK: - Table view data source
-    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch section {
         case Rows.name.index().section:
             return 15
-        case Rows.actions.index().section where med?.prescriptionCount > 0:
+        case Rows.actions.index().section where (med?.prescriptionCount ?? 0) > 0:
             return 20.0
         case Rows.notes.index().section:
             return 25.0
@@ -238,7 +238,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         }
     }
     
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == Rows.notes.index().section && med != nil {
             return "Notes"
         }
@@ -246,14 +246,14 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         return nil
     }
     
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let row = Rows(index: indexPath)
         
         switch row {
         case Rows.name:
             return 60.0
         case Rows.prescriptionCount:
-            if med?.refillHistory?.count > 0 {
+            if (med?.refillHistory?.count ?? 0) > 0 {
                 return tableView.rowHeight
             }
         case Rows.actions:
@@ -272,7 +272,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         return 0.0
     }
     
-    override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let row = Rows(index: indexPath)
         
         cell.preservesSuperviewLayoutMargins = true
@@ -281,15 +281,15 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         case Rows.doseDetails:
             if med?.refillHistory?.count == 0 {
                 cell.preservesSuperviewLayoutMargins = false
-                cell.layoutMargins = UIEdgeInsetsZero
-                cell.separatorInset = UIEdgeInsetsZero
+                cell.layoutMargins = UIEdgeInsets.zero
+                cell.separatorInset = UIEdgeInsets.zero
                 cell.contentView.layoutMargins = tableView.separatorInset
             }
         default: break
         }
     }
     
-    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         if let med = med {
             if section == Rows.prescriptionCount.index().section && med.prescriptionCount > 0 {
                 var status: String? = nil
@@ -301,7 +301,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
                         if days <= 1 {
                             status = "You will need to refill after the next dose. "
                         } else {
-                            status = "Based on current usage, your prescription should last approximately \(days) \(Intervals.Daily.units(Float(days))). "
+                            status = "Based on current usage, your prescription should last approximately \(days) \(Intervals.daily.units(Float(days))). "
                         }
                     } else {
                         status = "Continue taking doses to receive a duration approximation for your prescription."
@@ -317,16 +317,16 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     
     
     // MARK: - Table view delegates
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let row = Rows(index: indexPath)
         
         switch row {
         case Rows.name:
-            performSegueWithIdentifier("editMedication", sender: nil)
+            performSegue(withIdentifier: "editMedication", sender: nil)
         case Rows.nextDose:
-            performSegueWithIdentifier("addDose", sender: nil)
+            performSegue(withIdentifier: "addDose", sender: nil)
         case Rows.prescriptionCount:
-            performSegueWithIdentifier("refillPrescription", sender: nil)
+            performSegue(withIdentifier: "refillPrescription", sender: nil)
         case Rows.delete:
             presentDeleteAlert(indexPath)
         default: break
@@ -335,7 +335,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     
     
     // MARK: - Handle notes field
-    func textViewDidChange(textView: UITextView) {
+    func textViewDidChange(_ textView: UITextView) {
         med?.notes = textView.text
         appDelegate.saveContext()
 
@@ -346,37 +346,37 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
 
     // MARK: - Actions
     func editMedication() {
-        performSegueWithIdentifier("editMedication", sender: nil)
+        performSegue(withIdentifier: "editMedication", sender: nil)
     }
     
-    @IBAction func actionSelected(sender: UIButton) {
+    @IBAction func actionSelected(_ sender: UIButton) {
         if med != nil {
             sender.backgroundColor = tableView.separatorColor
         }
     }
     
-    @IBAction func actionDeselected(sender: UIButton) {
-        sender.backgroundColor = UIColor.whiteColor()
+    @IBAction func actionDeselected(_ sender: UIButton) {
+        sender.backgroundColor = UIColor.white
     }
 
-    func presentDeleteAlert(indexPath: NSIndexPath) {
+    func presentDeleteAlert(_ indexPath: IndexPath) {
         if let med = med {
             if let name = med.name {
-                let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.Alert)
+                let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.alert)
                 
-                deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {(action) -> Void in
-                    self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {(action) -> Void in
+                    self.tableView.deselectRow(at: indexPath, animated: true)
                 }))
                 
-                deleteAlert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: {(action) -> Void in
+                deleteAlert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: {(action) -> Void in
                     self.deleteMed()
                 }))
                 
-                deleteAlert.view.tintColor = UIColor.grayColor()
-                self.presentViewController(deleteAlert, animated: true, completion: nil)
+                deleteAlert.view.tintColor = UIColor.gray
+                self.present(deleteAlert, animated: true, completion: nil)
             }
         } else {
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            tableView.deselectRow(at: indexPath, animated: true)
         }
     }
     
@@ -390,44 +390,44 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             self.med = nil
             
             // Remove medication from persistent store
-            moc.deleteObject(med)
+            moc.delete(med)
             appDelegate.saveContext()
 
             // Send notifications
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
-            NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
-            NSNotificationCenter.defaultCenter().postNotificationName("medicationDeleted", object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "medicationDeleted"), object: nil)
         }
     }
     
     
     // MARK: - Peek actions
-    override func previewActionItems() -> [UIPreviewActionItem] {
+    override var previewActionItems : [UIPreviewActionItem] {
         return previewActions
     }
 
     lazy var previewActions: [UIPreviewActionItem] = {
-        let takeAction = UIPreviewAction(title: "Take Dose", style: .Default) { (action: UIPreviewAction, vc: UIViewController) -> Void in
+        let takeAction = UIPreviewAction(title: "Take Dose", style: .default) { (action: UIPreviewAction, vc: UIViewController) -> Void in
             if let med = self.med {
-                let entity = NSEntityDescription.entityForName("Dose", inManagedObjectContext: self.moc)
-                let dose = Dose(entity: entity!, insertIntoManagedObjectContext: self.moc)
+                let entity = NSEntityDescription.entity(forEntityName: "Dose", in: self.moc)
+                let dose = Dose(entity: entity!, insertInto: self.moc)
                 
-                dose.date = NSDate()
+                dose.date = Date()
                 dose.dosage = med.dosage
                 dose.dosageUnit = med.dosageUnit
                 
                 med.addDose(dose)
                 
                 // Check if medication needs to be refilled
-                let refillTime = self.defaults.integerForKey("refillTime")
+                let refillTime = self.defaults.integer(forKey: "refillTime")
                 if med.needsRefill(limit: refillTime) {
                     med.sendRefillNotification()
                 }
                 
                 self.appDelegate.saveContext()
                 
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshView", object: nil)
-                NSNotificationCenter.defaultCenter().postNotificationName("refreshMain", object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
             }
         }
         
@@ -436,20 +436,20 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     
     
     // MARK: - Navigation
-    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
         if med != nil {
             return true
         }
         
         // Deselect selected row
         if let index = tableView.indexPathForSelectedRow {
-            tableView.deselectRowAtIndexPath(index, animated: true)
+            tableView.deselectRow(at: index, animated: true)
         }
         
         return false
     }
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let med = med {
             self.navigationItem.backBarButtonItem?.title = med.name
             
@@ -458,32 +458,32 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             }
             
             if segue.identifier == "editMedication" {
-                if let vc = segue.destinationViewController.childViewControllers[0] as? AddMedicationTVC {
+                if let vc = segue.destination.childViewControllers[0] as? AddMedicationTVC {
                     vc.med = self.med
                     vc.editMode = true
                 }
             }
             
             if segue.identifier == "addDose" {
-                if let vc = segue.destinationViewController.childViewControllers[0] as? AddDoseTVC {
+                if let vc = segue.destination.childViewControllers[0] as? AddDoseTVC {
                     vc.med = self.med
                 }
             }
             
             if segue.identifier == "refillPrescription" {
-                if let vc = segue.destinationViewController.childViewControllers[0] as? AddRefillTVC {
+                if let vc = segue.destination.childViewControllers[0] as? AddRefillTVC {
                     vc.med = self.med
                 }
             }
             
             if segue.identifier == "viewDoseHistory" {
-                if let vc = segue.destinationViewController as? MedicineDoseHistoryTVC {
+                if let vc = segue.destination as? MedicineDoseHistoryTVC {
                     vc.med = self.med
                 }
             }
             
             if segue.identifier == "viewRefillHistory" {
-                if let vc = segue.destinationViewController as? MedicineRefillHistoryTVC {
+                if let vc = segue.destination as? MedicineRefillHistoryTVC {
                     vc.med = self.med
                 }
             }
@@ -505,7 +505,7 @@ private enum Rows: Int {
     case notes
     case delete
     
-    init(index: NSIndexPath) {
+    init(index: IndexPath) {
         var row = Rows.none
         
         switch (index.section, index.row) {
@@ -534,28 +534,28 @@ private enum Rows: Int {
         self = row
     }
     
-    func index() -> NSIndexPath {
+    func index() -> IndexPath {
         switch self {
         case .name:
-            return NSIndexPath(forRow: 0, inSection: 0)
+            return IndexPath(row: 0, section: 0)
         case .nextDose:
-            return NSIndexPath(forRow: 1, inSection: 0)
+            return IndexPath(row: 1, section: 0)
         case .doseDetails:
-            return NSIndexPath(forRow: 2, inSection: 0)
+            return IndexPath(row: 2, section: 0)
         case .prescriptionCount:
-            return NSIndexPath(forRow: 3, inSection: 0)
+            return IndexPath(row: 3, section: 0)
         case .actions:
-            return NSIndexPath(forRow: 0, inSection: 1)
+            return IndexPath(row: 0, section: 1)
         case .doseHistory:
-            return NSIndexPath(forRow: 0, inSection: 2)
+            return IndexPath(row: 0, section: 2)
         case .refillHistory:
-            return NSIndexPath(forRow: 1, inSection: 2)
+            return IndexPath(row: 1, section: 2)
         case .notes:
-            return NSIndexPath(forRow: 0, inSection: 3)
+            return IndexPath(row: 0, section: 3)
         case .delete:
-            return NSIndexPath(forRow: 0, inSection: 4)
+            return IndexPath(row: 0, section: 4)
         default:
-            return NSIndexPath(forRow: 0, inSection: 0)
+            return IndexPath(row: 0, section: 0)
         }
     }
 }
