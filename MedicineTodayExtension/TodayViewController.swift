@@ -53,8 +53,8 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             if let date = data["date"] {
                 if ((date as! Date).compare(Date()) == .orderedDescending && cal.isDateInToday(date as! Date)) {
                     let string = NSMutableAttributedString(string: data["dateString"] as! String)
-                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 50.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, string.length-2))
-                    string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 20.0), range: NSMakeRange(string.length-2, 2))
+                    string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 50.0, weight: UIFont.Weight.ultraLight), range: NSMakeRange(0, string.length-2))
+                    string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 20.0), range: NSMakeRange(string.length-2, 2))
                     
                     doseMainLabel.attributedText = string
                     doseMedLabel.text = (data["medString"] as? String)
@@ -64,7 +64,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             }
             
             let string = NSMutableAttributedString(string: data["dateString"] as! String)
-            string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+            string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 24.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
 
             doseMainLabel.attributedText = string
             doseMedLabel.text = nil
@@ -73,7 +73,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         }
         
         let string = NSMutableAttributedString(string: "Couldn't update")
-        string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 12.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+        string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 12.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
         
         doseMainLabel.attributedText = string
         doseMedLabel.text = nil

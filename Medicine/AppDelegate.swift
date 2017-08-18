@@ -290,7 +290,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         completionHandler()
     }
     
-    func postNotification(_ notification: UILocalNotification) {
+    @objc func postNotification(_ notification: UILocalNotification) {
         if let info = notification.userInfo {
             NSLog("Local notification received: %@", info)
         } else {

@@ -33,7 +33,7 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
         dosageInput.text = String(format:"%g", med.dosage)
 
         dosageUnitLabel.text = med.dosageUnit.description
-        dosageUnitPicker.selectRow(Int(med.dosageUnitInt), inComponent: 0, animated: false)
+//        dosageUnitPicker.selectRow(Int(med.dosageUnitInt), inComponent: 0, animated: false)
     }
     
     override func viewDidAppear(_ animated: Bool) {

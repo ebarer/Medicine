@@ -84,7 +84,7 @@ class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControll
         super.didReceiveMemoryWarning()
     }
     
-    func refreshView() {
+    @objc func refreshView() {
         loadHistory()
         displayEmptyView()
     }
@@ -184,15 +184,15 @@ class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControll
         
         if let text = header.textLabel?.text {
             let string = NSMutableAttributedString(string: text)
-            string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 13.0), range: NSMakeRange(0, string.length))
+            string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 13.0), range: NSMakeRange(0, string.length))
             
             if cal.isDateInToday(sectionDate) {
-                string.addAttribute(NSForegroundColorAttributeName, value: UIColor.red, range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSMakeRange(0, string.length))
             }
             
             if let index = text.characters.index(of: " ") {
                 let pos = text.characters.distance(from: text.startIndex, to: index)
-                string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 13.0, weight: UIFontWeightSemibold), range: NSMakeRange(0, pos))
+                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 13.0, weight: UIFont.Weight.semibold), range: NSMakeRange(0, pos))
             }
             
             header.textLabel?.attributedText = string
@@ -313,7 +313,7 @@ class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControll
         performSegue(withIdentifier: "addRefill", sender: self)
     }
     
-    func deleteRefills() {
+    @objc func deleteRefills() {
         if let selectedRowIndexes = tableView.indexPathsForSelectedRows {
             for indexPath in selectedRowIndexes.reversed() {
                 let sectionDate = dates[indexPath.section]
@@ -353,7 +353,7 @@ class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControll
         }
     }
     
-    func exportRefills() {
+    @objc func exportRefills() {
         if MFMailComposeViewController.canSendMail() {
             if let history = med.refillHistory?.array as? [Refill] {
                 var contents = "\(med.name!)\r"

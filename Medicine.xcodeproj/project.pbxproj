@@ -43,7 +43,6 @@
 		CE936E631C6C36400093BECF /* MainTVC+UIViewControllerPreviewing.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE936E621C6C36400093BECF /* MainTVC+UIViewControllerPreviewing.swift */; };
 		CE936E651C6C42770093BECF /* MedicineDetailsTVC+UIViewControllerPreviewing.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE936E641C6C42770093BECF /* MedicineDetailsTVC+UIViewControllerPreviewing.swift */; };
 		CE94A5B61BE8B13B008E58DF /* SettingsTVC+Refill.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE94A5B51BE8B13B008E58DF /* SettingsTVC+Refill.swift */; };
-		CE9A36C71B98FDCB00B90EDB /* MedicineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9A36C61B98FDCB00B90EDB /* MedicineTests.swift */; };
 		CEA250E91B90396C00BBE466 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA250E81B90396C00BBE466 /* AppDelegate.swift */; };
 		CEA250EE1B90396C00BBE466 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEA250EC1B90396C00BBE466 /* Main.storyboard */; };
 		CEA250F31B90396C00BBE466 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CEA250F21B90396C00BBE466 /* Assets.xcassets */; };
@@ -69,13 +68,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = CE2F6B151BBD5BA800707951;
 			remoteInfo = MedicineTodayExtension;
-		};
-		CE9A36C91B98FDCB00B90EDB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = CEA250DD1B90396C00BBE466 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = CEA250E41B90396C00BBE466;
-			remoteInfo = Medicine;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -138,9 +130,6 @@
 		CE936E621C6C36400093BECF /* MainTVC+UIViewControllerPreviewing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainTVC+UIViewControllerPreviewing.swift"; sourceTree = "<group>"; };
 		CE936E641C6C42770093BECF /* MedicineDetailsTVC+UIViewControllerPreviewing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "MedicineDetailsTVC+UIViewControllerPreviewing.swift"; path = "Details/MedicineDetailsTVC+UIViewControllerPreviewing.swift"; sourceTree = "<group>"; };
 		CE94A5B51BE8B13B008E58DF /* SettingsTVC+Refill.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Refill.swift"; path = "Settings/SettingsTVC+Refill.swift"; sourceTree = "<group>"; };
-		CE9A36C41B98FDCB00B90EDB /* MedicineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MedicineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE9A36C61B98FDCB00B90EDB /* MedicineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineTests.swift; sourceTree = "<group>"; };
-		CE9A36C81B98FDCB00B90EDB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CEA250E51B90396C00BBE466 /* Medicine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Medicine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEA250E81B90396C00BBE466 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CEA250ED1B90396C00BBE466 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -170,13 +159,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE2F6B181BBD5BA800707951 /* NotificationCenter.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		CE9A36C11B98FDCB00B90EDB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,20 +229,10 @@
 			path = ..;
 			sourceTree = "<group>";
 		};
-		CE9A36C51B98FDCB00B90EDB /* MedicineTests */ = {
-			isa = PBXGroup;
-			children = (
-				CE9A36C61B98FDCB00B90EDB /* MedicineTests.swift */,
-				CE9A36C81B98FDCB00B90EDB /* Info.plist */,
-			);
-			path = MedicineTests;
-			sourceTree = "<group>";
-		};
 		CEA250DC1B90396C00BBE466 = {
 			isa = PBXGroup;
 			children = (
 				CEA250E71B90396C00BBE466 /* Medicine */,
-				CE9A36C51B98FDCB00B90EDB /* MedicineTests */,
 				CE2F6B191BBD5BA800707951 /* MedicineTodayExtension */,
 				CEF5483D1B9CEA7A00C344B4 /* Frameworks */,
 				CEA250E61B90396C00BBE466 /* Products */,
@@ -271,7 +243,6 @@
 			isa = PBXGroup;
 			children = (
 				CEA250E51B90396C00BBE466 /* Medicine.app */,
-				CE9A36C41B98FDCB00B90EDB /* MedicineTests.xctest */,
 				CE2F6B161BBD5BA800707951 /* MedicineTodayExtension.appex */,
 			);
 			name = Products;
@@ -398,24 +369,6 @@
 			productReference = CE2F6B161BBD5BA800707951 /* MedicineTodayExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		CE9A36C31B98FDCB00B90EDB /* MedicineTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = CE9A36CD1B98FDCB00B90EDB /* Build configuration list for PBXNativeTarget "MedicineTests" */;
-			buildPhases = (
-				CE9A36C01B98FDCB00B90EDB /* Sources */,
-				CE9A36C11B98FDCB00B90EDB /* Frameworks */,
-				CE9A36C21B98FDCB00B90EDB /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				CE9A36CA1B98FDCB00B90EDB /* PBXTargetDependency */,
-			);
-			name = MedicineTests;
-			productName = MedicineTests;
-			productReference = CE9A36C41B98FDCB00B90EDB /* MedicineTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		CEA250E41B90396C00BBE466 /* Medicine */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CEA250FA1B90396C00BBE466 /* Build configuration list for PBXNativeTarget "Medicine" */;
@@ -442,28 +395,23 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0710;
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = "Elliot Barer";
 				TargetAttributes = {
 					CE2F6B151BBD5BA800707951 = {
 						CreatedOnToolsVersion = 7.1;
 						DevelopmentTeam = 5ZJB9DN7AQ;
-						LastSwiftMigration = 0820;
+						LastSwiftMigration = 0900;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
 							};
 						};
 					};
-					CE9A36C31B98FDCB00B90EDB = {
-						CreatedOnToolsVersion = 7.0;
-						LastSwiftMigration = 0820;
-						TestTargetID = CEA250E41B90396C00BBE466;
-					};
 					CEA250E41B90396C00BBE466 = {
 						CreatedOnToolsVersion = 7.0;
 						DevelopmentTeam = 5ZJB9DN7AQ;
-						LastSwiftMigration = 0820;
+						LastSwiftMigration = 0900;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -475,7 +423,7 @@
 								enabled = 1;
 							};
 							com.apple.iCloud = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
@@ -496,7 +444,6 @@
 			targets = (
 				CEA250E41B90396C00BBE466 /* Medicine */,
 				CE2F6B151BBD5BA800707951 /* MedicineTodayExtension */,
-				CE9A36C31B98FDCB00B90EDB /* MedicineTests */,
 			);
 		};
 /* End PBXProject section */
@@ -507,13 +454,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE2F6B1E1BBD5BA800707951 /* MainInterface.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		CE9A36C21B98FDCB00B90EDB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -545,14 +485,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE2F6B1B1BBD5BA800707951 /* TodayViewController.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		CE9A36C01B98FDCB00B90EDB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				CE9A36C71B98FDCB00B90EDB /* MedicineTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -604,11 +536,6 @@
 			isa = PBXTargetDependency;
 			target = CE2F6B151BBD5BA800707951 /* MedicineTodayExtension */;
 			targetProxy = CE2F6B201BBD5BA800707951 /* PBXContainerItemProxy */;
-		};
-		CE9A36CA1B98FDCB00B90EDB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = CEA250E41B90396C00BBE466 /* Medicine */;
-			targetProxy = CE9A36C91B98FDCB00B90EDB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -730,7 +657,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -747,33 +675,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
-			};
-			name = Release;
-		};
-		CE9A36CB1B98FDCB00B90EDB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				INFOPLIST_FILE = MedicineTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.MedicineTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Medicine.app/Medicine";
-			};
-			name = Debug;
-		};
-		CE9A36CC1B98FDCB00B90EDB /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				INFOPLIST_FILE = MedicineTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.MedicineTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Medicine.app/Medicine";
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -785,14 +688,20 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -832,14 +741,20 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -879,7 +794,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -897,7 +813,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -909,15 +826,6 @@
 			buildConfigurations = (
 				CE2F6B241BBD5BA800707951 /* Debug */,
 				CE2F6B251BBD5BA800707951 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		CE9A36CD1B98FDCB00B90EDB /* Build configuration list for PBXNativeTarget "MedicineTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				CE9A36CB1B98FDCB00B90EDB /* Debug */,
-				CE9A36CC1B98FDCB00B90EDB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

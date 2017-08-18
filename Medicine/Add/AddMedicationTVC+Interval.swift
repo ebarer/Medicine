@@ -269,13 +269,13 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
                 case 1:
                     let unit = med.intervalUnit.units(med.interval)
                     let label = NSMutableAttributedString(string: unit)
-                    label.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGray, range: NSMakeRange(0, label.length))
+                    label.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.lightGray, range: NSMakeRange(0, label.length))
                     return label
                 case 2:
                     return NSAttributedString(string: minutes[row % 4])
                 case 3:
                     let label = NSMutableAttributedString(string: "min")
-                    label.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGray, range: NSMakeRange(0, label.length))
+                    label.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.lightGray, range: NSMakeRange(0, label.length))
                     return label
                 default:
                     return nil
@@ -287,7 +287,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
                 default:
                     let unit = med.intervalUnit.units(med.interval)
                     let label = NSMutableAttributedString(string: unit)
-                    label.addAttribute(NSForegroundColorAttributeName, value: UIColor.lightGray, range: NSMakeRange(0, label.length))
+                    label.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.lightGray, range: NSMakeRange(0, label.length))
                     return label
                 }
             }

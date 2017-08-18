@@ -50,6 +50,13 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if #available(iOS 11.0, *) {
+            self.navigationController?.title = "Hello World"
+            self.navigationController?.navigationBar.prefersLargeTitles = true
+            self.navigationItem.title = "Hello World"
+            self.navigationItem.titleView?.tintColor = UIColor.white
+        }
+        
         // Setup edit button
         let editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(editMedication))
         self.navigationItem.rightBarButtonItem = editButton
@@ -91,7 +98,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         super.didReceiveMemoryWarning()
     }
     
-    func refreshDetails() {
+    @objc func refreshDetails() {
         // Select first medication if none selected
         if medication.count == 0 {
             med = nil
@@ -171,7 +178,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             doseTitle.text = "Next Dose"
             
             doseLabel.textColor = UIColor.black
-            doseLabel.font = UIFont.systemFont(ofSize: 14.0, weight: UIFontWeightRegular)
+            doseLabel.font = UIFont.systemFont(ofSize: 14.0, weight: UIFont.Weight.regular)
             
             // If no doses taken
             if med.doseHistory?.count == 0 && med.intervalUnit == .hourly {
@@ -199,7 +206,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
 
                     if let date = med.isOverdue().overdueDose {
                         doseLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                        doseLabel.font = UIFont.systemFont(ofSize: 14.0, weight: UIFontWeightSemibold)
+                        doseLabel.font = UIFont.systemFont(ofSize: 14.0, weight: UIFont.Weight.semibold)
                         doseLabel.text = Medicine.dateString(date)
                     }
                 }
@@ -345,7 +352,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
 
 
     // MARK: - Actions
-    func editMedication() {
+    @objc func editMedication() {
         performSegue(withIdentifier: "editMedication", sender: nil)
     }
     

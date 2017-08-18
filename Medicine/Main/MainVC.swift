@@ -141,7 +141,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Update values
-    func refreshMainVC(_ notification: Notification? = nil) {
+    @objc func refreshMainVC(_ notification: Notification? = nil) {
         
         if let tbc = self.tabBarController as? MainTBC {
             tbc.loadMedication()
@@ -211,7 +211,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     func updateHeader() {
         // Initialize main string
         var string = NSMutableAttributedString(string: "No more doses today")
-        string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+        string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 24.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
         
         // Setup today widget data
         var todayData = [String: AnyObject]()
@@ -233,7 +233,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             }
             
             string = NSMutableAttributedString(string: text)
-            string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+            string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 24.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
             headerCounterLabel.attributedText = string
         }
             
@@ -247,13 +247,13 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                         dateFormatter.dateFormat = "h:mm a"
                         let date = dateFormatter.string(from: nextDose.fireDate!)
                         string = NSMutableAttributedString(string: date)
-                        string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 70.0, weight: UIFontWeightUltraLight), range: NSMakeRange(0, string.length))
+                        string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 70.0, weight: UIFont.Weight.ultraLight), range: NSMakeRange(0, string.length))
                         
                         // Accomodate 24h times
                         let range = (date.contains("AM")) ? date.range(of: "AM") : date.range(of: "PM")
                         if let range = range {
                             let pos = date.characters.distance(from: date.startIndex, to: range.lowerBound)
-                            string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 24.0), range: NSMakeRange(pos-1, 3))
+                            string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 24.0), range: NSMakeRange(pos-1, 3))
                         }
                         
                         headerCounterLabel.attributedText = string
@@ -271,7 +271,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         else if medication.count > 0 {
             if medication.first?.lastDose == nil {
                 string = NSMutableAttributedString(string: "Take first dose")
-                string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 24.0, weight: UIFontWeightThin), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 24.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
                 headerCounterLabel.attributedText = string
             }
         }
@@ -285,7 +285,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         defaults.synchronize()
     }
     
-    func refreshTable() {
+    @objc func refreshTable() {
         // Reschedule notifications
         NotificationCenter.default.post(name: Notification.Name(rawValue: "rescheduleNotifications"), object: nil, userInfo: nil)
         
@@ -585,7 +585,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
     }
     
-    func takeDose(_ sender: UILongPressGestureRecognizer) {
+    @objc func takeDose(_ sender: UILongPressGestureRecognizer) {
         let point = sender.location(in: self.tableView)
         if let indexPath = self.tableView?.indexPathForRow(at: point) {
             let med = medication[indexPath.row]
@@ -655,7 +655,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil, userInfo: ["reload":false])
     }
     
-    func medicationDeleted() {
+    @objc func medicationDeleted() {
         // Dismiss any modal views
         if let _ = self.navigationController?.presentedViewController {
             dismiss(animated: true, completion: nil)

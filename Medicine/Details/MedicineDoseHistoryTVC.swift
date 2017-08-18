@@ -44,6 +44,11 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if #available(iOS 11.0, *) {
+            self.navigationController?.navigationBar.prefersLargeTitles = true
+//            self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor : UIColor.white]
+        }
+        
         // Modify VC
         self.title = "Dose History"
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
@@ -86,13 +91,24 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
         super.didReceiveMemoryWarning()
     }
     
-    func refreshView() {
-        loadHistory()
+    @objc func refreshView() {
         displayEmptyView()
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            print("Backup Thread")
+            if self.loadHistory() {
+                DispatchQueue.main.async {
+                    print("Main thread")
+                    self.displayEmptyView()
+                }
+            }
+        }
     }
     
-    func loadHistory() {
+    func loadHistory() -> Bool {
         if var historyArray = med.doseHistory?.array as? [Dose] {
+            print("Loading history")
+            
             // Clear history
             history.removeAll()
             
@@ -123,10 +139,16 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
                 let doses = historyArray.filter({cal.isDate($0.date as Date, inSameDayAs: date)})
                 history.updateValue(doses, forKey: date)
             }
+            
+            print("History loaded")
+            return true
         }
+        
+        return false
     }
     
     func displayEmptyView() {
+        print(history.count)
         if history.count == 0 {
             for button in self.normalButtons {
                 button.isEnabled = false
@@ -186,15 +208,15 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
         
         if let text = header.textLabel?.text {
             let string = NSMutableAttributedString(string: text)
-            string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 13.0), range: NSMakeRange(0, string.length))
+            string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 13.0), range: NSMakeRange(0, string.length))
             
             if cal.isDateInToday(sectionDate) {
-                string.addAttribute(NSForegroundColorAttributeName, value: UIColor.red, range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSMakeRange(0, string.length))
             }
             
             if let index = text.characters.index(of: " ") {
                 let pos = text.characters.distance(from: text.startIndex, to: index)
-                string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 13.0, weight: UIFontWeightSemibold), range: NSMakeRange(0, pos))
+                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 13.0, weight: UIFont.Weight.semibold), range: NSMakeRange(0, pos))
             }
             
             header.textLabel?.attributedText = string
@@ -319,7 +341,7 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
         performSegue(withIdentifier: "addDose", sender: self)
     }
     
-    func deleteDoses() {
+    @objc func deleteDoses() {
         if let selectedRowIndexes = tableView.indexPathsForSelectedRows {
             for indexPath in selectedRowIndexes.reversed() {
                 let sectionDate = dates[indexPath.section]
@@ -363,7 +385,7 @@ class MedicineDoseHistoryTVC: UITableViewController, MFMailComposeViewController
         }
     }
     
-    func exportDoses() {
+    @objc func exportDoses() {
         if MFMailComposeViewController.canSendMail() {
             if let history = med.doseHistory?.array as? [Dose] {
                 var contents = "\(med.name!)\r"

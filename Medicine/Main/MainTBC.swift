@@ -110,7 +110,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
 
     
     // MARK: - Notification observers
-    func doseNotification(_ notification: Notification) {
+    @objc func doseNotification(_ notification: Notification) {
         if let id = notification.userInfo!["id"] as? String {
             let medQuery = Medicine.getMedicine(arr: medication, id: id)
             if let med = medQuery {
@@ -147,7 +147,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         }
     }
     
-    func refillNotification(_ notification: Notification) {
+    @objc func refillNotification(_ notification: Notification) {
         if let id = notification.userInfo!["id"] as? String {
             let medQuery = Medicine.getMedicine(arr: medication, id: id)
             if let med = medQuery {
@@ -177,7 +177,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     
     // MARK: - Action observers
-    func takeDoseAction(_ notification: Notification) {
+    @objc func takeDoseAction(_ notification: Notification) {
         NSLog("takeDoseAction received", [])
         if let id = notification.userInfo!["id"] as? String {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
@@ -208,7 +208,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         }
     }
     
-    func snoozeReminderAction(_ notification: Notification) {
+    @objc func snoozeReminderAction(_ notification: Notification) {
         NSLog("snoozeReminderAction received", [])
         if let id = notification.userInfo!["id"] as? String {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
@@ -221,7 +221,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         }
     }
     
-    func refillAction(_ notification: Notification) {
+    @objc func refillAction(_ notification: Notification) {
         NSLog("refillAction received", [])
         if let id = notification.userInfo!["id"] as? String {
             if let med = Medicine.getMedicine(arr: medication, id: id) {
@@ -233,7 +233,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     
     // MARK: - Other observers
-    func rescheduleNotifications(_ notification: Notification) {        
+    @objc func rescheduleNotifications(_ notification: Notification) {        
         // Reschedule notifications
         for med in medication {
             med.scheduleNextNotification()

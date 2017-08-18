@@ -43,6 +43,12 @@ class HistoryTVC: UITableViewController {
         
         // Modify VC
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        
+        if #available(iOS 11.0, *) {
+            self.navigationController?.navigationBar.prefersLargeTitles = true
+            self.navigationItem.largeTitleDisplayMode = .always
+        }
+        
         self.navigationController?.toolbar.isTranslucent = true
         self.navigationController?.toolbar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         self.navigationItem.leftBarButtonItem = self.editButtonItem
@@ -66,7 +72,7 @@ class HistoryTVC: UITableViewController {
         super.didReceiveMemoryWarning()
     }
     
-    func refreshView() {
+    @objc func refreshView() {
         loadHistory()
         displayEmptyView()
     }
@@ -185,15 +191,15 @@ class HistoryTVC: UITableViewController {
         
         if let text = header.textLabel?.text {
             let string = NSMutableAttributedString(string: text)
-            string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 13.0), range: NSMakeRange(0, string.length))
+            string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 13.0), range: NSMakeRange(0, string.length))
             
             if cal.isDateInToday(sectionDate) {
-                string.addAttribute(NSForegroundColorAttributeName, value: UIColor.red, range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSMakeRange(0, string.length))
             }
             
             if let index = text.characters.index(of: " ") {
                 let pos = text.characters.distance(from: text.startIndex, to: index)
-                string.addAttribute(NSFontAttributeName, value: UIFont.systemFont(ofSize: 13.0, weight: UIFontWeightSemibold), range: NSMakeRange(0, pos))
+                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 13.0, weight: UIFont.Weight.semibold), range: NSMakeRange(0, pos))
             }
             
             header.textLabel?.attributedText = string
@@ -313,7 +319,7 @@ class HistoryTVC: UITableViewController {
         performSegue(withIdentifier: "addDose", sender: self)
     }
     
-    func deleteDoses() {
+    @objc func deleteDoses() {
         if let selectedRowIndexes = tableView.indexPathsForSelectedRows {
             for indexPath in selectedRowIndexes.reversed() {
                 let sectionDate = dates[indexPath.section]

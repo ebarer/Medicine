@@ -113,13 +113,13 @@ class SettingsTVC_Console: UITableViewController {
         case 0:
             let name = medication[indexPath.row].name!
             let attributedString = NSMutableAttributedString(string: name)
-            attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, name.characters.count))
+            attributedString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, name.characters.count))
             cell.textLabel?.attributedText = attributedString
             cell.detailTextLabel?.text = medication[indexPath.row].medicineID
         case 1:
             let txt = console[indexPath.row]
             let attributedString = NSMutableAttributedString(string: "\(txt.name) - \(txt.date)")
-            attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, txt.name.characters.count))
+            attributedString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, txt.name.characters.count))
             cell.textLabel?.attributedText = attributedString
             cell.detailTextLabel?.text = txt.id
         default: break
