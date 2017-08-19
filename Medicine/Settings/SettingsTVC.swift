@@ -12,7 +12,7 @@ import MessageUI
 
 class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
 
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     
@@ -150,22 +150,13 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     // MARK: - Helper methods
     func resetApp() {
-        let moc = appDelegate.managedObjectContext
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName:"Medicine")
-        
-        do {
-            let fetchedResults = try moc.fetch(request) as? [Medicine]
-            
-            // Delete all medications and corresponding history
-            if let results = fetchedResults {
-                for med in results {
-                    moc.delete(med)
-                }
+        let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        if let medication = try? cdStack.context.fetch(fetchRequest) {
+            for med in medication {
+                cdStack.context.delete(med)
             }
             
-            appDelegate.saveContext()
-            
-            medication.removeAll()
+            cdStack.save()
             
             // Clear scheduled notifications
             UIApplication.shared.cancelAllLocalNotifications()
@@ -198,8 +189,6 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
             if let index = self.tableView.indexPathForSelectedRow {
                 self.tableView.deselectRow(at: index, animated: false)
             }
-        } catch {
-            print("Could not fetch medication.")
         }
     }
     
@@ -221,20 +210,23 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         
         deviceInfo += "Obfuscated Medicine Information:\r"
         
-        for (index, med) in medication.enumerated() {
-            if let score = med.adherenceScore() {
-                deviceInfo += "Medicine \(index) (\(score)%): "
-            } else {
-                deviceInfo += "Medicine \(index) (-%): "
-            }
-            
-            deviceInfo += "\(med.removeTrailingZero(med.dosage)) \(med.dosageUnit.units(med.dosage)), every " +
-                          "\(med.removeTrailingZero(med.interval)) \(med.intervalUnit.units(med.interval)) "
-            
-            if med.refillHistory?.count == 0 {
-                deviceInfo += "(No refill history)"
-            } else {
-                deviceInfo += "(\(med.removeTrailingZero(med.prescriptionCount)) \(med.dosageUnit.units(med.prescriptionCount)) remaining)\r"
+        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        if let medication = try? cdStack.context.fetch(request) {
+            for (index, med) in medication.enumerated() {
+                if let score = med.adherenceScore() {
+                    deviceInfo += "Medicine \(index) (\(score)%): "
+                } else {
+                    deviceInfo += "Medicine \(index) (-%): "
+                }
+                
+                deviceInfo += "\(med.removeTrailingZero(med.dosage)) \(med.dosageUnit.units(med.dosage)), every " +
+                              "\(med.removeTrailingZero(med.interval)) \(med.intervalUnit.units(med.interval)) "
+                
+                if med.refillHistory?.count == 0 {
+                    deviceInfo += "(No refill history)"
+                } else {
+                    deviceInfo += "(\(med.removeTrailingZero(med.prescriptionCount)) \(med.dosageUnit.units(med.prescriptionCount)) remaining)\r"
+                }
             }
         }
         

@@ -26,10 +26,8 @@ class AddDoseTVC: UITableViewController {
     
     
     // MARK: - Helper variables
+    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
-    
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var moc: NSManagedObjectContext
     
     let cal = Calendar.current
     let dateFormatter = DateFormatter()
@@ -38,15 +36,11 @@ class AddDoseTVC: UITableViewController {
     
     // MARK: - Initialization
     required init?(coder aDecoder: NSCoder) {
-        // Setup context
-        moc = appDelegate.managedObjectContext
-        
         // Setup date formatter
         dateFormatter.timeStyle = DateFormatter.Style.short
         dateFormatter.dateStyle = DateFormatter.Style.none
-        
-        let entity = NSEntityDescription.entity(forEntityName: "Dose", in: moc)
-        dose = Dose(entity: entity!, insertInto: moc)
+
+        dose = Dose(insertInto: cdStack.context)
         dose.date = Date()
         
         super.init(coder: aDecoder)
@@ -97,11 +91,14 @@ class AddDoseTVC: UITableViewController {
             dose.medicine = med
             dose.dosage = med.dosage
             dose.dosageUnitInt = med.dosageUnitInt
-        } else if let med = medication.first {
-            self.med = med
-            dose.medicine = med
-            dose.dosage = med.dosage
-            dose.dosageUnitInt = med.dosageUnitInt
+        } else {
+            let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+            if let med = (try? cdStack.context.fetch(request))?.first {
+                self.med = med
+                dose.medicine = med
+                dose.dosage = med.dosage
+                dose.dosageUnitInt = med.dosageUnitInt
+            }
         }
     }
     
@@ -214,7 +211,7 @@ class AddDoseTVC: UITableViewController {
                     med.sendRefillNotification()
                 }
                 
-                appDelegate.saveContext()
+                cdStack.save()
                 
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
@@ -229,19 +226,18 @@ class AddDoseTVC: UITableViewController {
     }
     
     @IBAction func cancelDose(_ sender: AnyObject) {
-        moc.delete(dose)
-        appDelegate.saveContext()
+        cdStack.context.delete(dose)
+        cdStack.save()
         dismiss(animated: true, completion: nil)
     }
     
     
     // MARK: - Error handling
     func presentMedAlert() {
-            globalHistory = true
-        
-            let alert = UIAlertController(title: "Invalid Medication", message: "You have to select a valid medication.", preferredStyle: UIAlertControllerStyle.alert)
-            alert.view.tintColor = UIColor.gray
-            self.present(alert, animated: true, completion: nil)
+        globalHistory = true
+        let alert = UIAlertController(title: "Invalid Medication", message: "You have to select a valid medication.", preferredStyle: UIAlertControllerStyle.alert)
+        alert.view.tintColor = UIColor.gray
+        self.present(alert, animated: true, completion: nil)
     }
     
     func presentDoseAlert() {
@@ -251,7 +247,7 @@ class AddDoseTVC: UITableViewController {
             doseAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil))
             
             doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
-                self.appDelegate.saveContext()
+                self.cdStack.save()
                 
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)

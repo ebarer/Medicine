@@ -373,12 +373,16 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Initialization method
-    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertInto: context)
-        
-        if self.medicineID.isEmpty {
-            self.medicineID = UUID().uuidString
-            self.dateCreated = Date()
+    convenience init(insertInto context: NSManagedObjectContext) {
+        if let entity = NSEntityDescription.entity(forEntityName: "Medicine", in: context) {
+            self.init(entity: entity, insertInto: context)
+            
+            if self.medicineID.isEmpty {
+                self.medicineID = UUID().uuidString
+                self.dateCreated = Date()
+            }
+        } else {
+            fatalError("Unable to find Entity name!")
         }
     }
     
@@ -499,8 +503,8 @@ class Medicine: NSManagedObject {
         moc.delete(dose)
         
         // Save dose deletion
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        delegate.saveContext()
+        let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
+        cdStack.save()
     }
     
     
@@ -541,8 +545,8 @@ class Medicine: NSManagedObject {
         moc.delete(refill)
         
         // Save refill deletion
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        delegate.saveContext()
+        let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
+        cdStack.save()
     }
 
     /**
@@ -720,8 +724,8 @@ class Medicine: NSManagedObject {
         self.lastDose?.next = snoozeDate
         
         // Save modifications to last dose
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        delegate.saveContext()
+        let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
+        cdStack.save()
         
         // Schedule new notification
         do {
@@ -779,9 +783,16 @@ class Medicine: NSManagedObject {
     - Returns: Number of overdue items at date
     */
     func getBadgeCount(_ date: Date) -> Int {
-        return medication.filter({
-            $0.reminderEnabled && $0.nextDose?.compare(date) != .orderedDescending
-        }).count
+        let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
+        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        request.predicate = NSPredicate(format: "reminderEnabled == true", argumentArray: [])
+        if let medication = try? cdStack.context.fetch(request) {
+            return medication.filter({
+                $0.nextDose?.compare(date) != .orderedDescending
+            }).count
+        } else {
+            return 0
+        }
     }
     
     /**

@@ -29,9 +29,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
 
     
     // MARK: - Helper variables
-    
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var moc: NSManagedObjectContext
+    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     
     let cal = Calendar.current
     let dateFormatter = DateFormatter()
@@ -41,15 +39,11 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
     // MARK: - Initialization
     
     required init?(coder aDecoder: NSCoder) {
-        // Setup context
-        moc = appDelegate.managedObjectContext
+        refill = Refill(context: cdStack.context)
         
         // Setup date formatter
         dateFormatter.timeStyle = DateFormatter.Style.short
         dateFormatter.dateStyle = DateFormatter.Style.none
-        
-        let entity = NSEntityDescription.entity(forEntityName: "Refill", in: moc)
-        refill = Refill(entity: entity!, insertInto: moc)
         
         super.init(coder: aDecoder)
     }
@@ -330,22 +324,19 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
         }
     }
     
-
     
     // MARK: - Navigation
     
     @IBAction func saveRefill(_ sender: AnyObject) {
         med?.addRefill(refill)
         refill.medicine = med
-        
-        appDelegate.saveContext()
-        
+        cdStack.save()
         dismiss(animated: true, completion: nil)
     }
     
     @IBAction func cancelRefill(_ sender: AnyObject) {
-        moc.delete(refill)
-        appDelegate.saveContext()
+        cdStack.context.delete(refill)
+        cdStack.save()
         dismiss(animated: true, completion: nil)
     }
     

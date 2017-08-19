@@ -11,56 +11,23 @@ import CoreData
 import CoreSpotlight
 import MobileCoreServices
 
-// Global medication array
-var medication = [Medicine]()
-
 class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
-    
     // MARK: - Helper variables
+    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var moc: NSManagedObjectContext!
     var launchedShortcutItem: [AnyHashable: Any]?
     
     var selectedVC: UIViewController? = nil
     
-    
     // MARK: - Load medication
     func loadMedication() {
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName:"Medicine")
+        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-        
-        do {
-            let fetchedResults = try moc.fetch(request) as? [Medicine]
-            
-            if let results = fetchedResults {
-                // Store results in medication array
-                medication = results
-                
-                // Populate date created (migrationV22toV30)
-                for med in medication {
-                    if med.dateCreated == nil {
-                        if let firstDose = med.doseHistory?.lastObject as? Dose {
-                            med.dateCreated = firstDose.date
-                        } else {
-                            let cal = Calendar.current
-                            med.dateCreated = cal.date(byAdding: Calendar.Component.day, value: -1, to: Date())
-                        }
-                    }
-                }
-                
-                // If selected, sort by next dosage
-                if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
-                    medication.sort(by: Medicine.sortByNextDose)
-                }
-                
-                indexMedication()
-                setDynamicShortcuts()
-            }
-        } catch {
-            print("Could not fetch medication.")
+        if let medication = try? cdStack.context.fetch(request) {
+            indexMedication()
+            setDynamicShortcuts(forMedication: medication)
         }
     }
     
@@ -69,9 +36,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
-        
-        // Set mananged object context
-        moc = appDelegate.managedObjectContext
         
         // Set tab bar controller
         tabBar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
@@ -112,8 +76,9 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     // MARK: - Notification observers
     @objc func doseNotification(_ notification: Notification) {
         if let id = notification.userInfo!["id"] as? String {
-            let medQuery = Medicine.getMedicine(arr: medication, id: id)
-            if let med = medQuery {
+            let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+            request.predicate = NSPredicate(format: "medicineID", argumentArray: [id])
+            if let med = (try? cdStack.context.fetch(request))?.first {
                 print("doseNotification triggered for \(med.name ?? "unknown medicine")")
                 
                 let message = String(format:"Time to take %g %@ of %@", med.dosage, med.dosageUnit.units(med.dosage), med.name!)
@@ -126,13 +91,9 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 
                 if med.lastDose != nil {
                     alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertActionStyle.default, handler: {(action) -> Void in
-                        if let id = notification.userInfo!["id"] as? String {
-                            if let med = Medicine.getMedicine(arr: medication, id: id) {
-                                med.snoozeNotification()
-                                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
-                                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
-                            }
-                        }
+                        med.snoozeNotification()
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                     }))
                 }
                 
@@ -149,8 +110,9 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     @objc func refillNotification(_ notification: Notification) {
         if let id = notification.userInfo!["id"] as? String {
-            let medQuery = Medicine.getMedicine(arr: medication, id: id)
-            if let med = medQuery {
+            let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+            request.predicate = NSPredicate(format: "medicineID", argumentArray: [id])
+            if let med = (try? cdStack.context.fetch(request))?.first {
                 print("refillNotification triggered for \(med.name ?? "unknown medicine")")
                 
                 var message = "You are running low on \(med.name!) and should refill soon."
@@ -180,14 +142,13 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     @objc func takeDoseAction(_ notification: Notification) {
         NSLog("takeDoseAction received", [])
         if let id = notification.userInfo!["id"] as? String {
-            if let med = Medicine.getMedicine(arr: medication, id: id) {
-                let entity = NSEntityDescription.entity(forEntityName: "Dose", in: moc)
-                let dose = Dose(entity: entity!, insertInto: moc)
-
+            let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+            request.predicate = NSPredicate(format: "medicineID", argumentArray: [id])
+            if let medication = try? cdStack.context.fetch(request), let med = medication.first {
+                let dose = Dose(insertInto: cdStack.context)
                 dose.date = Date()
                 dose.dosage = med.dosage
                 dose.dosageUnitInt = med.dosageUnitInt
-                
                 med.addDose(dose)
                 
                 // Check if medication needs to be refilled
@@ -196,10 +157,10 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                     med.sendRefillNotification()
                 }
                 
-                appDelegate.saveContext()
+                cdStack.save()
                 NSLog("takeDoseAction performed", [])
 
-                setDynamicShortcuts()
+                setDynamicShortcuts(forMedication: medication)
                 updateBadgeCount()
                 
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
@@ -211,9 +172,11 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     @objc func snoozeReminderAction(_ notification: Notification) {
         NSLog("snoozeReminderAction received", [])
         if let id = notification.userInfo!["id"] as? String {
-            if let med = Medicine.getMedicine(arr: medication, id: id) {
+            let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+            request.predicate = NSPredicate(format: "medicineID", argumentArray: [id])
+            if let medication = try? cdStack.context.fetch(request), let med = medication.first {
                 med.snoozeNotification()
-                setDynamicShortcuts()
+                setDynamicShortcuts(forMedication: medication)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                 NSLog("snoozeReminderAction performed", [])
@@ -224,7 +187,9 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     @objc func refillAction(_ notification: Notification) {
         NSLog("refillAction received", [])
         if let id = notification.userInfo!["id"] as? String {
-            if let med = Medicine.getMedicine(arr: medication, id: id) {
+            let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+            request.predicate = NSPredicate(format: "medicineID", argumentArray: [id])
+            if let med = (try? cdStack.context.fetch(request))?.first {
                 performSegue(withIdentifier: "refillPrescription", sender: med)
                 NSLog("refillAction performed", [])
             }
@@ -235,12 +200,16 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     // MARK: - Other observers
     @objc func rescheduleNotifications(_ notification: Notification) {        
         // Reschedule notifications
-        for med in medication {
-            med.scheduleNextNotification()
-        }
+        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+        if let medication = try? cdStack.context.fetch(request) {
+            for med in medication {
+                med.scheduleNextNotification()
+            }
         
-        setDynamicShortcuts()
-        updateBadgeCount()
+            setDynamicShortcuts(forMedication: medication)
+            updateBadgeCount()
+        }
     }
     
     
@@ -265,7 +234,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     
     // MARK: - Helper methods
-    func setDynamicShortcuts() {
+    func setDynamicShortcuts(forMedication medication: [Medicine]) {
         // Update homescreen shortcuts for force touch devices
         let overdueItems = medication.filter({$0.isOverdue().flag})
         if overdueItems.count > 0  {
@@ -313,16 +282,24 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     }
 
     func updateBadgeCount() {
-        let overdueCount = medication.filter({$0.isOverdue().flag}).count
-        UIApplication.shared.applicationIconBadgeNumber = overdueCount
+        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+        if let medication = try? cdStack.context.fetch(request) {
+            let overdueCount = medication.filter({$0.isOverdue().flag}).count
+            UIApplication.shared.applicationIconBadgeNumber = overdueCount
+        }
     }
     
     func indexMedication() {
         // Update spotlight index
-        for med in medication  {
-            if let attributes = med.attributeSet {
-                let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                CSSearchableIndex.default().indexSearchableItems([item], completionHandler: nil)
+        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+        if let medication = try? cdStack.context.fetch(request) {
+            for med in medication  {
+                if let attributes = med.attributeSet {
+                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
+                    CSSearchableIndex.default().indexSearchableItems([item], completionHandler: nil)
+                }
             }
         }
     }

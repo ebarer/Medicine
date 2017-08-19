@@ -27,24 +27,9 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     // MARK: - Helper variables
     
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var moc: NSManagedObjectContext
+    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let cal = Calendar.current
     let dateFormatter = DateFormatter()
-    
-    
-    // MARK: - Initialization
-    
-    required init?(coder aDecoder: NSCoder) {
-        // Setup context
-        moc = appDelegate.managedObjectContext
-        
-        // Setup date formatter
-        dateFormatter.timeStyle = DateFormatter.Style.short
-        dateFormatter.dateStyle = DateFormatter.Style.none
-        
-        super.init(coder: aDecoder)
-    }
 
     
     // MARK: - View methods
@@ -54,13 +39,16 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         self.clearsSelectionOnViewWillAppear = true
         self.medicationName.delegate = self
         
+        // Setup date formatter
+        dateFormatter.timeStyle = DateFormatter.Style.short
+        dateFormatter.dateStyle = DateFormatter.Style.none
+        
         // Modify VC
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         
         // Setup medicine object
         if editMode == false {
-            let entity = NSEntityDescription.entity(forEntityName: "Medicine", in: moc)
-            med = Medicine(entity: entity!, insertInto: moc)
+            med = Medicine(insertInto: cdStack.context)
         }
     }
     
@@ -299,12 +287,9 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             // Cancel all notifications for medication
             med.cancelNotifications()
             
-            // Remove medication from array
-            medication.removeObject(med)
-            
             // Remove medication from persistent store
-            moc.delete(med)
-            appDelegate.saveContext()
+            cdStack.context.delete(med)
+            cdStack.save()
             
             // Send notifications
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
@@ -354,9 +339,10 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     @IBAction func saveMedication(_ sender: AnyObject) {
         if !editMode {
-            let insertIndex = IndexPath(row: medication.count, section: 0)
-            med.sortOrder = Int16(insertIndex.row)
-            medication.append(med)
+            let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+            if let count = try? cdStack.context.count(for: request) {
+                med.sortOrder = Int16(count)
+            }
         } else {
             if let lastDose = med.lastDose {
                 do {
@@ -367,7 +353,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             }
         }
         
-        appDelegate.saveContext()
+        cdStack.save()
         
         // Reschedule next notification
         med.scheduleNextNotification()
@@ -379,12 +365,12 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     @IBAction func cancelMedication(_ sender: AnyObject) {
         if !editMode {
-            moc.delete(med)
+            cdStack.context.delete(med)
         } else {
-            moc.rollback()
+            cdStack.context.rollback()
         }
         
-        appDelegate.saveContext()
+        cdStack.save()
         
         dismiss(animated: true, completion: nil)
     }

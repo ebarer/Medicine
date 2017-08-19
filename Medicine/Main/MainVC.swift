@@ -24,17 +24,15 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     
     // MARK: - Helper variables
+    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     var launchedShortcutItem: [AnyHashable: Any]?
-    
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var moc: NSManagedObjectContext
     
     let cal = Calendar.current
     let dateFormatter = DateFormatter()
     
+    var medication = [Medicine]()
     var selectedMed: Medicine?
-    
     
     // MARK: - IAP variables
     let productID = "com.ebarer.Medicine.Unlock"
@@ -43,23 +41,23 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     var mvc: UpgradeVC?
     
     
-    // MARK: - Initialization
-    required init?(coder aDecoder: NSCoder) {
-        // Setup context
-        moc = appDelegate.managedObjectContext
-        
-        super.init(coder: aDecoder)
-    }
-    
-    
     // MARK: - View methods
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // If selected, sort by next dosage
-        if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
-            medication.sort(by: Medicine.sortByNextDose)
+        // Create fetch request, sorted by task time
+        let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+        if let results = try? cdStack.context.fetch(fetchRequest) {
+            medication = results
+            
+            // If selected, sort by next dosage
+            if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
+                medication = medication.sorted(by: Medicine.sortByNextDose)
+            }
         }
+        
+        print(medication.count)
         
         // Add observers for notifications
         NotificationCenter.default.addObserver(self, selector: #selector(refreshMainVC(_:)), name: NSNotification.Name(rawValue: "refreshMain"), object: nil)
@@ -224,7 +222,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         
         // Warn of overdue doses
         let overdueItems = medication.filter({$0.isOverdue().flag})
-        if overdueItems.count > 0  {
+        if overdueItems.count > 0 {
             var text = "Overdue dose"
             
             // Pluralize string if multiple overdue doses
@@ -240,7 +238,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         // Show next scheduled dose
         else if let nextDose = UIApplication.shared.scheduledLocalNotifications?.first {
             if cal.isDateInToday(nextDose.fireDate!) {
-                if let id = nextDose.userInfo?["id"] {
+                if let id = nextDose.userInfo?["id"], medication != nil {
                     if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
                         headerDescriptionLabel.text = "Next Dose"
                         
@@ -404,7 +402,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             medication[toIndexPath.row].sortOrder = Int16(fromIndexPath.row)
             medication.sort(by: { $0.sortOrder < $1.sortOrder })
             
-            appDelegate.saveContext()
+            cdStack.save()
             
             // Set sort order to "manually"
             defaults.set(0, forKey: "sortOrder")
@@ -421,13 +419,13 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let editAction = UITableViewRowAction(style: .default, title: "Edit") { (action, indexPath) -> Void in
-            self.performSegue(withIdentifier: "editMedication", sender: medication[indexPath.row])
+            self.performSegue(withIdentifier: "editMedication", sender: self.medication[indexPath.row])
         }
         
         editAction.backgroundColor = UIColor(white: 0.78, alpha: 1.0)
         
         let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) -> Void in
-            if let name = medication[indexPath.row].name {
+            if let name = self.medication[indexPath.row].name {
                 self.presentDeleteAlert(name, indexPath: indexPath)
             }
         }
@@ -441,11 +439,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         super.setEditing(editing, animated: animated)
         
         tableView.setEditing(editing, animated: animated)
-        
-//        for i in 0..<tableView.numberOfRowsInSection(0) {
-//            let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: i, inSection: 0)) as! MedicineCell
-//            cell.addButton.hidden = editing
-//        }
         
         // Select med "selected" in Detail view
         if let collapsed = self.splitViewController?.isCollapsed, collapsed == false {
@@ -508,20 +501,17 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             }
             
             alert.addAction(UIAlertAction(title: "Skip Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
-                let entity = NSEntityDescription.entity(forEntityName: "Dose", in: self.moc)
-                let dose = Dose(entity: entity!, insertInto: self.moc)
-
+                let dose = Dose(insertInto: self.cdStack.context)
                 dose.date = Date()
                 dose.dosage = -1
                 dose.dosageUnit = med.dosageUnit
-                
                 med.addDose(dose)
                 
-                self.appDelegate.saveContext()
+                self.cdStack.save()
                 
                 // If selected, sort by next dosage
                 if self.defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
-                    medication.sort(by: Medicine.sortByNextDose)
+                    self.medication.sort(by: Medicine.sortByNextDose)
                     self.tableView.reloadData()
                 } else {
                     self.tableView.reloadRows(at: [index], with: UITableViewRowAnimation.none)
@@ -540,10 +530,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             // If last dose is set, allow user to undo last dose
             if (med.lastDose != nil) {
                 alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
-                    if (med.untakeLastDose(self.moc)) {
+                    if (med.untakeLastDose(self.cdStack.context)) {
                         // If selected, sort by next dosage
                         if self.defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
-                            medication.sort(by: Medicine.sortByNextDose)
+                            self.medication.sort(by: Medicine.sortByNextDose)
                             self.tableView.reloadData()
                         } else {
                             self.tableView.reloadRows(at: [index], with: UITableViewRowAnimation.none)
@@ -635,8 +625,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         medication.remove(at: indexPath.row)
         
         // Remove medication from persistent store
-        moc.delete(med)
-        appDelegate.saveContext()
+        cdStack.context.delete(med)
+        cdStack.save()
         
         // Update spotlight index
         CSSearchableIndex.default().deleteSearchableItems(withIdentifiers: [med.medicineID], completionHandler: nil)

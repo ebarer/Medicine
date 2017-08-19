@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
+class AddMedicationTVC_Dosage: UITableViewController { //}, UIPickerViewDelegate {
     
     var med: Medicine!
     var editMode: Bool = false

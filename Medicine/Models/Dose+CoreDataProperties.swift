@@ -14,6 +14,10 @@ import CoreData
 
 extension Dose {
 
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Dose> {
+        return NSFetchRequest<Dose>(entityName: "Dose")
+    }
+    
     @NSManaged var medicine: Medicine?
     
     @NSManaged var date: Date

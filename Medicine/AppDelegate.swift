@@ -9,14 +9,15 @@
 import UIKit
 import CoreData
 import StoreKit
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
 
     var window: UIWindow?
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    let stack = CoreDataStack(modelName: "Medicine")!
 
-    
     // MARK: - Application methods
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Handle views on startup
@@ -40,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         
         // Register for notifications and actions
         application.registerUserNotificationSettings(notificationSettings())
-
+        
         setUserDefaults()
         
         // Handle application shortcut
@@ -111,7 +112,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
-        self.saveContext()
+        self.stack.save()
         
         // Remove IAP observers
         if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKind(of: UINavigationController.self)}).first {
@@ -145,7 +146,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     // MARK: - Application helper methods
     func setUserDefaults() {
-        guard let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine") else { fatalError("No user defaults") }
+        guard let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine") else {
+            fatalError("No user defaults")
+        }
         
         if defaults.value(forKey: "sortOrder") == nil {
             // Set sort order to "next dosage"
@@ -229,7 +232,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                 let masterVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
                 
                 if masterVC.isViewLoaded {
-                    
                     masterVC.dismiss(animated: false, completion: nil)
                     
                     switch(String(describing: action)) {
@@ -305,85 +307,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             UIApplication.shared.cancelLocalNotification(notification)
         }
     }
-    
 
-    // MARK: - Core Data stack
-    lazy var applicationDocumentsDirectory: URL = {
-        // The directory the application uses to store the Core Data store file. This code uses a directory named "com.ebarer.Medicine" in the application's documents Application Support directory.
-        let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        return urls[urls.count-1]
-    }()
-    
-    lazy var applicationGroupDirectory: URL = {
-        return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.ebarer.Medicine")!
-    }()
-
-    lazy var managedObjectModel: NSManagedObjectModel = {
-        // The managed object model for the application. This property is not optional. It is a fatal error for the application not to be able to find and load its model.
-        let modelURL = Bundle.main.url(forResource: "Medicine", withExtension: "momd")!
-        return NSManagedObjectModel(contentsOf: modelURL)!
-    }()
-
-    lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator = {
-        // The persistent store coordinator for the application. This implementation creates and returns a coordinator, having added the store for the application to it.
-        // This property is optional since there are legitimate error conditions that could cause the creation of the store to fail.
-        // Create the coordinator and store
-        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
-        let oldURL = self.applicationDocumentsDirectory.appendingPathComponent("SingleViewCoreData.sqlite")
-        let url = self.applicationGroupDirectory.appendingPathComponent("Medicine.sqlite")
-        
-        let options = [NSMigratePersistentStoresAutomaticallyOption:true, NSInferMappingModelAutomaticallyOption:true]
-        var failureReason = "There was an error creating or loading the application's saved data."
-        
-        do {
-            guard FileManager.default.fileExists(atPath: url.path) else {
-                throw CoreDataError.invalidPersistentStore
-            }
-            
-            try coordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: url, options: options)
-            NSLog("Loaded persistent store correctly")
-        } catch {
-            NSLog("Failed to load persistent store coordinator from group, will attempt to migrate old store")
-
-            do {
-                let oldStore = try coordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: oldURL, options: options)
-                NSLog("Old store \(oldStore)")
-                let migratedStore = try coordinator.migratePersistentStore(oldStore, to: url, options: nil, withType: NSSQLiteStoreType)
-                NSLog("Migrated store \(migratedStore)")
-            } catch {
-                NSLog("Failed to load persistent store after migration attempt")
-                abort()
-            }
-        }
-        
-        return coordinator
-    }()
-
-    lazy var managedObjectContext: NSManagedObjectContext = {
-        // Returns the managed object context for the application (which is already bound to the persistent store coordinator for the application.)
-        // This property is optional since there are legitimate error conditions that could cause the creation of the context to fail.
-        let coordinator = self.persistentStoreCoordinator
-        var managedObjectContext = NSManagedObjectContext(concurrencyType: NSManagedObjectContextConcurrencyType.mainQueueConcurrencyType)
-        managedObjectContext.persistentStoreCoordinator = coordinator
-        return managedObjectContext
-    }()
-
-    func saveContext () {
-        if managedObjectContext.hasChanges {
-            do {
-                try managedObjectContext.save()
-            } catch {
-                let error = error as NSError
-                NSLog("Unable to save context: \(error), \(error.userInfo)")
-                abort()
-            }
-        }
-    }
-
-}
-
-
-// MARK: - Errors Enum
-enum CoreDataError: Error {
-    case invalidPersistentStore
 }

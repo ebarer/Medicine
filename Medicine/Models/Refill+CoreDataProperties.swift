@@ -14,6 +14,10 @@ import CoreData
 
 extension Refill {
 
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Refill> {
+        return NSFetchRequest<Refill>(entityName: "Refill")
+    }
+    
     @NSManaged var medicine: Medicine?
     
     @NSManaged var date: Date

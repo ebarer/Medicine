@@ -19,24 +19,13 @@ class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControll
     
     
     // MARK: - Helper variables
-    
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var moc: NSManagedObjectContext!
+    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     
     let cal = Calendar.current
     let dateFormatter = DateFormatter()
     
     var normalButtons = [UIBarButtonItem]()
     var editButtons = [UIBarButtonItem]()
-    
-    
-    // MARK: - Initialization
-    
-    required init?(coder aDecoder: NSCoder) {
-        // Setup context
-        moc = appDelegate.managedObjectContext
-        super.init(coder: aDecoder)
-    }
     
     
     // MARK: - View methods
@@ -320,7 +309,7 @@ class MedicineRefillHistoryTVC: UITableViewController, MFMailComposeViewControll
                 if let refill = history[sectionDate]?[indexPath.row] {
                     history[sectionDate]?.removeObject(refill)
                     
-                    med.removeRefill(refill, moc: moc)
+                    med.removeRefill(refill, moc: cdStack.context)
                     
                     if tableView.numberOfRows(inSection: indexPath.section) == 1 {
                         if emptyDates == true {
