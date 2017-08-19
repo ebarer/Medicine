@@ -57,12 +57,12 @@ struct CoreDataStack {
         // Add a SQLite store located in the documents folder
         let fm = FileManager.default
         
-        guard let docUrl = fm.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        guard let docUrl = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.com.ebarer.Medicine") else {
             print("Unable to reach the documents folder")
             return nil
         }
         
-        self.dbURL = docUrl.appendingPathComponent("data.sqlite")
+        self.dbURL = docUrl.appendingPathComponent("Medicine.sqlite")
         
         // Options for migration
         let options = [

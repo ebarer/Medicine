@@ -45,6 +45,12 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let req: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        if let count = try? cdStack.context.count(for: req) {
+            print(count)
+        }
+        
+        
         // Create fetch request, sorted by task time
         let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
