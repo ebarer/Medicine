@@ -162,6 +162,8 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         let row = Rows(index: indexPath)
         
         cell.preservesSuperviewLayoutMargins = true
+        cell.layoutMargins = tableView.layoutMargins
+        cell.separatorInset = tableView.separatorInset
         
         switch(row) {
         case Rows.dosage:

@@ -421,6 +421,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         let takeAction = UIContextualAction(style: UIContextualAction.Style.normal, title: "Take Dose") { (action: UIContextualAction, view: UIView, success: (Bool) -> Void) in
             self.performSegue(withIdentifier: "addDose", sender: self.medication[indexPath.row])
         }
+        
+        
+        takeAction.backgroundColor = UIColor.orange
 
         return UISwipeActionsConfiguration(actions: [takeAction])
     }
@@ -429,8 +432,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         let editAction = UITableViewRowAction(style: .default, title: "Edit") { (action, indexPath) -> Void in
             self.performSegue(withIdentifier: "editMedication", sender: self.medication[indexPath.row])
         }
-        
-        editAction.backgroundColor = UIColor(white: 0.78, alpha: 1.0)
         
         let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) -> Void in
             if let name = self.medication[indexPath.row].name {

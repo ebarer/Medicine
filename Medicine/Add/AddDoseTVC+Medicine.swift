@@ -19,6 +19,7 @@ class AddDoseTVC_Medicine: CoreDataTableViewController {
         
         // Create fetch request
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Medicine.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
         
         // Create the FetchedResultsController
         self.fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
@@ -32,7 +33,6 @@ class AddDoseTVC_Medicine: CoreDataTableViewController {
     }
 
     // MARK: - Table view data source
-
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "medicineCell", for: indexPath)
