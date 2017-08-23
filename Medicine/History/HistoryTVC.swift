@@ -10,11 +10,6 @@ import UIKit
 import CoreData
 
 class HistoryTVC: CoreDataTableViewController {
-
-//    let emptyDates = false
-//    var dates = [Date]()
-//    var history = [Date: [Dose]]()
-    
     
     // MARK: - Helper variables
     let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
@@ -33,11 +28,6 @@ class HistoryTVC: CoreDataTableViewController {
         // Modify VC
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         
-        if #available(iOS 11.0, *) {
-            self.navigationController?.navigationBar.prefersLargeTitles = true
-            self.navigationItem.largeTitleDisplayMode = .always
-        }
-        
         self.navigationController?.toolbar.isTranslucent = true
         self.navigationController?.toolbar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         self.navigationItem.leftBarButtonItem = self.editButtonItem
@@ -51,16 +41,23 @@ class HistoryTVC: CoreDataTableViewController {
         // Add observeres for notifications
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
         
+        // Define request for Doses
         let request: NSFetchRequest<NSFetchRequestResult> = Dose.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        let cutoffDate = Calendar.current.date(byAdding: .year, value: -1, to: Date())!
+        request.predicate = NSPredicate(format: "date >= %@", argumentArray: [cutoffDate])
+        request.fetchLimit = 500
+        
         self.fetchedResultsController = NSFetchedResultsController(fetchRequest: request,
                                                                    managedObjectContext: cdStack.context,
-                                                                   sectionNameKeyPath: "date",
+                                                                   sectionNameKeyPath: "dateSection",
                                                                    cacheName: nil)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        executeSearch()
         refreshView()
     }
     
@@ -102,42 +99,49 @@ class HistoryTVC: CoreDataTableViewController {
     
     
     // MARK: - Table headers
-    
-//    override func numberOfSections(in tableView: UITableView) -> Int {
-//        return dates.count
-//    }
+
+    // Ensure index bar (right side) doesn't appear
+    override func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+        return nil
+    }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if let fc = fetchedResultsController {
-            let sectionDate = fc.sections![section].name
-            print(sectionDate)
-            return sectionDate
-            
-            // TODO: Convert string to Date
-//            if cal.isDateInToday(sectionDate) {
-//                dateFormatter.timeStyle = DateFormatter.Style.none
-//                dateFormatter.dateStyle = DateFormatter.Style.medium
-//                return "Today  \(dateFormatter.string(from: sectionDate))"
-//            } else if cal.isDateInYesterday(sectionDate) {
-//                dateFormatter.timeStyle = DateFormatter.Style.none
-//                dateFormatter.dateStyle = DateFormatter.Style.medium
-//                return "Yesterday  \(dateFormatter.string(from: sectionDate))"
-//            } else if sectionDate.isDateInLastWeek() {
-//                dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
-//                return dateFormatter.string(from: sectionDate)
-//            } else {
-//                dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
-//                return dateFormatter.string(from: sectionDate)
-//            }
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "YYYY-MM-dd HH:mm:ss ZZZ"
+            guard let sectionDate = dateFormatter.date(from: fc.sections![section].name) else {
+                return nil
+            }
+
+            if cal.isDateInToday(sectionDate) {
+                dateFormatter.timeStyle = DateFormatter.Style.none
+                dateFormatter.dateStyle = DateFormatter.Style.medium
+                return "Today  \(dateFormatter.string(from: sectionDate))"
+            } else if cal.isDateInYesterday(sectionDate) {
+                dateFormatter.timeStyle = DateFormatter.Style.none
+                dateFormatter.dateStyle = DateFormatter.Style.medium
+                return "Yesterday  \(dateFormatter.string(from: sectionDate))"
+            } else if sectionDate.isDateInLastWeek() {
+                dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
+                return dateFormatter.string(from: sectionDate)
+            } else {
+                dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
+                return dateFormatter.string(from: sectionDate)
+            }
         } else {
             return nil
         }
     }
-    
+
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         if let fc = fetchedResultsController {
-            let sectionDate = fc.sections![section].name
-            let header:UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "YYYY-MM-dd HH:mm:ss ZZZ"
+            guard let sectionDate = dateFormatter.date(from: fc.sections![section].name) else {
+                return
+            }
+            
+            let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
             
             // Set header title
             header.textLabel?.text = header.textLabel?.text?.uppercased()
@@ -147,10 +151,9 @@ class HistoryTVC: CoreDataTableViewController {
                 let string = NSMutableAttributedString(string: text)
                 string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 13.0), range: NSMakeRange(0, string.length))
                 
-                // TODO: Convert string to date
-//                if cal.isDateInToday(sectionDate) {
-//                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSMakeRange(0, string.length))
-//                }
+                if Calendar.current.isDateInToday(sectionDate) {
+                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSMakeRange(0, string.length))
+                }
                 
                 if let index = text.characters.index(of: " ") {
                     let pos = text.characters.distance(from: text.startIndex, to: index)
@@ -164,16 +167,6 @@ class HistoryTVC: CoreDataTableViewController {
 
     
     // MARK: - Table rows
-    
-//    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        let sectionDate = dates[section]
-//
-//        if let count = history[sectionDate]?.count {
-//            return (count == 0) ? 1 : count
-//        }
-//
-//        return 1
-//    }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if let fc = fetchedResultsController {

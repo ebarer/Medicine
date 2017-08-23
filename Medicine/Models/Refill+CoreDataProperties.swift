@@ -22,6 +22,10 @@ extension Refill {
     
     @NSManaged var date: Date
     
+    @objc public var dateSection: Date? {
+        return Calendar.current.startOfDay(for: date)
+    }
+    
     @NSManaged var quantity: Float
     @NSManaged var quantityUnitInt: Int16
     @NSManaged var conversion: Float

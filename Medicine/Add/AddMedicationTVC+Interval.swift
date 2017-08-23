@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
+class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate, UIPickerViewDataSource {
 
     var med: Medicine!
     var editMode: Bool = false
@@ -122,6 +122,8 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         let row = Rows(index: indexPath)
         
         cell.preservesSuperviewLayoutMargins = true
+        cell.layoutMargins = tableView.layoutMargins
+        cell.separatorInset = tableView.separatorInset
         
         switch(row) {
         case Rows.intervalUnitLabel:
@@ -178,7 +180,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
     
     // MARK: - Picker data source
     
-    func numberOfComponentsInPickerView(_ pickerView: UIPickerView) -> Int {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         if (pickerView == intervalUnitPicker) {
             return 1
         }

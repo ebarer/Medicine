@@ -21,6 +21,11 @@ extension Dose {
     @NSManaged var medicine: Medicine?
     
     @NSManaged var date: Date
+    
+    @objc public var dateSection: Date? {
+        return Calendar.current.startOfDay(for: date)
+    }
+    
     @NSManaged var expectedDate: Date?
     @NSManaged var next: Date?
     

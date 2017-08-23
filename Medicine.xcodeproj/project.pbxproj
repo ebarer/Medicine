@@ -127,6 +127,7 @@
 		CE7519771BB00CB5000A2879 /* SettingsTVC+Sort.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Sort.swift"; path = "Settings/SettingsTVC+Sort.swift"; sourceTree = "<group>"; };
 		CE7519791BB00CFE000A2879 /* SettingsTVC+Snooze.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Snooze.swift"; path = "Settings/SettingsTVC+Snooze.swift"; sourceTree = "<group>"; };
 		CE7A8E7F1BB89CD1001727B9 /* Medicine - 2.3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2.3.xcdatamodel"; sourceTree = "<group>"; };
+		CE8064241F483ED000B7A1AD /* Medicine - 3.1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 3.1.xcdatamodel"; sourceTree = "<group>"; };
 		CE936E621C6C36400093BECF /* MainTVC+UIViewControllerPreviewing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainTVC+UIViewControllerPreviewing.swift"; sourceTree = "<group>"; };
 		CE936E641C6C42770093BECF /* MedicineDetailsTVC+UIViewControllerPreviewing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "MedicineDetailsTVC+UIViewControllerPreviewing.swift"; path = "Details/MedicineDetailsTVC+UIViewControllerPreviewing.swift"; sourceTree = "<group>"; };
 		CE94A5B51BE8B13B008E58DF /* SettingsTVC+Refill.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Refill.swift"; path = "Settings/SettingsTVC+Refill.swift"; sourceTree = "<group>"; };
@@ -789,6 +790,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Medicine/Medicine.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -798,6 +800,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
 			};
@@ -808,6 +811,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Medicine/Medicine.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -858,6 +862,7 @@
 		CEA2510A1B903E7D00BBE466 /* Medicine.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				CE8064241F483ED000B7A1AD /* Medicine - 3.1.xcdatamodel */,
 				CE1A39F41C58C487004480A4 /* Medicine - 3.xcdatamodel */,
 				CE1A39EE1C58B420004480A4 /* Medicine - 2.6.xcdatamodel */,
 				CE47425C1BFF1BA900B87403 /* Medicine - 2.5.xcdatamodel */,
@@ -868,7 +873,7 @@
 				CE48157B1B971A5700F1FA0C /* Medicine - 2.xcdatamodel */,
 				CEA2510B1B903E7D00BBE466 /* Medicine.xcdatamodel */,
 			);
-			currentVersion = CE1A39F41C58C487004480A4 /* Medicine - 3.xcdatamodel */;
+			currentVersion = CE8064241F483ED000B7A1AD /* Medicine - 3.1.xcdatamodel */;
 			name = Medicine.xcdatamodeld;
 			path = Medicine/Medicine.xcdatamodeld;
 			sourceTree = "<group>";

@@ -39,13 +39,6 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if #available(iOS 11.0, *) {
-            self.navigationController?.title = "Hello World"
-            self.navigationController?.navigationBar.prefersLargeTitles = true
-            self.navigationItem.title = "Hello World"
-            self.navigationItem.titleView?.tintColor = UIColor.white
-        }
-        
         // Setup edit button
         let editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(editMedication))
         self.navigationItem.rightBarButtonItem = editButton
@@ -167,7 +160,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             doseTitle.text = "Next Dose"
             
             doseLabel.textColor = UIColor.black
-            doseLabel.font = UIFont.systemFont(ofSize: 14.0, weight: UIFont.Weight.regular)
+            doseLabel.font = UIFont.systemFont(ofSize: 16.0, weight: UIFont.Weight.regular)
             
             // If no doses taken
             if med.doseHistory?.count == 0 && med.intervalUnit == .hourly {
@@ -195,7 +188,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
 
                     if let date = med.isOverdue().overdueDose {
                         doseLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                        doseLabel.font = UIFont.systemFont(ofSize: 14.0, weight: UIFont.Weight.semibold)
+                        doseLabel.font = UIFont.systemFont(ofSize: 16.0, weight: UIFont.Weight.semibold)
                         doseLabel.text = Medicine.dateString(date)
                     }
                 }
@@ -224,7 +217,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch section {
         case Rows.name.index().section:
-            return 15
+            return 15.0
         case Rows.actions.index().section where (med?.prescriptionCount ?? 0) > 0:
             return 20.0
         case Rows.notes.index().section:

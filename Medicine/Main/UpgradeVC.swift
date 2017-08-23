@@ -68,7 +68,7 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
         
         if let count = products?.count, count > 0 {
             // Set purchase label
-            if let upgrade = products?[0] {
+            if let upgrade = products?.first {
                 purchaseButton.setTitle(upgrade.localizedPrice(), for: UIControlState())
             }
         }
@@ -77,7 +77,7 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     
     @IBAction func purchaseFullVersion() {
         if let count = products?.count, count > 0 {
-            if let upgrade = products?[0] {
+            if let upgrade = products?.first {
                 if upgrade.productIdentifier == productID {
                     // Modify UI elements
                     purchaseButton.isEnabled = false

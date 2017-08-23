@@ -13,9 +13,6 @@ import MessageUI
 class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelegate {
     
     weak var med: Medicine!
-    //let emptyDates = false
-    //var dates = [Date]()
-    //var history = [Date: [Dose]]()
     
     // MARK: - Helper variables
     let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
@@ -31,10 +28,6 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        if #available(iOS 11.0, *) {
-            self.navigationController?.navigationBar.prefersLargeTitles = true
-        }
         
         // Modify VC
         self.title = "Dose History"
@@ -62,12 +55,17 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: NSNotification.Name(rawValue: "refreshView"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
         
+        // Define request for Doses
         let request: NSFetchRequest<NSFetchRequestResult> = Dose.fetchRequest()
         request.predicate = NSPredicate(format: "medicine == %@", argumentArray: [med])
-        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        let cutoffDate = Calendar.current.date(byAdding: .year, value: -1, to: Date())!
+        request.predicate = NSPredicate(format: "date >= %@", argumentArray: [cutoffDate])
+        request.fetchLimit = 500
+        
         self.fetchedResultsController = NSFetchedResultsController(fetchRequest: request,
                                                                    managedObjectContext: cdStack.context,
-                                                                   sectionNameKeyPath: "date",
+                                                                   sectionNameKeyPath: "dateSection",
                                                                    cacheName: nil)
     }
     
@@ -83,59 +81,7 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
     
     @objc func refreshView() {
         displayEmptyView()
-        
-//        DispatchQueue.global(qos: .userInitiated).async {
-//            print("Backup Thread")
-//            if self.loadHistory() {
-//                DispatchQueue.main.async {
-//                    print("Main thread")
-//                    self.displayEmptyView()
-//                }
-//            }
-//        }
     }
-    
-//    func loadHistory() -> Bool {
-//        if var historyArray = med.doseHistory?.array as? [Dose] {
-//            print("Loading history")
-//
-//            // Clear history
-//            history.removeAll()
-//
-//            // Sort history array
-//            historyArray.sort(by: { $0.date.compare($1.date as Date) == .orderedDescending })
-//
-//            // Get dates in history
-//            if emptyDates == true {
-//                // Get all dates from today to last dose, including empty dates
-//                var date = Date()
-//                while date.compare(historyArray.last!.date as Date) != .orderedAscending {
-//                    dates.append(date)
-//                    date = (cal as NSCalendar).date(byAdding: .day, value: -1, to: date, options: [])!
-//                }
-//            } else {
-//                // Get dates as exclusive elements from first dose to last
-//                var temp = Set<Date>()
-//                for dose in historyArray {
-//                    temp.insert(cal.startOfDay(for: dose.date as Date))
-//                }
-//
-//                // Store dates in array
-//                dates = temp.sorted(by: { $0.compare($1) == .orderedDescending })
-//            }
-//
-//            // Store doses in history dictionary, with dates as keys
-//            for date in dates {
-//                let doses = historyArray.filter({cal.isDate($0.date as Date, inSameDayAs: date)})
-//                history.updateValue(doses, forKey: date)
-//            }
-//
-//            print("History loaded")
-//            return true
-//        }
-//
-//        return false
-//    }
     
     func displayEmptyView() {
         if self.fetchedResultsController?.sections?.count == 0 {
@@ -162,33 +108,35 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
 
     
     // MARK: - Table headers
-    
-//    override func numberOfSections(in tableView: UITableView) -> Int {
-//        return dates.count
-//    }
 
+    // Ensure index bar (right side) doesn't appear
+    override func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+        return nil
+    }
+    
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if let fc = fetchedResultsController {
-            let sectionDate = fc.sections![section].name
-            print(sectionDate)
-            return sectionDate
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "YYYY-MM-dd HH:mm:ss ZZZ"
+            guard let sectionDate = dateFormatter.date(from: fc.sections![section].name) else {
+                return nil
+            }
             
-            // TODO: Convert string to Date
-//            if cal.isDateInToday(sectionDate) {
-//                dateFormatter.timeStyle = DateFormatter.Style.none
-//                dateFormatter.dateStyle = DateFormatter.Style.medium
-//                return "Today  \(dateFormatter.string(from: sectionDate))"
-//            } else if cal.isDateInYesterday(sectionDate) {
-//                dateFormatter.timeStyle = DateFormatter.Style.none
-//                dateFormatter.dateStyle = DateFormatter.Style.medium
-//                return "Yesterday  \(dateFormatter.string(from: sectionDate))"
-//            } else if sectionDate.isDateInLastWeek() {
-//                dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
-//                return dateFormatter.string(from: sectionDate)
-//            } else {
-//                dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
-//                return dateFormatter.string(from: sectionDate)
-//            }
+            if cal.isDateInToday(sectionDate) {
+                dateFormatter.timeStyle = DateFormatter.Style.none
+                dateFormatter.dateStyle = DateFormatter.Style.medium
+                return "Today  \(dateFormatter.string(from: sectionDate))"
+            } else if cal.isDateInYesterday(sectionDate) {
+                dateFormatter.timeStyle = DateFormatter.Style.none
+                dateFormatter.dateStyle = DateFormatter.Style.medium
+                return "Yesterday  \(dateFormatter.string(from: sectionDate))"
+            } else if sectionDate.isDateInLastWeek() {
+                dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
+                return dateFormatter.string(from: sectionDate)
+            } else {
+                dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
+                return dateFormatter.string(from: sectionDate)
+            }
         } else {
             return nil
         }
@@ -196,8 +144,13 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
     
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         if let fc = fetchedResultsController {
-            let sectionDate = fc.sections![section].name
-            let header:UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "YYYY-MM-dd HH:mm:ss ZZZ"
+            guard let sectionDate = dateFormatter.date(from: fc.sections![section].name) else {
+                return
+            }
+            
+            let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
             
             // Set header title
             header.textLabel?.text = header.textLabel?.text?.uppercased()
@@ -207,10 +160,9 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
                 let string = NSMutableAttributedString(string: text)
                 string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 13.0), range: NSMakeRange(0, string.length))
                 
-                // TODO: Convert string to date
-//                if cal.isDateInToday(sectionDate) {
-//                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSMakeRange(0, string.length))
-//                }
+                if Calendar.current.isDateInToday(sectionDate) {
+                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSMakeRange(0, string.length))
+                }
                 
                 if let index = text.characters.index(of: " ") {
                     let pos = text.characters.distance(from: text.startIndex, to: index)
@@ -224,16 +176,6 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
 
     
     // MARK: - Table rows
-    
-//    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        let sectionDate = dates[section]
-//
-//        if let count = history[sectionDate]?.count {
-//            return (count == 0) ? 1 : count
-//        }
-//
-//        return 1
-//    }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if let fc = fetchedResultsController {
@@ -278,14 +220,10 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
     // MARK: - Table view delegate
     
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-//        let sectionDate = dates[indexPath.section]
-//        return history[sectionDate]?.count != 0
         return true
     }
     
     override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-//        let sectionDate = dates[indexPath.section]
-//        return history[sectionDate]?.count != 0
         return true
     }
     

@@ -24,17 +24,19 @@ struct CoreDataStack {
     
     // MARK: Initializers
     
-    init?(modelName: String) {
-        
+    init?() {
         // Assumes the model is in the main bundle
-        guard let modelURL = Bundle.main.url(forResource: modelName, withExtension: "momd") else {
-            print("Unable to find \(modelName) in the main bundle")
+        guard let modelURL = Bundle.main.url(forResource: "Medicine", withExtension: "momd") else {
+            print("Unable to find DataModel in the main bundle")
             return nil
         }
         self.modelURL = modelURL
         
         // Try to create the model from the URL
-        let model = NSManagedObjectModel(contentsOf: modelURL)
+        guard let model = NSManagedObjectModel(contentsOf: modelURL) else {
+            abort()
+        }
+        
         self.model = model
         
         // Create the store coordinator
@@ -64,6 +66,12 @@ struct CoreDataStack {
         
         self.dbURL = docUrl.appendingPathComponent("Medicine.sqlite")
         
+        // Create database backup
+        let copyURL = docUrl.appendingPathComponent("Medicine-Backup.sqlite")
+        if fm.fileExists(atPath: copyURL.absoluteString) == false {
+            _ = try? fm.copyItem(at: self.dbURL, to: copyURL)
+        }
+        
         // Options for migration
         let options = [
             NSMigratePersistentStoresAutomaticallyOption: true,
@@ -90,7 +98,7 @@ struct CoreDataStack {
 // MARK: - CoreDataStack (Migrating and Removing Data)
 
 internal extension CoreDataStack  {
-    func dropAllData() -> Bool {        
+    func dropAllData() -> Bool {
         return false
     }
 }
@@ -103,7 +111,7 @@ extension CoreDataStack {
     func performBackgroundBatchOperation(_ batch: @escaping Batch) {
         backgroundContext.perform() {
             batch(self.backgroundContext)
-
+            
             do {
                 try self.backgroundContext.save()
             } catch {

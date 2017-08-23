@@ -43,27 +43,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     // MARK: - View methods
     override func viewDidLoad() {
-        super.viewDidLoad()
+        super.viewDidLoad()        
         
-        let req: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-        if let count = try? cdStack.context.count(for: req) {
-            print(count)
-        }
-        
-        
-        // Create fetch request, sorted by task time
-        let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-        if let results = try? cdStack.context.fetch(fetchRequest) {
-            medication = results
-            
-            // If selected, sort by next dosage
-            if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
-                medication = medication.sorted(by: Medicine.sortByNextDose)
-            }
-        }
-        
-        print(medication.count)
+        loadMedication()
         
         // Add observers for notifications
         NotificationCenter.default.addObserver(self, selector: #selector(refreshMainVC(_:)), name: NSNotification.Name(rawValue: "refreshMain"), object: nil)
@@ -99,6 +81,20 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         if defaults.string(forKey: "version") != version {
             defaults.setValue(version, forKey: "version")
             self.performSegue(withIdentifier: "tutorial", sender: self)
+        }
+    }
+    
+    func loadMedication() {
+        // Create fetch request, sorted by task time
+        let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+        if let results = try? cdStack.context.fetch(fetchRequest) {
+            medication = results
+            
+            // If selected, sort by next dosage
+            if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
+                medication = medication.sorted(by: Medicine.sortByNextDose)
+            }
         }
     }
 
@@ -147,10 +143,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     // MARK: - Update values
     @objc func refreshMainVC(_ notification: Notification? = nil) {
         
-        if let tbc = self.tabBarController as? MainTBC {
-            tbc.loadMedication()
-        }
-
+        loadMedication()
         updateHeader()
         refreshTable()
         
@@ -423,6 +416,15 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     // Empty implementation required for backwards compatibility (iOS 8.x)
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {}
     
+    @available(iOS 11.0, *)
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let takeAction = UIContextualAction(style: UIContextualAction.Style.normal, title: "Take Dose") { (action: UIContextualAction, view: UIView, success: (Bool) -> Void) in
+            self.performSegue(withIdentifier: "addDose", sender: self.medication[indexPath.row])
+        }
+
+        return UISwipeActionsConfiguration(actions: [takeAction])
+    }
+    
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let editAction = UITableViewRowAction(style: .default, title: "Edit") { (action, indexPath) -> Void in
             self.performSegue(withIdentifier: "editMedication", sender: self.medication[indexPath.row])
@@ -644,7 +646,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             displayEmptyView()
         } else {
             // Remove medication from array
-            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
+            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.fade)
         }
         
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)

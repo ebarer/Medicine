@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
     var window: UIWindow?
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
-    let stack = CoreDataStack(modelName: "Medicine")!
+    let stack = CoreDataStack()!
 
     // MARK: - Application methods
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
