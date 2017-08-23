@@ -418,10 +418,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     @available(iOS 11.0, *)
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let takeAction = UIContextualAction(style: UIContextualAction.Style.normal, title: "Take Dose") { (action: UIContextualAction, view: UIView, success: (Bool) -> Void) in
+        let takeAction = UIContextualAction(style: .normal, title: "Take Dose") { (action, view, success: (Bool) -> Void) in
             self.performSegue(withIdentifier: "addDose", sender: self.medication[indexPath.row])
+            success(true)
         }
-        
         
         takeAction.backgroundColor = UIColor.orange
 
@@ -429,7 +429,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let editAction = UITableViewRowAction(style: .default, title: "Edit") { (action, indexPath) -> Void in
+        let editAction = UITableViewRowAction(style: .normal, title: "Edit") { (action, indexPath) -> Void in
             self.performSegue(withIdentifier: "editMedication", sender: self.medication[indexPath.row])
         }
         
