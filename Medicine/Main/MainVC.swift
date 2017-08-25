@@ -399,7 +399,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         if fromIndexPath != toIndexPath {
             medication[fromIndexPath.row].sortOrder = Int16(toIndexPath.row)
             medication[toIndexPath.row].sortOrder = Int16(fromIndexPath.row)
-            medication.sort(by: { $0.sortOrder < $1.sortOrder })
+            //medication.sort(by: { $0.sortOrder < $1.sortOrder })
             
             cdStack.save()
             

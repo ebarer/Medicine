@@ -119,7 +119,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             
             var detailsString = "\(med.removeTrailingZero(med.dosage)) \(med.dosageUnit.units(med.dosage))"
             if med.reminderEnabled == true {
-                detailsString += ", every \(med.removeTrailingZero(med.interval)) \(med.intervalUnit.units(med.interval))"
+                detailsString += ", every \(med.intervalLabel())"
             }
             
             doseDetailsLabel.text = detailsString
@@ -163,6 +163,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             doseLabel.font = UIFont.systemFont(ofSize: 16.0, weight: UIFont.Weight.regular)
             
             // If no doses taken
+            med.doseArray()
             if med.doseHistory?.count == 0 && med.intervalUnit == .hourly {
                 doseTitle.text = "No doses logged"
                 doseLabel.text?.removeAll()

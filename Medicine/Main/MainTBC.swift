@@ -77,7 +77,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     @objc func doseNotification(_ notification: Notification) {
         if let id = notification.userInfo!["id"] as? String {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-            request.predicate = NSPredicate(format: "medicineID", argumentArray: [id])
+            request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
             if let med = (try? cdStack.context.fetch(request))?.first {
                 print("doseNotification triggered for \(med.name ?? "unknown medicine")")
                 
@@ -111,7 +111,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     @objc func refillNotification(_ notification: Notification) {
         if let id = notification.userInfo!["id"] as? String {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-            request.predicate = NSPredicate(format: "medicineID", argumentArray: [id])
+            request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
             if let med = (try? cdStack.context.fetch(request))?.first {
                 print("refillNotification triggered for \(med.name ?? "unknown medicine")")
                 
@@ -143,7 +143,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         NSLog("takeDoseAction received", [])
         if let id = notification.userInfo!["id"] as? String {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-            request.predicate = NSPredicate(format: "medicineID", argumentArray: [id])
+            request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
             if let medication = try? cdStack.context.fetch(request), let med = medication.first {
                 let dose = Dose(insertInto: cdStack.context)
                 dose.date = Date()
@@ -173,7 +173,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         NSLog("snoozeReminderAction received", [])
         if let id = notification.userInfo!["id"] as? String {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-            request.predicate = NSPredicate(format: "medicineID", argumentArray: [id])
+            request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
             if let medication = try? cdStack.context.fetch(request), let med = medication.first {
                 med.snoozeNotification()
                 setDynamicShortcuts(forMedication: medication)
@@ -188,7 +188,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         NSLog("refillAction received", [])
         if let id = notification.userInfo!["id"] as? String {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-            request.predicate = NSPredicate(format: "medicineID", argumentArray: [id])
+            request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
             if let med = (try? cdStack.context.fetch(request))?.first {
                 performSegue(withIdentifier: "refillPrescription", sender: med)
                 NSLog("refillAction performed", [])
