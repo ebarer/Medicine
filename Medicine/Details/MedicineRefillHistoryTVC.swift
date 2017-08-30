@@ -305,7 +305,7 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
                 
                 for refill in history.reversed() {
                     let dateFormatter = DateFormatter()
-                    dateFormatter.dateFormat = "YYYY-MM-dd h:mm:ss a"
+                    dateFormatter.dateFormat = "YYYY-MM-dd h:mm a"
 
                     contents += "\(dateFormatter.string(from: refill.date as Date)), "
                     contents += "\((refill.quantity * refill.conversion).removeTrailingZero()) \(med.dosageUnit.units(med.prescriptionCount))"

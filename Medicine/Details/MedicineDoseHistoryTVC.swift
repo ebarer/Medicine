@@ -305,13 +305,19 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
         if MFMailComposeViewController.canSendMail() {
             if let history = med.doseHistory?.array as? [Dose] {
                 var contents = "\(med.name!)\r"
-                    contents += "\(med.dosage.removeTrailingZero()) \(med.dosageUnit.units(med.dosage)) every "
-                    contents += "\(med.interval.removeTrailingZero()) \(med.intervalUnit.units(med.interval))\r"
-                    contents += "Date, Dosage\r"
+                    contents += "\(med.dosage.removeTrailingZero()) \(med.dosageUnit.units(med.dosage)) "
+                
+                if med.reminderEnabled {
+                    contents += "every \(med.interval.removeTrailingZero()) \(med.intervalUnit.units(med.interval))\r"
+                } else {
+                    contents += "as needed\r"
+                }
+                
+                contents += "Date, Dosage\r"
                 
                 for dose in history.reversed() {
                     let dateFormatter = DateFormatter()
-                    dateFormatter.dateFormat = "YYYY-MM-dd h:mm:ss a"
+                    dateFormatter.dateFormat = "YYYY-MM-dd h:mm a"
                     
                     contents += "\(dateFormatter.string(from: dose.date as Date)), "
                     

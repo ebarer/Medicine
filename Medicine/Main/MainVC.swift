@@ -75,7 +75,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         tableView.tableHeaderView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: tableView.bounds.size.width, height: 0.01))
         
         // Setup refresh timer
-        let _ = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(refreshTable), userInfo: nil, repeats: true)
+        let _ = Timer.scheduledTimer(timeInterval: 600, target: self, selector: #selector(refreshTable), userInfo: nil, repeats: true)
         
         // Display tutorial on first launch
         let dictionary = Bundle.main.infoDictionary!
@@ -102,7 +102,11 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             medication = results
             
             for med in medication {
-                print("\(med.sortOrder): \(med.name ?? "") [\(med.medicineID)] -> \(med.nextDose)")
+                if let date = med.nextDose {
+                    print("\(med.sortOrder): \(med.name ?? "") [\(med.medicineID)] -> \(date)")
+                } else {
+                    print("\(med.sortOrder): \(med.name ?? "") [\(med.medicineID)]")
+                }
             }
         }
     }
