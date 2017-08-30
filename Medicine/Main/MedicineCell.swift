@@ -19,6 +19,11 @@ class MedicineCell: UITableViewCell {
     @IBOutlet var subtitleGlyph: UIImageView!
     var glyphHidden = false
     var buttonHidden = false
+    var longPressGesture: UILongPressGestureRecognizer? {
+        didSet {
+            self.addGestureRecognizer(longPressGesture!)
+        }
+    }
 
     
     // MARK: - Constraints
@@ -47,6 +52,21 @@ class MedicineCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
+    }
+    
+    // Remove long press gesture when editing to prevent issues with reordering
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        
+        guard let gesture = longPressGesture else {
+            return
+        }
+        
+        if editing {
+            self.removeGestureRecognizer(gesture)
+        } else {
+            self.addGestureRecognizer(gesture)
+        }
     }
     
     func hideGlyph(_ val: Bool) {

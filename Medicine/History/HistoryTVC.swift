@@ -42,11 +42,11 @@ class HistoryTVC: CoreDataTableViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
         
         // Define request for Doses
-        let request: NSFetchRequest<NSFetchRequestResult> = Dose.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         let cutoffDate = Calendar.current.date(byAdding: .year, value: -1, to: Date())!
+        let request: NSFetchRequest<NSFetchRequestResult> = Dose.fetchRequest()
         request.predicate = NSPredicate(format: "date >= %@", argumentArray: [cutoffDate])
-        request.fetchLimit = 500
+        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        request.fetchLimit = 300
         
         self.fetchedResultsController = NSFetchedResultsController(fetchRequest: request,
                                                                    managedObjectContext: cdStack.context,

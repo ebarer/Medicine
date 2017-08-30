@@ -30,13 +30,14 @@ class Medicine: NSManagedObject {
 
     // MARK: - Member variables
     var nextDose: Date? {
-        do {
-            return try calculateNextDose()
-        } catch {
+        guard let date = try? calculateNextDose() else {
             return nil
         }
-    }
 
+        self.dateNextDose = date
+        return self.dateNextDose
+    }
+    
     var lastDose: Dose? {
         if let lastHistory = doseHistory {
             if let object = lastHistory.firstObject {
@@ -418,17 +419,15 @@ class Medicine: NSManagedObject {
      
      - Parameter dose: History object
      
-     - Returns: History object
+     - Returns: History object (discardable)
      */
     @discardableResult func addDose(_ dose: Dose) -> Dose {
         dose.medicine = self
         
         // Calculate the next dose and store in dose
-        do {
-            dose.next = try calculateNextDose(dose.date as Date)! as Date
-        } catch {
-            dose.next = nil
-        }
+        let nextDate = try? calculateNextDose(dose.date as Date)! as Date
+        dose.next = nextDate
+        self.dateNextDose = nextDate
         
         // Get expected date and store in dose
         if let lastDose = lastDose, lastDose.date.compare(dose.date as Date) == .orderedAscending {
@@ -647,7 +646,7 @@ class Medicine: NSManagedObject {
         
         else {
             status = "You currently have "
-            status += "\(removeTrailingZero(prescriptionCount)) \(dosageUnit.units(prescriptionCount)) of \(name!). "
+            status += "\(prescriptionCount.removeTrailingZero()) \(dosageUnit.units(prescriptionCount)) of \(name!). "
             
             if let days = refillDaysRemaining(), !entry {
                 if days <= 1 {
@@ -871,17 +870,6 @@ class Medicine: NSManagedObject {
         return nil
     }
     
-    /**
-     Removes trailing zeroes from passed number
-     
-     Parameter num: Float value to truncate
-     
-     Returns: Number as a string with trailing zeroes truncated
-     */
-    func removeTrailingZero(_ num: Float) -> String {
-        return String(format: "%g", num)
-    }
-    
 }
 
 
@@ -945,6 +933,21 @@ extension Array {
                 }
             }
         }
+    }
+}
+
+
+// MARK: - Float extension
+extension Float {
+    /**
+     Removes trailing zeroes from passed number
+     
+     Parameter num: Float value to truncate
+     
+     Returns: Number as a string with trailing zeroes truncated
+     */
+    func removeTrailingZero() -> String {
+        return String(format: "%g", self)
     }
 }
 

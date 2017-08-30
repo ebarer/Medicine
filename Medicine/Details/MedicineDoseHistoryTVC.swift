@@ -56,13 +56,13 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
         
         // Define request for Doses
-        let request: NSFetchRequest<NSFetchRequestResult> = Dose.fetchRequest()
-        request.predicate = NSPredicate(format: "medicine == %@", argumentArray: [med])
-        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         let cutoffDate = Calendar.current.date(byAdding: .year, value: -1, to: Date())!
-        request.predicate = NSPredicate(format: "date >= %@", argumentArray: [cutoffDate])
-        request.fetchLimit = 500
-        
+        let request: NSFetchRequest<NSFetchRequestResult> = Dose.fetchRequest()
+        request.predicate = NSPredicate(format: "medicine.medicineID == %@ && date >= %@",
+                                        argumentArray: [med.medicineID, cutoffDate])
+        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        request.fetchLimit = 300
+
         self.fetchedResultsController = NSFetchedResultsController(fetchRequest: request,
                                                                    managedObjectContext: cdStack.context,
                                                                    sectionNameKeyPath: "dateSection",
@@ -305,8 +305,8 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
         if MFMailComposeViewController.canSendMail() {
             if let history = med.doseHistory?.array as? [Dose] {
                 var contents = "\(med.name!)\r"
-                    contents += "\(med.removeTrailingZero(med.dosage)) \(med.dosageUnit.units(med.dosage)) every "
-                    contents += "\(med.removeTrailingZero(med.interval)) \(med.intervalUnit.units(med.interval))\r"
+                    contents += "\(med.dosage.removeTrailingZero()) \(med.dosageUnit.units(med.dosage)) every "
+                    contents += "\(med.interval.removeTrailingZero()) \(med.intervalUnit.units(med.interval))\r"
                     contents += "Date, Dosage\r"
                 
                 for dose in history.reversed() {
@@ -316,7 +316,7 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
                     contents += "\(dateFormatter.string(from: dose.date as Date)), "
                     
                     if dose.dosage > 0 {
-                        contents += "\(med.removeTrailingZero(dose.dosage)) \(dose.dosageUnit.units(dose.dosage))\r"
+                        contents += "\(med.dosage.removeTrailingZero()) \(dose.dosageUnit.units(dose.dosage))\r"
                     } else {
                         contents += "Skipped\r"
                     }

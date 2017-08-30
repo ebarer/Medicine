@@ -127,13 +127,13 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
             if refill.quantityUnit != med.dosageUnit && refill.conversion != 0 {
                 let count = refill.quantity * refill.conversion
                 refillGuide = med.refillStatus(entry: true, conversion: true)
-                refillGuide += "\nThis will add \(med.removeTrailingZero(count)) \(med.dosageUnit.units(count))."
+                refillGuide += "\nThis will add \(count.removeTrailingZero()) \(med.dosageUnit.units(count))."
             } else {
                 refillGuide = med.refillStatus(entry: true, conversion: false)
                 
                 if let count = med.refillHistory?.count, count > 0 {
                     let count = refill.quantity
-                    refillGuide += "\nThis will add \(med.removeTrailingZero(count)) \(med.dosageUnit.units(count))."
+                    refillGuide += "\nThis will add \(count.removeTrailingZero()) \(med.dosageUnit.units(count))."
                 }
             }
             

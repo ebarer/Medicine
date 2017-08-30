@@ -55,12 +55,12 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: NSNotification.Name(rawValue: "refreshView"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
         
-        // Define request for Doses
-        let request: NSFetchRequest<NSFetchRequestResult> = Refill.fetchRequest()
-        request.predicate = NSPredicate(format: "medicine == %@", argumentArray: [med])
-        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        // Define request for Doses        
         let cutoffDate = Calendar.current.date(byAdding: .year, value: -1, to: Date())!
-        request.predicate = NSPredicate(format: "date >= %@", argumentArray: [cutoffDate])
+        let request: NSFetchRequest<NSFetchRequestResult> = Refill.fetchRequest()
+        request.predicate = NSPredicate(format: "medicine.medicineID == %@ && date >= %@",
+                                        argumentArray: [med.medicineID, cutoffDate])
+        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         request.fetchLimit = 500
         
         self.fetchedResultsController = NSFetchedResultsController(fetchRequest: request,
@@ -71,9 +71,7 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         self.navigationController?.setToolbarHidden(false, animated: animated)
-
         displayEmptyView()
     }
     
@@ -200,10 +198,11 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
             cell.selectedBackgroundView = UIView()
             
             // Setup cell
-            var amount = "\(med.removeTrailingZero(refill.quantity * refill.conversion)) \(med.dosageUnit.units(med.prescriptionCount))"
+            var refillAmount = (refill.quantity * refill.conversion).removeTrailingZero()
+            var amount = "\(refillAmount) \(med.dosageUnit.units(med.prescriptionCount))"
             
             if refill.conversion != 1.0 {
-                amount += " (\(med.removeTrailingZero(refill.quantity)) \(refill.quantityUnit.units(refill.quantity)))"
+                amount += " (\(refill.quantity.removeTrailingZero()) \(refill.quantityUnit.units(refill.quantity)))"
             }
             
             cell.textLabel?.textColor = UIColor.black
@@ -307,12 +306,12 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
                 for refill in history.reversed() {
                     let dateFormatter = DateFormatter()
                     dateFormatter.dateFormat = "YYYY-MM-dd h:mm:ss a"
-                    
+
                     contents += "\(dateFormatter.string(from: refill.date as Date)), "
-                    contents += "\(med.removeTrailingZero(refill.quantity * refill.conversion)) \(med.dosageUnit.units(med.prescriptionCount))"
+                    contents += "\((refill.quantity * refill.conversion).removeTrailingZero()) \(med.dosageUnit.units(med.prescriptionCount))"
                     
                     if refill.conversion != 1.0 {
-                        contents += " (\(med.removeTrailingZero(refill.quantity)) \(refill.quantityUnit.units(refill.quantity)))"
+                        contents += " (\(refill.quantity.removeTrailingZero()) \(refill.quantityUnit.units(refill.quantity)))"
                     }
                     
                     contents += "\r"

@@ -219,13 +219,13 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
                     deviceInfo += "Medicine \(index) (-%): "
                 }
                 
-                deviceInfo += "\(med.removeTrailingZero(med.dosage)) \(med.dosageUnit.units(med.dosage)), every " +
-                              "\(med.removeTrailingZero(med.interval)) \(med.intervalUnit.units(med.interval)) "
+                deviceInfo += "\(med.dosage.removeTrailingZero()) \(med.dosageUnit.units(med.dosage)), every " +
+                              "\(med.interval.removeTrailingZero()) \(med.intervalUnit.units(med.interval)) "
                 
                 if med.refillHistory?.count == 0 {
                     deviceInfo += "(No refill history)"
                 } else {
-                    deviceInfo += "(\(med.removeTrailingZero(med.prescriptionCount)) \(med.dosageUnit.units(med.prescriptionCount)) remaining)\r"
+                    deviceInfo += "(\(med.prescriptionCount.removeTrailingZero()) \(med.dosageUnit.units(med.prescriptionCount)) remaining)\r"
                 }
             }
         }

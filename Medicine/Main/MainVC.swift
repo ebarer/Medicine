@@ -40,6 +40,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     var productLock = true
     var mvc: UpgradeVC?
     
+    var longPressGesture: UILongPressGestureRecognizer?
+    
     
     // MARK: - View methods
     override func viewDidLoad() {
@@ -87,13 +89,20 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     func loadMedication() {
         // Create fetch request, sorted by task time
         let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+
+        if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
+            // Sort by next dose
+            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dateNextDose", ascending: true)]
+        } else {
+            // Sort by manually defined sort order
+            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+        }
+
         if let results = try? cdStack.context.fetch(fetchRequest) {
             medication = results
             
-            // If selected, sort by next dosage
-            if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
-                medication = medication.sorted(by: Medicine.sortByNextDose)
+            for med in medication {
+                print("\(med.sortOrder): \(med.name ?? "") [\(med.medicineID)] -> \(med.nextDose)")
             }
         }
     }
@@ -142,7 +151,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     // MARK: - Update values
     @objc func refreshMainVC(_ notification: Notification? = nil) {
-        
         loadMedication()
         updateHeader()
         refreshTable()
@@ -286,11 +294,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         // Reschedule notifications
         NotificationCenter.default.post(name: Notification.Name(rawValue: "rescheduleNotifications"), object: nil, userInfo: nil)
         
-        // If selected, sort by next dosage
-        if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
-            medication.sort(by: Medicine.sortByNextDose)
-        }
-        
         // Dismiss editing mode
         setEditing(false, animated: true)
     }
@@ -384,7 +387,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         }
         
         // Add long press gesture recognizer
-        cell.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(takeDose(_:))))
+        longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(takeDose(_:)))
+        cell.longPressGesture = longPressGesture
         
         return cell
     }
@@ -396,17 +400,21 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     }
     
     func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to toIndexPath: IndexPath) {
+        
+        
         if fromIndexPath != toIndexPath {
             medication[fromIndexPath.row].sortOrder = Int16(toIndexPath.row)
             medication[toIndexPath.row].sortOrder = Int16(fromIndexPath.row)
             //medication.sort(by: { $0.sortOrder < $1.sortOrder })
-            
+
             cdStack.save()
-            
+
             // Set sort order to "manually"
             defaults.set(0, forKey: "sortOrder")
             defaults.synchronize()
         }
+        
+        tableView.endUpdates()
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -677,6 +685,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             case "editMedication":
                 return true
             case "upgrade":
+                return true
+            case "displaySettings":
                 return true
             default:
                 return false
