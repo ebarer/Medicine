@@ -174,7 +174,7 @@
                             <constraint firstItem="8GV-OH-x1T" firstAttribute="leading" secondItem="cwV-Bb-9Ec" secondAttribute="leading" id="H5V-tT-Dy2"/>
                             <constraint firstAttribute="trailing" secondItem="nqo-4C-ZAo" secondAttribute="trailing" id="cOf-iL-rME"/>
                             <constraint firstItem="8GV-OH-x1T" firstAttribute="top" secondItem="pgJ-kL-JYc" secondAttribute="bottom" id="gMy-4i-ZNO"/>
-                            <constraint firstAttribute="bottom" secondItem="nqo-4C-ZAo" secondAttribute="bottom" constant="49" id="k5a-pP-g1Z"/>
+                            <constraint firstAttribute="bottomMargin" secondItem="nqo-4C-ZAo" secondAttribute="bottom" id="k5a-pP-g1Z"/>
                             <constraint firstItem="nqo-4C-ZAo" firstAttribute="leading" secondItem="cwV-Bb-9Ec" secondAttribute="leading" id="pXg-yr-MEi"/>
                         </constraints>
                     </view>

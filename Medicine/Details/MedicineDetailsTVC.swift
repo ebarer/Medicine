@@ -253,7 +253,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
              Rows.delete:
             return 50.0
         case Rows.notes:
-            let height = notesField.contentSize.height + 30
+            let height = notesField.contentSize.height + 10
             return (height > 75.0) ? height : 75.0
         default:
             return tableView.rowHeight
