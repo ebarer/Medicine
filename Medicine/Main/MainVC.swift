@@ -75,7 +75,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         tableView.tableHeaderView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: tableView.bounds.size.width, height: 0.01))
         
         // Setup refresh timer
-        let _ = Timer.scheduledTimer(timeInterval: TimeInterval(300), target: self, selector: #selector(refreshTable), userInfo: nil, repeats: true)
+        let _ = Timer.scheduledTimer(timeInterval: TimeInterval(300), target: self, selector: #selector(refreshMainVC), userInfo: nil, repeats: true)
         
         // Display tutorial on first launch
         let dictionary = Bundle.main.infoDictionary!
@@ -400,8 +400,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     }
     
     func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to toIndexPath: IndexPath) {
-        
-        
         if fromIndexPath != toIndexPath {
             medication[fromIndexPath.row].sortOrder = Int16(toIndexPath.row)
             medication[toIndexPath.row].sortOrder = Int16(fromIndexPath.row)
@@ -413,8 +411,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             defaults.set(0, forKey: "sortOrder")
             defaults.synchronize()
         }
-        
-        tableView.endUpdates()
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
