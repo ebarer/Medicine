@@ -17,6 +17,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     
     // MARK: - Outlets
+    @IBOutlet var topConstraint: NSLayoutConstraint!
     @IBOutlet var doseMainLabel: UILabel!
     @IBOutlet var doseMedLabel: UILabel!
     
@@ -44,7 +45,8 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     }
     
     @objc func updateLabels() -> NCUpdateResult {
-        guard let data = defaults.value(forKey: "todayData") as? [String: AnyObject] else {
+        guard let data = defaults.value(forKey: "todayData") as? [String: AnyObject],
+              let dateString = data["dateString"] as? String else {
             let string = NSMutableAttributedString(string: "Couldn't update")
             string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 12.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
             
@@ -53,7 +55,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             return NCUpdateResult.newData
         }
         
-        if let dateString = data["dateString"] as? String, let details = data["medString"] as? String {
+        if let details = data["medString"] as? String {
             let string = NSMutableAttributedString(string: dateString)
             string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 50.0, weight: UIFont.Weight.ultraLight), range: NSMakeRange(0, string.length))
             
@@ -64,17 +66,20 @@ class TodayViewController: UIViewController, NCWidgetProviding {
                 string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 22.0), range: NSMakeRange(pos-1, 3))
             }
             
+            topConstraint.constant = 4.0
             doseMainLabel.attributedText = string
             doseMedLabel.text = details
             return NCUpdateResult.newData
-        }
-        
-        let string = NSMutableAttributedString(string: data["dateString"] as! String)
-        string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
+        } else {
+            let fontSize: CGFloat = dateString == "Overdue" ? 32.0 : 24.0
+            let string = NSMutableAttributedString(string: dateString)
+            string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: fontSize, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
 
-        doseMainLabel.attributedText = string
-        doseMedLabel.text = nil
-        return NCUpdateResult.newData
+            topConstraint.constant = 16.0
+            doseMainLabel.attributedText = string
+            doseMedLabel.text = nil
+            return NCUpdateResult.newData
+        }
     }
     
     @IBAction func launchApp() {

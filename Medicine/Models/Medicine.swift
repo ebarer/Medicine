@@ -802,7 +802,8 @@ class Medicine: NSManagedObject {
         request.predicate = NSPredicate(format: "reminderEnabled == true", argumentArray: [])
         if let medication = try? cdStack.context.fetch(request) {
             return medication.filter({
-                $0.nextDose?.compare(date) != .orderedDescending
+                guard let next = $0.nextDose else { return false }
+                return next.compare(date) != .orderedDescending
             }).count
         } else {
             return 0

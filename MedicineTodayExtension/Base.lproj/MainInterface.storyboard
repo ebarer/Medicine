@@ -77,6 +77,7 @@
                     <connections>
                         <outlet property="doseMainLabel" destination="HXM-f4-Fvj" id="neT-K3-tMT"/>
                         <outlet property="doseMedLabel" destination="zU9-iD-h8s" id="SzA-mQ-fdj"/>
+                        <outlet property="topConstraint" destination="Ib8-wn-RXi" id="eTT-6o-Ndy"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vXp-U4-Rya" userLabel="First Responder" sceneMemberID="firstResponder"/>

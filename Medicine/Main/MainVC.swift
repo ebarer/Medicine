@@ -234,7 +234,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             // If dose is in the past, warn of overdue doses
             if date.compare(Date()) == .orderedAscending {
                 string = NSMutableAttributedString(string: "Overdue")
-                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 24.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
                 headerCounterLabel.attributedText = string
             }
             // Show next scheduled dose
