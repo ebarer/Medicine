@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import MessageUI
+import UserNotifications
 
 class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
 
@@ -159,7 +160,8 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
             cdStack.save()
             
             // Clear scheduled notifications
-            UIApplication.shared.cancelAllLocalNotifications()
+            UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
             
             // Reset preferences
             defaults.set(true, forKey: "firstLaunch")

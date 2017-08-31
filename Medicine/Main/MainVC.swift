@@ -11,6 +11,7 @@ import CoreData
 import StoreKit
 import CoreSpotlight
 import MobileCoreServices
+import UserNotifications
 
 class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPaymentTransactionObserver {
 
@@ -21,7 +22,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     @IBOutlet var headerCounterLabel: UILabel!
     @IBOutlet var headerMedLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
-    
     
     // MARK: - Helper variables
     let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
@@ -42,12 +42,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     var longPressGesture: UILongPressGestureRecognizer?
     
-    
     // MARK: - View methods
     override func viewDidLoad() {
-        super.viewDidLoad()        
-        
-        loadMedication()
+        super.viewDidLoad()
         
         // Add observers for notifications
         NotificationCenter.default.addObserver(self, selector: #selector(refreshMainVC(_:)), name: NSNotification.Name(rawValue: "refreshMain"), object: nil)
@@ -92,7 +89,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
 
         if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
             // Sort by next dose
-            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dateNextDose", ascending: true)]
+            fetchRequest.sortDescriptors = [
+                NSSortDescriptor(key: "reminderEnabled", ascending: false),
+                NSSortDescriptor(key: "dateNextDose", ascending: true)
+            ]
         } else {
             // Sort by manually defined sort order
             fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
@@ -102,10 +102,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             medication = results
             
             for med in medication {
-                if let date = med.nextDose {
+                if let date = med.dateNextDose {
                     print("\(med.sortOrder): \(med.name ?? "") [\(med.medicineID)] -> \(date)")
-                } else {
-                    print("\(med.sortOrder): \(med.name ?? "") [\(med.medicineID)]")
                 }
             }
         }
@@ -115,6 +113,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(true, animated: true)
         
+        refreshTable()
         updateHeader()
         displayEmptyView()
         
@@ -127,7 +126,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             }
         }
         
-        // Handle homescreen shortcuts (selected by user)
+        // Handle home screen shortcuts (selected by user)
         if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
             if let action = shortcutItem.userInfo?["action"] {
                 switch(String(describing: action)) {
@@ -155,9 +154,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     // MARK: - Update values
     @objc func refreshMainVC(_ notification: Notification? = nil) {
-        loadMedication()
-        updateHeader()
         refreshTable()
+        updateHeader()
         
         let reload = notification?.userInfo?["reload"] as? Bool
         if reload == nil || reload != false {
@@ -231,51 +229,36 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         headerDescriptionLabel.text = nil
         headerMedLabel.text = nil
         
-        // Warn of overdue doses
-        let overdueItems = medication.filter({$0.isOverdue().flag})
-        if overdueItems.count > 0 {
-            var text = "Overdue dose"
-            
-            // Pluralize string if multiple overdue doses
-            if overdueItems.count > 1 {
-                text += "s"
+        let nextMed = medication.sorted(by: Medicine.sortByNextDose).filter({ $0.reminderEnabled == true }).first
+        if let date = nextMed?.nextDose {
+            // If dose is in the past, warn of overdue doses
+            if date.compare(Date()) == .orderedAscending {
+                string = NSMutableAttributedString(string: "Overdue")
+                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 24.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
+                headerCounterLabel.attributedText = string
             }
-            
-            string = NSMutableAttributedString(string: text)
-            string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 24.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
-            headerCounterLabel.attributedText = string
-        }
-            
-        // Show next scheduled dose
-        else if let nextDose = UIApplication.shared.scheduledLocalNotifications?.first {
-            if cal.isDateInToday(nextDose.fireDate!) {
-                if let id = nextDose.userInfo?["id"], medication != nil {
-                    if let med = Medicine.getMedicine(arr: medication, id: id as! String) {
-                        headerDescriptionLabel.text = "Next Dose"
-                        
-                        dateFormatter.dateFormat = "h:mm a"
-                        let date = dateFormatter.string(from: nextDose.fireDate!)
-                        string = NSMutableAttributedString(string: date)
-                        string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 70.0, weight: UIFont.Weight.ultraLight), range: NSMakeRange(0, string.length))
-                        
-                        // Accomodate 24h times
-                        let range = (date.contains("AM")) ? date.range(of: "AM") : date.range(of: "PM")
-                        if let range = range {
-                            let pos = date.characters.distance(from: date.startIndex, to: range.lowerBound)
-                            string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 24.0), range: NSMakeRange(pos-1, 3))
-                        }
-                        
-                        headerCounterLabel.attributedText = string
-                        
-                        let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
-                        headerMedLabel.text = "\(dose) of \(med.name!)"
-                    }
+            // Show next scheduled dose
+            else {
+                headerDescriptionLabel.text = "Next Dose"
+
+                dateFormatter.dateFormat = "h:mm a"
+                let dateString = dateFormatter.string(from: date)
+                string = NSMutableAttributedString(string: dateString)
+                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 70.0, weight: UIFont.Weight.ultraLight), range: NSMakeRange(0, string.length))
+
+                // Accomodate 24h times
+                let range = (dateString.contains("AM")) ? dateString.range(of: "AM") : dateString.range(of: "PM")
+                if let range = range {
+                    let pos = dateString.characters.distance(from: dateString.startIndex, to: range.lowerBound)
+                    string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 24.0), range: NSMakeRange(pos-1, 3))
                 }
+
+                headerCounterLabel.attributedText = string
+
+                let dose = String(format:"%g %@", nextMed!.dosage, nextMed!.dosageUnit.units(nextMed!.dosage))
+                headerMedLabel.text = "\(dose) of \(nextMed!.name!)"
             }
-            
-            todayData["date"] = nextDose.fireDate! as AnyObject?
         }
-            
         // Prompt to take first dose
         else if medication.count > 0 {
             if medication.first?.lastDose == nil {
@@ -297,6 +280,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     @objc func refreshTable() {
         // Reschedule notifications
         NotificationCenter.default.post(name: Notification.Name(rawValue: "rescheduleNotifications"), object: nil, userInfo: nil)
+        
+        loadMedication()
         
         // Dismiss editing mode
         setEditing(false, animated: true)
@@ -351,11 +336,16 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             
         // If reminders aren't enabled for medication
         else if med.reminderEnabled == false {
-            cell.subtitleGlyph.image = UIImage(named: "LastDoseIcon")
+            cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
             cell.subtitle.textColor = UIColor.lightGray
             
-            if let date = med.lastDose?.date {
-                cell.subtitle.text = "\(dose), \(Medicine.dateString(date))"
+            if let date = med.dateNextDose {
+                // If next date is in the past, instruct user they can take next dose
+                if date.compare(Date()) == .orderedAscending {
+                    cell.subtitle.text = "Take next dose as needed"
+                } else {
+                    cell.subtitle.text = "\(dose), \(Medicine.dateString(date))"
+                }
             } else {
                 cell.subtitle.text = "No doses logged"
             }
@@ -369,11 +359,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                     cell.subtitle.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
                     cell.subtitle.text = "\(dose), \(Medicine.dateString(date))"
                 }
-            }
-                
-            // If notification scheduled, set date to next scheduled fire date
-            else if let date = med.scheduledNotifications?.first?.fireDate {
-                cell.subtitle.text = "\(dose), \(Medicine.dateString(date))"
             }
                 
             // Set subtitle to next dosage date
@@ -407,7 +392,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         if fromIndexPath != toIndexPath {
             medication[fromIndexPath.row].sortOrder = Int16(toIndexPath.row)
             medication[toIndexPath.row].sortOrder = Int16(fromIndexPath.row)
-            //medication.sort(by: { $0.sortOrder < $1.sortOrder })
+            medication = medication.sorted(by: { $0.sortOrder < $1.sortOrder })
 
             cdStack.save()
 
@@ -426,11 +411,11 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     @available(iOS 11.0, *)
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let takeAction = UIContextualAction(style: .normal, title: "Take Dose") { (action, view, success: (Bool) -> Void) in
+        let takeAction = UIContextualAction(style: .normal, title: "Take\nDose") { (action, view, success: (Bool) -> Void) in
             self.performSegue(withIdentifier: "addDose", sender: self.medication[indexPath.row])
             success(true)
         }
-        
+
         takeAction.backgroundColor = UIColor.orange
 
         return UISwipeActionsConfiguration(actions: [takeAction])
@@ -550,8 +535,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                     if (med.untakeLastDose(self.cdStack.context)) {
                         // If selected, sort by next dosage
                         if self.defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
-                            self.medication.sort(by: Medicine.sortByNextDose)
-                            self.tableView.reloadData()
+                            self.loadMedication()
+                            self.tableView.reloadSections([0], with: .automatic)
                         } else {
                             self.tableView.reloadRows(at: [index], with: UITableViewRowAnimation.none)
                         }
@@ -625,7 +610,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         let med = medication[indexPath.row]
         
         // Cancel all notifications for medication
-        med.cancelNotifications()
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [med.refillNotificationIdentifier])
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [med.doseNotificationIdentifier])
         
         // Remove med from details
         if let svc = self.splitViewController, svc.viewControllers.count > 1 {
@@ -868,42 +854,29 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     // MARK: - Helper methods
     func setDynamicShortcuts() {
-        let overdueItems = medication.filter({$0.isOverdue().flag})
-        if overdueItems.count > 0  {
-            var text = "Overdue Dose"
-            var subtitle: String? = nil
-            var userInfo = [String:String]()
-            
-            // Pluralize string if multiple overdue doses
-            if overdueItems.count > 1 {
-                text += "s"
-            }
-                // Otherwise set subtitle to overdue med
-            else {
-                let med = overdueItems.first!
-                subtitle = med.name!
-                userInfo["action"] = "takeDose"
-                userInfo["medID"] = med.medicineID
-            }
-            
-            let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.overdue",
-                localizedTitle: text, localizedSubtitle: subtitle,
-                icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
-                userInfo: userInfo)
-            
-            UIApplication.shared.shortcutItems = [shortcutItem]
-            return
-        } else if let nextDose = UIApplication.shared.scheduledLocalNotifications?.first {
-            if let id = nextDose.userInfo?["id"] {
-                guard let med = Medicine.getMedicine(arr: medication, id: id as! String) else { return }
+        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        request.predicate = NSPredicate(format: "reminderEnabled == true", argumentArray: [])
+        request.sortDescriptors = [NSSortDescriptor(key: "dateNextDose", ascending: true)]
+        if let med = (try? cdStack.context.fetch(request))?.first {
+            // Set shortcut for overdue item
+            if med.isOverdue().flag {
+                let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.overdue",
+                                                             localizedTitle: "Overdue",
+                                                             localizedSubtitle: "\(med.name!)",
+                    icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
+                    userInfo: ["action" : "takeDose", "medID" : med.medicineID])
+                
+                UIApplication.shared.shortcutItems = [shortcutItem]
+                return
+            } else if let date = med.nextDose {
                 let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
-                let date = nextDose.fireDate
                 let subtitle = "\(Medicine.dateString(date)): \(dose) of \(med.name!)"
                 
                 let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
-                    localizedTitle: "Take Next Dose", localizedSubtitle: subtitle,
-                    icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
-                    userInfo: ["action":"takeDose", "medID":med.medicineID])
+                                                             localizedTitle: "Take Next Dose",
+                                                             localizedSubtitle: subtitle,
+                                                             icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
+                                                             userInfo: ["action" : "takeDose", "medID" : med.medicineID])
                 
                 UIApplication.shared.shortcutItems = [shortcutItem]
                 return

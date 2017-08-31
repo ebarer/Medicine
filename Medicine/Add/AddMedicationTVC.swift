@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import UserNotifications
 
 class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
     
@@ -125,10 +126,10 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch section {
         case Rows.name.index().section:
-            return 15
+            return tableView.sectionHeaderHeight
         case Rows.prescription.index().section:
             if med.name != nil && med.name != "" {
-                return tableView.rowHeight
+                return tableView.sectionHeaderHeight
             }
         default:
             return UITableViewAutomaticDimension
@@ -148,9 +149,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
                 return 48.0
             }
         case Rows.interval:
-            if med.reminderEnabled == true {
-                return tableView.rowHeight
-            }
+            return tableView.rowHeight
         default:
             return tableView.rowHeight
         }
@@ -287,7 +286,8 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     func deleteMed() {
         if let med = med {
             // Cancel all notifications for medication
-            med.cancelNotifications()
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [med.refillNotificationIdentifier])
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [med.doseNotificationIdentifier])
             
             // Remove medication from persistent store
             cdStack.context.delete(med)

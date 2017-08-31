@@ -8,20 +8,19 @@
 
 import UIKit
 import CoreData
+import MessageUI
 
-class HistoryTVC: CoreDataTableViewController {
+class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelegate {
     
     // MARK: - Helper variables
     let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     
     let cal = Calendar.current
     let dateFormatter = DateFormatter()
-    
+
     var editButtons = [UIBarButtonItem]()
     
-    
     // MARK: - View methods
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -33,9 +32,13 @@ class HistoryTVC: CoreDataTableViewController {
         self.navigationItem.leftBarButtonItem = self.editButtonItem
         
         // Configure toolbar buttons
+        let fixedButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        let exportButton = UIBarButtonItem(title: "Export", style: UIBarButtonItemStyle.plain, target: self, action: #selector(exportDoses))
         let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.plain, target: self, action: #selector(deleteDoses))
         deleteButton.isEnabled = false
         editButtons.append(deleteButton)
+        editButtons.append(fixedButton)
+        editButtons.append(exportButton)
         setToolbarItems(editButtons, animated: true)
         
         // Add observeres for notifications
@@ -210,16 +213,11 @@ class HistoryTVC: CoreDataTableViewController {
     
     
     // MARK: - Table view delegate
-    
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-//        let sectionDate = dates[indexPath.section]
-//        return history[sectionDate]?.count != 0
         return true
     }
     
     override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-//        let sectionDate = dates[indexPath.section]
-//        return history[sectionDate]?.count != 0
         return true
     }
     
@@ -236,9 +234,12 @@ class HistoryTVC: CoreDataTableViewController {
         updateDeleteButtonLabel()
     }
     
+    // MARK: - Mail delegate
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        self.dismiss(animated: true, completion: nil)
+    }
     
     // MARK: - Toolbar methods
-    
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
 
@@ -289,6 +290,46 @@ class HistoryTVC: CoreDataTableViewController {
             
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+        }
+    }
+    
+    @objc func exportDoses() {
+        self.setEditing(false, animated: true)
+        
+        if MFMailComposeViewController.canSendMail() {
+            if let history = self.fetchedResultsController?.fetchedObjects as? [Dose] {
+                var contents = "Date, Medicine, Dosage\r"
+
+                for dose in history.reversed() {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "YYYY-MM-dd h:mm a"
+
+                    contents += "\(dateFormatter.string(from: dose.date as Date)), "
+                    
+                    if let name = dose.medicine?.name {
+                        contents += "\(name), "
+                    } else {
+                        contents += "(Unknown), "
+                    }
+
+                    if dose.dosage > 0 {
+                        contents += "\(dose.dosage.removeTrailingZero()) \(dose.dosageUnit.units(dose.dosage))\r"
+                    } else {
+                        contents += "Skipped\r"
+                    }
+                }
+
+                if let data = contents.data(using: String.Encoding.utf8, allowLossyConversion: false) {
+                    let mc = MFMailComposeViewController()
+                    mc.mailComposeDelegate = self
+                    mc.setSubject("Dose History")
+                    mc.addAttachmentData(data, mimeType: "text/csv", fileName: "Dose_History.csv")
+
+                    self.present(mc, animated: true, completion: nil)
+                }
+            }
+        } else {
+            print("Can't send")
         }
     }
     

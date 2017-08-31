@@ -198,7 +198,7 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
             cell.selectedBackgroundView = UIView()
             
             // Setup cell
-            var refillAmount = (refill.quantity * refill.conversion).removeTrailingZero()
+            let refillAmount = (refill.quantity * refill.conversion).removeTrailingZero()
             var amount = "\(refillAmount) \(med.dosageUnit.units(med.prescriptionCount))"
             
             if refill.conversion != 1.0 {

@@ -63,8 +63,10 @@ class MedicineCell: UITableViewCell {
         }
         
         if editing {
+            hideButton(true)
             self.removeGestureRecognizer(gesture)
         } else {
+            hideButton(false)
             self.addGestureRecognizer(gesture)
         }
     }

@@ -23,9 +23,7 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
     var normalButtons = [UIBarButtonItem]()
     var editButtons = [UIBarButtonItem]()
     
-    
     // MARK: - View methods
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -240,16 +238,12 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
         updateDeleteButtonLabel()
     }
     
-    
     // MARK: - Mail delegate
-    
     func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         self.dismiss(animated: true, completion: nil)
     }
     
-    
     // MARK: - Toolbar methods
-    
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
         

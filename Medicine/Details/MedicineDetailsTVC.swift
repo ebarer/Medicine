@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import UserNotifications
 
 class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
     
@@ -163,7 +164,6 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             doseLabel.font = UIFont.systemFont(ofSize: 16.0, weight: UIFont.Weight.regular)
             
             // If no doses taken
-            med.doseArray()
             if med.doseHistory?.count == 0 && med.intervalUnit == .hourly {
                 doseTitle.text = "No doses logged"
                 doseLabel.text?.removeAll()
@@ -192,11 +192,6 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
                         doseLabel.font = UIFont.systemFont(ofSize: 16.0, weight: UIFont.Weight.semibold)
                         doseLabel.text = Medicine.dateString(date)
                     }
-                }
-                    
-                // If notification scheduled, set date to next scheduled fire date
-                else if let date = med.scheduledNotifications?.first?.fireDate {
-                    doseLabel.text = Medicine.dateString(date)
                 }
                     
                 // Set subtitle to next dosage date
@@ -373,7 +368,8 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     func deleteMed() {
         if let med = med {
             // Cancel all notifications for medication
-            med.cancelNotifications()
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [med.refillNotificationIdentifier])
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [med.doseNotificationIdentifier])
             
             // Remove medication from array
             self.med = nil

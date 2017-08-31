@@ -179,7 +179,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 setDynamicShortcuts(forMedication: medication)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
-                NSLog("snoozeReminderAction performed", [])
+                NSLog("snoozeReminderAction performed for %@", [med.name!])
             }
         }
     }
@@ -191,7 +191,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
             if let med = (try? cdStack.context.fetch(request))?.first {
                 performSegue(withIdentifier: "refillPrescription", sender: med)
-                NSLog("refillAction performed", [])
+                NSLog("refillAction performed for %@", [med.name!])
             }
         }
     }
@@ -234,44 +234,31 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     
     // MARK: - Helper methods
+    // Update homescreen shortcuts for force touch devices
     func setDynamicShortcuts(forMedication medication: [Medicine]) {
-        // Update homescreen shortcuts for force touch devices
-        let overdueItems = medication.filter({$0.isOverdue().flag})
-        if overdueItems.count > 0  {
-            var text = "Overdue Dose"
-            var subtitle: String? = nil
-            var userInfo = [String:String]()
-            
-            // Pluralize string if multiple overdue doses
-            if overdueItems.count > 1 {
-                text += "s"
-            }
-                // Otherwise set subtitle to overdue med
-            else {
-                let med = overdueItems.first!
-                subtitle = med.name!
-                userInfo["action"] = "takeDose"
-                userInfo["medID"] = med.medicineID
-            }
-            
-            let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.overdue",
-                localizedTitle: text, localizedSubtitle: subtitle,
-                icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
-                userInfo: userInfo)
-            
-            UIApplication.shared.shortcutItems = [shortcutItem]
-            return
-        } else if let nextDose = UIApplication.shared.scheduledLocalNotifications?.first {
-            if let id = nextDose.userInfo?["id"] {
-                guard let med = Medicine.getMedicine(arr: medication, id: id as! String) else { return }
+        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        request.predicate = NSPredicate(format: "reminderEnabled == true", argumentArray: [])
+        request.sortDescriptors = [NSSortDescriptor(key: "dateNextDose", ascending: true)]
+        if let med = (try? cdStack.context.fetch(request))?.first {
+            // Set shortcut for overdue item
+            if med.isOverdue().flag {
+                let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.overdue",
+                                                             localizedTitle: "Overdue",
+                                                             localizedSubtitle: "\(med.name!)",
+                                                             icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
+                                                             userInfo: ["action" : "takeDose", "medID" : med.medicineID])
+                
+                UIApplication.shared.shortcutItems = [shortcutItem]
+                return
+            } else if let date = med.nextDose {
                 let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
-                let date = nextDose.fireDate
                 let subtitle = "\(Medicine.dateString(date)): \(dose) of \(med.name!)"
                 
                 let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
-                    localizedTitle: "Take Next Dose", localizedSubtitle: subtitle,
-                    icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
-                    userInfo: ["action":"takeDose", "medID":med.medicineID])
+                                                             localizedTitle: "Take Next Dose",
+                                                             localizedSubtitle: subtitle,
+                                                             icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
+                                                             userInfo: ["action" : "takeDose", "medID" : med.medicineID])
                 
                 UIApplication.shared.shortcutItems = [shortcutItem]
                 return

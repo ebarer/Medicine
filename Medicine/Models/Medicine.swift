@@ -10,6 +10,7 @@ import UIKit
 import CoreData
 import CoreSpotlight
 import MobileCoreServices
+import UserNotifications
 
 class Medicine: NSManagedObject {
     
@@ -55,25 +56,6 @@ class Medicine: NSManagedObject {
         }
         
         return nil
-    }
-    
-    var scheduledNotifications: [UILocalNotification]? {
-        var medNotifications = [UILocalNotification]()
-        
-        let notifications = UIApplication.shared.scheduledLocalNotifications!
-        for notification in notifications {
-            if let id = notification.userInfo?["id"] as? String {
-                if (id == self.medicineID) {
-                    medNotifications.append(notification)
-                }
-            }
-        }
-        
-        if medNotifications.count == 0 {
-            return nil
-        }
-        
-        return medNotifications
     }
     
     func doseArray() -> [Date: [Dose]]? {
@@ -498,8 +480,11 @@ class Medicine: NSManagedObject {
                 self.prescriptionCount += dose.dosage
             }
         }
-        
+
         moc.delete(dose)
+        
+        // Update next dose
+        _ = self.nextDose
         
         // Save dose deletion
         let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
@@ -662,6 +647,10 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Notification methods
+    var doseNotificationIdentifier: String {
+        return "\(medicineID)-dose"
+    }
+    
     func scheduleNotification(_ date: Date, badgeCount: Int = 1) throws {
         // Schedule if the user wants a reminder and the reminder date is in the future
         guard date.compare(Date()) == .orderedDescending else {
@@ -675,32 +664,44 @@ class Medicine: NSManagedObject {
         guard let name = name else {
             throw MedicineError.invalidName
         }
-
-        let notification = UILocalNotification()
-        notification.alertAction = "View Medicine"
-        notification.alertTitle = "Take \(name)"
-        notification.alertBody = String(format:"Time to take %g %@ of %@", dosage, dosageUnit.units(dosage), name)
-        notification.soundName = UILocalNotificationDefaultSoundName
-        notification.category = "Dose Reminder"
+        
+        let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+        
+        let content = UNMutableNotificationContent()
+        content.title = "Take \(name)"
+        content.body = String(format:"Time to take %g %@ of %@", dosage, dosageUnit.units(dosage), name)
+        content.sound = UNNotificationSound.default()
+        content.badge = NSNumber(integerLiteral: badgeCount)
+        content.userInfo = ["id": medicineID]
         
         if lastDose == nil && intervalUnit == .daily {
-            notification.category = "Dose Reminder - No Snooze"
+            content.categoryIdentifier = "Dose Reminder - No Snooze"
+        } else {
+            content.categoryIdentifier = "Dose Reminder"
         }
-        
-        notification.userInfo = ["id": self.medicineID]
-        notification.applicationIconBadgeNumber = badgeCount
-        notification.fireDate = date
-        
-        UIApplication.shared.scheduleLocalNotification(notification)
+
+        let request = UNNotificationRequest(identifier: doseNotificationIdentifier, content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request) { (error) in
+            if error == nil {
+                let formatter = DateFormatter()
+                formatter.dateStyle = .medium
+                formatter.timeStyle = .medium
+                print("DOSE Notification scheduled for \(formatter.string(from: date)) for \"\(name)\".")
+            } else {
+                print("Error scheduling DOSE notification for \(name).")
+                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [self.doseNotificationIdentifier])
+            }
+        }
     }
     
     @discardableResult func scheduleNextNotification() -> Bool {
-        cancelNotifications()
-        
-        guard let date = nextDose else { return false }
+        guard let date = nextDose else {
+            return false
+        }
         
         do {
-            try scheduleNotification(date, badgeCount: getBadgeCount(date))
+            try scheduleNotification(date, badgeCount: Medicine.overdueCount(date))
             return true
         } catch {
             return false
@@ -728,7 +729,6 @@ class Medicine: NSManagedObject {
         
         // Schedule new notification
         do {
-            cancelNotifications()
             try scheduleNotification(snoozeDate)
             return true
         } catch {
@@ -736,38 +736,41 @@ class Medicine: NSManagedObject {
         }
     }
     
-    func cancelNotifications() {
-        let notifications = UIApplication.shared.scheduledLocalNotifications!
-        for notification in notifications {
-            let (id, _) = (notification.userInfo?["id"] as? String, notification.userInfo?["snooze"] as? Bool)
-            if (id == self.medicineID) {
-                UIApplication.shared.cancelLocalNotification(notification)
-            }
-        }
+    var refillNotificationIdentifier: String {
+        return "\(medicineID)-refill"
     }
     
     func sendRefillNotification() {
         if refillFlag {
-            let notification = UILocalNotification()
+            let now = Date()
+            let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: now)
+            let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+            
+            let content = UNMutableNotificationContent()
+            content.title = "Refill \(name!)"
             
             var message = "You are running low on \(name!) and should refill soon."
-            
             if prescriptionCount < dosage {
                 message = "You don't have enough \(name!) to take your next dose."
             } else if let count = refillDaysRemaining(), prescriptionCount > 0 && count > 0 {
                 message = "You currently have enough \(name!) for about \(count) \(count == 1 ? "day" : "days") and should refill soon."
             }
+            content.body = message
             
-            notification.alertTitle = "Refill \(name!)"
-            notification.alertBody = message
-            notification.soundName = UILocalNotificationDefaultSoundName
-            notification.category = "Refill Reminder"
-            notification.userInfo = ["id": self.medicineID, "type": "refill"]
-            notification.fireDate = Date()
+            content.sound = UNNotificationSound.default()
+            content.userInfo = ["id": self.medicineID, "type": "refill"]
+            content.categoryIdentifier = "Refill Reminder"
             
-            UIApplication.shared.scheduleLocalNotification(notification)
-            
-            refillFlag = false
+            let request = UNNotificationRequest(identifier: refillNotificationIdentifier, content: content, trigger: trigger)
+            UNUserNotificationCenter.current().add(request) { (error) in
+                if error == nil {
+                    print("REFILL notification scheduled for \(now) for \"\(self.name!)\".")
+                    self.refillFlag = false
+                } else {
+                    print("Error scheduling REFILL notification for \(self.name!).")
+                    UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [self.refillNotificationIdentifier])
+                }
+            }
         }
     }
     
@@ -781,7 +784,7 @@ class Medicine: NSManagedObject {
     
     - Returns: Number of overdue items at date
     */
-    func getBadgeCount(_ date: Date) -> Int {
+    class func overdueCount(_ date: Date = Date()) -> Int {
         let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
         let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
         request.predicate = NSPredicate(format: "reminderEnabled == true", argumentArray: [])
@@ -998,7 +1001,7 @@ enum Doses: Int16, CustomStringConvertible {
                 return "pills"
             }
         case .milligrams: return "mg"
-        case .millilitres: return "ml"
+        case .millilitres: return "mL"
         case .puffs:
             if (amount != nil && amount == 1.0) {
                 return "puff"
