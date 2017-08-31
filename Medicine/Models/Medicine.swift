@@ -35,8 +35,14 @@ class Medicine: NSManagedObject {
             return nil
         }
 
-        self.dateNextDose = date
-        return self.dateNextDose
+        // If next date is in the past, don't set value
+        if (self.reminderEnabled == false) && (date?.compare(Date()) == .orderedAscending) {
+            self.dateNextDose = Calendar.current.date(byAdding: .year, value: 1, to: Date())
+        } else {
+            self.dateNextDose = date
+        }
+        
+        return date
     }
     
     var lastDose: Dose? {
@@ -696,6 +702,12 @@ class Medicine: NSManagedObject {
     }
     
     @discardableResult func scheduleNextNotification() -> Bool {
+        if reminderEnabled == false {
+            print("Unscheduling DOSE notification for \(name!).")
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [self.doseNotificationIdentifier])
+            return false
+        }
+        
         guard let date = nextDose else {
             return false
         }

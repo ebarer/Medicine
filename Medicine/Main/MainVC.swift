@@ -72,7 +72,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         tableView.tableHeaderView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: tableView.bounds.size.width, height: 0.01))
         
         // Setup refresh timer
-        let _ = Timer.scheduledTimer(timeInterval: 600, target: self, selector: #selector(refreshTable), userInfo: nil, repeats: true)
+        let _ = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(refreshTable), userInfo: nil, repeats: true)
         
         // Display tutorial on first launch
         let dictionary = Bundle.main.infoDictionary!
@@ -91,7 +91,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             // Sort by next dose
             fetchRequest.sortDescriptors = [
                 NSSortDescriptor(key: "reminderEnabled", ascending: false),
-                NSSortDescriptor(key: "dateNextDose", ascending: true)
+                NSSortDescriptor(key: "dateNextDose", ascending: true),
+                NSSortDescriptor(key: "name", ascending: true)
             ]
         } else {
             // Sort by manually defined sort order
@@ -102,9 +103,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             medication = results
             
             for med in medication {
-                if let date = med.dateNextDose {
-                    print("\(med.sortOrder): \(med.name ?? "") [\(med.medicineID)] -> \(date)")
-                }
+                let date = med.nextDose
+                print("\(med.sortOrder): \(med.name ?? "") [\(med.medicineID)] -> \(date)")
             }
         }
     }
@@ -278,15 +278,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     }
     
     @objc func refreshTable() {
-        // Reschedule notifications
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "rescheduleNotifications"), object: nil, userInfo: nil)
-        
+        print("Refreshing table")
         loadMedication()
-        
-        // Dismiss editing mode
-        setEditing(false, animated: true)
+        self.tableView.reloadSections([0], with: .none)
     }
-    
     
     // MARK: - Table view data source
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -339,7 +334,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
             cell.subtitle.textColor = UIColor.lightGray
             
-            if let date = med.dateNextDose {
+            if let date = med.nextDose {
                 // If next date is in the past, instruct user they can take next dose
                 if date.compare(Date()) == .orderedAscending {
                     cell.subtitle.text = "Take next dose as needed"

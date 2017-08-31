@@ -119,9 +119,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             nameLabel.text = med.name
             
             var detailsString = "\(med.dosage.removeTrailingZero()) \(med.dosageUnit.units(med.dosage))"
-            if med.reminderEnabled == true {
                 detailsString += ", every \(med.intervalLabel())"
-            }
             
             doseDetailsLabel.text = detailsString
             
