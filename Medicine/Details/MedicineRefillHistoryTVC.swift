@@ -161,7 +161,7 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
                 string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 13.0), range: NSMakeRange(0, string.length))
                 
                 if Calendar.current.isDateInToday(sectionDate) {
-                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSMakeRange(0, string.length))
+                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, string.length))
                 }
                 
                 if let index = text.characters.index(of: " ") {

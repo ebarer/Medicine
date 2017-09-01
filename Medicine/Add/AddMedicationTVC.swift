@@ -105,10 +105,8 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         // If medication has no name, disable save button
         if med.name == nil || med.name?.isEmpty == true {
             saveButton.isEnabled = false
-            self.navigationItem.backBarButtonItem?.title = "Back"
         } else {
             saveButton.isEnabled = true
-            self.navigationItem.backBarButtonItem?.title = med.name
         }
     }
     
@@ -131,6 +129,8 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             if med.name != nil && med.name != "" {
                 return tableView.sectionHeaderHeight
             }
+        case Rows.delete.index().section:
+            return tableView.sectionHeaderHeight + 10.0
         default:
             return UITableViewAutomaticDimension
         }
@@ -139,9 +139,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let row = Rows(index: indexPath)
-        
-        switch row {
+        switch Rows(index: indexPath) {
         case Rows.name:
             return 60.0
         case Rows.prescription:
@@ -158,36 +156,29 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     }
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let row = Rows(index: indexPath)
-        
         cell.preservesSuperviewLayoutMargins = true
-        cell.layoutMargins = tableView.layoutMargins
-        cell.separatorInset = tableView.separatorInset
         
-        switch(row) {
+        switch Rows(index: indexPath) {
         case Rows.dosage:
             if med.reminderEnabled == false {
-                cell.preservesSuperviewLayoutMargins = false
-                cell.layoutMargins = UIEdgeInsets.zero
                 cell.separatorInset = UIEdgeInsets.zero
-                cell.contentView.layoutMargins = tableView.separatorInset
             }
         default: break
         }
     }
     
-    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        switch section {
-        case Rows.prescription.index().section:
-            if med.name != nil && med.name != "" {
-                return tableView.rowHeight
-            }
-        default:
-            return UITableViewAutomaticDimension
-        }
-        
-        return 0
-    }
+//    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+//        switch section {
+//        case Rows.prescription.index().section:
+//            if med.name != nil && med.name != "" {
+//                return 60.0
+//            }
+//        default:
+//            return UITableViewAutomaticDimension
+//        }
+//
+//        return 0
+//    }
     
     override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         if section == Rows.prescription.index().section {

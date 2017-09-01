@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16F67a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13189.4" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13165.3"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -23,35 +23,21 @@
                     </constraints>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Medication" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lBX-Bp-4HC">
-                    <rect key="frame" x="8" y="307" width="359" height="33"/>
+                    <rect key="frame" x="105" y="307" width="165.5" height="33"/>
                     <fontDescription key="fontDescription" type="system" weight="light" pointSize="27"/>
                     <color key="textColor" red="0.66666666666666663" green="0.66666666666666663" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
             </subviews>
-            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color key="backgroundColor" white="0.97999999999999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="lBX-Bp-4HC" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leadingMargin" id="04B-pq-BWi"/>
                 <constraint firstItem="lBX-Bp-4HC" firstAttribute="top" secondItem="BnB-8R-wPV" secondAttribute="bottom" constant="44" id="CwA-ir-BDL"/>
-                <constraint firstItem="lBX-Bp-4HC" firstAttribute="trailing" secondItem="iN0-l3-epB" secondAttribute="trailingMargin" id="Kiw-QV-Ywv"/>
                 <constraint firstItem="BnB-8R-wPV" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="YOE-dN-VOQ"/>
                 <constraint firstItem="lBX-Bp-4HC" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" constant="-14.75" id="a2O-TD-bEG">
                     <variation key="heightClass=regular-widthClass=compact" constant="-10"/>
                 </constraint>
                 <constraint firstItem="lBX-Bp-4HC" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="lVF-aU-BrW"/>
             </constraints>
-            <variation key="default">
-                <mask key="constraints">
-                    <exclude reference="04B-pq-BWi"/>
-                    <exclude reference="Kiw-QV-Ywv"/>
-                </mask>
-            </variation>
-            <variation key="heightClass=regular-widthClass=compact">
-                <mask key="constraints">
-                    <include reference="04B-pq-BWi"/>
-                    <include reference="Kiw-QV-Ywv"/>
-                </mask>
-            </variation>
             <point key="canvasLocation" x="261" y="158"/>
         </view>
     </objects>

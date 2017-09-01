@@ -17,7 +17,9 @@ extension MainVC: UIViewControllerPreviewingDelegate {
             let cell = tableView.cellForRow(at: indexPath) else { return nil }
         
         // Create a detail view controller and set its properties.
-        guard let vc = storyboard?.instantiateViewController(withIdentifier: "medicineDetails") as? MedicineDetailsTVC else { return nil }
+        guard let vc = UIStoryboard(name: "MedicineDetails", bundle: Bundle.main).instantiateViewController(withIdentifier: "MedicineDetailsTVC") as? MedicineDetailsTVC else {
+            return nil
+        }
         
         vc.med = medication[indexPath.row]
         

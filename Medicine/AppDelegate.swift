@@ -61,7 +61,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
-    func applicationDidEnterBackground(_ application: UIApplication) {
+    func applicationWillResignActive(_ application: UIApplication) {
         application.applicationIconBadgeNumber = Medicine.overdueCount()
         self.stack.save()
     }

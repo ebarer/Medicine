@@ -50,7 +50,7 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
         request.predicate = NSPredicate(format: "date >= %@", argumentArray: [cutoffDate])
         request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         request.fetchLimit = 300
-        
+
         self.fetchedResultsController = NSFetchedResultsController(fetchRequest: request,
                                                                    managedObjectContext: cdStack.context,
                                                                    sectionNameKeyPath: "dateSection",
@@ -108,6 +108,10 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
         return nil
     }
     
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 85.0
+    }
+    
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if let fc = fetchedResultsController {
             let dateFormatter = DateFormatter()
@@ -119,16 +123,16 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
             if cal.isDateInToday(sectionDate) {
                 dateFormatter.timeStyle = DateFormatter.Style.none
                 dateFormatter.dateStyle = DateFormatter.Style.medium
-                return "Today  \(dateFormatter.string(from: sectionDate))"
+                return "Today\n\(dateFormatter.string(from: sectionDate))"
             } else if cal.isDateInYesterday(sectionDate) {
                 dateFormatter.timeStyle = DateFormatter.Style.none
                 dateFormatter.dateStyle = DateFormatter.Style.medium
-                return "Yesterday  \(dateFormatter.string(from: sectionDate))"
+                return "Yesterday\n\(dateFormatter.string(from: sectionDate))"
             } else if sectionDate.isDateInLastWeek() {
-                dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
+                dateFormatter.dateFormat = "EEEE\nMMMM d, YYYY"
                 return dateFormatter.string(from: sectionDate)
             } else {
-                dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
+                dateFormatter.dateFormat = "EEEE\nMMMM d, YYYY"
                 return dateFormatter.string(from: sectionDate)
             }
         } else {
@@ -148,19 +152,21 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
             
             // Set header title
             header.textLabel?.text = header.textLabel?.text?.uppercased()
-            header.textLabel?.textColor = UIColor(white: 0.43, alpha: 1.0)
+            header.textLabel?.textColor = UIColor(white: 0, alpha: 0.3)
+            header.textLabel?.textAlignment = .left
             
             if let text = header.textLabel?.text {
                 let string = NSMutableAttributedString(string: text)
-                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 13.0), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 14.0), range: NSMakeRange(0, string.length))
                 
-                if Calendar.current.isDateInToday(sectionDate) {
-                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.red, range: NSMakeRange(0, string.length))
-                }
-                
-                if let index = text.characters.index(of: " ") {
+                if let index = text.characters.index(of: "\n") {
                     let pos = text.characters.distance(from: text.startIndex, to: index)
-                    string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 13.0, weight: UIFont.Weight.semibold), range: NSMakeRange(0, pos))
+                    string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 20.0, weight: UIFont.Weight.semibold), range: NSMakeRange(0, pos))
+                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(white: 0, alpha: 0.7), range: NSMakeRange(0, pos))
+                    
+                    if Calendar.current.isDateInToday(sectionDate) {
+                        string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, pos))
+                    }
                 }
                 
                 header.textLabel?.attributedText = string
@@ -174,14 +180,14 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if let fc = fetchedResultsController {
             let count = fc.sections![indexPath.section].numberOfObjects
-            return (count > 0) ? 55.0 : tableView.rowHeight
+            return (count > 0) ? 60.0 : tableView.rowHeight
         }
         
         return tableView.rowHeight
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "historyCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "historyCell", for: indexPath) as! HistoryCell
         
         if let dose = self.fetchedResultsController!.object(at: indexPath) as? Dose, let med = dose.medicine {
             // Setup date formatter
@@ -190,22 +196,26 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
             
             // Specify selection color
             cell.selectedBackgroundView = UIView()
-            
             if dose.dosage > 0 {
-                cell.textLabel?.textColor = UIColor.black
-                cell.textLabel?.text = "\(dateFormatter.string(from: dose.date as Date))"
-                cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                cell.detailTextLabel?.text = String(format:"%@ - %g %@", med.name!, dose.dosage, dose.dosageUnit.units(dose.dosage))
+                cell.medLabel?.text = med.name
+                cell.dateLabel?.text = "\(dateFormatter.string(from: dose.date))"
+                cell.historyLabel?.text = String(format:"%g %@", dose.dosage, dose.dosageUnit.units(dose.dosage))
             } else {
-                cell.textLabel?.textColor = UIColor.lightGray
-                cell.textLabel?.text = "Skipped (\(dateFormatter.string(from: dose.date as Date)))"
-                cell.detailTextLabel?.textColor = UIColor.lightGray
-                cell.detailTextLabel?.text = String(format:"%@", med.name!)
+                cell.medLabel?.text = med.name
+                cell.medLabel?.textColor = UIColor(white: 0, alpha: 0.2)
+                
+                cell.dateLabel?.text = "\(dateFormatter.string(from: dose.date))"
+                cell.dateLabel?.textColor = UIColor(white: 0, alpha: 0.2)
+                
+                cell.historyLabel?.text = "Skipped"
+                cell.historyLabel?.textColor = UIColor(white: 0, alpha: 0.2)
             }
         } else {
-            cell.textLabel?.textColor = UIColor.lightGray
-            cell.textLabel?.text = "No doses logged"
-            cell.detailTextLabel?.text?.removeAll()
+            cell.medLabel?.text = "No doses logged"
+            cell.medLabel?.textColor = UIColor(white: 0, alpha: 0.2)
+            
+            cell.dateLabel?.isHidden = true
+            cell.historyLabel?.isHidden = true
         }
         
         return cell

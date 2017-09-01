@@ -16,21 +16,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     // MARK: - Helper variables
     let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
-    
-    var launchedShortcutItem: [AnyHashable: Any]?
-    
     var selectedVC: UIViewController? = nil
-    
-    // MARK: - Load medication
-    func loadMedication() {
-        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-        if let medication = try? cdStack.context.fetch(request) {
-            indexMedication()
-            setDynamicShortcuts(forMedication: medication)
-        }
-    }
-    
     
     // MARK: - View methods
     override func viewDidLoad() {
@@ -38,9 +24,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         self.delegate = self
         
         // Set tab bar controller
+        tabBar.barStyle = .default
         tabBar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-       
-        loadMedication()
         
         // Add observeres for notifications
         NotificationCenter.default.addObserver(self, selector: #selector(doseNotification(_:)), name: NSNotification.Name(rawValue: "doseNotification"), object: nil)
@@ -59,19 +44,21 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         super.didReceiveMemoryWarning()
     }
     
-    
     // MARK: - Tab delegate
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        if viewController == selectedVC {
-            if viewController.isKind(of: UISplitViewController.self) {
+        if viewController.isKind(of: UISplitViewController.self) {
+            self.tabBar.barStyle = .default
+            
+            if viewController == selectedVC {
                 let navVC = (viewController as! UISplitViewController).childViewControllers[0] as! UINavigationController
                 navVC.popToRootViewController(animated: true)
             }
+        } else {
+            self.tabBar.barStyle = .default
         }
         
         selectedVC = viewController
     }
-
     
     // MARK: - Notification observers
     @objc func doseNotification(_ notification: Notification) {
@@ -137,7 +124,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         }
     }
     
-    
     // MARK: - Action observers
     @objc func takeDoseAction(_ notification: Notification) {
         NSLog("takeDoseAction received", [])
@@ -160,7 +146,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 cdStack.save()
                 NSLog("takeDoseAction performed", [])
 
-                setDynamicShortcuts(forMedication: medication)
+                setDynamicShortcuts()
                 updateBadgeCount()
                 
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
@@ -176,7 +162,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
             if let medication = try? cdStack.context.fetch(request), let med = medication.first {
                 med.snoozeNotification()
-                setDynamicShortcuts(forMedication: medication)
+                setDynamicShortcuts()
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                 NSLog("snoozeReminderAction performed for %@", [med.name!])
@@ -207,11 +193,10 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 med.scheduleNextNotification()
             }
         
-            setDynamicShortcuts(forMedication: medication)
+            setDynamicShortcuts()
             updateBadgeCount()
         }
     }
-    
     
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -232,10 +217,9 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         }
     }
     
-    
     // MARK: - Helper methods
     // Update homescreen shortcuts for force touch devices
-    func setDynamicShortcuts(forMedication medication: [Medicine]) {
+    func setDynamicShortcuts() {
         let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
         request.predicate = NSPredicate(format: "reminderEnabled == true", argumentArray: [])
         request.sortDescriptors = [NSSortDescriptor(key: "dateNextDose", ascending: true)]
@@ -291,10 +275,13 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         }
     }
     
+    func removeIndex(med: Medicine) {
+        CSSearchableIndex.default().deleteSearchableItems(withIdentifiers: [med.medicineID], completionHandler: nil)
+    }
+    
 }
 
 extension UITabBarController {
-    
     func setTabBarVisible(_ visible: Bool, animated: Bool) {
         if tabBarIsVisible() != visible {
             // Determine frame calculation
@@ -317,5 +304,4 @@ extension UITabBarController {
     func tabBarIsVisible() -> Bool {
         return self.tabBar.frame.origin.y < self.view.frame.maxY
     }
-    
 }

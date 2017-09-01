@@ -35,9 +35,12 @@ class Medicine: NSManagedObject {
             return nil
         }
 
-        // If next date is in the past, don't set value
+        // For as needed medication, if their next dose is in the past,
+        // push it into the future to ensure correct sorting
         if (self.reminderEnabled == false) && (date?.compare(Date()) == .orderedAscending) {
-            self.dateNextDose = Calendar.current.date(byAdding: .year, value: 1, to: Date())
+            if dateNextDose?.compare(Date()) == .orderedAscending {
+                self.dateNextDose = Calendar.current.date(byAdding: .year, value: 1, to: Date())
+            }
         } else {
             self.dateNextDose = date
         }
@@ -477,7 +480,7 @@ class Medicine: NSManagedObject {
     func untakeDose(_ dose: Dose, moc: NSManagedObjectContext) {
         // Modify prescription count
         if let refillCount = self.refillHistory?.count {
-            if refillCount > 0 {
+            if (refillCount > 0) && (dose.dosage > 0) {
                 // Only enable refill flag if undoing the dosage puts count in excess
                 if needsRefill() == false {
                     self.refillFlag = true
@@ -490,6 +493,7 @@ class Medicine: NSManagedObject {
         moc.delete(dose)
         
         // Update next dose
+        self.dateNextDose = nil
         _ = self.nextDose
         
         // Save dose deletion
@@ -664,6 +668,7 @@ class Medicine: NSManagedObject {
         }
         
         guard reminderEnabled == true else {
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [self.doseNotificationIdentifier])
             throw MedicineError.reminderDisabled
         }
         
@@ -702,11 +707,7 @@ class Medicine: NSManagedObject {
     }
     
     @discardableResult func scheduleNextNotification() -> Bool {
-        if reminderEnabled == false {
-            print("Unscheduling DOSE notification for \(name!).")
-            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [self.doseNotificationIdentifier])
-            return false
-        }
+        printNotifications()
         
         guard let date = nextDose else {
             return false
@@ -714,9 +715,25 @@ class Medicine: NSManagedObject {
         
         do {
             try scheduleNotification(date, badgeCount: Medicine.overdueCount(date))
+            
+            printNotifications()
+            
             return true
         } catch {
             return false
+        }
+    }
+    
+    func printNotifications() {
+        UNUserNotificationCenter.current().getPendingNotificationRequests { (requests) in
+            print("Notifications:")
+            for (index, request) in requests.enumerated() {
+                if let components = (request.trigger as? UNCalendarNotificationTrigger)?.dateComponents {
+                    if let date = Calendar.current.date(from: components) {
+                        print("\t\(index). \(request.identifier): \(date)")
+                    }
+                }
+            }
         }
     }
     

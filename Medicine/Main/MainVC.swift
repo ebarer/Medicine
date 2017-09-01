@@ -13,7 +13,7 @@ import CoreSpotlight
 import MobileCoreServices
 import UserNotifications
 
-class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPaymentTransactionObserver {
+class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     // MARK: - Outlets
     @IBOutlet var addMedicationButton: UIBarButtonItem!
@@ -26,6 +26,11 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     // MARK: - Helper variables
     let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    
+    var tbc: MainTBC? {
+        return self.tabBarController as? MainTBC
+    }
+    
     var launchedShortcutItem: [AnyHashable: Any]?
     
     let cal = Calendar.current
@@ -69,7 +74,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         self.navigationItem.titleView = UIImageView(image: UIImage(named: "Logo-Nav"))
         
         // Remove tableView gap
-        tableView.tableHeaderView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: tableView.bounds.size.width, height: 0.01))
+        //tableView.tableHeaderView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: tableView.bounds.size.width, height: 0.01))
+        tableView.separatorStyle = .none
         
         // Setup refresh timer
         let _ = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(refreshTable), userInfo: nil, repeats: true)
@@ -91,8 +97,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             // Sort by next dose
             fetchRequest.sortDescriptors = [
                 NSSortDescriptor(key: "reminderEnabled", ascending: false),
-                NSSortDescriptor(key: "dateNextDose", ascending: true),
-                NSSortDescriptor(key: "name", ascending: true)
+                NSSortDescriptor(key: "dateNextDose", ascending: true)
             ]
         } else {
             // Sort by manually defined sort order
@@ -101,10 +106,16 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
 
         if let results = try? cdStack.context.fetch(fetchRequest) {
             medication = results
-            
-            for med in medication {
-                let date = med.nextDose
+//            logMedication()
+        }
+    }
+    
+    func logMedication() {
+        for med in medication {
+            if let date = med.dateNextDose {
                 print("\(med.sortOrder): \(med.name ?? "") [\(med.medicineID)] -> \(date)")
+            } else {
+                print("\(med.sortOrder): \(med.name ?? "") [\(med.medicineID)] -> No next dose")
             }
         }
     }
@@ -121,8 +132,19 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         if let collapsed = self.splitViewController?.isCollapsed, collapsed == true {
             selectMed()
             
-            if let selected = self.tableView.indexPathForSelectedRow {
-                self.tableView.deselectRow(at: selected, animated: true)
+            if let selectedIndex = self.tableView.indexPathForSelectedRow {
+                if let cell = self.tableView.cellForRow(at: selectedIndex) as? MedicineCell {
+                    cell.cellFrame?.layer.backgroundColor = UIColor(white: 0.9, alpha: 1).cgColor
+
+                    self.transitionCoordinator?.animate(alongsideTransition: { (context) in
+                        cell.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
+                    }, completion: { (context) in
+                        if !context.isCancelled {
+                            self.tableView.deselectRow(at: selectedIndex, animated: animated)
+                            self.selectedMed = nil
+                        }
+                    })
+                }
             }
         }
         
@@ -141,10 +163,11 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             launchedShortcutItem = nil
         }
 
-        // Update spotlight index values
-        (self.tabBarController as! MainTBC).indexMedication()
+        // Update spotlight index values and home screen shortcuts
+        tbc?.indexMedication()
+        tbc?.setDynamicShortcuts()
         
-        setDynamicShortcuts()
+        self.view.layoutIfNeeded()
     }
     
     override func didReceiveMemoryWarning() {
@@ -218,7 +241,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     func updateHeader() {
         // Initialize main string
         var string = NSMutableAttributedString(string: "No more doses today")
-        string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 24.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
+        string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
         
         // Setup today widget data
         var todayData = [String: AnyObject]()
@@ -234,7 +257,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             // If dose is in the past, warn of overdue doses
             if date.compare(Date()) == .orderedAscending {
                 string = NSMutableAttributedString(string: "Overdue")
-                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1), range: NSMakeRange(0, string.length))
+                
                 headerCounterLabel.attributedText = string
             }
             // Show next scheduled dose
@@ -244,13 +269,14 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                 dateFormatter.dateFormat = "h:mm a"
                 let dateString = dateFormatter.string(from: date)
                 string = NSMutableAttributedString(string: dateString)
-                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 70.0, weight: UIFont.Weight.ultraLight), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 70.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
 
                 // Accomodate 24h times
                 let range = (dateString.contains("AM")) ? dateString.range(of: "AM") : dateString.range(of: "PM")
                 if let range = range {
                     let pos = dateString.characters.distance(from: dateString.startIndex, to: range.lowerBound)
                     string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 24.0), range: NSMakeRange(pos-1, 3))
+                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(white: 0, alpha: 0.3), range: NSMakeRange(pos-1, 3))
                 }
 
                 headerCounterLabel.attributedText = string
@@ -263,7 +289,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         else if medication.count > 0 {
             if medication.first?.lastDose == nil {
                 string = NSMutableAttributedString(string: "Take first dose")
-                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 24.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
                 headerCounterLabel.attributedText = string
             }
         }
@@ -278,9 +304,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     }
     
     @objc func refreshTable() {
-        print("Refreshing table")
-        loadMedication()
-        self.tableView.reloadSections([0], with: .none)
+        if !self.tableView.isEditing {
+            loadMedication()
+            self.tableView.reloadSections([0], with: .none)
+        }
     }
     
     // MARK: - Table view data source
@@ -293,7 +320,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100.0
+        return 110.0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -306,16 +333,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         cell.title.text = med.name
         cell.title.textColor = UIColor.black
         
-        // Set adherence score
-        if let score = med.adherenceScore() {
-            cell.adherenceScore.score = score
-            cell.adherenceScoreLabel.text = "\(score)"
-        } else {
-            cell.adherenceScoreLabel.text = "—"
-        }
-        
         // Set subtitle and attributes
-        cell.hideGlyph(false)
         cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
         cell.subtitle.textColor = UIColor.black
         cell.hideButton(false)
@@ -323,16 +341,16 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         
         // If no doses taken, and medication is hourly
         if med.doseHistory?.count == 0 && med.intervalUnit == .hourly {
-            cell.hideButton(true)
+            cell.hideButton(true, animated: false)
             cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
-            cell.subtitle.textColor = UIColor.lightGray
+            cell.subtitle.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
             cell.subtitle.text = "Tap to take first dose"
         }
             
         // If reminders aren't enabled for medication
         else if med.reminderEnabled == false {
             cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
-            cell.subtitle.textColor = UIColor.lightGray
+            cell.subtitle.textColor = UIColor(white: 0.5, alpha: 1)
             
             if let date = med.nextDose {
                 // If next date is in the past, instruct user they can take next dose
@@ -365,7 +383,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             else {
                 cell.hideButton(true)
                 cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
-                cell.subtitle.textColor = UIColor.lightGray
+                cell.subtitle.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
                 cell.subtitle.text = "Tap to take first dose"
             }
         }
@@ -385,9 +403,15 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     
     func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to toIndexPath: IndexPath) {
         if fromIndexPath != toIndexPath {
-            medication[fromIndexPath.row].sortOrder = Int16(toIndexPath.row)
-            medication[toIndexPath.row].sortOrder = Int16(fromIndexPath.row)
-            medication = medication.sorted(by: { $0.sortOrder < $1.sortOrder })
+            // Update medication array
+            let med = medication[fromIndexPath.row]
+            medication.remove(at: fromIndexPath.row)
+            medication.insert(med, at: toIndexPath.row)
+            
+            // Update sort order
+            for (index, med) in medication.enumerated() {
+                med.sortOrder = Int16(index)
+            }
 
             cdStack.save()
 
@@ -401,9 +425,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         return true
     }
     
-    // Empty implementation required for backwards compatibility (iOS 8.x)
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {}
-    
     @available(iOS 11.0, *)
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let takeAction = UIContextualAction(style: .normal, title: "Take\nDose") { (action, view, success: (Bool) -> Void) in
@@ -411,7 +432,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             success(true)
         }
 
-        takeAction.backgroundColor = UIColor.orange
+        takeAction.image = UIImage(named: "TakeDoseAction")
+        takeAction.backgroundColor = UIColor.darkGray
 
         return UISwipeActionsConfiguration(actions: [takeAction])
     }
@@ -460,8 +482,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
     }
     
     @IBAction func selectAddButton(_ sender: UIButton) {
-        let cell = (sender.superview?.superview as! MedicineCell)
-        if let indexPath = self.tableView.indexPath(for: cell) {
+        let pos = sender.convert(CGPoint(), to: tableView)
+        if let indexPath = tableView.indexPathForRow(at: pos) {
             presentActionMenu(indexPath)
         }
     }
@@ -517,11 +539,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                 
-                // Update spotlight index values
-                (self.tabBarController as! MainTBC).indexMedication()
-                
-                // Update shortcuts
-                self.setDynamicShortcuts()
+                // Update spotlight index values and home screen shortcuts
+                self.tbc?.indexMedication()
+                self.tbc?.setDynamicShortcuts()
             }))
             
             // If last dose is set, allow user to undo last dose
@@ -538,11 +558,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
                         
                         self.updateHeader()
                         
-                        // Update spotlight index values
-                        (self.tabBarController as! MainTBC).indexMedication()
-                        
-                        // Update shortcuts
-                        self.setDynamicShortcuts()
+                        // Update spotlight index values and home screen shortcuts
+                        self.tbc?.indexMedication()
+                        self.tbc?.setDynamicShortcuts()
                     } else {
                         self.tableView.deselectRow(at: index, animated: false)
                     }
@@ -626,11 +644,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         cdStack.context.delete(med)
         cdStack.save()
         
-        // Update spotlight index
-        CSSearchableIndex.default().deleteSearchableItems(withIdentifiers: [med.medicineID], completionHandler: nil)
-        
-        // Update shortcuts
-        setDynamicShortcuts()
+        // Update spotlight index values and home screen shortcuts
+        tbc?.removeIndex(med: med)
+        tbc?.setDynamicShortcuts()
         
         if medication.count == 0 {
             displayEmptyView()
@@ -744,9 +760,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
             performSegue(withIdentifier: "upgrade", sender: self)
         }
     }
-    
-    
-    // MARK: - IAP methods
+}
+
+// MARK: - IAP methods
+extension MainVC: SKPaymentTransactionObserver {
     func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         for transaction in transactions {
             switch (transaction.transactionState) {
@@ -844,40 +861,5 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate, SKPa
         dismiss(animated: true) { () -> Void in
             self.performSegue(withIdentifier: "addMedication", sender: self)
         }
-    }
-    
-    
-    // MARK: - Helper methods
-    func setDynamicShortcuts() {
-        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-        request.predicate = NSPredicate(format: "reminderEnabled == true", argumentArray: [])
-        request.sortDescriptors = [NSSortDescriptor(key: "dateNextDose", ascending: true)]
-        if let med = (try? cdStack.context.fetch(request))?.first {
-            // Set shortcut for overdue item
-            if med.isOverdue().flag {
-                let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.overdue",
-                                                             localizedTitle: "Overdue",
-                                                             localizedSubtitle: "\(med.name!)",
-                    icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
-                    userInfo: ["action" : "takeDose", "medID" : med.medicineID])
-                
-                UIApplication.shared.shortcutItems = [shortcutItem]
-                return
-            } else if let date = med.nextDose {
-                let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
-                let subtitle = "\(Medicine.dateString(date)): \(dose) of \(med.name!)"
-                
-                let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
-                                                             localizedTitle: "Take Next Dose",
-                                                             localizedSubtitle: subtitle,
-                                                             icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
-                                                             userInfo: ["action" : "takeDose", "medID" : med.medicineID])
-                
-                UIApplication.shared.shortcutItems = [shortcutItem]
-                return
-            }
-        }
-        
-        UIApplication.shared.shortcutItems = []
     }
 }

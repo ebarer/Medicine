@@ -67,9 +67,8 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         }
         
         // Update actions
-        actionCell.backgroundColor = tableView.separatorColor
-        takeDoseButton.backgroundColor = UIColor.white
-        refillButton.backgroundColor = UIColor.white
+        takeDoseButton.layer.cornerRadius = 10.0
+        refillButton.layer.cornerRadius = 10.0
         
         displayEmptyView()
         updateLabels()
@@ -84,9 +83,20 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     @objc func refreshDetails() {
         // Select first medication if none selected
         if med == nil {
-            let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-            request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-            if let medication = try? cdStack.context.fetch(request) {
+            let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+            
+            if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
+                // Sort by next dose
+                fetchRequest.sortDescriptors = [
+                    NSSortDescriptor(key: "reminderEnabled", ascending: false),
+                    NSSortDescriptor(key: "dateNextDose", ascending: true)
+                ]
+            } else {
+                // Sort by manually defined sort order
+                fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+            }
+            
+            if let medication = try? cdStack.context.fetch(fetchRequest) {
                 self.med = medication.first
             }
         }
@@ -179,7 +189,8 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             } else {
                 // If medication is overdue, set subtitle to next dosage date and tint red
                 if med.isOverdue().flag {
-                    nameCell.imageView?.image = UIImage(named: "OverdueIcon")
+                    nameCell.imageView?.image = UIImage(named: "OverdueGlyph")
+                    nameCell.imageView?.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
                     nameLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
                     
                     doseTitle.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
@@ -187,7 +198,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
 
                     if let date = med.isOverdue().overdueDose {
                         doseLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                        doseLabel.font = UIFont.systemFont(ofSize: 16.0, weight: UIFont.Weight.semibold)
+                        doseLabel.font = UIFont.systemFont(ofSize: 16.0, weight: UIFont.Weight.medium)
                         doseLabel.text = Medicine.dateString(date)
                     }
                 }
@@ -206,16 +217,26 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         }
     }
     
+    // MARK: - Button events
+    @IBAction func touchDown(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.2) {
+            sender.layer.backgroundColor = UIColor(white: 0.82, alpha: 1).cgColor
+        }
+    }
+    
+    @IBAction func touchUp(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.2) {
+            sender.layer.backgroundColor = UIColor(white: 0.92, alpha: 1).cgColor
+        }
+    }
     
     // MARK: - Table view data source
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch section {
         case Rows.name.index().section:
             return 15.0
-        case Rows.actions.index().section where (med?.prescriptionCount ?? 0) > 0:
-            return 20.0
         case Rows.notes.index().section:
-            return 25.0
+            return ((med?.prescriptionCount ?? 0) > 0) ? 45.0 : 25.0
         default:
             return 1.0
         }
@@ -230,44 +251,33 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let row = Rows(index: indexPath)
-        
-        switch row {
+        switch Rows(index: indexPath) {
         case Rows.name:
-            return 60.0
+            return 70.0
         case Rows.prescriptionCount:
-            if (med?.refillHistory?.count ?? 0) > 0 {
-                return tableView.rowHeight
-            }
+            return ((med?.refillHistory?.count ?? 0) > 0) ? tableView.rowHeight : 0.0
         case Rows.actions:
-            return 50.0
-        case Rows.doseHistory,
-             Rows.refillHistory,
-             Rows.delete:
-            return 50.0
+            return 100.0
         case Rows.notes:
             let height = notesField.contentSize.height + 10
             return (height > 75.0) ? height : 75.0
         default:
-            return tableView.rowHeight
+            return 50.0
         }
-        
-        return 0.0
     }
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let row = Rows(index: indexPath)
-        
         cell.preservesSuperviewLayoutMargins = true
         
-        switch(row) {
+        switch Rows(index: indexPath) {
         case Rows.doseDetails:
             if med?.refillHistory?.count == 0 {
-                cell.preservesSuperviewLayoutMargins = false
-                cell.layoutMargins = UIEdgeInsets.zero
                 cell.separatorInset = UIEdgeInsets.zero
-                cell.contentView.layoutMargins = tableView.separatorInset
             }
+        case Rows.prescriptionCount:
+            cell.separatorInset = UIEdgeInsets.zero
+        case Rows.actions:
+            cell.separatorInset = UIEdgeInsets.zero
         default: break
         }
     }
@@ -330,16 +340,6 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     // MARK: - Actions
     @objc func editMedication() {
         performSegue(withIdentifier: "editMedication", sender: nil)
-    }
-    
-    @IBAction func actionSelected(_ sender: UIButton) {
-        if med != nil {
-            sender.backgroundColor = tableView.separatorColor
-        }
-    }
-    
-    @IBAction func actionDeselected(_ sender: UIButton) {
-        sender.backgroundColor = UIColor.white
     }
 
     func presentDeleteAlert(_ indexPath: IndexPath) {
@@ -430,13 +430,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let med = med {
-            self.navigationItem.backBarButtonItem?.title = med.name
-            
-            if let button = sender as? UIButton {
-                actionDeselected(button)
-            }
-            
+        if med != nil {
             if segue.identifier == "editMedication" {
                 if let vc = segue.destination.childViewControllers[0] as? AddMedicationTVC {
                     vc.med = self.med
@@ -497,15 +491,15 @@ private enum Rows: Int {
             row = Rows.doseDetails
         case (0, 3):
             row = Rows.prescriptionCount
-        case (1, 0):
+        case (0, 4):
             row = Rows.actions
-        case (2, 0):
+        case (0, 5):
             row = Rows.doseHistory
-        case (2, 1):
+        case (0, 6):
             row = Rows.refillHistory
-        case (3, 0):
+        case (1, 0):
             row = Rows.notes
-        case (4, 0):
+        case (2, 0):
             row = Rows.delete
         default:
             row = Rows.none
@@ -525,15 +519,15 @@ private enum Rows: Int {
         case .prescriptionCount:
             return IndexPath(row: 3, section: 0)
         case .actions:
-            return IndexPath(row: 0, section: 1)
+            return IndexPath(row: 4, section: 0)
         case .doseHistory:
-            return IndexPath(row: 0, section: 2)
+            return IndexPath(row: 5, section: 0)
         case .refillHistory:
-            return IndexPath(row: 1, section: 2)
+            return IndexPath(row: 6, section: 0)
         case .notes:
-            return IndexPath(row: 0, section: 3)
+            return IndexPath(row: 0, section: 1)
         case .delete:
-            return IndexPath(row: 0, section: 4)
+            return IndexPath(row: 0, section: 2)
         default:
             return IndexPath(row: 0, section: 0)
         }
