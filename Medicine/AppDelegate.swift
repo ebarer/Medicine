@@ -139,6 +139,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         let actionIdentifier = response.actionIdentifier
         let notificationIdentifier = response.notification.request.identifier
+        let category = response.notification.request.content.categoryIdentifier
         let userInfo = response.notification.request.content.userInfo
 
         NSLog("Notification received (background): \(notificationIdentifier), \(actionIdentifier), \(userInfo)")
@@ -153,6 +154,16 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         
         if actionIdentifier == "refillMed" {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refillAction"), object: nil, userInfo: userInfo)
+        }
+        
+        if actionIdentifier == UNNotificationDefaultActionIdentifier {
+            if category == "Dose Reminder" || category == "Dose Reminder - No Snooze" {
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "doseNotification"), object: nil, userInfo: userInfo)
+            }
+            
+            if category == "Refill Reminder" {
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refillNotification"), object: nil, userInfo: userInfo)
+            }
         }
         
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationIdentifier])

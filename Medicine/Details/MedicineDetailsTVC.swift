@@ -323,7 +323,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         
         switch row {
         case Rows.name:
-            performSegue(withIdentifier: "editMedication", sender: nil)
+            performSegue(withIdentifier: "editMedication", sender: indexPath)
         case Rows.nextDose:
             performSegue(withIdentifier: "addDose", sender: nil)
         case Rows.prescriptionCount:
@@ -365,6 +365,9 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         if med.isOverdue().flag {
             alert.addAction(UIAlertAction(title: "Snooze Dose", style: UIAlertActionStyle.default, handler: {(action) -> Void in
                 med.snoozeNotification()
+                
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
             }))
         }
         
@@ -392,6 +395,9 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
                     // Update spotlight index values and home screen shortcuts
                     self.tbc?.indexMedication()
                     self.tbc?.setDynamicShortcuts()
+                    
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                 }
             }))
         }
@@ -501,6 +507,9 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
                 if let vc = segue.destination.childViewControllers[0] as? AddMedicationTVC {
                     vc.med = self.med
                     vc.editMode = true
+                    if let index = sender as? IndexPath, index == Rows.name.index() {
+                        vc.editName = true
+                    }
                 }
             }
             

@@ -218,67 +218,68 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="99.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="RYb-iA-Krs">
-                                                    <rect key="frame" x="13" y="23" width="349" height="53.5"/>
-                                                    <subviews>
-                                                        <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="10" baselineRelativeArrangement="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Akw-E5-vV1">
-                                                            <rect key="frame" x="0.0" y="0.0" width="311" height="53.5"/>
-                                                            <subviews>
-                                                                <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" horizontalCompressionResistancePriority="749" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Mf-Xz-vhH">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="150.5" height="53.5"/>
-                                                                    <color key="backgroundColor" white="0.92000000000000004" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                                    <state key="normal" title="Take Dose">
-                                                                        <color key="titleColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                    </state>
-                                                                    <connections>
-                                                                        <action selector="touchDown:" destination="bId-i9-gti" eventType="touchDown" id="CTv-pN-UcH"/>
-                                                                        <action selector="touchDown:" destination="bId-i9-gti" eventType="touchDragEnter" id="oOY-N4-ViO"/>
-                                                                        <action selector="touchUp:" destination="bId-i9-gti" eventType="touchUpOutside" id="JMa-6c-rTu"/>
-                                                                        <action selector="touchUp:" destination="bId-i9-gti" eventType="touchDragExit" id="UR5-pf-9M0"/>
-                                                                        <action selector="touchUp:" destination="bId-i9-gti" eventType="touchUpInside" id="hNL-r4-SnS"/>
-                                                                        <segue destination="n11-MU-3fJ" kind="presentation" identifier="addDose" modalPresentationStyle="formSheet" id="9EP-VD-gAR"/>
-                                                                    </connections>
-                                                                </button>
-                                                                <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xXh-Of-6Gb">
-                                                                    <rect key="frame" x="160.5" y="0.0" width="150.5" height="53.5"/>
-                                                                    <color key="backgroundColor" white="0.92000000000000004" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                                    <state key="normal" title="Refill">
-                                                                        <color key="titleColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                    </state>
-                                                                    <connections>
-                                                                        <action selector="touchDown:" destination="bId-i9-gti" eventType="touchDragEnter" id="XlL-Jq-fWC"/>
-                                                                        <action selector="touchDown:" destination="bId-i9-gti" eventType="touchDown" id="bQA-0N-9tW"/>
-                                                                        <action selector="touchUp:" destination="bId-i9-gti" eventType="touchDragExit" id="Dc8-hW-vAO"/>
-                                                                        <action selector="touchUp:" destination="bId-i9-gti" eventType="touchUpOutside" id="Uxu-n1-9tm"/>
-                                                                        <action selector="touchUp:" destination="bId-i9-gti" eventType="touchUpInside" id="ego-38-kqC"/>
-                                                                        <segue destination="pyR-Rp-6Sn" kind="presentation" identifier="refillPrescription" modalPresentationStyle="formSheet" id="aZS-QS-W9W"/>
-                                                                    </connections>
-                                                                </button>
-                                                            </subviews>
-                                                        </stackView>
-                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W2p-CR-pRq">
-                                                            <rect key="frame" x="321" y="0.0" width="28" height="53.5"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="width" constant="28" id="DTZ-Jm-QXz"/>
-                                                            </constraints>
-                                                            <state key="normal" image="ActionButton"/>
-                                                            <connections>
-                                                                <action selector="presentActionMenu:" destination="bId-i9-gti" eventType="touchUpInside" id="Edp-sB-cfR"/>
-                                                            </connections>
-                                                        </button>
-                                                    </subviews>
-                                                </stackView>
+                                                <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" horizontalCompressionResistancePriority="749" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Mf-Xz-vhH">
+                                                    <rect key="frame" x="15" y="25" width="148" height="50"/>
+                                                    <color key="backgroundColor" white="0.92000000000000004" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="50" id="S3P-W2-LV3"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <state key="normal" title="Take Dose">
+                                                        <color key="titleColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    </state>
+                                                    <connections>
+                                                        <action selector="touchDown:" destination="bId-i9-gti" eventType="touchDown" id="CTv-pN-UcH"/>
+                                                        <action selector="touchDown:" destination="bId-i9-gti" eventType="touchDragEnter" id="oOY-N4-ViO"/>
+                                                        <action selector="touchUp:" destination="bId-i9-gti" eventType="touchUpOutside" id="JMa-6c-rTu"/>
+                                                        <action selector="touchUp:" destination="bId-i9-gti" eventType="touchDragExit" id="UR5-pf-9M0"/>
+                                                        <action selector="touchUp:" destination="bId-i9-gti" eventType="touchUpInside" id="hNL-r4-SnS"/>
+                                                        <segue destination="n11-MU-3fJ" kind="presentation" identifier="addDose" modalPresentationStyle="formSheet" id="9EP-VD-gAR"/>
+                                                    </connections>
+                                                </button>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W2p-CR-pRq">
+                                                    <rect key="frame" x="173" y="36" width="28" height="28"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="28" id="DTZ-Jm-QXz"/>
+                                                        <constraint firstAttribute="height" constant="28" id="UkD-gH-xci"/>
+                                                    </constraints>
+                                                    <state key="normal" image="ActionButton"/>
+                                                    <connections>
+                                                        <action selector="presentActionMenu:" destination="bId-i9-gti" eventType="touchUpInside" id="Edp-sB-cfR"/>
+                                                    </connections>
+                                                </button>
+                                                <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xXh-Of-6Gb">
+                                                    <rect key="frame" x="211" y="25" width="149" height="50"/>
+                                                    <color key="backgroundColor" white="0.92000000000000004" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="50" id="6D1-30-Tua"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <state key="normal" title="Refill">
+                                                        <color key="titleColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    </state>
+                                                    <connections>
+                                                        <action selector="touchDown:" destination="bId-i9-gti" eventType="touchDragEnter" id="XlL-Jq-fWC"/>
+                                                        <action selector="touchDown:" destination="bId-i9-gti" eventType="touchDown" id="bQA-0N-9tW"/>
+                                                        <action selector="touchUp:" destination="bId-i9-gti" eventType="touchDragExit" id="Dc8-hW-vAO"/>
+                                                        <action selector="touchUp:" destination="bId-i9-gti" eventType="touchUpOutside" id="Uxu-n1-9tm"/>
+                                                        <action selector="touchUp:" destination="bId-i9-gti" eventType="touchUpInside" id="ego-38-kqC"/>
+                                                        <segue destination="pyR-Rp-6Sn" kind="presentation" identifier="refillPrescription" modalPresentationStyle="formSheet" id="aZS-QS-W9W"/>
+                                                    </connections>
+                                                </button>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="RYb-iA-Krs" firstAttribute="top" secondItem="Y4a-C3-dXI" secondAttribute="topMargin" constant="15" id="1Vt-oM-FcO"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="RYb-iA-Krs" secondAttribute="bottom" constant="15" id="aw8-2S-jrl"/>
-                                                <constraint firstItem="RYb-iA-Krs" firstAttribute="leading" secondItem="Y4a-C3-dXI" secondAttribute="leadingMargin" constant="5" id="c0s-f8-793"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="RYb-iA-Krs" secondAttribute="trailing" constant="5" id="fET-Bu-MJR"/>
+                                                <constraint firstItem="7Mf-Xz-vhH" firstAttribute="leading" secondItem="Y4a-C3-dXI" secondAttribute="leading" constant="15" id="Cym-DX-806"/>
+                                                <constraint firstItem="W2p-CR-pRq" firstAttribute="leading" secondItem="7Mf-Xz-vhH" secondAttribute="trailing" constant="10" id="PVG-E0-u57"/>
+                                                <constraint firstItem="W2p-CR-pRq" firstAttribute="centerX" secondItem="Y4a-C3-dXI" secondAttribute="centerX" id="dj2-4y-Wyc"/>
+                                                <constraint firstItem="xXh-Of-6Gb" firstAttribute="centerY" secondItem="Y4a-C3-dXI" secondAttribute="centerY" id="k9s-IV-3Of"/>
+                                                <constraint firstItem="xXh-Of-6Gb" firstAttribute="leading" secondItem="W2p-CR-pRq" secondAttribute="trailing" constant="10" id="kUF-nD-zRd"/>
+                                                <constraint firstItem="7Mf-Xz-vhH" firstAttribute="centerY" secondItem="Y4a-C3-dXI" secondAttribute="centerY" id="qBz-dW-Cdr"/>
+                                                <constraint firstAttribute="trailing" secondItem="xXh-Of-6Gb" secondAttribute="trailing" constant="15" id="vgi-R4-Fb0"/>
+                                                <constraint firstItem="W2p-CR-pRq" firstAttribute="centerY" secondItem="Y4a-C3-dXI" secondAttribute="centerY" id="yUM-02-8QC"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" white="0.97999999999999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="doseHistoryCell" textLabel="u7p-Qm-u0R" imageView="jEk-A0-Gso" rowHeight="50" style="IBUITableViewCellStyleDefault" id="PRK-SG-2FB">
@@ -408,7 +409,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0ju-qm-6jC" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="449" y="1140"/>
+            <point key="canvasLocation" x="448.80000000000001" y="1139.2803598200901"/>
         </scene>
         <!--AddMedication-->
         <scene sceneID="0f3-H2-g5u">

@@ -14,6 +14,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     var med: Medicine!
     var editMode: Bool = false
+    var editName: Bool = false
     
     
     // MARK: - Outlets
@@ -76,7 +77,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if med.name == nil || med.name?.isEmpty == true {
+        if med.name == nil || med.name?.isEmpty == true || editName {
             medicationName.becomeFirstResponder()
         }
     }

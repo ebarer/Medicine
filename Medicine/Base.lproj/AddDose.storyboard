@@ -146,7 +146,7 @@
                                 <action selector="cancelDose:" destination="HPy-gl-Dzk" id="lGu-sJ-rg9"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="irm-aw-TcC">
+                        <barButtonItem key="rightBarButtonItem" style="done" systemItem="save" id="irm-aw-TcC">
                             <connections>
                                 <action selector="saveDose:" destination="HPy-gl-Dzk" id="RHj-yg-FYs"/>
                             </connections>

@@ -231,7 +231,7 @@
                                 <action selector="cancelRefill:" destination="VWf-LW-CiA" id="QiX-OO-0bI"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="SYX-7O-NPd">
+                        <barButtonItem key="rightBarButtonItem" style="done" systemItem="save" id="SYX-7O-NPd">
                             <connections>
                                 <action selector="saveRefill:" destination="VWf-LW-CiA" id="3TG-Be-QTp"/>
                             </connections>
