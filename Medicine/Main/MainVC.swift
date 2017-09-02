@@ -26,6 +26,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     // MARK: - Helper variables
     let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    var timer: Timer?
     
     var tbc: MainTBC? {
         return self.tabBarController as? MainTBC
@@ -76,9 +77,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         // Remove tableView gap
         tableView.separatorStyle = .none
         
-        // Setup refresh timer
-        let _ = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(refreshTable), userInfo: nil, repeats: true)
-        
         // Display tutorial on first launch
         let dictionary = Bundle.main.infoDictionary!
         let version = dictionary["CFBundleShortVersionString"] as! String
@@ -126,15 +124,15 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(true, animated: true)
         
-        loadMedication()
+        refreshMainVC()
         
         // Deselect selection
-        if let collapsed = self.splitViewController?.isCollapsed, collapsed == true {
+//        if let collapsed = self.splitViewController?.isCollapsed, collapsed == true {
             selectMed()
             
             if let selectedIndex = self.tableView.indexPathForSelectedRow {
                 if let cell = self.tableView.cellForRow(at: selectedIndex) as? MedicineCell {
-                    cell.cellFrame?.layer.backgroundColor = UIColor(white: 0.9, alpha: 1).cgColor
+                    cell.cellFrame?.layer.backgroundColor = UIColor(white: 0.95, alpha: 1).cgColor
 
                     self.transitionCoordinator?.animate(alongsideTransition: { (context) in
                         cell.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
@@ -146,9 +144,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                     })
                 }
             }
-        }
-        
-        refreshMainVC()
+//        }
         
         // Handle home screen shortcuts (selected by user)
         if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
@@ -168,8 +164,15 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         // Update spotlight index values and home screen shortcuts
         tbc?.indexMedication()
         tbc?.setDynamicShortcuts()
-        
-        self.view.layoutIfNeeded()
+
+        // Setup refresh timer
+        timer = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(refreshTable), userInfo: nil, repeats: true)
+        NSLog("Activate timer")
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        NSLog("Deactivate timer")
+        timer?.invalidate()
     }
     
     override func didReceiveMemoryWarning() {
@@ -187,6 +190,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         
         let reload = notification?.userInfo?["reload"] as? Bool
         if reload == nil || reload != false {
+            loadMedication()
             tableView.reloadData()
         }
         
@@ -268,7 +272,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 headerCounterLabel.attributedText = string
             }
             // Show next scheduled dose
-            else {
+            else if Calendar.current.isDateInToday(date) {
                 headerDescriptionLabel.text = "Next Dose"
 
                 dateFormatter.dateFormat = "h:mm a"
@@ -346,10 +350,12 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         cell.title.text = med.name
         cell.title.textColor = UIColor.black
         
+        // Show add button
+        cell.hideButton(false)
+        
         // Set subtitle and attributes
         cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
         cell.subtitle.textColor = UIColor.black
-        cell.hideButton(false)
         let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
         
         // If no doses taken, and medication is hourly
@@ -402,8 +408,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
         
         // Add long press gesture recognizer
-        longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(takeDose(_:)))
-        cell.longPressGesture = longPressGesture
+//        longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(takeDose(_:)))
+//        cell.longPressGesture = longPressGesture
         
         return cell
     }
@@ -603,9 +609,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             
             // Set popover for iPad
             if let cell = tableView.cellForRow(at: index) as? MedicineCell {
-                alert.popoverPresentationController?.sourceView = cell.title
-                let rect = CGRect(x: cell.title.bounds.origin.x, y: cell.title.bounds.origin.y, width: cell.title.bounds.width + 5, height: cell.title.bounds.height)
-                alert.popoverPresentationController?.sourceRect = rect
+                alert.popoverPresentationController?.sourceView = cell.addButton
+                alert.popoverPresentationController?.sourceRect = cell.addButton.bounds.insetBy(dx: 7, dy: 0)
                 alert.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.left
             }
             

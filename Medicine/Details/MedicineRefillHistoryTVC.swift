@@ -29,6 +29,8 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.tableView.cellLayoutMarginsFollowReadableWidth = true
+        
         // Modify VC
         self.title = "Refill History"
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
@@ -55,11 +57,9 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: NSNotification.Name(rawValue: "refreshView"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
         
-        // Define request for Doses        
-        let cutoffDate = Calendar.current.date(byAdding: .year, value: -1, to: Date())!
+        // Define request for Doses
         let request: NSFetchRequest<NSFetchRequestResult> = Refill.fetchRequest()
-        request.predicate = NSPredicate(format: "medicine.medicineID == %@ && date >= %@",
-                                        argumentArray: [med.medicineID, cutoffDate])
+        request.predicate = NSPredicate(format: "medicine.medicineID == %@", argumentArray: [med.medicineID])
         request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         request.fetchLimit = 500
         
@@ -114,6 +114,10 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
         return nil
     }
     
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 85.0
+    }
+    
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if let fc = fetchedResultsController {
             let dateFormatter = DateFormatter()
@@ -125,16 +129,16 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
             if cal.isDateInToday(sectionDate) {
                 dateFormatter.timeStyle = DateFormatter.Style.none
                 dateFormatter.dateStyle = DateFormatter.Style.medium
-                return "Today  \(dateFormatter.string(from: sectionDate))"
+                return "Today\n\(dateFormatter.string(from: sectionDate))"
             } else if cal.isDateInYesterday(sectionDate) {
                 dateFormatter.timeStyle = DateFormatter.Style.none
                 dateFormatter.dateStyle = DateFormatter.Style.medium
-                return "Yesterday  \(dateFormatter.string(from: sectionDate))"
+                return "Yesterday\n\(dateFormatter.string(from: sectionDate))"
             } else if sectionDate.isDateInLastWeek() {
-                dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
+                dateFormatter.dateFormat = "EEEE\nMMMM d, YYYY"
                 return dateFormatter.string(from: sectionDate)
             } else {
-                dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
+                dateFormatter.dateFormat = "EEEE\nMMMM d, YYYY"
                 return dateFormatter.string(from: sectionDate)
             }
         } else {
@@ -154,19 +158,21 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
             
             // Set header title
             header.textLabel?.text = header.textLabel?.text?.uppercased()
-            header.textLabel?.textColor = UIColor(white: 0.43, alpha: 1.0)
+            header.textLabel?.textColor = UIColor(white: 0, alpha: 0.3)
+            header.textLabel?.textAlignment = .left
             
             if let text = header.textLabel?.text {
                 let string = NSMutableAttributedString(string: text)
-                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 13.0), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 14.0), range: NSMakeRange(0, string.length))
                 
-                if Calendar.current.isDateInToday(sectionDate) {
-                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, string.length))
-                }
-                
-                if let index = text.characters.index(of: " ") {
+                if let index = text.characters.index(of: "\n") {
                     let pos = text.characters.distance(from: text.startIndex, to: index)
-                    string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 13.0, weight: UIFont.Weight.semibold), range: NSMakeRange(0, pos))
+                    string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 20.0, weight: UIFont.Weight.semibold), range: NSMakeRange(0, pos))
+                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(white: 0, alpha: 0.7), range: NSMakeRange(0, pos))
+                    
+                    if Calendar.current.isDateInToday(sectionDate) {
+                        string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, pos))
+                    }
                 }
                 
                 header.textLabel?.attributedText = string
@@ -180,14 +186,14 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if let fc = fetchedResultsController {
             let count = fc.sections![indexPath.section].numberOfObjects
-            return (count > 0) ? 55.0 : tableView.rowHeight
+            return (count > 0) ? 50.0 : tableView.rowHeight
         }
         
         return tableView.rowHeight
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "historyCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "historyCell", for: indexPath) as! HistoryCell
         
         if let refill = self.fetchedResultsController!.object(at: indexPath) as? Refill {
             // Setup date formatter
@@ -196,19 +202,25 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
             
             // Specify selection color
             cell.selectedBackgroundView = UIView()
+            cell.historyLabel?.isHidden = true
             
             // Setup cell
             let refillAmount = (refill.quantity * refill.conversion).removeTrailingZero()
-            var amount = "\(refillAmount) \(med.dosageUnit.units(med.prescriptionCount))"
+            var amount = "Added \(refillAmount) \(med.dosageUnit.units(med.prescriptionCount))"
             
             if refill.conversion != 1.0 {
                 amount += " (\(refill.quantity.removeTrailingZero()) \(refill.quantityUnit.units(refill.quantity)))"
             }
             
-            cell.textLabel?.textColor = UIColor.black
-            cell.textLabel?.text = amount
-            cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-            cell.detailTextLabel?.text = dateFormatter.string(from: refill.date as Date)
+            cell.dateLabel?.text = dateFormatter.string(from: refill.date)
+            
+            cell.medLabel?.text = amount
+            cell.medLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        } else {
+            cell.dateLabel?.isHidden = true
+            
+            cell.medLabel?.text = "No refills logged"
+            cell.medLabel?.textColor = UIColor(white: 0, alpha: 0.2)
         }
         
         return cell

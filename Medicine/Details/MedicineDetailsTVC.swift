@@ -14,7 +14,6 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     
     weak var med:Medicine?
     
-    
     // MARK: - Outlets
     @IBOutlet var nameCell: UITableViewCell!
     @IBOutlet var nameLabel: UILabel!
@@ -26,12 +25,17 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     @IBOutlet var actionCell: UITableViewCell!
     @IBOutlet var takeDoseButton: UIButton!
     @IBOutlet var refillButton: UIButton!
+    @IBOutlet var actionsButton: UIButton!
     @IBOutlet var notesField: UITextView!
     
     
     // MARK: - Helper variables
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
+    
+    var tbc: MainTBC? {
+        return self.tabBarController as? MainTBC
+    }
     
     let cal = Calendar.current
     let dateFormatter = DateFormatter()
@@ -344,6 +348,64 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     // MARK: - Actions
     @objc func editMedication() {
         performSegue(withIdentifier: "editMedication", sender: nil)
+    }
+    
+    @IBAction func presentActionMenu(_ sender: UIButton) {
+        guard let med = med else {
+            return
+        }
+        
+        var dateString: String? = nil
+        if let date = med.lastDose?.date {
+            dateString = "Last Dose: \(Medicine.dateString(date, today: true))"
+        }
+        
+        let alert = UIAlertController(title: med.name, message: dateString, preferredStyle: UIAlertControllerStyle.actionSheet)
+        
+        if med.isOverdue().flag {
+            alert.addAction(UIAlertAction(title: "Snooze Dose", style: UIAlertActionStyle.default, handler: {(action) -> Void in
+                med.snoozeNotification()
+            }))
+        }
+        
+        alert.addAction(UIAlertAction(title: "Skip Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
+            let dose = Dose(insertInto: self.cdStack.context)
+            dose.date = Date()
+            dose.dosage = -1
+            dose.dosageUnit = med.dosageUnit
+            med.addDose(dose)
+            
+            self.cdStack.save()
+            
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+            
+            // Update spotlight index values and home screen shortcuts
+            self.tbc?.indexMedication()
+            self.tbc?.setDynamicShortcuts()
+        }))
+        
+        // If last dose is set, allow user to undo last dose
+        if (med.lastDose != nil) {
+            alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
+                if (med.untakeLastDose(self.cdStack.context)) {
+                    // Update spotlight index values and home screen shortcuts
+                    self.tbc?.indexMedication()
+                    self.tbc?.setDynamicShortcuts()
+                }
+            }))
+        }
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel))
+        
+        // Set popover for iPad
+        alert.popoverPresentationController?.sourceView = actionsButton
+        alert.popoverPresentationController?.sourceRect = actionsButton.bounds.insetBy(dx: 0, dy: 14)
+        alert.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.up
+        
+        alert.view.layoutIfNeeded()
+        alert.view.tintColor = UIColor.gray
+        present(alert, animated: true, completion: nil)
     }
 
     func presentDeleteAlert(_ indexPath: IndexPath) {

@@ -28,10 +28,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 // Configure split view on startup
                 splitView.delegate = self
                 
-                let minWidth = min(splitView.view.bounds.width, splitView.view.bounds.height)
-                let maxWidth = max(splitView.view.bounds.width, splitView.view.bounds.height)
-                splitView.minimumPrimaryColumnWidth = minWidth / 2
-                splitView.maximumPrimaryColumnWidth = maxWidth / 2
+                let bounds = splitView.view.bounds
+                splitView.minimumPrimaryColumnWidth = bounds.width / 3
+                splitView.maximumPrimaryColumnWidth = bounds.width / 2
+                splitView.preferredPrimaryColumnWidthFraction = 0.4
 
                 let detailNVC = splitView.viewControllers[1] as! UINavigationController
                 detailNVC.topViewController?.navigationItem.leftBarButtonItem = splitView.displayModeButtonItem
@@ -137,36 +137,41 @@ extension AppDelegate: UISplitViewControllerDelegate {
 // MARK: - Notifications
 extension AppDelegate: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        let actionIdentifier = response.actionIdentifier
+        let notificationIdentifier = response.notification.request.identifier
         let userInfo = response.notification.request.content.userInfo
 
-        NSLog("Received \"\(response.actionIdentifier)\" -> \(userInfo)", [])
+        NSLog("Notification received (background): \(notificationIdentifier), \(actionIdentifier), \(userInfo)")
         
-        if response.actionIdentifier == "takeDose" {
+        if actionIdentifier == "takeDose" {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "takeDoseAction"), object: nil, userInfo: userInfo)
         }
         
-        if response.actionIdentifier == "snoozeReminder" {
+        if actionIdentifier == "snoozeReminder" {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "snoozeReminderAction"), object: nil, userInfo: userInfo)
         }
         
-        if response.actionIdentifier == "refillMed" {
+        if actionIdentifier == "refillMed" {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refillAction"), object: nil, userInfo: userInfo)
         }
+        
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationIdentifier])
         
         completionHandler()
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-
         let identifier = notification.request.identifier
-        let userInfo = notification.request.content.userInfo
         let category = notification.request.content.categoryIdentifier
+        let userInfo = notification.request.content.userInfo
 
-        NSLog("Local notification received: %@ %@: %@", identifier, category, userInfo)
+        NSLog("Notification received (foreground): \(identifier), \(category), \(userInfo)")
         
         if category == "Dose Reminder" || category == "Dose Reminder - No Snooze" {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "doseNotification"), object: nil, userInfo: userInfo)
-        } else if category == "Refill Reminder" {
+        }
+        
+        if category == "Refill Reminder" {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refillNotification"), object: nil, userInfo: userInfo)
         }
 

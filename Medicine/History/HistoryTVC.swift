@@ -47,9 +47,7 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
         
         // Define request for Doses
-        let cutoffDate = Calendar.current.date(byAdding: .year, value: -1, to: Date())!
         let request: NSFetchRequest<NSFetchRequestResult> = Dose.fetchRequest()
-        request.predicate = NSPredicate(format: "date >= %@", argumentArray: [cutoffDate])
         request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         request.fetchLimit = 300
 
@@ -62,7 +60,6 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        executeSearch()
         refreshView()
     }
     
@@ -198,25 +195,29 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
             
             // Specify selection color
             cell.selectedBackgroundView = UIView()
+            
             if dose.dosage > 0 {
+                cell.dateLabel?.text = dateFormatter.string(from: dose.date)
+                
                 cell.medLabel?.text = med.name
-                cell.dateLabel?.text = "\(dateFormatter.string(from: dose.date))"
+                
                 cell.historyLabel?.text = String(format:"%g %@", dose.dosage, dose.dosageUnit.units(dose.dosage))
             } else {
+                cell.dateLabel?.text = dateFormatter.string(from: dose.date)
+                cell.dateLabel?.textColor = UIColor(white: 0, alpha: 0.2)
+                
                 cell.medLabel?.text = med.name
                 cell.medLabel?.textColor = UIColor(white: 0, alpha: 0.2)
-                
-                cell.dateLabel?.text = "\(dateFormatter.string(from: dose.date))"
-                cell.dateLabel?.textColor = UIColor(white: 0, alpha: 0.2)
                 
                 cell.historyLabel?.text = "Skipped"
                 cell.historyLabel?.textColor = UIColor(white: 0, alpha: 0.2)
             }
         } else {
+            cell.dateLabel?.isHidden = true
+            
             cell.medLabel?.text = "No doses logged"
             cell.medLabel?.textColor = UIColor(white: 0, alpha: 0.2)
-            
-            cell.dateLabel?.isHidden = true
+
             cell.historyLabel?.isHidden = true
         }
         

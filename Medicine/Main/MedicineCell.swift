@@ -16,11 +16,11 @@ class MedicineCell: UITableViewCell {
     @IBOutlet var subtitle: UILabel!
     @IBOutlet var subtitleGlyph: UIImageView!
     
-    var longPressGesture: UILongPressGestureRecognizer? {
-        didSet {
-            self.addGestureRecognizer(longPressGesture!)
-        }
-    }
+//    var longPressGesture: UILongPressGestureRecognizer? {
+//        didSet {
+//            self.addGestureRecognizer(longPressGesture!)
+//        }
+//    }
     
     // MARK: - Constraints
     @IBOutlet var glyphWidth: NSLayoutConstraint!
@@ -56,7 +56,7 @@ class MedicineCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
         
         if selected {
-            self.cellFrame?.layer.backgroundColor = UIColor(white: 0.9, alpha: 1).cgColor
+            self.cellFrame?.layer.backgroundColor = UIColor(white: 0.95, alpha: 1).cgColor
         } else {
             self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
         }
@@ -66,7 +66,7 @@ class MedicineCell: UITableViewCell {
         super.setHighlighted(highlighted, animated: animated)
         
         if highlighted {
-            self.cellFrame?.layer.backgroundColor = UIColor(white: 0.9, alpha: 1).cgColor
+            self.cellFrame?.layer.backgroundColor = UIColor(white: 0.95, alpha: 1).cgColor
         } else {
             self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
         }
@@ -76,22 +76,25 @@ class MedicineCell: UITableViewCell {
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
         
-        if let gesture = longPressGesture {
-            if editing {
-                if !rowEditing {
-                    self.hideButton(true)
-                }
-                self.removeGestureRecognizer(gesture)
-            } else {
-                self.hideButton(false)
-                self.addGestureRecognizer(gesture)
+//        guard let gesture = longPressGesture else {
+//            print("Gesture not defined")
+//            return
+//        }
+        
+        if editing {
+            if !rowEditing {
+                self.hideButton(true)
             }
+//            self.removeGestureRecognizer(gesture)
+        } else {
+            self.hideButton(false)
+//            self.addGestureRecognizer(gesture)
         }
     }
     
     override var frame: CGRect {
         didSet {
-            cellFrame?.layer.backgroundColor = UIColor.white.cgColor
+            self.setSelected(self.isSelected, animated: false)
         }
     }
     

@@ -27,6 +27,8 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.tableView.cellLayoutMarginsFollowReadableWidth = true
+        
         // Modify VC
         self.title = "Dose History"
         self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
@@ -54,10 +56,8 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
         
         // Define request for Doses
-        let cutoffDate = Calendar.current.date(byAdding: .year, value: -1, to: Date())!
         let request: NSFetchRequest<NSFetchRequestResult> = Dose.fetchRequest()
-        request.predicate = NSPredicate(format: "medicine.medicineID == %@ && date >= %@",
-                                        argumentArray: [med.medicineID, cutoffDate])
+        request.predicate = NSPredicate(format: "medicine.medicineID == %@", argumentArray: [med.medicineID])
         request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         request.fetchLimit = 300
 
@@ -112,6 +112,10 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
         return nil
     }
     
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 85.0
+    }
+    
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if let fc = fetchedResultsController {
             let dateFormatter = DateFormatter()
@@ -123,16 +127,16 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
             if cal.isDateInToday(sectionDate) {
                 dateFormatter.timeStyle = DateFormatter.Style.none
                 dateFormatter.dateStyle = DateFormatter.Style.medium
-                return "Today  \(dateFormatter.string(from: sectionDate))"
+                return "Today\n\(dateFormatter.string(from: sectionDate))"
             } else if cal.isDateInYesterday(sectionDate) {
                 dateFormatter.timeStyle = DateFormatter.Style.none
                 dateFormatter.dateStyle = DateFormatter.Style.medium
-                return "Yesterday  \(dateFormatter.string(from: sectionDate))"
+                return "Yesterday\n\(dateFormatter.string(from: sectionDate))"
             } else if sectionDate.isDateInLastWeek() {
-                dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
+                dateFormatter.dateFormat = "EEEE\nMMMM d, YYYY"
                 return dateFormatter.string(from: sectionDate)
             } else {
-                dateFormatter.dateFormat = "EEEE  MMM d, YYYY"
+                dateFormatter.dateFormat = "EEEE\nMMMM d, YYYY"
                 return dateFormatter.string(from: sectionDate)
             }
         } else {
@@ -152,19 +156,21 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
             
             // Set header title
             header.textLabel?.text = header.textLabel?.text?.uppercased()
-            header.textLabel?.textColor = UIColor(white: 0.43, alpha: 1.0)
+            header.textLabel?.textColor = UIColor(white: 0, alpha: 0.3)
+            header.textLabel?.textAlignment = .left
             
             if let text = header.textLabel?.text {
                 let string = NSMutableAttributedString(string: text)
-                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 13.0), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 14.0), range: NSMakeRange(0, string.length))
                 
-                if Calendar.current.isDateInToday(sectionDate) {
-                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, string.length))
-                }
-                
-                if let index = text.characters.index(of: " ") {
+                if let index = text.characters.index(of: "\n") {
                     let pos = text.characters.distance(from: text.startIndex, to: index)
-                    string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 13.0, weight: UIFont.Weight.semibold), range: NSMakeRange(0, pos))
+                    string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 20.0, weight: UIFont.Weight.semibold), range: NSMakeRange(0, pos))
+                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(white: 0, alpha: 0.7), range: NSMakeRange(0, pos))
+                    
+                    if Calendar.current.isDateInToday(sectionDate) {
+                        string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, pos))
+                    }
                 }
                 
                 header.textLabel?.attributedText = string
@@ -178,14 +184,14 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if let fc = fetchedResultsController {
             let count = fc.sections![indexPath.section].numberOfObjects
-            return (count > 0) ? 55.0 : tableView.rowHeight
+            return (count > 0) ? 50.0 : tableView.rowHeight
         }
         
         return tableView.rowHeight
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {        
-        let cell = tableView.dequeueReusableCell(withIdentifier: "historyCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "historyCell", for: indexPath) as! HistoryCell
         
         if let dose = self.fetchedResultsController!.object(at: indexPath) as? Dose {
             // Setup date formatter
@@ -194,21 +200,25 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
             
             // Specify selection color
             cell.selectedBackgroundView = UIView()
+            cell.historyLabel?.isHidden = true
             
             if dose.dosage > 0 {
-                cell.textLabel?.textColor = UIColor.black
-                cell.textLabel?.text = "\(dateFormatter.string(from: dose.date as Date))"
-                cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                cell.detailTextLabel?.text = String(format:"%g %@", dose.dosage, dose.dosageUnit.units(dose.dosage))
+                cell.dateLabel?.text = dateFormatter.string(from: dose.date)
+                
+                cell.medLabel?.text = String(format:"%g %@", dose.dosage, dose.dosageUnit.units(dose.dosage))
+                cell.medLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
             } else {
-                cell.textLabel?.textColor = UIColor.lightGray
-                cell.textLabel?.text = "Skipped (\(dateFormatter.string(from: dose.date as Date)))"
-                cell.detailTextLabel?.text?.removeAll()
+                cell.dateLabel?.text = dateFormatter.string(from: dose.date)
+                cell.dateLabel?.textColor = UIColor(white: 0, alpha: 0.2)
+                
+                cell.medLabel?.text = "Skipped"
+                cell.medLabel?.textColor = UIColor(white: 0, alpha: 0.2)
             }
         } else {
-            cell.textLabel?.textColor = UIColor.lightGray
-            cell.textLabel?.text = "No doses logged"
-            cell.detailTextLabel?.text?.removeAll()
+            cell.dateLabel?.isHidden = true
+            
+            cell.medLabel?.text = "No doses logged"
+            cell.medLabel?.textColor = UIColor(white: 0, alpha: 0.2)
         }
         
         return cell
