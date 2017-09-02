@@ -96,7 +96,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             // Sort by next dose
             fetchRequest.sortDescriptors = [
                 NSSortDescriptor(key: "reminderEnabled", ascending: false),
-                NSSortDescriptor(key: "dateNextDose", ascending: true)
+                NSSortDescriptor(key: "hasNextDose", ascending: false),
+                NSSortDescriptor(key: "dateNextDose", ascending: true),
+                NSSortDescriptor(key: "dateLastDose", ascending: false)
             ]
         } else {
             // Sort by manually defined sort order
@@ -105,26 +107,26 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
         if let results = try? cdStack.context.fetch(fetchRequest) {
             medication = results
-//            logMedication()
+            logMedication()
         }
     }
     
-//    func logMedication() {
-//        let formatter = DateFormatter()
-//        formatter.dateStyle = .medium
-//        formatter.timeStyle = .medium
-//
-//        print("Medication:")
-//        for med in medication {
-//            print("\t\(med.sortOrder): [\(med.medicineID)] \(med.name ?? "") -> \(med.hasNextDose) ? \(formatter.string(for: med.nextDose) ?? "No next dose")")
-//        }
-//    }
+    func logMedication() {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .medium
+
+        print("Medication:")
+        for med in medication {
+            print("\t\(med.sortOrder): [\(med.medicineID)] \(med.name ?? "") -> \(med.hasNextDose) ? \(formatter.string(for: med.nextDose) ?? "No next dose")")
+        }
+    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(true, animated: true)
         
-        updateHeader()
+        loadMedication()
         
         // Deselect selection
         if let collapsed = self.splitViewController?.isCollapsed, collapsed == true {
@@ -146,7 +148,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             }
         }
         
-        displayEmptyView()
+        refreshMainVC()
         
         // Handle home screen shortcuts (selected by user)
         if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
