@@ -56,7 +56,14 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="99.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zxo-P1-c2Z">
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CSL-wT-VgS" customClass="MedicineCell_CellFrame" customModule="Medicine" customModuleProvider="target">
+                                                    <rect key="frame" x="13" y="9" width="349" height="77"/>
+                                                    <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="77" id="ESr-XI-HL4"/>
+                                                    </constraints>
+                                                </view>
+                                                <view contentMode="scaleToFill" restorationIdentifier="Cell Shadow" translatesAutoresizingMaskIntoConstraints="NO" id="zxo-P1-c2Z">
                                                     <rect key="frame" x="10" y="5" width="355" height="85"/>
                                                     <subviews>
                                                         <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="SwQ-ue-Pgf">
@@ -121,7 +128,10 @@
                                             <constraints>
                                                 <constraint firstItem="zxo-P1-c2Z" firstAttribute="leading" secondItem="1Ns-gf-tOB" secondAttribute="leading" constant="10" id="BHA-pl-PAC"/>
                                                 <constraint firstItem="zxo-P1-c2Z" firstAttribute="top" secondItem="1Ns-gf-tOB" secondAttribute="top" constant="5" id="gIJ-rI-w6i"/>
+                                                <constraint firstItem="CSL-wT-VgS" firstAttribute="leading" secondItem="1Ns-gf-tOB" secondAttribute="leading" constant="13" id="gmT-AE-2W5"/>
                                                 <constraint firstAttribute="trailing" secondItem="zxo-P1-c2Z" secondAttribute="trailing" constant="10" id="jMB-ju-dO3"/>
+                                                <constraint firstItem="CSL-wT-VgS" firstAttribute="top" secondItem="1Ns-gf-tOB" secondAttribute="top" constant="9" id="nMN-36-F6V"/>
+                                                <constraint firstAttribute="trailing" secondItem="CSL-wT-VgS" secondAttribute="trailing" constant="13" id="xWM-Ua-wWk"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.97999999999999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -129,6 +139,7 @@
                                         <connections>
                                             <outlet property="addButton" destination="kNd-KS-JV6" id="lwU-aX-2VC"/>
                                             <outlet property="cellFrame" destination="zxo-P1-c2Z" id="d94-uL-E0q"/>
+                                            <outlet property="cellShadow" destination="CSL-wT-VgS" id="bjI-6q-PNH"/>
                                             <outlet property="glyphWidth" destination="IBC-iP-TEG" id="jvU-Bp-szr"/>
                                             <outlet property="subtitle" destination="rME-QJ-EvS" id="fep-sn-Oya"/>
                                             <outlet property="subtitleGlyph" destination="fwD-XN-yWy" id="yop-qy-tod"/>
@@ -244,11 +255,10 @@
             </objects>
             <point key="canvasLocation" x="1156" y="603"/>
         </scene>
-        <!--Medication-->
+        <!--Navigation Controller-->
         <scene sceneID="Je1-oK-fKE">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="WH0-Wl-VP6" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Medication" image="MedicineTab" selectedImage="MedicineTab+Selected" id="PIi-sd-RMV"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="0Eg-jE-EZT">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
@@ -460,12 +470,11 @@
         <image name="ActionButton" width="28" height="28"/>
         <image name="HistoryTab" width="25" height="25"/>
         <image name="MedicineTab" width="25" height="25"/>
-        <image name="MedicineTab+Selected" width="25" height="25"/>
         <image name="OverdueIcon" width="20" height="20"/>
         <image name="SettingsNav" width="22" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ReX-M7-kyR"/>
+        <segue reference="0em-p9-1cT"/>
         <segue reference="ZvU-1l-YKz"/>
     </inferredMetricsTieBreakers>
 </document>

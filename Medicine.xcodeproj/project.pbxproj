@@ -56,6 +56,7 @@
 		CECDC9511F477791007D4BB4 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECDC94F1F477791007D4BB4 /* CoreDataStack.swift */; };
 		CECDC9521F477791007D4BB4 /* CoreDataTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECDC9501F477791007D4BB4 /* CoreDataTableViewController.swift */; };
 		CEE849811C13932600880484 /* MedicineDetailsTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE849801C13932600880484 /* MedicineDetailsTVC.swift */; };
+		CEE935891F5B5E5E00EE8B77 /* MedicineCell+CellFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE935881F5B5E5E00EE8B77 /* MedicineCell+CellFrame.swift */; };
 		CEEB07901C5EA9FA00EEF86C /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEEB078E1C5EA9FA00EEF86C /* Settings.storyboard */; };
 		CEEE50DE1C5B4CF3008985A1 /* DetailEmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEEE50DD1C5B4CF3008985A1 /* DetailEmptyView.xib */; };
 		CEF5483C1B9CEA7100C344B4 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */; };
@@ -149,6 +150,7 @@
 		CECDC9501F477791007D4BB4 /* CoreDataTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CoreDataTableViewController.swift; path = Medicine/Models/CoreDataTableViewController.swift; sourceTree = "<group>"; };
 		CEE18F341BEEC5CF00222D92 /* Medicine - 2.4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2.4.xcdatamodel"; sourceTree = "<group>"; };
 		CEE849801C13932600880484 /* MedicineDetailsTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MedicineDetailsTVC.swift; path = Details/MedicineDetailsTVC.swift; sourceTree = "<group>"; };
+		CEE935881F5B5E5E00EE8B77 /* MedicineCell+CellFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "MedicineCell+CellFrame.swift"; path = "Main/MedicineCell+CellFrame.swift"; sourceTree = "<group>"; };
 		CEEB078F1C5EA9FA00EEF86C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
 		CEEE50DD1C5B4CF3008985A1 /* DetailEmptyView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DetailEmptyView.xib; path = Details/DetailEmptyView.xib; sourceTree = "<group>"; };
 		CEF5483B1B9CEA7100C344B4 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
@@ -296,6 +298,7 @@
 				CE2725C21C26B425001CA73A /* MainVC.swift */,
 				CE936E621C6C36400093BECF /* MainTVC+UIViewControllerPreviewing.swift */,
 				CEB36F3E1BE6D02000BCBD87 /* MedicineCell.swift */,
+				CEE935881F5B5E5E00EE8B77 /* MedicineCell+CellFrame.swift */,
 				CE2325821BB1693C0013B72D /* HistoryEmptyView.xib */,
 				CE0EA1941BAFE28200F48A09 /* HistoryTVC.swift */,
 				CE27589E1F597C470027F596 /* HistoryCell.swift */,
@@ -519,6 +522,7 @@
 				CE38AF231B950517000D00AD /* AddDoseTVC.swift in Sources */,
 				CE27589F1F597C470027F596 /* HistoryCell.swift in Sources */,
 				CE936E651C6C42770093BECF /* MedicineDetailsTVC+UIViewControllerPreviewing.swift in Sources */,
+				CEE935891F5B5E5E00EE8B77 /* MedicineCell+CellFrame.swift in Sources */,
 				CE0EA1951BAFE28200F48A09 /* HistoryTVC.swift in Sources */,
 				CE0EA1971BAFE2B800F48A09 /* MedicineDoseHistoryTVC.swift in Sources */,
 				CE3A42541C13A27C0035E390 /* MedicineRefillHistoryTVC.swift in Sources */,

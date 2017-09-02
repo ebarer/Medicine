@@ -18,6 +18,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     // MARK: - Outlets
     @IBOutlet var addMedicationButton: UIBarButtonItem!
     @IBOutlet var summaryHeader: UIView!
+    let summaryHeaderBorder = CALayer()
     @IBOutlet var headerDescriptionLabel: UILabel!
     @IBOutlet var headerCounterLabel: UILabel!
     @IBOutlet var headerMedLabel: UILabel!
@@ -186,8 +187,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     @objc func refreshMainVC(_ notification: Notification? = nil) {
-        updateHeader()
-        
         let reload = notification?.userInfo?["reload"] as? Bool
         if reload == nil || reload != false {
             loadMedication()
@@ -198,6 +197,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             selectMed()
         }
 
+        updateHeader()
         displayEmptyView()
     }
     
@@ -316,6 +316,12 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y > 0 {
             if summaryHeader.layer.shadowOpacity == 0 {
+                if summaryHeaderBorder.superlayer == nil {
+                    summaryHeaderBorder.frame = CGRect(x: 0, y: summaryHeader.frame.height - 1, width: summaryHeader.frame.width, height: 1)
+                    summaryHeaderBorder.backgroundColor = UIColor(white: 0, alpha: 0.2).cgColor
+                    summaryHeader.layer.addSublayer(summaryHeaderBorder)
+                }
+                
                 summaryHeader.layer.shadowOffset = CGSize(width: 0, height: 1)
                 summaryHeader.layer.shadowRadius = 2
                 summaryHeader.layer.shadowColor = UIColor.black.cgColor
@@ -323,6 +329,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             }
         } else {
             if summaryHeader.layer.shadowOpacity > 0 {
+                if summaryHeaderBorder.superlayer != nil {
+                    summaryHeaderBorder.removeFromSuperlayer()
+                }
+                    
                 self.summaryHeader.layer.shadowOpacity = 0
             }
         }
@@ -491,12 +501,14 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
         if let cell = tableView.cellForRow(at: indexPath) as? MedicineCell {
             cell.rowEditing = true
+            setEditing(true, animated: true)
         }
     }
     
     func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
         if let index = indexPath, let cell = tableView.cellForRow(at: index) as? MedicineCell {
             cell.rowEditing = false
+            setEditing(false, animated: false)
         }
         
         if let collapsed = self.splitViewController?.isCollapsed, collapsed == false {

@@ -12,39 +12,34 @@ class MedicineCell: UITableViewCell {
     
     // MARK: - Cell properties
     @IBOutlet var cellFrame: UIView?
+    @IBOutlet var cellShadow: MedicineCell_CellFrame?
     @IBOutlet var title: UILabel!
     @IBOutlet var subtitle: UILabel!
     @IBOutlet var subtitleGlyph: UIImageView!
     
-//    var longPressGesture: UILongPressGestureRecognizer? {
-//        didSet {
-//            self.addGestureRecognizer(longPressGesture!)
-//        }
-//    }
+    override var frame: CGRect {
+        didSet {
+            self.setSelected(self.isSelected, animated: false)
+        }
+    }
     
     // MARK: - Constraints
     @IBOutlet var glyphWidth: NSLayoutConstraint!
     @IBOutlet weak var addButton: UIButton!
     var rowEditing: Bool = false
     
-    override var alpha: CGFloat {
-        didSet {
-            super.alpha = 1
-        }
-    }
-    
     // MARK: - View methods
     override func awakeFromNib() {
         super.awakeFromNib()
         
+        self.selectedBackgroundView = UIView()
+        
         self.clipsToBounds = true
         self.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
         self.backgroundColor = .clear
-        self.selectedBackgroundView = UIView()
         
-        cellFrame?.layer.backgroundColor = UIColor.white.cgColor
-        cellFrame?.layer.cornerRadius = 10.0
-        drawShadow()
+        self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
+        self.cellFrame?.layer.cornerRadius = 10.0
     }
     
     override func prepareForReuse() {
@@ -57,8 +52,10 @@ class MedicineCell: UITableViewCell {
         
         if selected {
             self.cellFrame?.layer.backgroundColor = UIColor(white: 0.95, alpha: 1).cgColor
+            self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
         } else {
             self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
+            self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
         }
     }
     
@@ -67,8 +64,10 @@ class MedicineCell: UITableViewCell {
         
         if highlighted {
             self.cellFrame?.layer.backgroundColor = UIColor(white: 0.95, alpha: 1).cgColor
+            self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
         } else {
             self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
+            self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
         }
     }
     
@@ -76,33 +75,11 @@ class MedicineCell: UITableViewCell {
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
         
-//        guard let gesture = longPressGesture else {
-//            print("Gesture not defined")
-//            return
-//        }
-        
-        if editing {
-            if !rowEditing {
-                self.hideButton(true)
-            }
-//            self.removeGestureRecognizer(gesture)
+        if editing && !rowEditing {
+            self.hideButton(true)
         } else {
             self.hideButton(false)
-//            self.addGestureRecognizer(gesture)
         }
-    }
-    
-    override var frame: CGRect {
-        didSet {
-            self.setSelected(self.isSelected, animated: false)
-        }
-    }
-    
-    func drawShadow() {
-        cellFrame?.layer.shadowOffset = CGSize(width: 0, height: 1)
-        cellFrame?.layer.shadowRadius = 2
-        cellFrame?.layer.shadowColor = UIColor.black.cgColor
-        cellFrame?.layer.shadowOpacity = 0.15
     }
     
     func hideButton(_ hide: Bool, animated: Bool = true) {
