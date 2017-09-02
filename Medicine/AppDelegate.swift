@@ -27,6 +27,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 
                 // Configure split view on startup
                 splitView.delegate = self
+                
+                let minWidth = min(splitView.view.bounds.width, splitView.view.bounds.height)
+                let maxWidth = max(splitView.view.bounds.width, splitView.view.bounds.height)
+                splitView.minimumPrimaryColumnWidth = minWidth / 2
+                splitView.maximumPrimaryColumnWidth = maxWidth / 2
+
                 let detailNVC = splitView.viewControllers[1] as! UINavigationController
                 detailNVC.topViewController?.navigationItem.leftBarButtonItem = splitView.displayModeButtonItem
                 
@@ -46,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 UNUserNotificationCenter.current().setNotificationCategories(self.notificationCategories)
                 UNUserNotificationCenter.current().delegate = self
             } else {
-                print("Notification access denied.")
+                NSLog("Notification access denied.", [])
             }
         }
         
@@ -61,9 +67,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
-    func applicationWillResignActive(_ application: UIApplication) {
-        application.applicationIconBadgeNumber = Medicine.overdueCount()
-        self.stack.save()
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        UNUserNotificationCenter.current().getPendingNotificationRequests { (requests) in
+            NSLog("%@", [requests])
+        }
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -77,6 +84,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         launchedShortcutItem = nil
+    }
+    
+    func applicationWillResignActive(_ application: UIApplication) {
+        self.stack.save()
+        application.applicationIconBadgeNumber = Medicine.overdueCount()
+        
+        NSLog("Rescheduling notifications in the background")
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "rescheduleNotifications"), object: nil, userInfo: nil)
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -94,10 +109,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: - Background refresh
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "rescheduleNotifications"), object: nil, userInfo: nil)
         NSLog("Rescheduling notifications in the background")
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "rescheduleNotifications"), object: nil, userInfo: nil)
         completionHandler(UIBackgroundFetchResult.newData)
-        self.stack.save()
     }
 }
 
@@ -124,8 +138,8 @@ extension AppDelegate: UISplitViewControllerDelegate {
 extension AppDelegate: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         let userInfo = response.notification.request.content.userInfo
-        
-        print("Received \"\(response.actionIdentifier)\" -> \(userInfo)")
+
+        NSLog("Received \"\(response.actionIdentifier)\" -> \(userInfo)", [])
         
         if response.actionIdentifier == "takeDose" {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "takeDoseAction"), object: nil, userInfo: userInfo)
@@ -148,15 +162,14 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         let userInfo = notification.request.content.userInfo
         let category = notification.request.content.categoryIdentifier
 
-        print("\(identifier) (\(category)): \(userInfo)")
-        NSLog("Local notification received: %@", userInfo)
+        NSLog("Local notification received: %@ %@: %@", identifier, category, userInfo)
         
         if category == "Dose Reminder" || category == "Dose Reminder - No Snooze" {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "doseNotification"), object: nil, userInfo: userInfo)
         } else if category == "Refill Reminder" {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refillNotification"), object: nil, userInfo: userInfo)
         }
-        
+
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
         
         completionHandler([])

@@ -11,15 +11,29 @@ import CoreData
 
 class AddDoseTVC_Medicine: CoreDataTableViewController {
 
+    // MARK: - Helper variables
     var selectedMed: Medicine?
     let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
+    let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Create fetch request
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Medicine.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+        
+        if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
+            // Sort by next dose
+            fetchRequest.sortDescriptors = [
+                NSSortDescriptor(key: "reminderEnabled", ascending: false),
+                NSSortDescriptor(key: "hasNextDose", ascending: false),
+                NSSortDescriptor(key: "dateNextDose", ascending: true),
+                NSSortDescriptor(key: "dateLastDose", ascending: false)
+            ]
+        } else {
+            // Sort by manually defined sort order
+            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+        }
         
         // Create the FetchedResultsController
         self.fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,

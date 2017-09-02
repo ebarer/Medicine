@@ -92,9 +92,22 @@ class AddDoseTVC: UITableViewController {
             dose.dosage = med.dosage
             dose.dosageUnitInt = med.dosageUnitInt
         } else {
-            let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-            request.sortDescriptors = [NSSortDescriptor(key: "dateNextDose", ascending: true)]
-            if let med = (try? cdStack.context.fetch(request))?.first {
+            let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+            
+            if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
+                // Sort by next dose
+                fetchRequest.sortDescriptors = [
+                    NSSortDescriptor(key: "reminderEnabled", ascending: false),
+                    NSSortDescriptor(key: "hasNextDose", ascending: false),
+                    NSSortDescriptor(key: "dateNextDose", ascending: true),
+                    NSSortDescriptor(key: "dateLastDose", ascending: false)
+                ]
+            } else {
+                // Sort by manually defined sort order
+                fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+            }
+            
+            if let med = (try? cdStack.context.fetch(fetchRequest))?.first {
                 self.med = med
                 dose.medicine = med
                 dose.dosage = med.dosage

@@ -32,17 +32,24 @@ class Medicine: NSManagedObject {
     // MARK: - Member variables
     var nextDose: Date? {
         guard let date = try? calculateNextDose() else {
+            self.hasNextDose = false
+            self.dateNextDose = nil
             return nil
         }
 
         // For as needed medication, if their next dose is in the past,
         // push it into the future to ensure correct sorting
         if (self.reminderEnabled == false) && (date?.compare(Date()) == .orderedAscending) {
-            if dateNextDose?.compare(Date()) == .orderedAscending {
-                self.dateNextDose = Calendar.current.date(byAdding: .year, value: 1, to: Date())
-            }
+            self.hasNextDose = false
+            self.dateNextDose = nil
         } else {
+            self.hasNextDose = (date != nil)
             self.dateNextDose = date
+        }
+        
+        // Ensure new medications are at top of sort
+        if self.doseHistory?.count == 0 {
+            self.hasNextDose = true
         }
         
         return date
@@ -60,10 +67,12 @@ class Medicine: NSManagedObject {
                     }
                 }
                 
+                self.dateLastDose = dose.date
                 return dose
             }
         }
         
+        self.dateLastDose = nil
         return nil
     }
     
@@ -416,8 +425,10 @@ class Medicine: NSManagedObject {
         dose.medicine = self
         
         // Calculate the next dose and store in dose
+        // Need to calculate based on current dose time
         let nextDate = try? calculateNextDose(dose.date as Date)! as Date
         dose.next = nextDate
+        self.hasNextDose = (nextDate != nil)
         self.dateNextDose = nextDate
         
         // Get expected date and store in dose
@@ -668,6 +679,7 @@ class Medicine: NSManagedObject {
         }
         
         guard reminderEnabled == true else {
+            print(self.doseNotificationIdentifier)
             UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [self.doseNotificationIdentifier])
             throw MedicineError.reminderDisabled
         }
@@ -707,17 +719,13 @@ class Medicine: NSManagedObject {
     }
     
     @discardableResult func scheduleNextNotification() -> Bool {
-        printNotifications()
-        
         guard let date = nextDose else {
             return false
         }
         
         do {
             try scheduleNotification(date, badgeCount: Medicine.overdueCount(date))
-            
-            printNotifications()
-            
+            NSLog("Scheduled notification for %@", [self.name!])
             return true
         } catch {
             return false

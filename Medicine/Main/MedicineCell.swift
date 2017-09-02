@@ -25,6 +25,7 @@ class MedicineCell: UITableViewCell {
     // MARK: - Constraints
     @IBOutlet var glyphWidth: NSLayoutConstraint!
     @IBOutlet weak var addButton: UIButton!
+    var rowEditing: Bool = false
     
     override var alpha: CGFloat {
         didSet {
@@ -77,7 +78,9 @@ class MedicineCell: UITableViewCell {
         
         if let gesture = longPressGesture {
             if editing {
-                self.hideButton(true)
+                if !rowEditing {
+                    self.hideButton(true)
+                }
                 self.removeGestureRecognizer(gesture)
             } else {
                 self.hideButton(false)

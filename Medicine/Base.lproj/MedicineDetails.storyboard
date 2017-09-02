@@ -70,7 +70,7 @@
         <scene sceneID="Inm-Zq-Kd8">
             <objects>
                 <tableViewController storyboardIdentifier="MedicineDetailsTVC" id="bId-i9-gti" customClass="MedicineDetailsTVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="onDrag" dataMode="static" style="grouped" rowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="jtd-GR-Mg6">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" alwaysBounceVertical="YES" keyboardDismissMode="onDrag" dataMode="static" style="grouped" rowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="jtd-GR-Mg6">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.97999999999999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -78,7 +78,7 @@
                         <sections>
                             <tableViewSection id="CeD-jM-j6H">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="nameCell" textLabel="Wyg-od-5gf" rowHeight="70" style="IBUITableViewCellStyleDefault" id="E2J-0S-uZB">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" layoutMarginsFollowReadableWidth="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="nameCell" textLabel="Wyg-od-5gf" rowHeight="70" style="IBUITableViewCellStyleDefault" id="E2J-0S-uZB">
                                         <rect key="frame" x="0.0" y="35" width="375" height="70"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="E2J-0S-uZB" id="mzN-Ni-m3u">
@@ -96,7 +96,7 @@
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="doseCell" id="tMt-Sa-HrQ">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" layoutMarginsFollowReadableWidth="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="doseCell" id="tMt-Sa-HrQ">
                                         <rect key="frame" x="0.0" y="105" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="tMt-Sa-HrQ" id="QtC-50-Jqk">
@@ -126,7 +126,7 @@
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="doseDetailsCell" id="088-FE-COh">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" layoutMarginsFollowReadableWidth="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="doseDetailsCell" id="088-FE-COh">
                                         <rect key="frame" x="0.0" y="149" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="088-FE-COh" id="uig-Uj-V2Q">
@@ -156,7 +156,7 @@
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="prescriptionCell" id="pms-ns-nHl">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" layoutMarginsFollowReadableWidth="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="prescriptionCell" id="pms-ns-nHl">
                                         <rect key="frame" x="0.0" y="193" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="pms-ns-nHl" id="SYr-zH-6rW">
@@ -186,7 +186,7 @@
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="0.0" reuseIdentifier="actionCell" rowHeight="100" id="mgb-Vp-OKh">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" selectionStyle="none" indentationWidth="0.0" reuseIdentifier="actionCell" rowHeight="100" id="mgb-Vp-OKh">
                                         <rect key="frame" x="0.0" y="237" width="375" height="100"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="mgb-Vp-OKh" id="Y4a-C3-dXI">
@@ -205,6 +205,7 @@
                                                             </state>
                                                             <connections>
                                                                 <action selector="touchDown:" destination="bId-i9-gti" eventType="touchDown" id="CTv-pN-UcH"/>
+                                                                <action selector="touchDown:" destination="bId-i9-gti" eventType="touchDragEnter" id="oOY-N4-ViO"/>
                                                                 <action selector="touchUp:" destination="bId-i9-gti" eventType="touchUpOutside" id="JMa-6c-rTu"/>
                                                                 <action selector="touchUp:" destination="bId-i9-gti" eventType="touchDragExit" id="UR5-pf-9M0"/>
                                                                 <action selector="touchUp:" destination="bId-i9-gti" eventType="touchUpInside" id="hNL-r4-SnS"/>
@@ -219,7 +220,9 @@
                                                                 <color key="titleColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             </state>
                                                             <connections>
+                                                                <action selector="touchDown:" destination="bId-i9-gti" eventType="touchDragEnter" id="XlL-Jq-fWC"/>
                                                                 <action selector="touchDown:" destination="bId-i9-gti" eventType="touchDown" id="bQA-0N-9tW"/>
+                                                                <action selector="touchUp:" destination="bId-i9-gti" eventType="touchDragExit" id="Dc8-hW-vAO"/>
                                                                 <action selector="touchUp:" destination="bId-i9-gti" eventType="touchUpOutside" id="Uxu-n1-9tm"/>
                                                                 <action selector="touchUp:" destination="bId-i9-gti" eventType="touchUpInside" id="ego-38-kqC"/>
                                                                 <segue destination="pyR-Rp-6Sn" kind="presentation" identifier="refillPrescription" modalPresentationStyle="formSheet" id="aZS-QS-W9W"/>
@@ -237,7 +240,7 @@
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.97999999999999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="doseHistoryCell" textLabel="u7p-Qm-u0R" imageView="jEk-A0-Gso" rowHeight="50" style="IBUITableViewCellStyleDefault" id="PRK-SG-2FB">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="doseHistoryCell" textLabel="u7p-Qm-u0R" imageView="jEk-A0-Gso" rowHeight="50" style="IBUITableViewCellStyleDefault" id="PRK-SG-2FB">
                                         <rect key="frame" x="0.0" y="337" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="PRK-SG-2FB" id="y1U-2Z-nyD">
@@ -261,7 +264,7 @@
                                             <segue destination="R3Z-8d-hiK" kind="show" identifier="viewDoseHistory" id="S0E-F8-5LC"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="refillHistoryCell" textLabel="lbf-gf-3tZ" imageView="WBO-58-vjP" rowHeight="50" style="IBUITableViewCellStyleDefault" id="dwA-uN-uNZ">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="refillHistoryCell" textLabel="lbf-gf-3tZ" imageView="WBO-58-vjP" rowHeight="50" style="IBUITableViewCellStyleDefault" id="dwA-uN-uNZ">
                                         <rect key="frame" x="0.0" y="387" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dwA-uN-uNZ" id="U8f-sa-1ce">
@@ -470,7 +473,7 @@
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="barTintColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="barTintColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <textAttributes key="titleTextAttributes">
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </textAttributes>

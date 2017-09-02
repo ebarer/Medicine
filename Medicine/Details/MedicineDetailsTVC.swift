@@ -40,6 +40,8 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.tableView.cellLayoutMarginsFollowReadableWidth = true
+        
         // Setup edit button
         let editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(editMedication))
         self.navigationItem.rightBarButtonItem = editButton
@@ -89,7 +91,9 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
                 // Sort by next dose
                 fetchRequest.sortDescriptors = [
                     NSSortDescriptor(key: "reminderEnabled", ascending: false),
-                    NSSortDescriptor(key: "dateNextDose", ascending: true)
+                    NSSortDescriptor(key: "hasNextDose", ascending: false),
+                    NSSortDescriptor(key: "dateNextDose", ascending: true),
+                    NSSortDescriptor(key: "dateLastDose", ascending: false)
                 ]
             } else {
                 // Sort by manually defined sort order

@@ -187,10 +187,13 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     @objc func rescheduleNotifications(_ notification: Notification) {        
         // Reschedule notifications
         let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+        request.predicate = NSPredicate(format: "reminderEnabled == true", [])
         if let medication = try? cdStack.context.fetch(request) {
             for med in medication {
-                med.scheduleNextNotification()
+                let success = med.scheduleNextNotification()
+                if success {
+                    
+                }
             }
         
             setDynamicShortcuts()
@@ -222,7 +225,11 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     func setDynamicShortcuts() {
         let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
         request.predicate = NSPredicate(format: "reminderEnabled == true", argumentArray: [])
-        request.sortDescriptors = [NSSortDescriptor(key: "dateNextDose", ascending: true)]
+        request.sortDescriptors = [
+            NSSortDescriptor(key: "hasNextDose", ascending: false),
+            NSSortDescriptor(key: "dateNextDose", ascending: true),
+            NSSortDescriptor(key: "dateLastDose", ascending: false)
+        ]
         if let med = (try? cdStack.context.fetch(request))?.first {
             // Set shortcut for overdue item
             if med.isOverdue().flag {

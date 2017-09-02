@@ -142,6 +142,7 @@ extension CoreDataStack {
                 self.persistingContext.perform() {
                     do {
                         try self.persistingContext.save()
+                        NSLog("Data saved", [])
                     } catch {
                         fatalError("Error while saving persisting context: \(error)")
                     }

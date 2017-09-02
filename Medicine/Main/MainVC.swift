@@ -74,7 +74,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         self.navigationItem.titleView = UIImageView(image: UIImage(named: "Logo-Nav"))
         
         // Remove tableView gap
-        //tableView.tableHeaderView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: tableView.bounds.size.width, height: 0.01))
         tableView.separatorStyle = .none
         
         // Setup refresh timer
@@ -110,23 +109,22 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
     }
     
-    func logMedication() {
-        for med in medication {
-            if let date = med.dateNextDose {
-                print("\(med.sortOrder): \(med.name ?? "") [\(med.medicineID)] -> \(date)")
-            } else {
-                print("\(med.sortOrder): \(med.name ?? "") [\(med.medicineID)] -> No next dose")
-            }
-        }
-    }
+//    func logMedication() {
+//        let formatter = DateFormatter()
+//        formatter.dateStyle = .medium
+//        formatter.timeStyle = .medium
+//
+//        print("Medication:")
+//        for med in medication {
+//            print("\t\(med.sortOrder): [\(med.medicineID)] \(med.name ?? "") -> \(med.hasNextDose) ? \(formatter.string(for: med.nextDose) ?? "No next dose")")
+//        }
+//    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(true, animated: true)
         
-        refreshTable()
         updateHeader()
-        displayEmptyView()
         
         // Deselect selection
         if let collapsed = self.splitViewController?.isCollapsed, collapsed == true {
@@ -147,6 +145,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 }
             }
         }
+        
+        displayEmptyView()
         
         // Handle home screen shortcuts (selected by user)
         if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
@@ -176,8 +176,11 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     
     // MARK: - Update values
+    @objc func refreshTable() {
+        refreshMainVC()
+    }
+    
     @objc func refreshMainVC(_ notification: Notification? = nil) {
-        refreshTable()
         updateHeader()
         
         let reload = notification?.userInfo?["reload"] as? Bool
@@ -303,14 +306,22 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         defaults.synchronize()
     }
     
-    @objc func refreshTable() {
-        if !self.tableView.isEditing {
-            loadMedication()
-            self.tableView.reloadSections([0], with: .none)
+    // MARK: - Table view data source
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y > 0 {
+            if summaryHeader.layer.shadowOpacity == 0 {
+                summaryHeader.layer.shadowOffset = CGSize(width: 0, height: 1)
+                summaryHeader.layer.shadowRadius = 2
+                summaryHeader.layer.shadowColor = UIColor.black.cgColor
+                summaryHeader.layer.shadowOpacity = 0.3
+            }
+        } else {
+            if summaryHeader.layer.shadowOpacity > 0 {
+                self.summaryHeader.layer.shadowOpacity = 0
+            }
         }
     }
-    
-    // MARK: - Table view data source
+
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -320,7 +331,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 110.0
+        return 100.0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -449,6 +460,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             }
         }
         
+        deleteAction.backgroundColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        
         return [deleteAction, editAction]
     }
     
@@ -467,7 +480,17 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
     }
     
+    func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
+        if let cell = tableView.cellForRow(at: indexPath) as? MedicineCell {
+            cell.rowEditing = true
+        }
+    }
+    
     func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
+        if let index = indexPath, let cell = tableView.cellForRow(at: index) as? MedicineCell {
+            cell.rowEditing = false
+        }
+        
         if let collapsed = self.splitViewController?.isCollapsed, collapsed == false {
             selectMed()
         }
