@@ -151,7 +151,7 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
             
             // Set header title
             header.textLabel?.text = header.textLabel?.text?.uppercased()
-            header.textLabel?.textColor = UIColor(white: 0, alpha: 0.3)
+            header.textLabel?.textColor = UIColor.lightGray
             header.textLabel?.textAlignment = .left
             
             if let text = header.textLabel?.text {
@@ -161,7 +161,7 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
                 if let index = text.characters.index(of: "\n") {
                     let pos = text.characters.distance(from: text.startIndex, to: index)
                     string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 20.0, weight: UIFont.Weight.semibold), range: NSMakeRange(0, pos))
-                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(white: 0, alpha: 0.7), range: NSMakeRange(0, pos))
+                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(white: 0.22, alpha: 1), range: NSMakeRange(0, pos))
                     
                     if Calendar.current.isDateInToday(sectionDate) {
                         string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, pos))

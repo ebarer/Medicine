@@ -228,13 +228,13 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     // MARK: - Button events
     @IBAction func touchDown(_ sender: UIButton) {
         UIView.animate(withDuration: 0.2) {
-            sender.layer.backgroundColor = UIColor(white: 0.82, alpha: 1).cgColor
+            sender.layer.backgroundColor = sender.layer.backgroundColor?.copy(alpha: 0.5)
         }
     }
     
     @IBAction func touchUp(_ sender: UIButton) {
         UIView.animate(withDuration: 0.2) {
-            sender.layer.backgroundColor = UIColor(white: 0.92, alpha: 1).cgColor
+            sender.layer.backgroundColor = sender.layer.backgroundColor?.copy(alpha: 1.0)
         }
     }
     

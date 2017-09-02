@@ -452,7 +452,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
 
         takeAction.image = UIImage(named: "TakeDoseAction")
-        takeAction.backgroundColor = UIColor.darkGray
+        takeAction.backgroundColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
 
         return UISwipeActionsConfiguration(actions: [takeAction])
     }
