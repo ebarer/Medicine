@@ -14,28 +14,20 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     let productID = "com.ebarer.Medicine.Unlock"
     var products: [SKProduct]?
     
-    
     // MARK: - Outlets
-    
     @IBOutlet var purchaseButton: UIButton!
     @IBOutlet var restoreButton: UIButton!
     @IBOutlet var purchaseIndicator: UIActivityIndicatorView!
     
-    
-    // MARK: - Helper variable
-    let purchaseColour = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-    
-    
     // MARK: - View methods
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Style purchase button
         purchaseButton.layer.cornerRadius = 4
         purchaseButton.layer.borderWidth = 1
-        purchaseButton.layer.borderColor = purchaseColour.cgColor
-        purchaseButton.tintColor = purchaseColour
+        purchaseButton.layer.borderColor = UIColor.medRed.cgColor
+        purchaseButton.tintColor = UIColor.medRed
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -49,7 +41,6 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     
     
     // MARK: - Store kit delegate/observer
-    
     func requestProductInfo() {
         if SKPaymentQueue.canMakePayments() {
             let productRequest = SKProductsRequest(productIdentifiers: Set([productID]))
@@ -62,7 +53,6 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     
     
     // Mark: - Purchase methods
-    
     func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
         products = response.products
         
@@ -126,7 +116,6 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     
 
     // MARK: - Navigation
-    
     @IBAction func cancel(_ sender: AnyObject?) {
         dismiss(animated: true, completion: nil)
     }    

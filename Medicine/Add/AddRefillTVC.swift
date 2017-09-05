@@ -57,7 +57,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
         self.clearsSelectionOnViewWillAppear = true
         
         // Modify VC
-        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        self.view.tintColor = UIColor.medRed
         
         // Set picker min/max values
         picker.maximumDate = Date()
@@ -183,7 +183,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
         cell.separatorInset = tableView.separatorInset
         
         if selectedRow == Rows(index: indexPath) {
-            cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+            cell.detailTextLabel?.textColor = UIColor.medRed
         } else {
             cell.detailTextLabel?.textColor = UIColor.gray
         }

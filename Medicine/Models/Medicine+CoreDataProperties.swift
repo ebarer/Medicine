@@ -19,6 +19,7 @@ extension Medicine {
     }
     
     @NSManaged var dateCreated: Date?
+    @NSManaged var isNew: Bool
     
     @NSManaged var name: String?
     @NSManaged var medicineID: String

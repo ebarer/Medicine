@@ -25,7 +25,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         
         // Set tab bar controller
         tabBar.barStyle = .default
-        tabBar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        tabBar.tintColor = UIColor.medRed
         
         // Add observeres for notifications
         NotificationCenter.default.addObserver(self, selector: #selector(doseNotification(_:)), name: NSNotification.Name(rawValue: "doseNotification"), object: nil)
@@ -230,6 +230,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             NSSortDescriptor(key: "dateNextDose", ascending: true),
             NSSortDescriptor(key: "dateLastDose", ascending: false)
         ]
+        
         if let med = (try? cdStack.context.fetch(request))?.first {
             // Set shortcut for overdue item
             if med.isOverdue().flag {

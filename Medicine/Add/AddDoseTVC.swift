@@ -53,7 +53,7 @@ class AddDoseTVC: UITableViewController {
         self.clearsSelectionOnViewWillAppear = true
 
         // Modify VC
-        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        self.view.tintColor = UIColor.medRed
         tableView.tableHeaderView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: tableView.bounds.size.width, height: 0.01))  // Remove tableView gap
 
         // Prevent modification of medication when not in global history
@@ -64,8 +64,6 @@ class AddDoseTVC: UITableViewController {
 
         // Set picker min/max values
         picker.maximumDate = Date()
-        
-        updateDoseValues()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -93,19 +91,12 @@ class AddDoseTVC: UITableViewController {
             dose.dosageUnitInt = med.dosageUnitInt
         } else {
             let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-            
-            if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
-                // Sort by next dose
-                fetchRequest.sortDescriptors = [
-                    NSSortDescriptor(key: "reminderEnabled", ascending: false),
-                    NSSortDescriptor(key: "hasNextDose", ascending: false),
-                    NSSortDescriptor(key: "dateNextDose", ascending: true),
-                    NSSortDescriptor(key: "dateLastDose", ascending: false)
-                ]
-            } else {
-                // Sort by manually defined sort order
-                fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-            }
+            fetchRequest.sortDescriptors = [
+                NSSortDescriptor(key: "reminderEnabled", ascending: false),
+                NSSortDescriptor(key: "hasNextDose", ascending: false),
+                NSSortDescriptor(key: "dateNextDose", ascending: true),
+                NSSortDescriptor(key: "dateLastDose", ascending: false)
+            ]
             
             if let med = (try? cdStack.context.fetch(fetchRequest))?.first {
                 self.med = med
@@ -145,11 +136,9 @@ class AddDoseTVC: UITableViewController {
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath == IndexPath(row: 0, section: 0) {
             return 216.0
-        } else if indexPath == IndexPath(row: 2, section: 0) {
-            return 48.0
         }
         
-        return tableView.rowHeight
+        return 50.0
     }
     
     override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {

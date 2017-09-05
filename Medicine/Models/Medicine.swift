@@ -49,7 +49,9 @@ class Medicine: NSManagedObject {
         
         // Ensure new medications are at top of sort
         if self.doseHistory?.count == 0 {
-            self.hasNextDose = true
+            self.isNew = true
+        } else {
+            self.isNew = false
         }
         
         return date
@@ -339,18 +341,18 @@ class Medicine: NSManagedObject {
         
         // Set label date, skip if date is today (parameter)
         if today == true && cal.isDateInToday(date) {
-            dateString = "Today, "
+            dateString = "Today at "
         } else if !cal.isDateInToday(date) {
             if cal.isDateInYesterday(date) {
-                dateString = "Yesterday, "
+                dateString = "Yesterday at "
             } else if cal.isDateInTomorrow(date) {
-                dateString = "Tomorrow, "
+                dateString = "Tomorrow at "
             } else if date.isDateInWeek() {
-                dateFormatter.dateFormat = "EEEE, "
+                dateFormatter.dateFormat = "EEEE at "
                 dateString = dateFormatter.string(from: date)
             } else {
                 // Default case
-                dateFormatter.dateFormat = "MMM d, "
+                dateFormatter.dateFormat = "MMM d at "
                 dateString = dateFormatter.string(from: date)
             }
         }
@@ -360,7 +362,7 @@ class Medicine: NSManagedObject {
             if cal.isDateInTomorrow(date) {
                 dateString = "Midnight"
             } else if cal.isDateInToday(date) {
-                dateString = "Yesterday, Midnight"
+                dateString = "Yesterday at Midnight"
             } else {
                 dateString.append("Midnight")
             }
@@ -430,6 +432,8 @@ class Medicine: NSManagedObject {
         dose.next = nextDate
         self.hasNextDose = (nextDate != nil)
         self.dateNextDose = nextDate
+        
+        self.isNew = false
         
         // Get expected date and store in dose
         if let lastDose = lastDose, lastDose.date.compare(dose.date as Date) == .orderedAscending {
@@ -504,7 +508,6 @@ class Medicine: NSManagedObject {
         moc.delete(dose)
         
         // Update next dose
-        self.dateNextDose = nil
         _ = self.nextDose
         
         // Save dose deletion

@@ -10,6 +10,8 @@ import UIKit
 
 class MedicineCell: UITableViewCell {
     
+    var med: Medicine?
+    
     // MARK: - Cell properties
     @IBOutlet var cellFrame: UIView?
     @IBOutlet var cellShadow: MedicineCell_CellFrame?
@@ -35,7 +37,7 @@ class MedicineCell: UITableViewCell {
         self.selectedBackgroundView = UIView()
         
         self.clipsToBounds = true
-        self.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        self.tintColor = UIColor.medRed
         self.backgroundColor = .clear
         
         self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
@@ -43,8 +45,9 @@ class MedicineCell: UITableViewCell {
     }
     
     override func prepareForReuse() {
-        addButton.isHidden = false
-        addButton.alpha = 1.0
+        subtitleGlyph.image = UIImage(named: "NextDoseIcon")
+        subtitle.textColor = UIColor.subtitle
+        hideButton(false, animated: false)
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -63,7 +66,7 @@ class MedicineCell: UITableViewCell {
         super.setHighlighted(highlighted, animated: animated)
         
         if highlighted {
-            self.cellFrame?.layer.backgroundColor = UIColor(white: 0.95, alpha: 1).cgColor
+            self.cellFrame?.layer.backgroundColor = UIColor(white: 0.84, alpha: 1).cgColor
             self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
         } else {
             self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
@@ -74,6 +77,11 @@ class MedicineCell: UITableViewCell {
     // Remove long press gesture when editing to prevent issues with reordering
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
+        
+        if med?.doseHistory?.count == 0 && med?.intervalUnit == .hourly {
+            self.hideButton(true, animated: false)
+            return
+        }
         
         if editing && !rowEditing {
             self.hideButton(true)
@@ -86,8 +94,11 @@ class MedicineCell: UITableViewCell {
         if animated {
             UIView.animate(withDuration: 0.2, animations: {
                 self.addButton.alpha = hide ? 0 : 1
+            }, completion: { (completed) in
+                self.addButton.isHidden = hide
             })
         } else {
+            self.addButton.alpha = hide ? 0 : 1
             self.addButton.isHidden = hide
         }
     }

@@ -33,8 +33,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         return self.tabBarController as? MainTBC
     }
     
-    var launchedShortcutItem: [AnyHashable: Any]?
-    
     let cal = Calendar.current
     let dateFormatter = DateFormatter()
     
@@ -70,7 +68,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
         
         // Modify VC tint and Navigation Item
-        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        self.view.tintColor = UIColor.medRed
         
         // Add logo to navigation bar
         self.navigationItem.titleView = UIImageView(image: UIImage(named: "Logo-Nav"))
@@ -88,12 +86,15 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     func loadMedication() {
+        medication = [Medicine]()
+        
         // Create fetch request, sorted by task time
         let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
 
         if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
             // Sort by next dose
             fetchRequest.sortDescriptors = [
+                NSSortDescriptor(key: "isNew", ascending: false),
                 NSSortDescriptor(key: "reminderEnabled", ascending: false),
                 NSSortDescriptor(key: "hasNextDose", ascending: false),
                 NSSortDescriptor(key: "dateNextDose", ascending: true),
@@ -117,49 +118,31 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
         print("Medication:")
         for med in medication {
-            print("\t\(med.sortOrder): [\(med.medicineID)] \(med.name ?? "") -> \(med.hasNextDose) ? \(formatter.string(for: med.nextDose) ?? "No next dose")")
+            print("\t\(med.sortOrder): [\(med.medicineID)] \(med.name ?? "") \(med.isNew ? "(New) ->" : "->") \(med.hasNextDose) ? \(formatter.string(for: med.nextDose) ?? "No next dose")")
         }
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(true, animated: true)
         
         refreshMainVC()
-        
-        // Deselect selection
-//        if let collapsed = self.splitViewController?.isCollapsed, collapsed == true {
-            selectMed()
-            
-            if let selectedIndex = self.tableView.indexPathForSelectedRow {
-                if let cell = self.tableView.cellForRow(at: selectedIndex) as? MedicineCell {
-                    cell.cellFrame?.layer.backgroundColor = UIColor(white: 0.95, alpha: 1).cgColor
 
-                    self.transitionCoordinator?.animate(alongsideTransition: { (context) in
-                        cell.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
-                    }, completion: { (context) in
-                        if !context.isCancelled {
-                            self.tableView.deselectRow(at: selectedIndex, animated: animated)
-                            self.selectedMed = nil
-                        }
-                    })
-                }
-            }
-//        }
+        selectMed()
         
-        // Handle home screen shortcuts (selected by user)
-        if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
-            if let action = shortcutItem.userInfo?["action"] {
-                switch(String(describing: action)) {
-                case "addMedication":
-                    performSegue(withIdentifier: "addMedication", sender: self)
-                case "takeDose":
-                    performSegue(withIdentifier: "addDose", sender: self)
-                default: break
-                }
+        if let selectedIndex = self.tableView.indexPathForSelectedRow {
+            if let cell = self.tableView.cellForRow(at: selectedIndex) as? MedicineCell {
+                cell.cellFrame?.layer.backgroundColor = UIColor(white: 0.84, alpha: 1).cgColor
+
+                self.transitionCoordinator?.animate(alongsideTransition: { (context) in
+                    cell.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
+                }, completion: { (context) in
+                    if !context.isCancelled {
+                        self.tableView.deselectRow(at: selectedIndex, animated: animated)
+                        self.selectedMed = nil
+                    }
+                })
             }
-            
-            launchedShortcutItem = nil
         }
 
         // Update spotlight index values and home screen shortcuts
@@ -178,6 +161,23 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    func handleShortcut(shortcutItem: UIApplicationShortcutItem?) {
+        guard let shortcutItem = shortcutItem else { return }
+        guard let action = shortcutItem.userInfo?["action"] as? String else { return }
+
+        switch(action) {
+        case "addMedication":
+            performSegue(withIdentifier: "addMedication", sender: nil)
+        case "takeDose":
+            guard let medID = shortcutItem.userInfo?["medID"] as? String else { return }
+            let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+            fetchRequest.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [medID])
+            let med = try? cdStack.context.fetch(fetchRequest).first
+            performSegue(withIdentifier: "addDose", sender: med ?? nil)
+        default: break
+        }
     }
     
     
@@ -248,6 +248,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     func updateHeader() {
+        self.view.backgroundColor = UIColor(white: 0.98, alpha: 1)
+        
         // Initialize main string
         var string = NSMutableAttributedString(string: "No more doses today")
         string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
@@ -265,9 +267,13 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         if let date = nextMed?.nextDose {
             // If dose is in the past, warn of overdue doses
             if date.compare(Date()) == .orderedAscending {
+//                UIView.animate(withDuration: 0.4, animations: {
+//                    self.view.backgroundColor = UIColor.medRed
+//                })
+                
                 string = NSMutableAttributedString(string: "Overdue")
                 string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
-                string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.medRed, range: NSMakeRange(0, string.length))
                 
                 headerCounterLabel.attributedText = string
             }
@@ -314,28 +320,32 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - Table view data source
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentOffset.y > 0 {
-            if summaryHeader.layer.shadowOpacity == 0 {
-                if summaryHeaderBorder.superlayer == nil {
-                    summaryHeaderBorder.frame = CGRect(x: 0, y: summaryHeader.frame.height - 1, width: summaryHeader.frame.width, height: 1)
-                    summaryHeaderBorder.backgroundColor = UIColor(white: 0, alpha: 0.2).cgColor
-                    summaryHeader.layer.addSublayer(summaryHeaderBorder)
-                }
-                
-                summaryHeader.layer.shadowOffset = CGSize(width: 0, height: 1)
-                summaryHeader.layer.shadowRadius = 2
-                summaryHeader.layer.shadowColor = UIColor.black.cgColor
-                summaryHeader.layer.shadowOpacity = 0.3
-            }
-        } else {
-            if summaryHeader.layer.shadowOpacity > 0 {
-                if summaryHeaderBorder.superlayer != nil {
-                    summaryHeaderBorder.removeFromSuperlayer()
-                }
-                    
-                self.summaryHeader.layer.shadowOpacity = 0
-            }
-        }
+        //print(scrollView.contentOffset.y)
+        let alpha = (0.02 * -scrollView.contentOffset.y) + 1
+        summaryHeader.alpha = (alpha > 1) ? 1 : (alpha < 0) ? 0 : alpha
+        
+//        if scrollView.contentOffset.y > 0 {
+//            if summaryHeader.layer.shadowOpacity == 0 {
+//                if summaryHeaderBorder.superlayer == nil {
+//                    summaryHeaderBorder.frame = CGRect(x: 0, y: summaryHeader.frame.height - 1, width: summaryHeader.frame.width, height: 1)
+//                    summaryHeaderBorder.backgroundColor = UIColor(white: 0, alpha: 0.2).cgColor
+//                    summaryHeader.layer.addSublayer(summaryHeaderBorder)
+//                }
+//
+//                summaryHeader.layer.shadowOffset = CGSize(width: 0, height: 1)
+//                summaryHeader.layer.shadowRadius = 2
+//                summaryHeader.layer.shadowColor = UIColor.black.cgColor
+//                summaryHeader.layer.shadowOpacity = 0.3
+//            }
+//        } else {
+//            if summaryHeader.layer.shadowOpacity > 0 {
+//                if summaryHeaderBorder.superlayer != nil {
+//                    summaryHeaderBorder.removeFromSuperlayer()
+//                }
+//
+//                self.summaryHeader.layer.shadowOpacity = 0
+//            }
+//        }
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -355,13 +365,11 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         
         // Configure cell
         let cell = tableView.dequeueReusableCell(withIdentifier: "medicineCell", for: indexPath) as! MedicineCell
+        cell.med = med
         
         // Set medication name
         cell.title.text = med.name
         cell.title.textColor = UIColor.black
-        
-        // Show add button
-        cell.hideButton(false)
         
         // Set subtitle and attributes
         cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
@@ -372,18 +380,16 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         if med.doseHistory?.count == 0 && med.intervalUnit == .hourly {
             cell.hideButton(true, animated: false)
             cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
-            cell.subtitle.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+            cell.subtitle.textColor = UIColor.subtitle
             cell.subtitle.text = "Tap to take first dose"
         }
             
         // If reminders aren't enabled for medication
         else if med.reminderEnabled == false {
-            cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
-            cell.subtitle.textColor = UIColor(white: 0.5, alpha: 1)
-            
             if let date = med.nextDose {
                 // If next date is in the past, instruct user they can take next dose
                 if date.compare(Date()) == .orderedAscending {
+                    cell.subtitle.textColor = UIColor.subtitle
                     cell.subtitle.text = "Take next dose as needed"
                 } else {
                     cell.subtitle.text = "\(dose), \(Medicine.dateString(date))"
@@ -394,11 +400,11 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         } else {
             // If medication is overdue, set subtitle to next dosage date and tint red
             if med.isOverdue().flag {
-                cell.title.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                cell.title.textColor = UIColor.medRed
                 cell.subtitleGlyph.image = UIImage(named: "OverdueIcon")
                 
                 if let date = med.isOverdue().overdueDose {
-                    cell.subtitle.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                    cell.subtitle.textColor = UIColor.medRed
                     cell.subtitle.text = "\(dose), \(Medicine.dateString(date))"
                 }
             }
@@ -410,16 +416,12 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 
             // If no other conditions met, instruct user on how to take dose
             else {
-                cell.hideButton(true)
+                cell.hideButton(true, animated: false)
                 cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
-                cell.subtitle.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                cell.subtitle.textColor = UIColor.medRed
                 cell.subtitle.text = "Tap to take first dose"
             }
         }
-        
-        // Add long press gesture recognizer
-//        longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(takeDose(_:)))
-//        cell.longPressGesture = longPressGesture
         
         return cell
     }
@@ -462,7 +464,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
 
         takeAction.image = UIImage(named: "TakeDoseAction")
-        takeAction.backgroundColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        takeAction.backgroundColor = UIColor.medRed
 
         return UISwipeActionsConfiguration(actions: [takeAction])
     }
@@ -478,7 +480,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             }
         }
         
-        deleteAction.backgroundColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        deleteAction.backgroundColor = UIColor.medRed
         
         return [deleteAction, editAction]
     }
@@ -553,12 +555,14 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             alert.addAction(UIAlertAction(title: "Take Dose", style: UIAlertActionStyle.default, handler: {(action) -> Void in
                 self.performSegue(withIdentifier: "addDose", sender: med)
                 self.tableView.deselectRow(at: index, animated: false)
+                self.selectedMed = nil
             }))
             
             if med.isOverdue().flag {
                 alert.addAction(UIAlertAction(title: "Snooze Dose", style: UIAlertActionStyle.default, handler: {(action) -> Void in
                     med.snoozeNotification()
                     self.tableView.deselectRow(at: index, animated: false)
+                    self.selectedMed = nil
                 }))
             }
             
@@ -606,6 +610,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                         self.tbc?.setDynamicShortcuts()
                     } else {
                         self.tableView.deselectRow(at: index, animated: false)
+                        self.selectedMed = nil
                     }
                 }))
             }
@@ -613,10 +618,12 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             alert.addAction(UIAlertAction(title: "Refill Prescription", style: UIAlertActionStyle.default, handler: {(action) -> Void in
                 self.performSegue(withIdentifier: "refillPrescription", sender: med)
                 self.tableView.deselectRow(at: index, animated: false)
+                self.selectedMed = nil
             }))
             
             alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {(action) -> Void in
-                self.tableView.deselectRow(at: index, animated: false)
+                self.tableView.deselectRow(at: index, animated: true)
+                self.selectedMed = nil
             }))
             
             // Set popover for iPad
@@ -640,6 +647,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             if (sender.state == .began) {
                 self.performSegue(withIdentifier: "addDose", sender: med)
                 self.tableView.deselectRow(at: indexPath, animated: false)
+                self.selectedMed = nil
             }
         }
     }
@@ -651,6 +659,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         
         deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {(action) -> Void in
             self.tableView.deselectRow(at: indexPath, animated: false)
+            self.selectedMed = nil
         }))
         
         deleteAlert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: {(action) -> Void in
@@ -736,7 +745,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             if let index = self.tableView.indexPath(for: sender as! UITableViewCell) {
                 let med = medication[index.row]
                 if med.doseHistory?.count == 0 && med.intervalUnit == .hourly {
-                    presentActionMenu(index)
+                    performSegue(withIdentifier: "addDose", sender: med)
                     return false
                 }
             }
@@ -879,7 +888,9 @@ extension MainVC: SKPaymentTransactionObserver {
     func unlockManager() {
         defaults.set(true, forKey: "managerUnlocked")
         defaults.synchronize()
+        
         productLock = false
+        
         continueToAdd()
     }
     

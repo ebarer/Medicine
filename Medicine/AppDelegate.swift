@@ -17,7 +17,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     let stack = CoreDataStack()!
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
-    var launchedShortcutItem: [AnyHashable: Any]?
 
     // MARK: - Application methods
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
@@ -58,12 +57,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         setUserDefaults()
         
-        // Handle application shortcut
-        if let _ = launchOptions?[UIApplicationLaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
-            launchedShortcutItem = launchOptions
-            return false
-        }
-        
         return true
     }
     
@@ -76,14 +69,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillEnterForeground(_ application: UIApplication) {
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
-    }
-    
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        if let shortcutItem = launchedShortcutItem?[UIApplicationLaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
-            _ = handleShortcut(shortcutItem)
-        }
-        
-        launchedShortcutItem = nil
     }
     
     func applicationWillResignActive(_ application: UIApplication) {
@@ -251,29 +236,11 @@ extension AppDelegate {
         completionHandler(handleShortcut(shortcutItem))
     }
 
-    func handleShortcut(_ shortcutItem: UIApplicationShortcutItem) -> Bool {
-        guard let action = shortcutItem.userInfo?["action"] else { return false }
-        
+    @discardableResult func handleShortcut(_ shortcutItem: UIApplicationShortcutItem) -> Bool {
         if let tbc = self.window!.rootViewController as? UITabBarController {
             if let splitView = tbc.viewControllers?.filter({$0.isKind(of: UISplitViewController.self)}).first as? UISplitViewController {
-                let masterVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
-                
-                if masterVC.isViewLoaded {
-                    masterVC.dismiss(animated: false, completion: nil)
-                    
-                    switch(String(describing: action)) {
-                    case "addMedication":
-                        masterVC.performSegue(withIdentifier: "addMedication", sender: self)
-                    case "takeDose":
-                        masterVC.performSegue(withIdentifier: "addDose", sender: self)
-                    default: break
-                    }
-                    
-                    launchedShortcutItem = nil
-                    return true
-                } else {
-                    masterVC.launchedShortcutItem = self.launchedShortcutItem as [NSObject : AnyObject]?
-                }
+                let mainVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
+                mainVC.handleShortcut(shortcutItem: shortcutItem)
             }
         }
         

@@ -198,14 +198,14 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
                 // If medication is overdue, set subtitle to next dosage date and tint red
                 if med.isOverdue().flag {
                     nameCell.imageView?.image = UIImage(named: "OverdueGlyph")
-                    nameCell.imageView?.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                    nameLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                    nameCell.imageView?.tintColor = UIColor.medRed
+                    nameLabel.textColor = UIColor.medRed
                     
-                    doseTitle.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                    doseTitle.textColor = UIColor.medRed
                     doseTitle.text = "Overdue"
 
                     if let date = med.isOverdue().overdueDose {
-                        doseLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                        doseLabel.textColor = UIColor.medRed
                         doseLabel.font = UIFont.systemFont(ofSize: 16.0, weight: UIFont.Weight.medium)
                         doseLabel.text = Medicine.dateString(date)
                     }
@@ -244,7 +244,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         case Rows.name.index().section:
             return 15.0
         case Rows.notes.index().section:
-            return ((med?.prescriptionCount ?? 0) > 0) ? 45.0 : 25.0
+            return ((med?.prescriptionCount ?? 0) > 0) ? 50.0 : 25.0
         default:
             return 1.0
         }

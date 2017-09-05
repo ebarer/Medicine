@@ -27,14 +27,14 @@ class HistoryCell: UITableViewCell {
     func setupCell() {
         dateLabel?.isHidden = false
         dateLabel?.text = nil
-        dateLabel?.textColor = UIColor(white: 0.22, alpha: 1)
+        dateLabel?.textColor = UIColor.darkGray
         
         medLabel?.text = nil
-        medLabel?.textColor = UIColor(white: 0.22, alpha: 1)
+        medLabel?.textColor = UIColor.medRed
 
         historyLabel?.isHidden = false
         historyLabel?.text = nil
-        historyLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        historyLabel?.textColor = UIColor.medRed
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

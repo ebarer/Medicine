@@ -16,6 +16,8 @@
 		CE0EA1971BAFE2B800F48A09 /* MedicineDoseHistoryTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0EA1961BAFE2B800F48A09 /* MedicineDoseHistoryTVC.swift */; };
 		CE0EA1991BAFF49100F48A09 /* MainTBC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0EA1981BAFF49100F48A09 /* MainTBC.swift */; };
 		CE0EA19D1BAFFDA200F48A09 /* AddDoseTVC+Medicine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0EA19C1BAFFDA200F48A09 /* AddDoseTVC+Medicine.swift */; };
+		CE15F3DB1F5EC6EE00DE24FF /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE69135D1F5CDC5A007EC59C /* Date+Extension.swift */; };
+		CE15F3DC1F5EC6F100DE24FF /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6913611F5D1C4D007EC59C /* UIColor+Extension.swift */; };
 		CE2325841BB1693C0013B72D /* HistoryEmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE2325821BB1693C0013B72D /* HistoryEmptyView.xib */; };
 		CE247B8F1B96618100E4EB5F /* AddMedicationTVC+Dosage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE247B8E1B96618100E4EB5F /* AddMedicationTVC+Dosage.swift */; };
 		CE247B911B96619B00E4EB5F /* AddMedicationTVC+Interval.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE247B901B96619B00E4EB5F /* AddMedicationTVC+Interval.swift */; };
@@ -33,6 +35,8 @@
 		CE3A42541C13A27C0035E390 /* MedicineRefillHistoryTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3A42531C13A27C0035E390 /* MedicineRefillHistoryTVC.swift */; };
 		CE3AB2FE1C66CCDE0036AC30 /* migrationV22toV25.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = CE3AB2FD1C66CCDE0036AC30 /* migrationV22toV25.xcmappingmodel */; };
 		CE6325CA1BA1661C00BAD562 /* UpgradeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6325C91BA1661C00BAD562 /* UpgradeVC.swift */; };
+		CE69135E1F5CDC5A007EC59C /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE69135D1F5CDC5A007EC59C /* Date+Extension.swift */; };
+		CE6913621F5D1C4D007EC59C /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6913611F5D1C4D007EC59C /* UIColor+Extension.swift */; };
 		CE6E551D1B9040C900805397 /* Medicine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */; };
 		CE6E551E1B9040C900805397 /* Medicine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551A1B9040C900805397 /* Medicine.swift */; };
 		CE6E551F1B9040C900805397 /* Dose+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551B1B9040C900805397 /* Dose+CoreDataProperties.swift */; };
@@ -121,6 +125,8 @@
 		CE48157B1B971A5700F1FA0C /* Medicine - 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2.xcdatamodel"; sourceTree = "<group>"; };
 		CE587A151BA9244400821D18 /* Medicine - 2. 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2. 2.xcdatamodel"; sourceTree = "<group>"; };
 		CE6325C91BA1661C00BAD562 /* UpgradeVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UpgradeVC.swift; path = Main/UpgradeVC.swift; sourceTree = "<group>"; };
+		CE69135D1F5CDC5A007EC59C /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
+		CE6913611F5D1C4D007EC59C /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Medicine+CoreDataProperties.swift"; path = "Medicine/Models/Medicine+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		CE6E551A1B9040C900805397 /* Medicine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Medicine.swift; path = Medicine/Models/Medicine.swift; sourceTree = "<group>"; };
 		CE6E551B1B9040C900805397 /* Dose+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Dose+CoreDataProperties.swift"; path = "Medicine/Models/Dose+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -210,6 +216,15 @@
 			path = MedicineTodayExtension;
 			sourceTree = "<group>";
 		};
+		CE6913601F5CDC69007EC59C /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				CE6913611F5D1C4D007EC59C /* UIColor+Extension.swift */,
+				CE69135D1F5CDC5A007EC59C /* Date+Extension.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		CE6E55211B9040E700805397 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -252,6 +267,7 @@
 			children = (
 				CEA250E81B90396C00BBE466 /* AppDelegate.swift */,
 				CE6E55211B9040E700805397 /* Models */,
+				CE6913601F5CDC69007EC59C /* Extensions */,
 				CEA251031B903BE900BBE466 /* Main */,
 				CECD22B11BE94127007C5F25 /* Details */,
 				CEA251001B903BC900BBE466 /* Add */,
@@ -483,7 +499,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE15F3DC1F5EC6F100DE24FF /* UIColor+Extension.swift in Sources */,
 				CE2F6B1B1BBD5BA800707951 /* TodayViewController.swift in Sources */,
+				CE15F3DB1F5EC6EE00DE24FF /* Date+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -492,6 +510,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CECDC9511F477791007D4BB4 /* CoreDataStack.swift in Sources */,
+				CE6913621F5D1C4D007EC59C /* UIColor+Extension.swift in Sources */,
 				CEA2510C1B903E7D00BBE466 /* Medicine.xcdatamodeld in Sources */,
 				CE94A5B61BE8B13B008E58DF /* SettingsTVC+Refill.swift in Sources */,
 				CE6E551E1B9040C900805397 /* Medicine.swift in Sources */,
@@ -509,6 +528,7 @@
 				CEA250FF1B903BC200BBE466 /* AddMedicationTVC.swift in Sources */,
 				CE6325CA1BA1661C00BAD562 /* UpgradeVC.swift in Sources */,
 				CE75197A1BB00CFE000A2879 /* SettingsTVC+Snooze.swift in Sources */,
+				CE69135E1F5CDC5A007EC59C /* Date+Extension.swift in Sources */,
 				CE7519781BB00CB5000A2879 /* SettingsTVC+Sort.swift in Sources */,
 				CECD22B61BE95088007C5F25 /* AddRefillTVC.swift in Sources */,
 				CE936E631C6C36400093BECF /* MainTVC+UIViewControllerPreviewing.swift in Sources */,

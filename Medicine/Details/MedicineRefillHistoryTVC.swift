@@ -17,9 +17,6 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     // MARK: - Helper variables
     let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     
-    let cal = Calendar.current
-    let dateFormatter = DateFormatter()
-    
     var normalButtons = [UIBarButtonItem]()
     var editButtons = [UIBarButtonItem]()
     
@@ -32,10 +29,10 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
         self.tableView.cellLayoutMarginsFollowReadableWidth = true
         
         // Modify VC
-        self.title = "Refill History"
-        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        self.view.tintColor = UIColor.medRed
+        
         self.navigationController?.toolbar.isTranslucent = true
-        self.navigationController?.toolbar.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        self.navigationController?.toolbar.tintColor = UIColor.medRed
         
         // Configure toolbar buttons
         let fixedButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
@@ -80,6 +77,8 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     }
     
     @objc func refreshView() {
+        self.fetchedResultsController?.delegate = self
+        self.executeSearch()
         displayEmptyView()
     }
     
@@ -115,69 +114,63 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 85.0
+        return 80.0
     }
-    
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let headerView = tableView.dequeueReusableCell(withIdentifier: "headerCell") else {
+            return nil
+        }
+        
+        let border = CALayer()
+        border.backgroundColor = UIColor(white: 0.86, alpha: 1).cgColor
+        border.frame = CGRect(x: 0, y: headerView.frame.height - 0.5, width: headerView.frame.width, height: 0.5)
+        headerView.layer.addSublayer(border)
+        
+        guard let dayLabel = headerView.viewWithTag(1) as? UILabel else {
+            return nil
+        }
+        
+        dayLabel.textColor = UIColor.darkGray
+        
+        guard let dateLabel = headerView.viewWithTag(2) as? UILabel else {
+            return nil
+        }
+        
         if let fc = fetchedResultsController {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "YYYY-MM-dd HH:mm:ss ZZZ"
-            guard let sectionDate = dateFormatter.date(from: fc.sections![section].name) else {
+            guard let sectionDate = Date.fromString(fc.sections![section].name, withFormat: "YYYY-MM-dd HH:mm:ss ZZZ") else {
                 return nil
             }
             
-            if cal.isDateInToday(sectionDate) {
-                dateFormatter.timeStyle = DateFormatter.Style.none
-                dateFormatter.dateStyle = DateFormatter.Style.medium
-                return "Today\n\(dateFormatter.string(from: sectionDate))"
-            } else if cal.isDateInYesterday(sectionDate) {
-                dateFormatter.timeStyle = DateFormatter.Style.none
-                dateFormatter.dateStyle = DateFormatter.Style.medium
-                return "Yesterday\n\(dateFormatter.string(from: sectionDate))"
+            if Calendar.current.isDateInToday(sectionDate) {
+                dayLabel.textColor = UIColor.medRed
+                dayLabel.text = "TODAY"
+                dateLabel.text = sectionDate.string(dateStyle: .long)?.uppercased()
+            } else if Calendar.current.isDateInYesterday(sectionDate) {
+                dayLabel.text = "YESTERDAY"
+                dateLabel.text = sectionDate.string(dateStyle: .long)?.uppercased()
             } else if sectionDate.isDateInLastWeek() {
-                dateFormatter.dateFormat = "EEEE\nMMMM d, YYYY"
-                return dateFormatter.string(from: sectionDate)
+                dayLabel.text = sectionDate.string(withFormat: "EEEE")?.uppercased()
+                dateLabel.text = sectionDate.string(withFormat: "MMMM d, YYYY")?.uppercased()
             } else {
-                dateFormatter.dateFormat = "EEEE\nMMMM d, YYYY"
-                return dateFormatter.string(from: sectionDate)
+                dayLabel.text = sectionDate.string(withFormat: "MMMM d, YYYY")?.uppercased()
+                dateLabel.text = sectionDate.string(withFormat: "EEEE")?.uppercased()
             }
-        } else {
-            return nil
         }
+        
+        return headerView
     }
     
-    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        if let fc = fetchedResultsController {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "YYYY-MM-dd HH:mm:ss ZZZ"
-            guard let sectionDate = dateFormatter.date(from: fc.sections![section].name) else {
-                return
-            }
-            
-            let header: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
-            
-            // Set header title
-            header.textLabel?.text = header.textLabel?.text?.uppercased()
-            header.textLabel?.textColor = UIColor(white: 0, alpha: 0.3)
-            header.textLabel?.textAlignment = .left
-            
-            if let text = header.textLabel?.text {
-                let string = NSMutableAttributedString(string: text)
-                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 14.0), range: NSMakeRange(0, string.length))
-                
-                if let index = text.characters.index(of: "\n") {
-                    let pos = text.characters.distance(from: text.startIndex, to: index)
-                    string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 20.0, weight: UIFont.Weight.semibold), range: NSMakeRange(0, pos))
-                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(white: 0, alpha: 0.7), range: NSMakeRange(0, pos))
-                    
-                    if Calendar.current.isDateInToday(sectionDate) {
-                        string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0), range: NSMakeRange(0, pos))
-                    }
-                }
-                
-                header.textLabel?.attributedText = string
-            }
-        }
+    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let footerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 5))
+        footerView.backgroundColor = UIColor(white: 0.95, alpha: 1)
+        
+        let border = CALayer()
+        border.backgroundColor = UIColor(white: 0.86, alpha: 1).cgColor
+        border.frame = CGRect(x: 0, y: 0, width: footerView.frame.width, height: 0.5)
+        footerView.layer.addSublayer(border)
+        
+        return footerView
     }
     
     
@@ -196,10 +189,6 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
         let cell = tableView.dequeueReusableCell(withIdentifier: "historyCell", for: indexPath) as! HistoryCell
         
         if let refill = self.fetchedResultsController!.object(at: indexPath) as? Refill {
-            // Setup date formatter
-            dateFormatter.timeStyle = DateFormatter.Style.short
-            dateFormatter.dateStyle = DateFormatter.Style.none
-            
             // Specify selection color
             cell.selectedBackgroundView = UIView()
             cell.historyLabel?.isHidden = true
@@ -212,10 +201,10 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
                 amount += " (\(refill.quantity.removeTrailingZero()) \(refill.quantityUnit.units(refill.quantity)))"
             }
             
-            cell.dateLabel?.text = dateFormatter.string(from: refill.date)
+            cell.dateLabel?.text = refill.date.string(timeStyle: .short)
             
             cell.medLabel?.text = amount
-            cell.medLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+            cell.medLabel?.textColor = UIColor.medRed
         } else {
             cell.dateLabel?.isHidden = true
             
@@ -349,6 +338,7 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "addRefill" {
             if let vc = segue.destination.childViewControllers[0] as? AddRefillTVC {
+                self.fetchedResultsController?.delegate = nil
                 vc.med = med
             }
         }

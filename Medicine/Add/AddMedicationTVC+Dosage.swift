@@ -27,7 +27,7 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate, UIPi
         super.viewDidLoad()
         
         // Modify VC
-        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        self.view.tintColor = UIColor.medRed
         
         // Set values
         dosageInput.text = String(format:"%g", med.dosage)
@@ -60,7 +60,7 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate, UIPi
                 return 162
             }
         default:
-            return tableView.rowHeight
+            return 50
         }
         
         return 0

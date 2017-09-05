@@ -39,6 +39,10 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     override func viewDidLoad() {
         super.viewDidLoad()
         self.clearsSelectionOnViewWillAppear = true
+        
+        let placeholder = NSAttributedString(string: "Enter medication name",
+                                             attributes: [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 32.0, weight: .light)])
+        self.medicationName.attributedPlaceholder = placeholder
         self.medicationName.delegate = self
         
         // Setup date formatter
@@ -46,7 +50,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         dateFormatter.dateStyle = DateFormatter.Style.none
         
         // Modify VC
-        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        self.view.tintColor = UIColor.medRed
         
         // Setup medicine object
         if editMode == false {
@@ -142,18 +146,18 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch Rows(index: indexPath) {
         case Rows.name:
-            return 60.0
+            return 70.0
         case Rows.prescription:
             if med.name != nil && med.name != "" {
-                return 48.0
+                return 50.0
+            } else {
+                return 0
             }
-        case Rows.interval:
-            return tableView.rowHeight
         default:
-            return tableView.rowHeight
+            break
         }
         
-        return 0
+        return 50.0
     }
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {

@@ -23,11 +23,12 @@ extension MainVC: UIViewControllerPreviewingDelegate {
             return nil
         }
         
-//        guard let med = fetchedResultsController?.object(at: indexPath) as? Medicine else {
-//            return nil
-//        }
+        let med = medication[indexPath.row]
+        vc.med = med
         
-        vc.med = medication[indexPath.row]
+        if med.doseHistory?.count == 0 && med.intervalUnit == .hourly {
+            return nil
+        }
         
         // Set the source rect to the cell frame, so surrounding elements are blurred.
         previewingContext.sourceRect = cell.frame
