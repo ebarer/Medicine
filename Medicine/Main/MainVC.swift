@@ -519,10 +519,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedMed = medication[indexPath.row]
-        
         if tableView.isEditing == true {
             performSegue(withIdentifier: "editMedication", sender: medication[indexPath.row])
+        } else {
+            selectedMed = medication[indexPath.row]
         }
     }
     
@@ -629,7 +629,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             // Set popover for iPad
             if let cell = tableView.cellForRow(at: index) as? MedicineCell {
                 alert.popoverPresentationController?.sourceView = cell.addButton
-                alert.popoverPresentationController?.sourceRect = cell.addButton.bounds.insetBy(dx: 7, dy: 0)
+                alert.popoverPresentationController?.sourceRect = cell.addButton.bounds
                 alert.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.left
             }
             

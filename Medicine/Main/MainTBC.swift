@@ -27,7 +27,10 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         tabBar.barStyle = .default
         tabBar.tintColor = UIColor.medRed
         
-        // Add observeres for notifications
+        // Add observer for day change
+        NotificationCenter.default.addObserver(self, selector: #selector(rescheduleNotifications(_:)), name: NSNotification.Name.NSCalendarDayChanged, object: nil)
+        
+        // Add observers for notifications
         NotificationCenter.default.addObserver(self, selector: #selector(doseNotification(_:)), name: NSNotification.Name(rawValue: "doseNotification"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refillNotification(_:)), name: NSNotification.Name(rawValue: "refillNotification"), object: nil)
         

@@ -370,6 +370,8 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         
         cdStack.save()
         
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
         dismiss(animated: true, completion: nil)
     }
     

@@ -17,11 +17,11 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     // MARK: - Outlets
     @IBOutlet var nameCell: UITableViewCell!
     @IBOutlet var nameLabel: UILabel!
-    @IBOutlet var doseDetailsLabel: UILabel!
-    @IBOutlet var doseCell: UITableViewCell!
     @IBOutlet var doseTitle: UILabel!
     @IBOutlet var doseLabel: UILabel!
+    @IBOutlet var doseDetailsLabel: UILabel!
     @IBOutlet var prescriptionLabel: UILabel!
+    @IBOutlet var prescriptionDescription: UILabel!
     @IBOutlet var actionCell: UITableViewCell!
     @IBOutlet var takeDoseButton: UIButton!
     @IBOutlet var refillButton: UIButton!
@@ -141,26 +141,10 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             
             doseDetailsLabel.text = detailsString
             
-            var prescriptionString = ""
-            if let count = med.refillHistory?.count, count > 0 {
-                let count = med.prescriptionCount
-                let numberFormatter = NumberFormatter()
-                numberFormatter.numberStyle = NumberFormatter.Style.decimal
-                
-                if count.isZero {
-                    prescriptionString = "None remaining"
-                } else if let count = numberFormatter.string(from: NSNumber(value: count)) {
-                    prescriptionString = "\(count) \(med.dosageUnit.units(med.prescriptionCount)) remaining"
-                }
-            } else {
-                prescriptionString = "None"
-            }
-            
-            prescriptionLabel.text = prescriptionString
+            updateDose()
+            updatePrescription()
             
             notesField.text = med.notes
-            
-            updateDose()
             
             // Correct inset
             tableView.reloadRows(at: [Rows.name.index()], with: .none)
@@ -187,9 +171,14 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             
             // If reminders aren't enabled for medication
             else if med.reminderEnabled == false {
-                if let date = med.lastDose?.date {
-                    doseTitle.text = "Last Dose"
-                    doseLabel.text = Medicine.dateString(date)
+                if let date = med.nextDose {
+                    if date.compare(Date()) == .orderedAscending {
+                        doseTitle.text = "Next Dose"
+                        doseLabel.text = "Take as needed"
+                    } else {
+                        doseTitle.text = "Next Dose"
+                        doseLabel.text = Medicine.dateString(date)
+                    }
                 } else {
                     doseTitle.text = "No doses logged"
                     doseLabel.text?.removeAll()
@@ -225,6 +214,38 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         }
     }
     
+    func updatePrescription() {
+        if let med = med {
+            if let historyCount = med.refillHistory?.count, historyCount > 0 {
+                let count = med.prescriptionCount
+                let numberFormatter = NumberFormatter()
+                numberFormatter.numberStyle = NumberFormatter.Style.decimal
+                
+                if count.isZero {
+                    prescriptionLabel.text = "None remaining"
+                } else if let count = numberFormatter.string(from: NSNumber(value: count)) {
+                    prescriptionLabel.text = "\(count) \(med.dosageUnit.units(med.prescriptionCount)) remaining"
+                }
+            } else {
+                prescriptionLabel.text = "None"
+            }
+
+            if med.prescriptionCount < med.dosage {
+                prescriptionDescription.text = "You do not appear to have enough \(med.name!) remaining to take the next dose. "
+            } else {
+                if let days = med.refillDaysRemaining() {
+                    if days <= 1 {
+                        prescriptionDescription.text = "You will need to refill after the next dose. "
+                    } else {
+                        prescriptionDescription.text = "Based on current usage, your prescription should last approximately \(days) \(Intervals.daily.units(Float(days))). "
+                    }
+                } else {
+                    prescriptionDescription.text = "Continue taking doses to receive an approximation for your prescription duration."
+                }
+            }
+        }
+    }
+    
     // MARK: - Button events
     @IBAction func touchDown(_ sender: UIButton) {
         UIView.animate(withDuration: 0.2) {
@@ -239,17 +260,6 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     }
     
     // MARK: - Table view data source
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch section {
-        case Rows.name.index().section:
-            return 15.0
-        case Rows.notes.index().section:
-            return ((med?.prescriptionCount ?? 0) > 0) ? 50.0 : 25.0
-        default:
-            return 1.0
-        }
-    }
-    
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == Rows.notes.index().section && med != nil {
             return "Notes"
@@ -263,11 +273,11 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         case Rows.name:
             return 70.0
         case Rows.prescriptionCount:
-            return ((med?.refillHistory?.count ?? 0) > 0) ? tableView.rowHeight : 0.0
+            return ((med?.refillHistory?.count ?? 0) > 0) ? 105.0 : 0.0     // UITableViewAutomaticDimension
         case Rows.actions:
             return 100.0
         case Rows.notes:
-            let height = notesField.contentSize.height + 10
+            let height = notesField.contentSize.height + 30
             return (height > 75.0) ? height : 75.0
         default:
             return 50.0
@@ -289,33 +299,6 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         default: break
         }
     }
-    
-    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if let med = med {
-            if section == Rows.prescriptionCount.index().section && med.prescriptionCount > 0 {
-                var status: String? = nil
-                
-                if med.prescriptionCount < med.dosage {
-                    status = "You do not appear to have enough \(med.name!) remaining to take the next dose. "
-                } else {                
-                    if let days = med.refillDaysRemaining() {
-                        if days <= 1 {
-                            status = "You will need to refill after the next dose. "
-                        } else {
-                            status = "Based on current usage, your prescription should last approximately \(days) \(Intervals.daily.units(Float(days))). "
-                        }
-                    } else {
-                        status = "Continue taking doses to receive a duration approximation for your prescription."
-                    }
-                }
-                
-                return status
-            }
-        }
-        
-        return nil
-    }
-    
     
     // MARK: - Table view delegates
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -406,7 +389,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         
         // Set popover for iPad
         alert.popoverPresentationController?.sourceView = actionsButton
-        alert.popoverPresentationController?.sourceRect = actionsButton.bounds.insetBy(dx: 0, dy: 14)
+        alert.popoverPresentationController?.sourceRect = actionsButton.bounds.offsetBy(dx: -1, dy: 4)
         alert.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.up
         
         alert.view.layoutIfNeeded()

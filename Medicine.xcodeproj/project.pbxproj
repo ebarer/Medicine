@@ -674,7 +674,7 @@
 				DEVELOPMENT_TEAM = 5ZJB9DN7AQ;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
 				INFOPLIST_FILE = MedicineTodayExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine.MedicineTodayExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -694,7 +694,7 @@
 				DEVELOPMENT_TEAM = 5ZJB9DN7AQ;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
 				INFOPLIST_FILE = MedicineTodayExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine.MedicineTodayExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";

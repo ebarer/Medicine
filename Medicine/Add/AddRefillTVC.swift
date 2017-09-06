@@ -336,7 +336,12 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
     @IBAction func saveRefill(_ sender: AnyObject) {
         med?.addRefill(refill)
         refill.medicine = med
+        
         cdStack.save()
+        
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+        
         dismiss(animated: true, completion: nil)
     }
     

@@ -53,24 +53,28 @@ class MedicineCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         
-        if selected {
-            self.cellFrame?.layer.backgroundColor = UIColor(white: 0.95, alpha: 1).cgColor
-            self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
-        } else {
-            self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
-            self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
+        if !rowEditing {
+            if selected {
+                self.cellFrame?.layer.backgroundColor = UIColor(white: 0.84, alpha: 1).cgColor
+                self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
+            } else {
+                self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
+                self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
+            }
         }
     }
     
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
         
-        if highlighted {
-            self.cellFrame?.layer.backgroundColor = UIColor(white: 0.84, alpha: 1).cgColor
-            self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
-        } else {
-            self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
-            self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
+        if !rowEditing {
+            if highlighted {
+                self.cellFrame?.layer.backgroundColor = UIColor(white: 0.84, alpha: 1).cgColor
+                self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
+            } else {
+                self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
+                self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
+            }
         }
     }
     

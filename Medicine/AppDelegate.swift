@@ -62,7 +62,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationDidEnterBackground(_ application: UIApplication) {
         UNUserNotificationCenter.current().getPendingNotificationRequests { (requests) in
-            NSLog("%@", [requests])
+            for request in requests {
+                if let dateComponents = (request.trigger as? UNCalendarNotificationTrigger)?.dateComponents {
+                    guard let date = Calendar.current.date(from: dateComponents) else {
+                        continue
+                    }
+                    let logMessage = "Notification: \(request.identifier), Date: \(date)"
+                    NSLog(logMessage)
+                }
+            }
         }
     }
     

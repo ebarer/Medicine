@@ -49,9 +49,12 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         
         guard let data = defaults.value(forKey: "todayData") as? [String: AnyObject],
               let dateString = data["dateString"] as? String else {
+            
+            NSLog("Today extension data: %@", [defaults.value(forKey: "todayData")])
             let string = NSMutableAttributedString(string: "Couldn't update")
             string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 24.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
             
+            topConstraint.constant = 16.0
             doseMainLabel.attributedText = string
             doseMedLabel.text = nil
             return NCUpdateResult.newData
@@ -75,12 +78,18 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             doseMedLabel.text = details
             return NCUpdateResult.newData
         } else {
-            self.view.backgroundColor = UIColor.medRed
+            let fontSize: CGFloat = (dateString == "Overdue") ? 32.0 : 24.0
             
-            let fontSize: CGFloat = dateString == "Overdue" ? 32.0 : 24.0
             let string = NSMutableAttributedString(string: dateString)
             string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: fontSize, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
-            string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.white, range: NSMakeRange(0, string.length))
+            
+            if dateString == "Overdue" {
+                self.view.backgroundColor = UIColor.medRed
+                string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.white, range: NSMakeRange(0, string.length))
+            } else {
+                string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(white: 0.18, alpha: 1), range: NSMakeRange(0, string.length))
+            }
+            
 
             topConstraint.constant = 16.0
             doseMainLabel.attributedText = string
