@@ -18,7 +18,7 @@ class TutorialPVC: UIPageViewController, UIPageViewControllerDataSource {
         super.viewDidLoad()
         
         // Setup view, and remove navigation bar shadow
-        self.view.backgroundColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        self.view.backgroundColor = UIColor.medRed
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController?.navigationBar.shadowImage = UIImage()
         
@@ -92,8 +92,8 @@ class TutorialPVC: UIPageViewController, UIPageViewControllerDataSource {
             })
         default:
             UIView.animate(withDuration: 0.5, animations: { () -> Void in
-                self.navigationController?.navigationBar.barTintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-                self.view.backgroundColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                self.navigationController?.navigationBar.barTintColor = UIColor.medRed
+                self.view.backgroundColor = UIColor.medRed
             })
         }
     }

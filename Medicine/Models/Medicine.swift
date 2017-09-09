@@ -10,9 +10,9 @@ import UIKit
 import CoreData
 import CoreSpotlight
 import MobileCoreServices
+import UserNotifications
 
 class Medicine: NSManagedObject {
-    
     
     // MARK: - Enum variables
     fileprivate let cal = Calendar.current
@@ -30,49 +30,45 @@ class Medicine: NSManagedObject {
 
     // MARK: - Member variables
     var nextDose: Date? {
-        do {
-            return try calculateNextDose()
-        } catch {
+        guard let date = try? calculateNextDose() else {
+            self.hasNextDose = false
+            self.dateNextDose = nil
             return nil
         }
-    }
 
-    var lastDose: Dose? {
-        if let lastHistory = doseHistory {
-            if let object = lastHistory.firstObject {
-                var dose = object as! Dose
-                
-                for next in lastHistory.array as! [Dose] {
-                    // Ignore if item is set to be deleted
-                    if (!next.isDeleted && dose.date.compare(next.date as Date) == .orderedAscending) {
-                        dose = next
-                    }
-                }
-                
-                return dose
-            }
+        // For as needed medication, if their next dose is in the past,
+        // push it into the future to ensure correct sorting
+        if (self.reminderEnabled == false) && (date?.compare(Date()) == .orderedAscending) {
+            self.hasNextDose = false
+            self.dateNextDose = nil
+        } else {
+            self.hasNextDose = (date != nil)
+            self.dateNextDose = date
         }
         
-        return nil
+        // Ensure new medications are at top of sort
+        if self.doseHistory?.count == 0 {
+            self.isNew = true
+        } else {
+            self.isNew = false
+        }
+        
+        return date
     }
     
-    var scheduledNotifications: [UILocalNotification]? {
-        var medNotifications = [UILocalNotification]()
-        
-        let notifications = UIApplication.shared.scheduledLocalNotifications!
-        for notification in notifications {
-            if let id = notification.userInfo?["id"] as? String {
-                if (id == self.medicineID) {
-                    medNotifications.append(notification)
-                }
-            }
-        }
-        
-        if medNotifications.count == 0 {
+    var lastDose: Dose? {
+        guard let history = doseHistory?.array as? [Dose] else {
+            self.dateLastDose = nil
             return nil
         }
         
-        return medNotifications
+        guard let dose = history.sorted(by: { $0.date.compare($1.date) == .orderedDescending }).first else {
+            self.dateLastDose = nil
+            return nil
+        }
+        
+        self.dateLastDose = dose.date
+        return dose
     }
     
     func doseArray() -> [Date: [Dose]]? {
@@ -338,18 +334,18 @@ class Medicine: NSManagedObject {
         
         // Set label date, skip if date is today (parameter)
         if today == true && cal.isDateInToday(date) {
-            dateString = "Today, "
+            dateString = "Today at "
         } else if !cal.isDateInToday(date) {
             if cal.isDateInYesterday(date) {
-                dateString = "Yesterday, "
+                dateString = "Yesterday at "
             } else if cal.isDateInTomorrow(date) {
-                dateString = "Tomorrow, "
+                dateString = "Tomorrow at "
             } else if date.isDateInWeek() {
-                dateFormatter.dateFormat = "EEEE, "
+                dateFormatter.dateFormat = "EEEE at "
                 dateString = dateFormatter.string(from: date)
             } else {
                 // Default case
-                dateFormatter.dateFormat = "MMM d, "
+                dateFormatter.dateFormat = "MMM d at "
                 dateString = dateFormatter.string(from: date)
             }
         }
@@ -359,7 +355,7 @@ class Medicine: NSManagedObject {
             if cal.isDateInTomorrow(date) {
                 dateString = "Midnight"
             } else if cal.isDateInToday(date) {
-                dateString = "Yesterday, Midnight"
+                dateString = "Yesterday at Midnight"
             } else {
                 dateString.append("Midnight")
             }
@@ -373,15 +369,18 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Initialization method
-    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertInto: context)
-        
-        if self.medicineID.isEmpty {
-            self.medicineID = UUID().uuidString
-            self.dateCreated = Date()
+    convenience init(insertInto context: NSManagedObjectContext) {
+        if let entity = NSEntityDescription.entity(forEntityName: "Medicine", in: context) {
+            self.init(entity: entity, insertInto: context)
+            
+            if self.medicineID.isEmpty {
+                self.medicineID = UUID().uuidString
+                self.dateCreated = Date()
+            }
+        } else {
+            fatalError("Unable to find Entity name!")
         }
     }
-    
     
     // MARK: - Dose methods
     
@@ -414,17 +413,19 @@ class Medicine: NSManagedObject {
      
      - Parameter dose: History object
      
-     - Returns: History object
+     - Returns: History object (discardable)
      */
     @discardableResult func addDose(_ dose: Dose) -> Dose {
         dose.medicine = self
         
         // Calculate the next dose and store in dose
-        do {
-            dose.next = try calculateNextDose(dose.date as Date)! as Date
-        } catch {
-            dose.next = nil
-        }
+        // Need to calculate based on current dose time
+        let nextDate = try? calculateNextDose(dose.date as Date)! as Date
+        dose.next = nextDate
+        self.hasNextDose = (nextDate != nil)
+        self.dateNextDose = nextDate
+        
+        self.isNew = false
         
         // Get expected date and store in dose
         if let lastDose = lastDose, lastDose.date.compare(dose.date as Date) == .orderedAscending {
@@ -466,10 +467,9 @@ class Medicine: NSManagedObject {
      
      - Returns: Bool depending on whether action was successful
      */
-    func untakeLastDose(_ moc: NSManagedObjectContext) -> Bool {
+    func untakeLastDose() -> Bool {
         if let lastDose = lastDose {
-            untakeDose(lastDose, moc: moc)
-            
+            untakeDose(lastDose)
             scheduleNextNotification()
             return true
         }
@@ -483,10 +483,10 @@ class Medicine: NSManagedObject {
      - Parameter dose: History object
      - Parameter moc: NSManagedObjectContext object
      */
-    func untakeDose(_ dose: Dose, moc: NSManagedObjectContext) {
+    func untakeDose(_ dose: Dose) {
         // Modify prescription count
         if let refillCount = self.refillHistory?.count {
-            if refillCount > 0 {
+            if (refillCount > 0) && (dose.dosage > 0) {
                 // Only enable refill flag if undoing the dosage puts count in excess
                 if needsRefill() == false {
                     self.refillFlag = true
@@ -496,11 +496,9 @@ class Medicine: NSManagedObject {
             }
         }
         
-        moc.delete(dose)
-        
-        // Save dose deletion
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        delegate.saveContext()
+        // Update next and last dose values
+        _ = self.nextDose
+        _ = self.lastDose
     }
     
     
@@ -541,8 +539,8 @@ class Medicine: NSManagedObject {
         moc.delete(refill)
         
         // Save refill deletion
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        delegate.saveContext()
+        let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
+        cdStack.save()
     }
 
     /**
@@ -643,7 +641,7 @@ class Medicine: NSManagedObject {
         
         else {
             status = "You currently have "
-            status += "\(removeTrailingZero(prescriptionCount)) \(dosageUnit.units(prescriptionCount)) of \(name!). "
+            status += "\(prescriptionCount.removeTrailingZero()) \(dosageUnit.units(prescriptionCount)) of \(name!). "
             
             if let days = refillDaysRemaining(), !entry {
                 if days <= 1 {
@@ -659,6 +657,10 @@ class Medicine: NSManagedObject {
     
     
     // MARK: - Notification methods
+    var doseNotificationIdentifier: String {
+        return "\(medicineID)-dose"
+    }
+    
     func scheduleNotification(_ date: Date, badgeCount: Int = 1) throws {
         // Schedule if the user wants a reminder and the reminder date is in the future
         guard date.compare(Date()) == .orderedDescending else {
@@ -666,38 +668,53 @@ class Medicine: NSManagedObject {
         }
         
         guard reminderEnabled == true else {
+            print(self.doseNotificationIdentifier)
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [self.doseNotificationIdentifier])
             throw MedicineError.reminderDisabled
         }
         
         guard let name = name else {
             throw MedicineError.invalidName
         }
-
-        let notification = UILocalNotification()
-        notification.alertAction = "View Medicine"
-        notification.alertTitle = "Take \(name)"
-        notification.alertBody = String(format:"Time to take %g %@ of %@", dosage, dosageUnit.units(dosage), name)
-        notification.soundName = UILocalNotificationDefaultSoundName
-        notification.category = "Dose Reminder"
+        
+        let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+        
+        let content = UNMutableNotificationContent()
+        content.title = "Take \(name)"
+        content.body = String(format:"Time to take %g %@ of %@", dosage, dosageUnit.units(dosage), name)
+        content.sound = UNNotificationSound.default()
+        content.badge = NSNumber(integerLiteral: badgeCount)
+        content.userInfo = ["id": medicineID]
         
         if lastDose == nil && intervalUnit == .daily {
-            notification.category = "Dose Reminder - No Snooze"
+            content.categoryIdentifier = "Dose Reminder - No Snooze"
+        } else {
+            content.categoryIdentifier = "Dose Reminder"
         }
-        
-        notification.userInfo = ["id": self.medicineID]
-        notification.applicationIconBadgeNumber = badgeCount
-        notification.fireDate = date
-        
-        UIApplication.shared.scheduleLocalNotification(notification)
+
+        let request = UNNotificationRequest(identifier: doseNotificationIdentifier, content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request) { (error) in
+            if error == nil {
+                let formatter = DateFormatter()
+                formatter.dateStyle = .medium
+                formatter.timeStyle = .medium
+                print("DOSE Notification scheduled for \(formatter.string(from: date)) for \"\(name)\".")
+            } else {
+                print("Error scheduling DOSE notification for \(name).")
+                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [self.doseNotificationIdentifier])
+            }
+        }
     }
     
     @discardableResult func scheduleNextNotification() -> Bool {
-        cancelNotifications()
-        
-        guard let date = nextDose else { return false }
+        guard let date = nextDose else {
+            return false
+        }
         
         do {
-            try scheduleNotification(date, badgeCount: getBadgeCount(date))
+            try scheduleNotification(date, badgeCount: Medicine.overdueCount(date))
+            NSLog("\tScheduled notification for: \(self.name!)")
             return true
         } catch {
             return false
@@ -720,12 +737,11 @@ class Medicine: NSManagedObject {
         self.lastDose?.next = snoozeDate
         
         // Save modifications to last dose
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        delegate.saveContext()
+        let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
+        cdStack.save()
         
         // Schedule new notification
         do {
-            cancelNotifications()
             try scheduleNotification(snoozeDate)
             return true
         } catch {
@@ -733,38 +749,41 @@ class Medicine: NSManagedObject {
         }
     }
     
-    func cancelNotifications() {
-        let notifications = UIApplication.shared.scheduledLocalNotifications!
-        for notification in notifications {
-            let (id, _) = (notification.userInfo?["id"] as? String, notification.userInfo?["snooze"] as? Bool)
-            if (id == self.medicineID) {
-                UIApplication.shared.cancelLocalNotification(notification)
-            }
-        }
+    var refillNotificationIdentifier: String {
+        return "\(medicineID)-refill"
     }
     
     func sendRefillNotification() {
         if refillFlag {
-            let notification = UILocalNotification()
+            let now = Date()
+            let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: now)
+            let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+            
+            let content = UNMutableNotificationContent()
+            content.title = "Refill \(name!)"
             
             var message = "You are running low on \(name!) and should refill soon."
-            
             if prescriptionCount < dosage {
                 message = "You don't have enough \(name!) to take your next dose."
             } else if let count = refillDaysRemaining(), prescriptionCount > 0 && count > 0 {
                 message = "You currently have enough \(name!) for about \(count) \(count == 1 ? "day" : "days") and should refill soon."
             }
+            content.body = message
             
-            notification.alertTitle = "Refill \(name!)"
-            notification.alertBody = message
-            notification.soundName = UILocalNotificationDefaultSoundName
-            notification.category = "Refill Reminder"
-            notification.userInfo = ["id": self.medicineID, "type": "refill"]
-            notification.fireDate = Date()
+            content.sound = UNNotificationSound.default()
+            content.userInfo = ["id": self.medicineID, "type": "refill"]
+            content.categoryIdentifier = "Refill Reminder"
             
-            UIApplication.shared.scheduleLocalNotification(notification)
-            
-            refillFlag = false
+            let request = UNNotificationRequest(identifier: refillNotificationIdentifier, content: content, trigger: trigger)
+            UNUserNotificationCenter.current().add(request) { (error) in
+                if error == nil {
+                    print("REFILL notification scheduled for \(now) for \"\(self.name!)\".")
+                    self.refillFlag = false
+                } else {
+                    print("Error scheduling REFILL notification for \(self.name!).")
+                    UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [self.refillNotificationIdentifier])
+                }
+            }
         }
     }
     
@@ -778,10 +797,18 @@ class Medicine: NSManagedObject {
     
     - Returns: Number of overdue items at date
     */
-    func getBadgeCount(_ date: Date) -> Int {
-        return medication.filter({
-            $0.reminderEnabled && $0.nextDose?.compare(date) != .orderedDescending
-        }).count
+    class func overdueCount(_ date: Date = Date()) -> Int {
+        let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
+        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        request.predicate = NSPredicate(format: "reminderEnabled == true", argumentArray: [])
+        if let medication = try? cdStack.context.fetch(request) {
+            return medication.filter({
+                guard let next = $0.nextDose else { return false }
+                return next.compare(date) != .orderedDescending
+            }).count
+        } else {
+            return 0
+        }
     }
     
     /**
@@ -860,17 +887,6 @@ class Medicine: NSManagedObject {
         return nil
     }
     
-    /**
-     Removes trailing zeroes from passed number
-     
-     Parameter num: Float value to truncate
-     
-     Returns: Number as a string with trailing zeroes truncated
-     */
-    func removeTrailingZero(_ num: Float) -> String {
-        return String(format: "%g", num)
-    }
-    
 }
 
 
@@ -938,6 +954,21 @@ extension Array {
 }
 
 
+// MARK: - Float extension
+extension Float {
+    /**
+     Removes trailing zeroes from passed number
+     
+     Parameter num: Float value to truncate
+     
+     Returns: Number as a string with trailing zeroes truncated
+     */
+    func removeTrailingZero() -> String {
+        return String(format: "%g", self)
+    }
+}
+
+
 // MARK: - Errors Enum
 enum MedicineError: Error {
     case invalidName
@@ -984,7 +1015,7 @@ enum Doses: Int16, CustomStringConvertible {
                 return "pills"
             }
         case .milligrams: return "mg"
-        case .millilitres: return "ml"
+        case .millilitres: return "mL"
         case .puffs:
             if (amount != nil && amount == 1.0) {
                 return "puff"

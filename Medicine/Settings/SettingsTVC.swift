@@ -9,10 +9,11 @@
 import UIKit
 import CoreData
 import MessageUI
+import UserNotifications
 
 class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
 
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     
@@ -29,6 +30,10 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         super.viewDidLoad()
         
         setLabels()
+        
+        if #available(iOS 11.0, *) {
+            self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.white]
+        }
         
         // Set version string
         let dictionary = Bundle.main.infoDictionary!
@@ -150,25 +155,17 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     // MARK: - Helper methods
     func resetApp() {
-        let moc = appDelegate.managedObjectContext
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName:"Medicine")
-        
-        do {
-            let fetchedResults = try moc.fetch(request) as? [Medicine]
-            
-            // Delete all medications and corresponding history
-            if let results = fetchedResults {
-                for med in results {
-                    moc.delete(med)
-                }
+        let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        if let medication = try? cdStack.context.fetch(fetchRequest) {
+            for med in medication {
+                cdStack.context.delete(med)
             }
             
-            appDelegate.saveContext()
-            
-            medication.removeAll()
+            cdStack.save()
             
             // Clear scheduled notifications
-            UIApplication.shared.cancelAllLocalNotifications()
+            UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
             
             // Reset preferences
             defaults.set(true, forKey: "firstLaunch")
@@ -198,8 +195,6 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
             if let index = self.tableView.indexPathForSelectedRow {
                 self.tableView.deselectRow(at: index, animated: false)
             }
-        } catch {
-            print("Could not fetch medication.")
         }
     }
     
@@ -221,20 +216,23 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         
         deviceInfo += "Obfuscated Medicine Information:\r"
         
-        for (index, med) in medication.enumerated() {
-            if let score = med.adherenceScore() {
-                deviceInfo += "Medicine \(index) (\(score)%): "
-            } else {
-                deviceInfo += "Medicine \(index) (-%): "
-            }
-            
-            deviceInfo += "\(med.removeTrailingZero(med.dosage)) \(med.dosageUnit.units(med.dosage)), every " +
-                          "\(med.removeTrailingZero(med.interval)) \(med.intervalUnit.units(med.interval)) "
-            
-            if med.refillHistory?.count == 0 {
-                deviceInfo += "(No refill history)"
-            } else {
-                deviceInfo += "(\(med.removeTrailingZero(med.prescriptionCount)) \(med.dosageUnit.units(med.prescriptionCount)) remaining)\r"
+        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        if let medication = try? cdStack.context.fetch(request) {
+            for (index, med) in medication.enumerated() {
+                if let score = med.adherenceScore() {
+                    deviceInfo += "Medicine \(index) (\(score)%): "
+                } else {
+                    deviceInfo += "Medicine \(index) (-%): "
+                }
+                
+                deviceInfo += "\(med.dosage.removeTrailingZero()) \(med.dosageUnit.units(med.dosage)), every " +
+                              "\(med.interval.removeTrailingZero()) \(med.intervalUnit.units(med.interval)) "
+                
+                if med.refillHistory?.count == 0 {
+                    deviceInfo += "(No refill history)"
+                } else {
+                    deviceInfo += "(\(med.prescriptionCount.removeTrailingZero()) \(med.dosageUnit.units(med.prescriptionCount)) remaining)\r"
+                }
             }
         }
         

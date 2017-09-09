@@ -14,9 +14,17 @@ import CoreData
 
 extension Refill {
 
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Refill> {
+        return NSFetchRequest<Refill>(entityName: "Refill")
+    }
+    
     @NSManaged var medicine: Medicine?
     
     @NSManaged var date: Date
+    
+    @objc public var dateSection: Date? {
+        return Calendar.current.startOfDay(for: date)
+    }
     
     @NSManaged var quantity: Float
     @NSManaged var quantityUnitInt: Int16

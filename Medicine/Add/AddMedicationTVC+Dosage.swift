@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
+class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
     var med: Medicine!
     var editMode: Bool = false
@@ -27,13 +27,13 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
         super.viewDidLoad()
         
         // Modify VC
-        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        self.view.tintColor = UIColor.medRed
         
         // Set values
         dosageInput.text = String(format:"%g", med.dosage)
 
         dosageUnitLabel.text = med.dosageUnit.description
-//        dosageUnitPicker.selectRow(Int(med.dosageUnitInt), inComponent: 0, animated: false)
+        dosageUnitPicker.selectRow(Int(med.dosageUnitInt), inComponent: 0, animated: false)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -60,7 +60,7 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
                 return 162
             }
         default:
-            return tableView.rowHeight
+            return 50
         }
         
         return 0
@@ -84,7 +84,7 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate {
     
     // MARK: - Picker data source
     
-    func numberOfComponentsInPickerView(_ pickerView: UIPickerView) -> Int {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     

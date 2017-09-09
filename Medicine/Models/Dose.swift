@@ -11,8 +11,12 @@ import CoreData
 
 class Dose: NSManagedObject {
 
-    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertInto: context)
+    convenience init(insertInto context: NSManagedObjectContext) {
+        if let entity = NSEntityDescription.entity(forEntityName: "Dose", in: context) {
+            self.init(entity: entity, insertInto: context)
+        } else {
+            fatalError("Unable to find Entity name!")
+        }
     }
     
     var dosageUnit: Doses {

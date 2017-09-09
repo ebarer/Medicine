@@ -14,7 +14,12 @@ import CoreData
 
 extension Medicine {
 
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Medicine> {
+        return NSFetchRequest<Medicine>(entityName: "Medicine")
+    }
+    
     @NSManaged var dateCreated: Date?
+    @NSManaged var isNew: Bool
     
     @NSManaged var name: String?
     @NSManaged var medicineID: String
@@ -28,6 +33,9 @@ extension Medicine {
     @NSManaged var intervalUnitInt: Int16
     @NSManaged var intervalAlarm: Date?
     
+    @NSManaged var hasNextDose: Bool
+    @NSManaged var dateNextDose: Date?
+    @NSManaged var dateLastDose: Date?
     @NSManaged var doseHistory: NSOrderedSet?
     
     @NSManaged var prescriptionCount: Float

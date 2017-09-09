@@ -8,11 +8,13 @@
 
 import UIKit
 import CoreData
+import UserNotifications
 
 class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
     
     var med: Medicine!
     var editMode: Bool = false
+    var editName: Bool = false
     
     
     // MARK: - Outlets
@@ -27,24 +29,9 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     // MARK: - Helper variables
     
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var moc: NSManagedObjectContext
+    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let cal = Calendar.current
     let dateFormatter = DateFormatter()
-    
-    
-    // MARK: - Initialization
-    
-    required init?(coder aDecoder: NSCoder) {
-        // Setup context
-        moc = appDelegate.managedObjectContext
-        
-        // Setup date formatter
-        dateFormatter.timeStyle = DateFormatter.Style.short
-        dateFormatter.dateStyle = DateFormatter.Style.none
-        
-        super.init(coder: aDecoder)
-    }
 
     
     // MARK: - View methods
@@ -52,15 +39,22 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     override func viewDidLoad() {
         super.viewDidLoad()
         self.clearsSelectionOnViewWillAppear = true
+        
+        let placeholder = NSAttributedString(string: "Enter medication name",
+                                             attributes: [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 32.0, weight: .light)])
+        self.medicationName.attributedPlaceholder = placeholder
         self.medicationName.delegate = self
         
+        // Setup date formatter
+        dateFormatter.timeStyle = DateFormatter.Style.short
+        dateFormatter.dateStyle = DateFormatter.Style.none
+        
         // Modify VC
-        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        self.view.tintColor = UIColor.medRed
         
         // Setup medicine object
         if editMode == false {
-            let entity = NSEntityDescription.entity(forEntityName: "Medicine", in: moc)
-            med = Medicine(entity: entity!, insertInto: moc)
+            med = Medicine(insertInto: cdStack.context)
         }
     }
     
@@ -87,7 +81,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if med.name == nil || med.name?.isEmpty == true {
+        if med.name == nil || med.name?.isEmpty == true || editName {
             medicationName.becomeFirstResponder()
         }
     }
@@ -116,10 +110,8 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         // If medication has no name, disable save button
         if med.name == nil || med.name?.isEmpty == true {
             saveButton.isEnabled = false
-            self.navigationItem.backBarButtonItem?.title = "Back"
         } else {
             saveButton.isEnabled = true
-            self.navigationItem.backBarButtonItem?.title = med.name
         }
     }
     
@@ -137,11 +129,13 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         switch section {
         case Rows.name.index().section:
-            return 15
+            return tableView.sectionHeaderHeight
         case Rows.prescription.index().section:
             if med.name != nil && med.name != "" {
-                return tableView.rowHeight
+                return tableView.sectionHeaderHeight
             }
+        case Rows.delete.index().section:
+            return tableView.sectionHeaderHeight + 10.0
         default:
             return UITableViewAutomaticDimension
         }
@@ -150,55 +144,46 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let row = Rows(index: indexPath)
-        
-        switch row {
+        switch Rows(index: indexPath) {
         case Rows.name:
-            return 60.0
+            return 70.0
         case Rows.prescription:
             if med.name != nil && med.name != "" {
-                return 48.0
-            }
-        case Rows.interval:
-            if med.reminderEnabled == true {
-                return tableView.rowHeight
+                return 50.0
+            } else {
+                return 0
             }
         default:
-            return tableView.rowHeight
+            break
         }
         
-        return 0
+        return 50.0
     }
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let row = Rows(index: indexPath)
-        
         cell.preservesSuperviewLayoutMargins = true
         
-        switch(row) {
+        switch Rows(index: indexPath) {
         case Rows.dosage:
             if med.reminderEnabled == false {
-                cell.preservesSuperviewLayoutMargins = false
-                cell.layoutMargins = UIEdgeInsets.zero
                 cell.separatorInset = UIEdgeInsets.zero
-                cell.contentView.layoutMargins = tableView.separatorInset
             }
         default: break
         }
     }
     
-    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        switch section {
-        case Rows.prescription.index().section:
-            if med.name != nil && med.name != "" {
-                return tableView.rowHeight
-            }
-        default:
-            return UITableViewAutomaticDimension
-        }
-        
-        return 0
-    }
+//    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+//        switch section {
+//        case Rows.prescription.index().section:
+//            if med.name != nil && med.name != "" {
+//                return 60.0
+//            }
+//        default:
+//            return UITableViewAutomaticDimension
+//        }
+//
+//        return 0
+//    }
     
     override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         if section == Rows.prescription.index().section {
@@ -297,14 +282,12 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     func deleteMed() {
         if let med = med {
             // Cancel all notifications for medication
-            med.cancelNotifications()
-            
-            // Remove medication from array
-            medication.removeObject(med)
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [med.refillNotificationIdentifier])
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [med.doseNotificationIdentifier])
             
             // Remove medication from persistent store
-            moc.delete(med)
-            appDelegate.saveContext()
+            cdStack.context.delete(med)
+            cdStack.save()
             
             // Send notifications
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
@@ -352,11 +335,12 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         }
     }
     
-    @IBAction func saveMedication(_ sender: AnyObject) {
+    @IBAction func saveMedication(_ sender: AnyObject?) {
         if !editMode {
-            let insertIndex = IndexPath(row: medication.count, section: 0)
-            med.sortOrder = Int16(insertIndex.row)
-            medication.append(med)
+            let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+            if let count = try? cdStack.context.count(for: request) {
+                med.sortOrder = Int16(count)
+            }
         } else {
             if let lastDose = med.lastDose {
                 do {
@@ -367,7 +351,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             }
         }
         
-        appDelegate.saveContext()
+        cdStack.save()
         
         // Reschedule next notification
         med.scheduleNextNotification()
@@ -377,15 +361,17 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func cancelMedication(_ sender: AnyObject) {
+    @IBAction func cancelMedication(_ sender: AnyObject?) {
         if !editMode {
-            moc.delete(med)
+            cdStack.context.delete(med)
         } else {
-            moc.rollback()
+            cdStack.context.rollback()
         }
         
-        appDelegate.saveContext()
+        cdStack.save()
         
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
         dismiss(animated: true, completion: nil)
     }
     

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11232" systemVersion="16A319" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13221.4" systemVersion="" minimumToolsVersion="Xcode 7.3" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
     <entity name="Dose" representedClassName=".Dose" elementID="History" syncable="YES">
         <attribute name="date" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="dosage" attributeType="Float" defaultValueString="1" usesScalarValueType="NO" syncable="YES"/>
@@ -33,8 +33,8 @@
         <relationship name="medicine" maxCount="1" deletionRule="Nullify" destinationEntity="Medicine" inverseName="refillHistory" inverseEntity="Medicine" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Dose" positionX="-92" positionY="51" width="128" height="135"/>
+        <element name="Dose" positionX="90" positionY="207" width="128" height="133"/>
         <element name="Medicine" positionX="-263" positionY="-142" width="128" height="270"/>
-        <element name="Refill" positionX="-180" positionY="-27" width="128" height="120"/>
+        <element name="Refill" positionX="151" positionY="-84" width="128" height="120"/>
     </elements>
 </model>

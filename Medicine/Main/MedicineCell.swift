@@ -10,63 +10,101 @@ import UIKit
 
 class MedicineCell: UITableViewCell {
     
-    // MARK: - Cell properties
+    var med: Medicine?
     
-    @IBOutlet var adherenceScore: MedicineCell_Adherence!
-    @IBOutlet var adherenceScoreLabel: UILabel!
+    // MARK: - Cell properties
+    @IBOutlet var cellFrame: UIView?
+    @IBOutlet var cellShadow: MedicineCell_CellFrame?
     @IBOutlet var title: UILabel!
     @IBOutlet var subtitle: UILabel!
     @IBOutlet var subtitleGlyph: UIImageView!
-    var glyphHidden = false
-    var buttonHidden = false
-
+    
+    override var frame: CGRect {
+        didSet {
+            self.setSelected(self.isSelected, animated: false)
+        }
+    }
     
     // MARK: - Constraints
-    
-    @IBOutlet var adherenceWidth: NSLayoutConstraint!
-    @IBOutlet var titleLeading: NSLayoutConstraint!
     @IBOutlet var glyphWidth: NSLayoutConstraint!
-    @IBOutlet weak var glyphLeading: NSLayoutConstraint!
-    @IBOutlet var subtitleLeading: NSLayoutConstraint!
     @IBOutlet weak var addButton: UIButton!
-    @IBOutlet weak var addButtonTrailing: NSLayoutConstraint!
+    var rowEditing: Bool = false
     
     // MARK: - View methods
-    
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        // Set tint
-        self.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        self.selectedBackgroundView = UIView()
         
-        // Hide adherence field
-        adherenceWidth.constant = 0.0
-        titleLeading.constant = 0.0
-        glyphLeading.constant = 0.0
+        self.clipsToBounds = true
+        self.tintColor = UIColor.medRed
+        self.backgroundColor = .clear
+        
+        self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
+        self.cellFrame?.layer.cornerRadius = 10.0
     }
-
+    
+    override func prepareForReuse() {
+        subtitleGlyph.image = UIImage(named: "NextDoseIcon")
+        subtitle.textColor = UIColor.subtitle
+        hideButton(false, animated: false)
+    }
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
+        
+        if !rowEditing {
+            if selected {
+                self.cellFrame?.layer.backgroundColor = UIColor(white: 0.84, alpha: 1).cgColor
+                self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
+            } else {
+                self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
+                self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
+            }
+        }
     }
     
-    func hideGlyph(_ val: Bool) {
-        if val {
-            glyphHidden = true
-            glyphWidth.constant = 0.0
-            subtitleLeading.constant = 0.0
-        } else {
-            glyphHidden = false
-            glyphWidth.constant = 20.0
-            subtitleLeading.constant = 8.0
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        super.setHighlighted(highlighted, animated: animated)
+        
+        if !rowEditing {
+            if highlighted {
+                self.cellFrame?.layer.backgroundColor = UIColor(white: 0.84, alpha: 1).cgColor
+                self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
+            } else {
+                self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
+                self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
+            }
+        }
+    }
+    
+    // Remove long press gesture when editing to prevent issues with reordering
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        
+        if med?.doseHistory?.count == 0 && med?.intervalUnit == .hourly {
+            self.hideButton(true, animated: false)
+            return
         }
         
-        self.setNeedsUpdateConstraints()
-        self.layoutIfNeeded()
+        if editing && !rowEditing {
+            self.hideButton(true)
+        } else {
+            self.hideButton(false)
+        }
     }
     
-    func hideButton(_ val: Bool) {
-        addButton.isHidden = val
-        buttonHidden = val
+    func hideButton(_ hide: Bool, animated: Bool = true) {
+        if animated {
+            UIView.animate(withDuration: 0.2, animations: {
+                self.addButton.alpha = hide ? 0 : 1
+            }, completion: { (completed) in
+                self.addButton.isHidden = hide
+            })
+        } else {
+            self.addButton.alpha = hide ? 0 : 1
+            self.addButton.isHidden = hide
+        }
     }
 
 }

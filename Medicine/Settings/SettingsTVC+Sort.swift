@@ -7,11 +7,12 @@
 //
 
 import UIKit
+import CoreData
 
 class SettingsTVC_Sort: UITableViewController {
 
+    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
-    
     
     // MARK: - View methods
     
@@ -42,16 +43,26 @@ class SettingsTVC_Sort: UITableViewController {
             defaults.set(selection, forKey: "sortOrder")
             defaults.synchronize()
             
+            let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+            guard var medication = try? cdStack.context.fetch(request) else {
+                NSLog("Couldn't retrieve medication list", [])
+                return
+            }
+            
             if let dvc = segue.destination as? SettingsTVC {
                 switch(defaults.integer(forKey: "sortOrder")) {
                 case SortOrder.manual.rawValue:
-                    medication.sort(by: Medicine.sortByManual)
+                    medication = medication.sorted(by: Medicine.sortByManual)
                     dvc.sortLabel.text = "Manually"
                 case SortOrder.nextDosage.rawValue:
-                    medication.sort(by: Medicine.sortByNextDose)
+                    medication = medication.sorted(by: Medicine.sortByNextDose)
                     dvc.sortLabel.text = "Next Dosage"
                 default: break
                 }
+            }
+            
+            for (index, med) in medication.enumerated() {
+                med.sortOrder = Int16(index)
             }
             
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)

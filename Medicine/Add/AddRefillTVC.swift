@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDelegate {
+class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate {
     
     var med: Medicine?
     var refill: Refill
@@ -29,9 +29,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
 
     
     // MARK: - Helper variables
-    
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var moc: NSManagedObjectContext
+    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     
     let cal = Calendar.current
     let dateFormatter = DateFormatter()
@@ -41,15 +39,12 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
     // MARK: - Initialization
     
     required init?(coder aDecoder: NSCoder) {
-        // Setup context
-        moc = appDelegate.managedObjectContext
+        refill = Refill(context: cdStack.context)
+        refill.date = Date()
         
         // Setup date formatter
         dateFormatter.timeStyle = DateFormatter.Style.short
         dateFormatter.dateStyle = DateFormatter.Style.none
-        
-        let entity = NSEntityDescription.entity(forEntityName: "Refill", in: moc)
-        refill = Refill(entity: entity!, insertInto: moc)
         
         super.init(coder: aDecoder)
     }
@@ -62,7 +57,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
         self.clearsSelectionOnViewWillAppear = true
         
         // Modify VC
-        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        self.view.tintColor = UIColor.medRed
         
         // Set picker min/max values
         picker.maximumDate = Date()
@@ -116,7 +111,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
             conversionInput.text = String(format:"%g", refill.conversion)
         }
         
-        dateLabel.text = dateFormatter.string(from: refill.date as Date)
+        dateLabel.text = dateFormatter.string(from: refill.date)
         
         // Update description
         updateDescription()
@@ -132,13 +127,13 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
             if refill.quantityUnit != med.dosageUnit && refill.conversion != 0 {
                 let count = refill.quantity * refill.conversion
                 refillGuide = med.refillStatus(entry: true, conversion: true)
-                refillGuide += "\nThis will add \(med.removeTrailingZero(count)) \(med.dosageUnit.units(count))."
+                refillGuide += "\nThis will add \(count.removeTrailingZero()) \(med.dosageUnit.units(count))."
             } else {
                 refillGuide = med.refillStatus(entry: true, conversion: false)
                 
                 if let count = med.refillHistory?.count, count > 0 {
                     let count = refill.quantity
-                    refillGuide += "\nThis will add \(med.removeTrailingZero(count)) \(med.dosageUnit.units(count))."
+                    refillGuide += "\nThis will add \(count.removeTrailingZero()) \(med.dosageUnit.units(count))."
                 }
             }
             
@@ -161,8 +156,8 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
         let row = Rows(index: indexPath)
         
         switch row {
-        case Rows.quantityUnitPicker:
-            if selectedRow == Rows.quantityUnit {
+        case Rows.refillUnitPicker:
+            if selectedRow == Rows.refillUnit {
                 return 175
             }
         case Rows.conversionAmount:
@@ -184,23 +179,26 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
         let row = Rows(index: indexPath)
         
         cell.preservesSuperviewLayoutMargins = true
+        cell.layoutMargins = tableView.layoutMargins
+        cell.separatorInset = tableView.separatorInset
         
         if selectedRow == Rows(index: indexPath) {
-            cell.detailTextLabel?.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+            cell.detailTextLabel?.textColor = UIColor.medRed
         } else {
             cell.detailTextLabel?.textColor = UIColor.gray
         }
         
         switch(row) {
-        case Rows.quantityUnit:
-            if row != selectedRow {
+        case Rows.refillUnit:
+            if row != selectedRow && med?.dosageUnit == refill.quantityUnit {
                 cell.preservesSuperviewLayoutMargins = false
                 cell.layoutMargins = UIEdgeInsets.zero
                 cell.separatorInset = UIEdgeInsets.zero
                 cell.contentView.layoutMargins = tableView.separatorInset
             }
-        case Rows.quantityUnitPicker:
+        case Rows.refillUnitPicker:
             if med?.dosageUnit == refill.quantityUnit {
+                print("Unit picker issue!")
                 cell.preservesSuperviewLayoutMargins = false
                 cell.layoutMargins = UIEdgeInsets.zero
                 cell.separatorInset = UIEdgeInsets.zero
@@ -232,7 +230,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
         }
         
         // Reload labels
-        let labels = [Rows.quantityUnit.index(), Rows.date.index()]
+        let labels = [Rows.refillUnit.index(), Rows.date.index()]
         tableView.reloadRows(at: labels, with: .none)
         
         // Reload table
@@ -247,7 +245,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
         selectedRow = Rows.none
         
         // Reload labels
-        let labels = [Rows.quantityUnit.index(), Rows.date.index()]
+        let labels = [Rows.refillUnit.index(), Rows.date.index()]
         tableView.reloadRows(at: labels, with: .none)
         
         // Reload table
@@ -258,7 +256,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
     
     // MARK: - Picker data source
     
-    func numberOfComponentsInPickerView(_ pickerView: UIPickerView) -> Int {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     
@@ -283,6 +281,8 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
                 refill.quantityUnit = unit
                 refill.conversion = 1
             }
+            
+            tableView.reloadRows(at: [Rows.refillUnitPicker.index()], with: .none)
         
             updateLabels()
             
@@ -330,7 +330,6 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
         }
     }
     
-
     
     // MARK: - Navigation
     
@@ -338,14 +337,17 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
         med?.addRefill(refill)
         refill.medicine = med
         
-        appDelegate.saveContext()
+        cdStack.save()
+        
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
         
         dismiss(animated: true, completion: nil)
     }
     
     @IBAction func cancelRefill(_ sender: AnyObject) {
-        moc.delete(refill)
-        appDelegate.saveContext()
+        cdStack.context.delete(refill)
+        cdStack.save()
         dismiss(animated: true, completion: nil)
     }
     
@@ -354,9 +356,9 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UITextFieldDele
 
 private enum Rows: Int {
     case none = -1
-    case quantityAmount
-    case quantityUnit
-    case quantityUnitPicker
+    case refillQuantity
+    case refillUnit
+    case refillUnitPicker
     case conversionAmount
     case date
     case datePicker
@@ -366,11 +368,11 @@ private enum Rows: Int {
         
         switch (index.section, index.row) {
         case (0, 0):
-            row = Rows.quantityAmount
+            row = Rows.refillQuantity
         case (0, 1):
-            row = Rows.quantityUnit
+            row = Rows.refillUnit
         case (0, 2):
-            row = Rows.quantityUnitPicker
+            row = Rows.refillUnitPicker
         case (0, 3):
             row = Rows.conversionAmount
         case (1, 0):
@@ -386,11 +388,11 @@ private enum Rows: Int {
     
     func index() -> IndexPath {
         switch self {
-        case .quantityAmount:
+        case .refillQuantity:
             return IndexPath(row: 0, section: 0)
-        case .quantityUnit:
+        case .refillUnit:
             return IndexPath(row: 1, section: 0)
-        case .quantityUnitPicker:
+        case .refillUnitPicker:
             return IndexPath(row: 2, section: 0)
         case .conversionAmount:
             return IndexPath(row: 3, section: 0)

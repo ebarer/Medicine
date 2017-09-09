@@ -14,28 +14,20 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     let productID = "com.ebarer.Medicine.Unlock"
     var products: [SKProduct]?
     
-    
     // MARK: - Outlets
-    
     @IBOutlet var purchaseButton: UIButton!
     @IBOutlet var restoreButton: UIButton!
     @IBOutlet var purchaseIndicator: UIActivityIndicatorView!
     
-    
-    // MARK: - Helper variable
-    let purchaseColour = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-    
-    
     // MARK: - View methods
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Style purchase button
         purchaseButton.layer.cornerRadius = 4
         purchaseButton.layer.borderWidth = 1
-        purchaseButton.layer.borderColor = purchaseColour.cgColor
-        purchaseButton.tintColor = purchaseColour
+        purchaseButton.layer.borderColor = UIColor.medRed.cgColor
+        purchaseButton.tintColor = UIColor.medRed
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -49,7 +41,6 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     
     
     // MARK: - Store kit delegate/observer
-    
     func requestProductInfo() {
         if SKPaymentQueue.canMakePayments() {
             let productRequest = SKProductsRequest(productIdentifiers: Set([productID]))
@@ -62,36 +53,52 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     
     
     // Mark: - Purchase methods
-    
     func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
         products = response.products
         
-        if let count = products?.count, count > 0 {
-            // Set purchase label
-            if let upgrade = products?[0] {
-                purchaseButton.setTitle(upgrade.localizedPrice(), for: UIControlState())
-            }
+        guard let _ = products?.count, let upgrade = products?.first else {
+            return
         }
+        
+        purchaseButton.setTitle(upgrade.localizedPrice, for: UIControlState())
     }
 
     
     @IBAction func purchaseFullVersion() {
-        if let count = products?.count, count > 0 {
-            if let upgrade = products?[0] {
-                if upgrade.productIdentifier == productID {
-                    // Modify UI elements
-                    purchaseButton.isEnabled = false
-                    purchaseButton.setTitle("Purchasing...", for: UIControlState.disabled)
-                    restoreButton.isEnabled = false
-                    purchaseIndicator.startAnimating()
-                    
-                    // Process transaction
-                    if SKPaymentQueue.canMakePayments() {
-                        SKPaymentQueue.default().add(SKPayment(product: upgrade))
-                    }
-                }
-            }
+        // Check that user can make purchases
+        guard SKPaymentQueue.canMakePayments() == true else {
+            displayPurchaseFailureAlert()
+            return
         }
+        
+        // Check that there are products to purchase
+        guard let _ = products?.count, let upgrade = products?.first else {            
+            displayPurchaseFailureAlert()
+            return
+        }
+
+        if upgrade.productIdentifier == productID {
+            // Modify UI elements
+            purchaseButton.isEnabled = false
+            purchaseButton.setTitle("Purchasing...", for: UIControlState.disabled)
+            restoreButton.isEnabled = false
+            purchaseIndicator.startAnimating()
+            
+            // Process transaction
+            SKPaymentQueue.default().add(SKPayment(product: upgrade))
+        }
+    }
+    
+    func displayPurchaseFailureAlert() {
+        let alert = UIAlertController(title: "Purchased failed",
+                                      message: "Could not complete purchase at this time.",
+                                      preferredStyle: UIAlertControllerStyle.alert)
+        
+        alert.addAction(UIAlertAction(title: "Done", style: .cancel, handler: { (action) in
+            alert.dismiss(animated: true, completion: nil)
+        }))
+        
+        self.present(alert, animated: true, completion: nil)
     }
     
     @IBAction func restoreFullVersion(_ sender: AnyObject) {
@@ -109,7 +116,6 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     
 
     // MARK: - Navigation
-    
     @IBAction func cancel(_ sender: AnyObject?) {
         dismiss(animated: true, completion: nil)
     }    
@@ -117,12 +123,10 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
 }
 
 extension SKProduct {
-    
-    func localizedPrice() -> String {
+    var localizedPrice: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.locale = self.priceLocale
         return formatter.string(from: self.price)!
     }
-    
 }

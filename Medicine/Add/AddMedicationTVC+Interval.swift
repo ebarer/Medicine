@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
+class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate, UIPickerViewDataSource {
 
     var med: Medicine!
     var editMode: Bool = false
@@ -38,7 +38,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         super.viewDidLoad()
         
         // Modify VC
-        self.view.tintColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+        self.view.tintColor = UIColor.medRed
         
         // Setup date formatter
         dateFormatter.timeStyle = DateFormatter.Style.short
@@ -105,14 +105,14 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
             }
         case Rows.alarmLabel:
             if med.intervalUnit == Intervals.daily {
-                return tableView.rowHeight
+                return 50
             }
         case Rows.alarmPicker:
             if selectedRow == Rows.alarmLabel {
                 return 216
             }
         default:
-            return tableView.rowHeight
+            return 50
         }
         
         return 0
@@ -122,11 +122,13 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
         let row = Rows(index: indexPath)
         
         cell.preservesSuperviewLayoutMargins = true
+        cell.layoutMargins = tableView.layoutMargins
+        cell.separatorInset = tableView.separatorInset
         
         switch(row) {
         case Rows.intervalUnitLabel:
             if row == selectedRow {
-                intervalUnitLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                intervalUnitLabel.textColor = UIColor.medRed
             } else {
                 intervalUnitLabel.textColor = UIColor.gray
             }
@@ -138,7 +140,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
                 cell.separatorInset = UIEdgeInsets.zero
                 cell.contentView.layoutMargins = UIEdgeInsetsMake(0, tableView.separatorInset.left, 0, tableView.separatorInset.left)
             } else {
-                intervalLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                intervalLabel.textColor = UIColor.medRed
             }
         case Rows.alarmLabel:
             if row != selectedRow {
@@ -148,7 +150,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
                 cell.separatorInset = UIEdgeInsets.zero
                 cell.contentView.layoutMargins = UIEdgeInsetsMake(0, tableView.separatorInset.left, 0, tableView.separatorInset.left)
             } else {
-                alarmLabel.textColor = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
+                alarmLabel.textColor = UIColor.medRed
             }
         default: break
         }
@@ -178,7 +180,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate {
     
     // MARK: - Picker data source
     
-    func numberOfComponentsInPickerView(_ pickerView: UIPickerView) -> Int {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         if (pickerView == intervalUnitPicker) {
             return 1
         }

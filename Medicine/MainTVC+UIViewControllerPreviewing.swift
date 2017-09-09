@@ -14,12 +14,21 @@ extension MainVC: UIViewControllerPreviewingDelegate {
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
         // Obtain the index path and the cell that was pressed.
         guard let indexPath = tableView.indexPathForRow(at: location),
-            let cell = tableView.cellForRow(at: indexPath) else { return nil }
+            let cell = tableView.cellForRow(at: indexPath) else {
+            return nil
+        }
         
         // Create a detail view controller and set its properties.
-        guard let vc = storyboard?.instantiateViewController(withIdentifier: "medicineDetails") as? MedicineDetailsTVC else { return nil }
+        guard let vc = UIStoryboard(name: "MedicineDetails", bundle: Bundle.main).instantiateViewController(withIdentifier: "MedicineDetailsTVC") as? MedicineDetailsTVC else {
+            return nil
+        }
         
-        vc.med = medication[indexPath.row]
+        let med = medication[indexPath.row]
+        vc.med = med
+        
+        if med.doseHistory?.count == 0 && med.intervalUnit == .hourly {
+            return nil
+        }
         
         // Set the source rect to the cell frame, so surrounding elements are blurred.
         previewingContext.sourceRect = cell.frame
