@@ -31,6 +31,10 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         
         setLabels()
         
+        if #available(iOS 11.0, *) {
+            self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.white]
+        }
+        
         // Set version string
         let dictionary = Bundle.main.infoDictionary!
         let version = dictionary["CFBundleShortVersionString"] as! String

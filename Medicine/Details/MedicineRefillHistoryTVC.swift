@@ -90,7 +90,7 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
             
             // Create empty message
             if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiate(withOwner: self, options: nil)[0] as? UIView {
-                tableView.separatorStyle = UITableViewCellSeparatorStyle.none
+                tableView.separatorStyle = .none
                 tableView.backgroundView = emptyView
             }
         } else {
@@ -98,7 +98,7 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
                 button.isEnabled = true
             }
             
-            tableView.separatorStyle = UITableViewCellSeparatorStyle.singleLine
+            tableView.separatorStyle = .singleLine
             tableView.backgroundView = nil
         }
         
@@ -118,7 +118,7 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let headerView = tableView.dequeueReusableCell(withIdentifier: "headerCell") else {
+        guard let headerView = tableView.dequeueReusableCell(withIdentifier: "headerCell")?.contentView else {
             return nil
         }
         

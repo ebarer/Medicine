@@ -80,6 +80,7 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
             
             if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiate(withOwner: self, options: nil)[0] as? UIView {
                 tableView.backgroundView = emptyView
+                tableView.separatorStyle = .none
             }
         } else {
             if self.fetchedResultsController?.sections?.count == 0 {
@@ -89,10 +90,12 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
                 // Create empty message
                 if let emptyView = UINib(nibName: "HistoryEmptyView", bundle: nil).instantiate(withOwner: self, options: nil)[0] as? UIView {
                     tableView.backgroundView = emptyView
+                    tableView.separatorStyle = .none
                 }
             } else {
                 navigationItem.leftBarButtonItem?.isEnabled = true
                 navigationItem.leftBarButtonItem?.isEnabled = true
+                tableView.separatorStyle = .singleLine
                 tableView.backgroundView = nil
             }
         }
@@ -113,7 +116,7 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let headerView = tableView.dequeueReusableCell(withIdentifier: "headerCell") else {
+        guard let headerView = tableView.dequeueReusableCell(withIdentifier: "headerCell")?.contentView else {
             return nil
         }
         
@@ -280,24 +283,22 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
                     let med = dose.medicine!
                     
                     if med.lastDose == dose {
-                        _ = med.untakeLastDose(cdStack.context)
+                        _ = med.untakeLastDose()
                     } else {
-                        med.untakeDose(dose, moc: cdStack.context)
+                        med.untakeDose(dose)
                     }
                     
                     cdStack.context.delete(dose)
-                    cdStack.save()
-                    
                 }
             }
             
-            displayEmptyView()
-            
-            updateDeleteButtonLabel()
-            setEditing(false, animated: true)
+            cdStack.save()
             
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+            
+            updateDeleteButtonLabel()
+            setEditing(false, animated: true)
         }
     }
     

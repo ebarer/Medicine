@@ -30,7 +30,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>240</string>
+	<string>241</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationShortcutItems</key>
@@ -39,7 +39,7 @@
 			<key>UIApplicationShortcutItemIconType</key>
 			<string>UIApplicationShortcutIconTypeAdd</string>
 			<key>UIApplicationShortcutItemTitle</key>
-			<string>New Medication</string>
+			<string>Add Medication</string>
 			<key>UIApplicationShortcutItemType</key>
 			<string>com.ebarer.Medicine.newMedication</string>
 			<key>UIApplicationShortcutItemUserInfo</key>

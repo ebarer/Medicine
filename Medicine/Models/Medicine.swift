@@ -14,7 +14,6 @@ import UserNotifications
 
 class Medicine: NSManagedObject {
     
-    
     // MARK: - Enum variables
     fileprivate let cal = Calendar.current
     
@@ -58,24 +57,18 @@ class Medicine: NSManagedObject {
     }
     
     var lastDose: Dose? {
-        if let lastHistory = doseHistory {
-            if let object = lastHistory.firstObject {
-                var dose = object as! Dose
-                
-                for next in lastHistory.array as! [Dose] {
-                    // Ignore if item is set to be deleted
-                    if (!next.isDeleted && dose.date.compare(next.date as Date) == .orderedAscending) {
-                        dose = next
-                    }
-                }
-                
-                self.dateLastDose = dose.date
-                return dose
-            }
+        guard let history = doseHistory?.array as? [Dose] else {
+            self.dateLastDose = nil
+            return nil
         }
         
-        self.dateLastDose = nil
-        return nil
+        guard let dose = history.sorted(by: { $0.date.compare($1.date) == .orderedDescending }).first else {
+            self.dateLastDose = nil
+            return nil
+        }
+        
+        self.dateLastDose = dose.date
+        return dose
     }
     
     func doseArray() -> [Date: [Dose]]? {
@@ -389,7 +382,6 @@ class Medicine: NSManagedObject {
         }
     }
     
-    
     // MARK: - Dose methods
     
     /**
@@ -475,10 +467,9 @@ class Medicine: NSManagedObject {
      
      - Returns: Bool depending on whether action was successful
      */
-    func untakeLastDose(_ moc: NSManagedObjectContext) -> Bool {
+    func untakeLastDose() -> Bool {
         if let lastDose = lastDose {
-            untakeDose(lastDose, moc: moc)
-            
+            untakeDose(lastDose)
             scheduleNextNotification()
             return true
         }
@@ -492,7 +483,7 @@ class Medicine: NSManagedObject {
      - Parameter dose: History object
      - Parameter moc: NSManagedObjectContext object
      */
-    func untakeDose(_ dose: Dose, moc: NSManagedObjectContext) {
+    func untakeDose(_ dose: Dose) {
         // Modify prescription count
         if let refillCount = self.refillHistory?.count {
             if (refillCount > 0) && (dose.dosage > 0) {
@@ -504,15 +495,10 @@ class Medicine: NSManagedObject {
                 self.prescriptionCount += dose.dosage
             }
         }
-
-        moc.delete(dose)
         
-        // Update next dose
+        // Update next and last dose values
         _ = self.nextDose
-        
-        // Save dose deletion
-        let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
-        cdStack.save()
+        _ = self.lastDose
     }
     
     
@@ -728,23 +714,10 @@ class Medicine: NSManagedObject {
         
         do {
             try scheduleNotification(date, badgeCount: Medicine.overdueCount(date))
-            NSLog("Scheduled notification for %@", [self.name!])
+            NSLog("\tScheduled notification for: \(self.name!)")
             return true
         } catch {
             return false
-        }
-    }
-    
-    func printNotifications() {
-        UNUserNotificationCenter.current().getPendingNotificationRequests { (requests) in
-            print("Notifications:")
-            for (index, request) in requests.enumerated() {
-                if let components = (request.trigger as? UNCalendarNotificationTrigger)?.dateComponents {
-                    if let date = Calendar.current.date(from: components) {
-                        print("\t\(index). \(request.identifier): \(date)")
-                    }
-                }
-            }
         }
     }
     

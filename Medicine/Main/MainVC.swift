@@ -25,13 +25,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - Helper variables
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     var timer: Timer?
-    
-    var tbc: MainTBC? {
-        return self.tabBarController as? MainTBC
-    }
     
     let cal = Calendar.current
     let dateFormatter = DateFormatter()
@@ -146,8 +143,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
 
         // Update spotlight index values and home screen shortcuts
-        tbc?.indexMedication()
-        tbc?.setDynamicShortcuts()
+        appDelegate.indexMedication()
+        appDelegate.setDynamicShortcuts()
 
         // Setup refresh timer
         timer = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(refreshTable), userInfo: nil, repeats: true)
@@ -169,8 +166,36 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
         switch(action) {
         case "addMedication":
+            // If VC being presented, dismiss
+            if self.presentedViewController != nil {
+                if let vc = (self.presentedViewController as? UINavigationController)?.viewControllers.first {
+                    if let addDoseVC = vc as? AddDoseTVC {
+                        addDoseVC.cancelDose(nil)
+                    }
+                    
+                    if let addMedVC = vc as? AddMedicationTVC {
+                        addMedVC.cancelMedication(nil)
+                    }
+                }
+            }
+
             performSegue(withIdentifier: "addMedication", sender: nil)
         case "takeDose":
+            // If VC being presented, dismiss
+            if self.presentedViewController != nil {
+                if self.presentedViewController != nil {
+                    if let vc = (self.presentedViewController as? UINavigationController)?.viewControllers.first {
+                        if let addDoseVC = vc as? AddDoseTVC {
+                            addDoseVC.cancelDose(nil)
+                        }
+                        
+                        if let addMedVC = vc as? AddMedicationTVC {
+                            addMedVC.cancelMedication(nil)
+                        }
+                    }
+                }
+            }
+            
             guard let medID = shortcutItem.userInfo?["medID"] as? String else { return }
             let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
             fetchRequest.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [medID])
@@ -418,7 +443,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             else {
                 cell.hideButton(true, animated: false)
                 cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
-                cell.subtitle.textColor = UIColor.medRed
+                cell.subtitle.textColor = UIColor.subtitle
                 cell.subtitle.text = "Tap to take first dose"
             }
         }
@@ -587,14 +612,16 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                 
                 // Update spotlight index values and home screen shortcuts
-                self.tbc?.indexMedication()
-                self.tbc?.setDynamicShortcuts()
+                self.appDelegate.indexMedication()
+                self.appDelegate.setDynamicShortcuts()
             }))
             
             // If last dose is set, allow user to undo last dose
             if (med.lastDose != nil) {
                 alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
-                    if (med.untakeLastDose(self.cdStack.context)) {
+                    if (med.untakeLastDose()) {
+                        self.cdStack.save()
+                        
                         // If selected, sort by next dosage
                         if self.defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
                             self.loadMedication()
@@ -606,8 +633,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                         self.updateHeader()
                         
                         // Update spotlight index values and home screen shortcuts
-                        self.tbc?.indexMedication()
-                        self.tbc?.setDynamicShortcuts()
+                        self.appDelegate.indexMedication()
+                        self.appDelegate.setDynamicShortcuts()
                     } else {
                         self.tableView.deselectRow(at: index, animated: false)
                         self.selectedMed = nil
@@ -696,8 +723,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         cdStack.save()
         
         // Update spotlight index values and home screen shortcuts
-        tbc?.removeIndex(med: med)
-        tbc?.setDynamicShortcuts()
+        appDelegate.removeIndex(med: med)
+        appDelegate.setDynamicShortcuts()
         
         if medication.count == 0 {
             displayEmptyView()

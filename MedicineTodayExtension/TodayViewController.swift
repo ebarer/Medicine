@@ -73,7 +73,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
                 string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(white: 0, alpha: 0.5), range: NSMakeRange(pos-1, 3))
             }
             
-            topConstraint.constant = 4.0
+            topConstraint.constant = 10.0
             doseMainLabel.attributedText = string
             doseMedLabel.text = details
             return NCUpdateResult.newData

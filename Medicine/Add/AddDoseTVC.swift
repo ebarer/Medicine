@@ -202,7 +202,7 @@ class AddDoseTVC: UITableViewController {
         }
     }
     
-    @IBAction func saveDose(_ sender: AnyObject) {
+    @IBAction func saveDose(_ sender: AnyObject?) {
         if let med = self.med {
             do {
                 // Save dose
@@ -228,7 +228,7 @@ class AddDoseTVC: UITableViewController {
         }
     }
     
-    @IBAction func cancelDose(_ sender: AnyObject) {
+    @IBAction func cancelDose(_ sender: AnyObject?) {
         cdStack.context.delete(dose)
         cdStack.save()
         dismiss(animated: true, completion: nil)

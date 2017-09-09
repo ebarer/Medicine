@@ -30,12 +30,9 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     
     
     // MARK: - Helper variables
-    let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
-    
-    var tbc: MainTBC? {
-        return self.tabBarController as? MainTBC
-    }
+    let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     let cal = Calendar.current
     let dateFormatter = DateFormatter()
@@ -367,17 +364,19 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
             
             // Update spotlight index values and home screen shortcuts
-            self.tbc?.indexMedication()
-            self.tbc?.setDynamicShortcuts()
+            self.appDelegate.indexMedication()
+            self.appDelegate.setDynamicShortcuts()
         }))
         
         // If last dose is set, allow user to undo last dose
         if (med.lastDose != nil) {
             alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
-                if (med.untakeLastDose(self.cdStack.context)) {
+                if (med.untakeLastDose()) {
+                    self.cdStack.save()
+                    
                     // Update spotlight index values and home screen shortcuts
-                    self.tbc?.indexMedication()
-                    self.tbc?.setDynamicShortcuts()
+                    self.appDelegate.indexMedication()
+                    self.appDelegate.setDynamicShortcuts()
                     
                     NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                     NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
@@ -437,38 +436,6 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             NotificationCenter.default.post(name: Notification.Name(rawValue: "medicationDeleted"), object: nil)
         }
     }
-    
-    
-    // MARK: - Peek actions
-    override var previewActionItems : [UIPreviewActionItem] {
-        return previewActions
-    }
-
-    lazy var previewActions: [UIPreviewActionItem] = {
-        let takeAction = UIPreviewAction(title: "Take Dose", style: .default) { (action: UIPreviewAction, vc: UIViewController) -> Void in
-            if let med = self.med {
-                let dose = Dose(insertInto: self.cdStack.context)
-                dose.date = Date()
-                dose.dosage = med.dosage
-                dose.dosageUnit = med.dosageUnit
-                med.addDose(dose)
-                
-                // Check if medication needs to be refilled
-                let refillTime = self.defaults.integer(forKey: "refillTime")
-                if med.needsRefill(limit: refillTime) {
-                    med.sendRefillNotification()
-                }
-                
-                self.cdStack.save()
-                
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
-            }
-        }
-        
-        return [takeAction]
-    }()
-    
     
     // MARK: - Navigation
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {

@@ -335,7 +335,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         }
     }
     
-    @IBAction func saveMedication(_ sender: AnyObject) {
+    @IBAction func saveMedication(_ sender: AnyObject?) {
         if !editMode {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
             if let count = try? cdStack.context.count(for: request) {
@@ -361,7 +361,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func cancelMedication(_ sender: AnyObject) {
+    @IBAction func cancelMedication(_ sender: AnyObject?) {
         if !editMode {
             cdStack.context.delete(med)
         } else {

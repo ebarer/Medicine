@@ -8,12 +8,12 @@
 
 import UIKit
 import CoreData
-import CoreSpotlight
 import MobileCoreServices
 
 class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     // MARK: - Helper variables
+    let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
     let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     var selectedVC: UIViewController? = nil
@@ -27,9 +27,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         tabBar.barStyle = .default
         tabBar.tintColor = UIColor.medRed
         
-        // Add observer for day change
-        NotificationCenter.default.addObserver(self, selector: #selector(rescheduleNotifications(_:)), name: NSNotification.Name.NSCalendarDayChanged, object: nil)
-        
         // Add observers for notifications
         NotificationCenter.default.addObserver(self, selector: #selector(doseNotification(_:)), name: NSNotification.Name(rawValue: "doseNotification"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refillNotification(_:)), name: NSNotification.Name(rawValue: "refillNotification"), object: nil)
@@ -38,9 +35,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(takeDoseAction(_:)), name: NSNotification.Name(rawValue: "takeDoseAction"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(snoozeReminderAction(_:)), name: NSNotification.Name(rawValue: "snoozeReminderAction"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refillAction(_:)), name: NSNotification.Name(rawValue: "refillAction"), object: nil)
-        
-        // Add observer for scheduling notifications and updating app badge count
-        NotificationCenter.default.addObserver(self, selector: #selector(rescheduleNotifications(_:)), name: NSNotification.Name(rawValue: "rescheduleNotifications"), object: nil)
     }
 
     override func didReceiveMemoryWarning() {
@@ -149,8 +143,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 cdStack.save()
                 NSLog("takeDoseAction performed", [])
 
-                setDynamicShortcuts()
-                updateBadgeCount()
+                appDelegate.setDynamicShortcuts()
+                appDelegate.updateBadgeCount()
                 
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
@@ -165,7 +159,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
             if let medication = try? cdStack.context.fetch(request), let med = medication.first {
                 med.snoozeNotification()
-                setDynamicShortcuts()
+                appDelegate.setDynamicShortcuts()
+                
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                 NSLog("snoozeReminderAction performed for %@", [med.name!])
@@ -182,25 +177,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 performSegue(withIdentifier: "refillPrescription", sender: med)
                 NSLog("refillAction performed for %@", [med.name!])
             }
-        }
-    }
-    
-    
-    // MARK: - Other observers
-    @objc func rescheduleNotifications(_ notification: Notification) {        
-        // Reschedule notifications
-        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-        request.predicate = NSPredicate(format: "reminderEnabled == true", [])
-        if let medication = try? cdStack.context.fetch(request) {
-            for med in medication {
-                let success = med.scheduleNextNotification()
-                if success {
-                    
-                }
-            }
-        
-            setDynamicShortcuts()
-            updateBadgeCount()
         }
     }
     
@@ -222,74 +198,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             }
         }
     }
-    
-    // MARK: - Helper methods
-    // Update homescreen shortcuts for force touch devices
-    func setDynamicShortcuts() {
-        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-        request.predicate = NSPredicate(format: "reminderEnabled == true", argumentArray: [])
-        request.sortDescriptors = [
-            NSSortDescriptor(key: "hasNextDose", ascending: false),
-            NSSortDescriptor(key: "dateNextDose", ascending: true),
-            NSSortDescriptor(key: "dateLastDose", ascending: false)
-        ]
-        
-        if let med = (try? cdStack.context.fetch(request))?.first {
-            // Set shortcut for overdue item
-            if med.isOverdue().flag {
-                let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.overdue",
-                                                             localizedTitle: "Overdue",
-                                                             localizedSubtitle: "\(med.name!)",
-                                                             icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
-                                                             userInfo: ["action" : "takeDose", "medID" : med.medicineID])
-                
-                UIApplication.shared.shortcutItems = [shortcutItem]
-                return
-            } else if let date = med.nextDose {
-                let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
-                let subtitle = "\(Medicine.dateString(date)): \(dose) of \(med.name!)"
-                
-                let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
-                                                             localizedTitle: "Take Next Dose",
-                                                             localizedSubtitle: subtitle,
-                                                             icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
-                                                             userInfo: ["action" : "takeDose", "medID" : med.medicineID])
-                
-                UIApplication.shared.shortcutItems = [shortcutItem]
-                return
-            }
-        }
-        
-        UIApplication.shared.shortcutItems = []
-    }
-
-    func updateBadgeCount() {
-        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-        if let medication = try? cdStack.context.fetch(request) {
-            let overdueCount = medication.filter({$0.isOverdue().flag}).count
-            UIApplication.shared.applicationIconBadgeNumber = overdueCount
-        }
-    }
-    
-    func indexMedication() {
-        // Update spotlight index
-        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-        if let medication = try? cdStack.context.fetch(request) {
-            for med in medication  {
-                if let attributes = med.attributeSet {
-                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
-                    CSSearchableIndex.default().indexSearchableItems([item], completionHandler: nil)
-                }
-            }
-        }
-    }
-    
-    func removeIndex(med: Medicine) {
-        CSSearchableIndex.default().deleteSearchableItems(withIdentifiers: [med.medicineID], completionHandler: nil)
-    }
-    
 }
 
 extension UITabBarController {

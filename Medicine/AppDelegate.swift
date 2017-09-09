@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import CoreSpotlight
 import StoreKit
 import UserNotifications
 
@@ -17,6 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     let stack = CoreDataStack()!
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
+    var backgroundTask: UIBackgroundTaskIdentifier?
 
     // MARK: - Application methods
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
@@ -44,6 +46,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Setup background fetch to reload reschedule notifications
         UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
+        backgroundTask = application.beginBackgroundTask(withName: "rescheduleNotifications", expirationHandler: nil)
+        
+        // Add observer for day change
+        NotificationCenter.default.addObserver(self, selector: #selector(rescheduleNotifications(completionHandler:)), name: .NSCalendarDayChanged, object: nil)
         
         // Register for notifications and actions
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) {(accepted, error) in
@@ -61,6 +67,67 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
+        
+    }
+    
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+    }
+    
+    func applicationWillResignActive(_ application: UIApplication) {
+        self.stack.save()
+
+        rescheduleNotifications()
+    }
+
+    func applicationWillTerminate(_ application: UIApplication) {
+        self.stack.save()
+        
+        // Remove IAP observers
+        if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKind(of: UINavigationController.self)}).first {
+            if let vc = vcs.childViewControllers.filter({$0.isKind(of: MainVC.self)}).first {
+                SKPaymentQueue.default().remove(vc as! MainVC)
+            }
+        }
+
+        rescheduleNotifications()
+    }
+}
+
+// MARK: - Background Fetch: Notification scheduling
+extension AppDelegate {
+    func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        NSLog("Background fetch:")
+        
+        rescheduleNotifications {
+            NSLog("Completed background fetch.")
+            completionHandler(UIBackgroundFetchResult.newData)
+        }
+    }
+    
+    @objc func rescheduleNotifications(completionHandler: (() -> Void)? = nil) {
+        NSLog("Rescheduling notifications")
+        
+        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        request.predicate = NSPredicate(format: "reminderEnabled == true", [])
+        if let medication = try? stack.context.fetch(request) {
+            for med in medication {
+                med.scheduleNextNotification()
+            }
+        }
+        
+        logNotifications()
+        setDynamicShortcuts()
+        updateBadgeCount()
+        indexMedication()
+        
+        if let completion = completionHandler {
+            completion()
+        }
+    }
+    
+    func logNotifications() {
         UNUserNotificationCenter.current().getPendingNotificationRequests { (requests) in
             for request in requests {
                 if let dateComponents = (request.trigger as? UNCalendarNotificationTrigger)?.dateComponents {
@@ -74,37 +141,108 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    func applicationWillEnterForeground(_ application: UIApplication) {
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+    func updateBadgeCount() {
+        let count = Medicine.overdueCount()
+        UIApplication.shared.applicationIconBadgeNumber = count
+        NSLog("Updating app badge count to: \(count)")
+    }
+}
+
+// MARK: - Application shortcut stack
+extension AppDelegate {
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
+        completionHandler(handleShortcut(shortcutItem))
     }
     
-    func applicationWillResignActive(_ application: UIApplication) {
-        self.stack.save()
-        application.applicationIconBadgeNumber = Medicine.overdueCount()
-        
-        NSLog("Rescheduling notifications in the background")
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "rescheduleNotifications"), object: nil, userInfo: nil)
-    }
-
-    func applicationWillTerminate(_ application: UIApplication) {
-        self.stack.save()
-        
-        // Remove IAP observers
-        if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKind(of: UINavigationController.self)}).first {
-            if let vc = vcs.childViewControllers.filter({$0.isKind(of: MainVC.self)}).first {
-                SKPaymentQueue.default().remove(vc as! MainVC)
+    @discardableResult func handleShortcut(_ shortcutItem: UIApplicationShortcutItem) -> Bool {
+        if let tbc = self.window!.rootViewController as? UITabBarController {
+            if let splitView = tbc.viewControllers?.filter({$0.isKind(of: UISplitViewController.self)}).first as? UISplitViewController {
+                let mainVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
+                mainVC.handleShortcut(shortcutItem: shortcutItem)
             }
         }
         
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "rescheduleNotifications"), object: nil, userInfo: nil)
+        return false
+    }
+
+    func setDynamicShortcuts() {
+        NSLog("Updating dynamic shortcuts")
+        
+        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        request.predicate = NSPredicate(format: "reminderEnabled == true", argumentArray: [])
+        request.fetchLimit = 3
+        request.sortDescriptors = [
+            NSSortDescriptor(key: "hasNextDose", ascending: false),
+            NSSortDescriptor(key: "dateNextDose", ascending: true),
+            NSSortDescriptor(key: "dateLastDose", ascending: false)
+        ]
+        
+        var shortcutItems = [UIApplicationShortcutItem]()
+        
+        if let medication = try? stack.context.fetch(request) {
+            for med in medication {
+                // Set shortcut for overdue item
+                if med.isOverdue().flag {
+                    let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
+                    let subtitle = "\(dose) — Overdue"
+                    
+                    let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.overdue",
+                                                                 localizedTitle: "Take \(med.name!)",
+                                                                 localizedSubtitle: subtitle,
+                        icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
+                        userInfo: ["action" : "takeDose", "medID" : med.medicineID])
+                    
+                    shortcutItems.append(shortcutItem)
+                } else if let date = med.nextDose {
+                    let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
+                    let subtitle = "\(dose) — \(Medicine.dateString(date))"
+                    
+                    let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
+                                                                 localizedTitle: "Take \(med.name!)",
+                                                                 localizedSubtitle: subtitle,
+                                                                 icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
+                                                                 userInfo: ["action" : "takeDose", "medID" : med.medicineID])
+                    
+                    shortcutItems.append(shortcutItem)
+                } else {
+                    let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
+                    let subtitle = "\(dose) — As needed"
+                    
+                    let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
+                                                                 localizedTitle: "Take \(med.name!)",
+                                                                 localizedSubtitle: subtitle,
+                                                                 icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
+                                                                 userInfo: ["action" : "takeDose", "medID" : med.medicineID])
+                    
+                    shortcutItems.append(shortcutItem)
+                }
+            }
+        }
+        
+        UIApplication.shared.shortcutItems = shortcutItems
+    }
+}
+
+// MARK: - Core Spotlight
+extension AppDelegate {
+    func indexMedication() {
+        NSLog("Indexing medication for CoreSpotlight")
+        
+        // Update spotlight index
+        let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+        if let medication = try? stack.context.fetch(request) {
+            for med in medication  {
+                if let attributes = med.attributeSet {
+                    let item = CSSearchableItem(uniqueIdentifier: med.medicineID, domainIdentifier: nil, attributeSet: attributes)
+                    CSSearchableIndex.default().indexSearchableItems([item], completionHandler: nil)
+                }
+            }
+        }
     }
     
-    // MARK: - Background refresh
-    func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        NSLog("Rescheduling notifications in the background")
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "rescheduleNotifications"), object: nil, userInfo: nil)
-        completionHandler(UIBackgroundFetchResult.newData)
+    func removeIndex(med: Medicine) {
+        CSSearchableIndex.default().deleteSearchableItems(withIdentifiers: [med.medicineID], completionHandler: nil)
     }
 }
 
@@ -141,15 +279,15 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "takeDoseAction"), object: nil, userInfo: userInfo)
         }
         
-        if actionIdentifier == "snoozeReminder" {
+        else if actionIdentifier == "snoozeReminder" {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "snoozeReminderAction"), object: nil, userInfo: userInfo)
         }
         
-        if actionIdentifier == "refillMed" {
+        else if actionIdentifier == "refillMed" {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refillAction"), object: nil, userInfo: userInfo)
         }
         
-        if actionIdentifier == UNNotificationDefaultActionIdentifier {
+        else if actionIdentifier == UNNotificationDefaultActionIdentifier {
             if category == "Dose Reminder" || category == "Dose Reminder - No Snooze" {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "doseNotification"), object: nil, userInfo: userInfo)
             }
@@ -157,6 +295,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             if category == "Refill Reminder" {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refillNotification"), object: nil, userInfo: userInfo)
             }
+        }
+        
+        else if actionIdentifier == UNNotificationDismissActionIdentifier {
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "rescheduleNotifications"), object: nil, userInfo: userInfo)
         }
         
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationIdentifier])
@@ -235,23 +377,5 @@ extension AppDelegate {
         }
         
         defaults.synchronize()
-    }
-}
-
-// MARK: - Application shortcut stack
-extension AppDelegate {
-    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
-        completionHandler(handleShortcut(shortcutItem))
-    }
-
-    @discardableResult func handleShortcut(_ shortcutItem: UIApplicationShortcutItem) -> Bool {
-        if let tbc = self.window!.rootViewController as? UITabBarController {
-            if let splitView = tbc.viewControllers?.filter({$0.isKind(of: UISplitViewController.self)}).first as? UISplitViewController {
-                let mainVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
-                mainVC.handleShortcut(shortcutItem: shortcutItem)
-            }
-        }
-        
-        return false
     }
 }

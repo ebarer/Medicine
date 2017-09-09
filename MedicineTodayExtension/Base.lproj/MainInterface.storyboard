@@ -23,7 +23,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="7:36 " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HXM-f4-Fvj">
-                                <rect key="frame" x="16" y="4" width="288" height="60"/>
+                                <rect key="frame" x="16" y="10" width="288" height="60"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="60" id="Prw-pR-y2L"/>
                                 </constraints>
@@ -32,7 +32,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1 pill of Tylenol" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zU9-iD-h8s">
-                                <rect key="frame" x="16" y="64" width="288" height="20"/>
+                                <rect key="frame" x="16" y="70" width="288" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="ex2-V4-0j1"/>
                                 </constraints>
@@ -54,7 +54,7 @@
                             <constraint firstItem="HXM-f4-Fvj" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leadingMargin" id="5hZ-y1-ur1"/>
                             <constraint firstItem="kas-Ce-PxG" firstAttribute="top" secondItem="Ft6-oW-KC0" secondAttribute="bottom" id="9Zh-Ky-eMF"/>
                             <constraint firstAttribute="trailingMargin" secondItem="kas-Ce-PxG" secondAttribute="trailing" id="G15-EV-35O"/>
-                            <constraint firstItem="HXM-f4-Fvj" firstAttribute="top" secondItem="Ft6-oW-KC0" secondAttribute="bottom" constant="4" id="Ib8-wn-RXi"/>
+                            <constraint firstItem="HXM-f4-Fvj" firstAttribute="top" secondItem="Ft6-oW-KC0" secondAttribute="bottom" constant="10" id="Ib8-wn-RXi"/>
                             <constraint firstAttribute="trailingMargin" secondItem="HXM-f4-Fvj" secondAttribute="trailing" id="YdY-YH-Fat"/>
                             <constraint firstItem="zU9-iD-h8s" firstAttribute="top" secondItem="HXM-f4-Fvj" secondAttribute="bottom" id="Yfu-6P-XIb"/>
                             <constraint firstItem="FKl-LY-JtV" firstAttribute="top" secondItem="kas-Ce-PxG" secondAttribute="bottom" id="cjj-ev-8gO"/>
