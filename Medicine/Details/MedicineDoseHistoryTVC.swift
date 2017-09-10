@@ -143,13 +143,13 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
             if Calendar.current.isDateInToday(sectionDate) {
                 dayLabel.textColor = UIColor.medRed
                 dayLabel.text = "TODAY"
-                dateLabel.text = sectionDate.string(dateStyle: .long)?.uppercased()
+                dateLabel.text = sectionDate.string(withFormat: "MMMM d")?.uppercased()
             } else if Calendar.current.isDateInYesterday(sectionDate) {
                 dayLabel.text = "YESTERDAY"
-                dateLabel.text = sectionDate.string(dateStyle: .long)?.uppercased()
+                dateLabel.text = sectionDate.string(withFormat: "MMMM d")?.uppercased()
             } else if sectionDate.isDateInLastWeek() {
                 dayLabel.text = sectionDate.string(withFormat: "EEEE")?.uppercased()
-                dateLabel.text = sectionDate.string(withFormat: "MMMM d, YYYY")?.uppercased()
+                dateLabel.text = sectionDate.string(withFormat: "MMMM d")?.uppercased()
             } else {
                 dayLabel.text = sectionDate.string(withFormat: "MMMM d, YYYY")?.uppercased()
                 dateLabel.text = sectionDate.string(withFormat: "EEEE")?.uppercased()

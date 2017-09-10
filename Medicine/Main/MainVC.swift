@@ -345,8 +345,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - Table view data source
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        //print(scrollView.contentOffset.y)
-        let alpha = (0.02 * -scrollView.contentOffset.y) + 1
+        let alpha = -0.0167 * scrollView.contentOffset.y
         summaryHeader.alpha = (alpha > 1) ? 1 : (alpha < 0) ? 0 : alpha
         
 //        if scrollView.contentOffset.y > 0 {
@@ -559,9 +558,17 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     func selectMed() {
-        if let med = selectedMed {
+        if let med = selectedMed, let count = med.doseHistory?.count, count > 0 {
             if let row = medication.index(of: med) {
                 tableView.selectRow(at: IndexPath(row: row, section: 0), animated: false, scrollPosition: .none)
+            }
+        } else {
+            selectedMed = nil
+        }
+        
+        if let navVC = self.splitViewController?.viewControllers[safe: 1] {
+            if let detailVC = (navVC as? UINavigationController)?.viewControllers[safe: 0] as? MedicineDetailsTVC {
+                detailVC.med = selectedMed
             }
         }
     }
