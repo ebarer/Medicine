@@ -345,8 +345,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - Table view data source
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        var alpha = -0.0167 * scrollView.contentOffset.y
+        var alpha = (-0.02 * scrollView.contentOffset.y) + 1
         alpha = (alpha > 1) ? 1 : (alpha < 0) ? 0 : alpha
+        print("\(scrollView.contentOffset.y) = \(alpha)")
         summaryHeader.alpha = alpha
         
 //        if scrollView.contentOffset.y > 0 {
