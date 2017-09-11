@@ -345,8 +345,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - Table view data source
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let alpha = -0.0167 * scrollView.contentOffset.y
-        summaryHeader.alpha = (alpha > 1) ? 1 : (alpha < 0) ? 0 : alpha
+        var alpha = -0.0167 * scrollView.contentOffset.y
+        alpha = (alpha > 1) ? 1 : (alpha < 0) ? 0 : alpha
+        summaryHeader.alpha = alpha
         
 //        if scrollView.contentOffset.y > 0 {
 //            if summaryHeader.layer.shadowOpacity == 0 {
@@ -586,79 +587,49 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             
             alert.addAction(UIAlertAction(title: "Take Dose", style: UIAlertActionStyle.default, handler: {(action) -> Void in
                 self.performSegue(withIdentifier: "addDose", sender: med)
-                self.tableView.deselectRow(at: index, animated: false)
-                self.selectedMed = nil
             }))
             
             if med.isOverdue().flag {
                 alert.addAction(UIAlertAction(title: "Snooze Dose", style: UIAlertActionStyle.default, handler: {(action) -> Void in
                     med.snoozeNotification()
-                    self.tableView.deselectRow(at: index, animated: false)
-                    self.selectedMed = nil
+                    
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                 }))
             }
             
             alert.addAction(UIAlertAction(title: "Skip Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
-                let dose = Dose(insertInto: self.cdStack.context)
-                dose.date = Date()
-                dose.dosage = -1
-                dose.dosageUnit = med.dosageUnit
-                med.addDose(dose)
-                
+                med.skipDose(context: self.cdStack.context)
                 self.cdStack.save()
-                
-                // If selected, sort by next dosage
-                if self.defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
-                    self.medication.sort(by: Medicine.sortByNextDose)
-                    self.tableView.reloadData()
-                } else {
-                    self.tableView.reloadRows(at: [index], with: UITableViewRowAnimation.none)
-                }
-                
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                 
                 // Update spotlight index values and home screen shortcuts
                 self.appDelegate.indexMedication()
                 self.appDelegate.setDynamicShortcuts()
+                
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
             }))
             
             // If last dose is set, allow user to undo last dose
             if (med.lastDose != nil) {
                 alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
-                    if (med.untakeLastDose()) {
-                        self.cdStack.save()
-                        
-                        // If selected, sort by next dosage
-                        if self.defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
-                            self.loadMedication()
-                            self.tableView.reloadSections([0], with: .automatic)
-                        } else {
-                            self.tableView.reloadRows(at: [index], with: UITableViewRowAnimation.none)
-                        }
-                        
-                        self.updateHeader()
-                        
-                        // Update spotlight index values and home screen shortcuts
-                        self.appDelegate.indexMedication()
-                        self.appDelegate.setDynamicShortcuts()
-                    } else {
-                        self.tableView.deselectRow(at: index, animated: false)
-                        self.selectedMed = nil
-                    }
+                    med.untakeLastDose(context: self.cdStack.context)
+                    self.cdStack.save()
+
+                    // Update spotlight index values and home screen shortcuts
+                    self.appDelegate.indexMedication()
+                    self.appDelegate.setDynamicShortcuts()
+                    
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                 }))
             }
             
             alert.addAction(UIAlertAction(title: "Refill Prescription", style: UIAlertActionStyle.default, handler: {(action) -> Void in
                 self.performSegue(withIdentifier: "refillPrescription", sender: med)
-                self.tableView.deselectRow(at: index, animated: false)
-                self.selectedMed = nil
             }))
             
-            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {(action) -> Void in
-                self.tableView.deselectRow(at: index, animated: true)
-                self.selectedMed = nil
-            }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel))
             
             // Set popover for iPad
             if let cell = tableView.cellForRow(at: index) as? MedicineCell {

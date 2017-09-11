@@ -407,14 +407,7 @@ class Medicine: NSManagedObject {
         
         addDose(dose)
     }
-    
-    /**
-     Add a new dose for medication
-     
-     - Parameter dose: History object
-     
-     - Returns: History object (discardable)
-     */
+
     @discardableResult func addDose(_ dose: Dose) -> Dose {
         dose.medicine = self
         
@@ -459,6 +452,18 @@ class Medicine: NSManagedObject {
         
         return dose
     }
+    
+    /**
+ 
+     */
+    func skipDose(context: NSManagedObjectContext) {
+        let dose = Dose(insertInto: context)
+        dose.date = Date()
+        dose.dosage = -1
+        dose.dosageUnit = self.dosageUnit
+        
+        self.addDose(dose)
+    }
 
     /**
      Remove the last dose for medication
@@ -467,9 +472,9 @@ class Medicine: NSManagedObject {
      
      - Returns: Bool depending on whether action was successful
      */
-    func untakeLastDose() -> Bool {
+    @discardableResult func untakeLastDose(context: NSManagedObjectContext) -> Bool {
         if let lastDose = lastDose {
-            untakeDose(lastDose)
+            untakeDose(lastDose, context: context)
             scheduleNextNotification()
             return true
         }
@@ -483,7 +488,7 @@ class Medicine: NSManagedObject {
      - Parameter dose: History object
      - Parameter moc: NSManagedObjectContext object
      */
-    func untakeDose(_ dose: Dose) {
+    func untakeDose(_ dose: Dose, context: NSManagedObjectContext) {
         // Modify prescription count
         if let refillCount = self.refillHistory?.count {
             if (refillCount > 0) && (dose.dosage > 0) {
@@ -495,6 +500,8 @@ class Medicine: NSManagedObject {
                 self.prescriptionCount += dose.dosage
             }
         }
+        
+        context.delete(dose)
         
         // Update next and last dose values
         _ = self.nextDose

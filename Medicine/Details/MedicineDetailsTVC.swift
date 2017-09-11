@@ -352,35 +352,29 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         }
         
         alert.addAction(UIAlertAction(title: "Skip Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
-            let dose = Dose(insertInto: self.cdStack.context)
-            dose.date = Date()
-            dose.dosage = -1
-            dose.dosageUnit = med.dosageUnit
-            med.addDose(dose)
-            
+            med.skipDose(context: self.cdStack.context)
             self.cdStack.save()
-            
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
             
             // Update spotlight index values and home screen shortcuts
             self.appDelegate.indexMedication()
             self.appDelegate.setDynamicShortcuts()
+            
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
         }))
         
         // If last dose is set, allow user to undo last dose
         if (med.lastDose != nil) {
             alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
-                if (med.untakeLastDose()) {
-                    self.cdStack.save()
+                med.untakeLastDose(context: self.cdStack.context)
+                self.cdStack.save()
                     
-                    // Update spotlight index values and home screen shortcuts
-                    self.appDelegate.indexMedication()
-                    self.appDelegate.setDynamicShortcuts()
-                    
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
-                }
+                // Update spotlight index values and home screen shortcuts
+                self.appDelegate.indexMedication()
+                self.appDelegate.setDynamicShortcuts()
+                
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
             }))
         }
         

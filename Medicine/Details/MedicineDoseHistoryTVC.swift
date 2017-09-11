@@ -273,9 +273,9 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
             for indexPath in selectedRowIndexes.reversed() {
                 if let dose = self.fetchedResultsController!.object(at: indexPath) as? Dose {
                     if med.lastDose == dose {
-                        _ = med.untakeLastDose()
+                        _ = med.untakeLastDose(context: cdStack.context)
                     } else {
-                        med.untakeDose(dose)
+                        med.untakeDose(dose, context: cdStack.context)
                     }
                     
                     cdStack.context.delete(dose)

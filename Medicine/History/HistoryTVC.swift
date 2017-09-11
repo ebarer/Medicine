@@ -284,9 +284,9 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
                     let med = dose.medicine!
                     
                     if med.lastDose == dose {
-                        _ = med.untakeLastDose()
+                        _ = med.untakeLastDose(context: cdStack.context)
                     } else {
-                        med.untakeDose(dose)
+                        med.untakeDose(dose, context: cdStack.context)
                     }
                     
                     cdStack.context.delete(dose)
