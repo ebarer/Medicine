@@ -65,8 +65,8 @@ class SettingsTVC_Sort: UITableViewController {
                 med.sortOrder = Int16(index)
             }
             
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
         }
     }
 

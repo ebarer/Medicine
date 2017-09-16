@@ -76,14 +76,14 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 if med.lastDose != nil {
                     alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertActionStyle.default, handler: {(action) -> Void in
                         med.snoozeNotification()
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                     }))
                 }
                 
                 alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.cancel, handler: {(action) -> Void in
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                     NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 }))
                 
                 alert.view.tintColor = UIColor.gray
@@ -146,8 +146,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 appDelegate.setDynamicShortcuts()
                 appDelegate.updateBadgeCount()
                 
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
             }
         }
     }
@@ -161,8 +161,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 med.snoozeNotification()
                 appDelegate.setDynamicShortcuts()
                 
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 NSLog("snoozeReminderAction performed for %@", [med.name!])
             }
         }

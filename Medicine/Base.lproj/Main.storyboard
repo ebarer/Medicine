@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13189.4" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="YNu-dM-a51">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="YNu-dM-a51">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13165.3"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -16,7 +16,7 @@
                 <viewControllerPlaceholder storyboardName="Upgrade" id="l1N-4I-mqi" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jlM-d8-EFB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3395" y="381"/>
+            <point key="canvasLocation" x="3392" y="358"/>
         </scene>
         <!--AddRefill-->
         <scene sceneID="lan-nL-PWk">
@@ -38,49 +38,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8GV-OH-x1T">
-                                <rect key="frame" x="0.0" y="64" width="375" height="150"/>
-                                <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="FeF-a1-PGy">
-                                        <rect key="frame" x="15" y="15" width="345" height="125"/>
-                                        <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="252" text="Next Dose" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="buh-D9-XUF">
-                                                <rect key="frame" x="134" y="0.0" width="77" height="25"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="25" id="2jr-ZO-r6P"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
-                                                <color key="textColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="7:36 " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gxJ-Wi-7LD">
-                                                <rect key="frame" x="97.5" y="35" width="150" height="55"/>
-                                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="72"/>
-                                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" text="1 pill of Tylenol" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Upl-L0-WgZ">
-                                                <rect key="frame" x="118" y="100" width="109.5" height="25"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="25" id="OhF-bB-m92"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
-                                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                        </subviews>
-                                    </stackView>
-                                </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstItem="FeF-a1-PGy" firstAttribute="top" secondItem="8GV-OH-x1T" secondAttribute="top" constant="15" id="2di-DI-2e2"/>
-                                    <constraint firstItem="FeF-a1-PGy" firstAttribute="centerX" secondItem="8GV-OH-x1T" secondAttribute="centerX" id="9kT-Lo-e55"/>
-                                    <constraint firstAttribute="bottom" secondItem="FeF-a1-PGy" secondAttribute="bottom" constant="10" id="kgi-xt-SWT"/>
-                                    <constraint firstItem="FeF-a1-PGy" firstAttribute="leading" secondItem="8GV-OH-x1T" secondAttribute="leading" constant="15" id="uYK-d1-diZ"/>
-                                    <constraint firstAttribute="height" constant="150" id="uhh-gr-pun"/>
-                                    <constraint firstAttribute="trailing" secondItem="FeF-a1-PGy" secondAttribute="trailing" constant="15" id="w4v-xJ-MKD"/>
-                                </constraints>
-                            </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" sectionIndexMinimumDisplayRowCount="1" allowsSelectionDuringEditing="YES" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="nqo-4C-ZAo">
                                 <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -89,7 +46,43 @@
                                 <view key="tableHeaderView" contentMode="scaleToFill" id="I6r-XF-kgJ">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="150"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="252" text="Next Dose" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="buh-D9-XUF">
+                                            <rect key="frame" x="149" y="15" width="77" height="25"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="25" id="2jr-ZO-r6P"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                                            <color key="textColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" text="1 pill of Tylenol" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Upl-L0-WgZ">
+                                            <rect key="frame" x="15" y="115" width="345" height="25"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="25" id="OhF-bB-m92"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="7:36 " textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gxJ-Wi-7LD">
+                                            <rect key="frame" x="15" y="32" width="345" height="86"/>
+                                            <fontDescription key="fontDescription" type="system" weight="thin" pointSize="72"/>
+                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <constraints>
+                                        <constraint firstItem="gxJ-Wi-7LD" firstAttribute="leading" secondItem="I6r-XF-kgJ" secondAttribute="leading" constant="15" id="6O8-JM-X7w"/>
+                                        <constraint firstItem="buh-D9-XUF" firstAttribute="centerX" secondItem="I6r-XF-kgJ" secondAttribute="centerX" id="7ry-Hx-gB0"/>
+                                        <constraint firstItem="Upl-L0-WgZ" firstAttribute="leading" secondItem="I6r-XF-kgJ" secondAttribute="leading" constant="15" id="9UY-fN-Tki"/>
+                                        <constraint firstItem="gxJ-Wi-7LD" firstAttribute="centerY" secondItem="I6r-XF-kgJ" secondAttribute="centerY" id="Ifn-Bw-sNo"/>
+                                        <constraint firstAttribute="trailing" secondItem="Upl-L0-WgZ" secondAttribute="trailing" constant="15" id="Rlk-Pv-tZg"/>
+                                        <constraint firstAttribute="trailing" secondItem="gxJ-Wi-7LD" secondAttribute="trailing" constant="15" id="psw-AK-VYJ"/>
+                                        <constraint firstItem="buh-D9-XUF" firstAttribute="top" secondItem="I6r-XF-kgJ" secondAttribute="top" constant="15" id="wV8-Zs-t0g"/>
+                                        <constraint firstAttribute="bottom" secondItem="Upl-L0-WgZ" secondAttribute="bottom" constant="10" id="x5f-yI-42M"/>
+                                    </constraints>
                                 </view>
                                 <view key="tableFooterView" contentMode="scaleToFill" id="Qk6-CI-2pz">
                                     <rect key="frame" x="0.0" y="278" width="375" height="10"/>
@@ -199,11 +192,8 @@
                         </subviews>
                         <color key="backgroundColor" white="0.97999999999999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="8GV-OH-x1T" secondAttribute="trailing" id="5k5-qs-rO7"/>
                             <constraint firstItem="nqo-4C-ZAo" firstAttribute="top" secondItem="pgJ-kL-JYc" secondAttribute="bottom" id="AEv-Ua-yBO"/>
-                            <constraint firstItem="8GV-OH-x1T" firstAttribute="leading" secondItem="cwV-Bb-9Ec" secondAttribute="leading" id="H5V-tT-Dy2"/>
                             <constraint firstAttribute="trailing" secondItem="nqo-4C-ZAo" secondAttribute="trailing" id="cOf-iL-rME"/>
-                            <constraint firstItem="8GV-OH-x1T" firstAttribute="top" secondItem="pgJ-kL-JYc" secondAttribute="bottom" id="gMy-4i-ZNO"/>
                             <constraint firstAttribute="bottom" secondItem="nqo-4C-ZAo" secondAttribute="bottom" id="k5a-pP-g1Z"/>
                             <constraint firstItem="nqo-4C-ZAo" firstAttribute="leading" secondItem="cwV-Bb-9Ec" secondAttribute="leading" id="pXg-yr-MEi"/>
                         </constraints>
@@ -227,7 +217,6 @@
                         <outlet property="headerCounterLabel" destination="gxJ-Wi-7LD" id="KPT-b6-n0n"/>
                         <outlet property="headerDescriptionLabel" destination="buh-D9-XUF" id="tvD-vx-RlS"/>
                         <outlet property="headerMedLabel" destination="Upl-L0-WgZ" id="qGQ-KV-ykC"/>
-                        <outlet property="summaryHeader" destination="8GV-OH-x1T" id="xL7-5Q-79h"/>
                         <outlet property="tableView" destination="nqo-4C-ZAo" id="Qqq-kc-Kc3"/>
                         <segue destination="KKX-VQ-lBK" kind="presentation" identifier="editMedication" modalPresentationStyle="formSheet" id="ZvU-1l-YKz"/>
                         <segue destination="KKX-VQ-lBK" kind="presentation" identifier="addMedication" modalPresentationStyle="formSheet" id="Cho-HC-bOJ"/>
@@ -435,7 +424,7 @@
                 <viewControllerPlaceholder storyboardName="Settings" id="9tF-0m-LzC" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ooh-0C-F3k" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3394" y="438"/>
+            <point key="canvasLocation" x="3391" y="434"/>
         </scene>
         <!--Tutorial-->
         <scene sceneID="uJe-Pw-JeJ">
@@ -443,7 +432,7 @@
                 <viewControllerPlaceholder storyboardName="Tutorial" id="omS-jf-M2h" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FD3-8j-bs6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3391" y="296"/>
+            <point key="canvasLocation" x="3388" y="274"/>
         </scene>
         <!--History-->
         <scene sceneID="fpV-lt-R8E">

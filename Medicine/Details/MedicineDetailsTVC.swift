@@ -85,26 +85,26 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     
     @objc func refreshDetails() {
         // Select first medication if none selected
-        if med == nil {
-            let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-            
-            if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
-                // Sort by next dose
-                fetchRequest.sortDescriptors = [
-                    NSSortDescriptor(key: "reminderEnabled", ascending: false),
-                    NSSortDescriptor(key: "hasNextDose", ascending: false),
-                    NSSortDescriptor(key: "dateNextDose", ascending: true),
-                    NSSortDescriptor(key: "dateLastDose", ascending: false)
-                ]
-            } else {
-                // Sort by manually defined sort order
-                fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-            }
-            
-            if let medication = try? cdStack.context.fetch(fetchRequest) {
-                self.med = medication.first
-            }
-        }
+//        if med == nil {
+//            let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+//            
+//            if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
+//                // Sort by next dose
+//                fetchRequest.sortDescriptors = [
+//                    NSSortDescriptor(key: "reminderEnabled", ascending: false),
+//                    NSSortDescriptor(key: "hasNextDose", ascending: false),
+//                    NSSortDescriptor(key: "dateNextDose", ascending: true),
+//                    NSSortDescriptor(key: "dateLastDose", ascending: false)
+//                ]
+//            } else {
+//                // Sort by manually defined sort order
+//                fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+//            }
+//            
+//            if let medication = try? cdStack.context.fetch(fetchRequest) {
+//                self.med = medication.first
+//            }
+//        }
         
         displayEmptyView()
         updateLabels()
@@ -125,6 +125,10 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             self.view.viewWithTag(1001)?.removeFromSuperview()
             self.tableView.isScrollEnabled = true
             self.navigationItem.rightBarButtonItem?.isEnabled = true
+        }
+        
+        if let index = tableView.indexPathForSelectedRow {
+            self.tableView.deselectRow(at: index, animated: true)
         }
     }
     
@@ -156,9 +160,9 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             
             doseTitle.textColor = UIColor.lightGray
             doseTitle.text = "Next Dose"
+            doseTitle.font = UIFont.systemFont(ofSize: 16.0, weight: UIFont.Weight.regular)
             
             doseLabel.textColor = UIColor.black
-            doseLabel.font = UIFont.systemFont(ofSize: 16.0, weight: UIFont.Weight.regular)
             
             // If no doses taken
             if med.doseHistory?.count == 0 && med.intervalUnit == .hourly {
@@ -189,10 +193,11 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
                     
                     doseTitle.textColor = UIColor.medRed
                     doseTitle.text = "Overdue"
+                    doseTitle.font = UIFont.systemFont(ofSize: 16.0, weight: UIFont.Weight.semibold)
 
                     if let date = med.isOverdue().overdueDose {
                         doseLabel.textColor = UIColor.medRed
-                        doseLabel.font = UIFont.systemFont(ofSize: 16.0, weight: UIFont.Weight.medium)
+                        doseLabel.font = UIFont.systemFont(ofSize: 16.0)
                         doseLabel.text = Medicine.dateString(date)
                     }
                 }
@@ -346,8 +351,8 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             alert.addAction(UIAlertAction(title: "Snooze Dose", style: UIAlertActionStyle.default, handler: {(action) -> Void in
                 med.snoozeNotification()
                 
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
             }))
         }
         
@@ -359,8 +364,8 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             self.appDelegate.indexMedication()
             self.appDelegate.setDynamicShortcuts()
             
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
         }))
         
         // If last dose is set, allow user to undo last dose
@@ -373,8 +378,8 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
                 self.appDelegate.indexMedication()
                 self.appDelegate.setDynamicShortcuts()
                 
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
             }))
         }
         
@@ -425,9 +430,9 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             cdStack.save()
 
             // Send notifications
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
             NotificationCenter.default.post(name: Notification.Name(rawValue: "medicationDeleted"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
         }
     }
     
@@ -489,8 +494,8 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
 private enum Rows: Int {
     case none = -1
     case name
-    case nextDose
     case doseDetails
+    case nextDose
     case prescriptionCount
     case actions
     case doseHistory
@@ -505,9 +510,9 @@ private enum Rows: Int {
         case (0, 0):
             row = Rows.name
         case (0, 1):
-            row = Rows.nextDose
-        case (0, 2):
             row = Rows.doseDetails
+        case (0, 2):
+            row = Rows.nextDose
         case (0, 3):
             row = Rows.prescriptionCount
         case (0, 4):
@@ -531,9 +536,9 @@ private enum Rows: Int {
         switch self {
         case .name:
             return IndexPath(row: 0, section: 0)
-        case .nextDose:
-            return IndexPath(row: 1, section: 0)
         case .doseDetails:
+            return IndexPath(row: 1, section: 0)
+        case .nextDose:
             return IndexPath(row: 2, section: 0)
         case .prescriptionCount:
             return IndexPath(row: 3, section: 0)

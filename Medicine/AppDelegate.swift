@@ -30,7 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 splitView.delegate = self
                 
                 let bounds = splitView.view.bounds
-                splitView.minimumPrimaryColumnWidth = bounds.width / 3
+                splitView.minimumPrimaryColumnWidth = bounds.width / 2
                 splitView.maximumPrimaryColumnWidth = bounds.width / 2
                 splitView.preferredPrimaryColumnWidthFraction = 0.4
 

@@ -290,9 +290,9 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             cdStack.save()
             
             // Send notifications
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
             NotificationCenter.default.post(name: Notification.Name(rawValue: "medicationDeleted"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
         }
     }
     
@@ -356,8 +356,9 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         // Reschedule next notification
         med.scheduleNextNotification()
         
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+        
         dismiss(animated: true, completion: nil)
     }
     
@@ -370,8 +371,9 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         
         cdStack.save()
         
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+        
         dismiss(animated: true, completion: nil)
     }
     

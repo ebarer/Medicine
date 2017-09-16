@@ -18,7 +18,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     // MARK: - Outlets
     @IBOutlet var addMedicationButton: UIBarButtonItem!
     @IBOutlet var summaryHeader: UIView!
-    let summaryHeaderBorder = CALayer()
+    private let summaryHeaderHeight: CGFloat = 150.0
     @IBOutlet var headerDescriptionLabel: UILabel!
     @IBOutlet var headerCounterLabel: UILabel!
     @IBOutlet var headerMedLabel: UILabel!
@@ -48,10 +48,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Add observers for notifications
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshMainVC(_:)), name: NSNotification.Name(rawValue: "refreshMain"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(medicationDeleted), name: NSNotification.Name(rawValue: "medicationDeleted"), object: nil)
-        
         // Register for 3D touch if available
         if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: tableView)
@@ -70,8 +66,20 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         // Add logo to navigation bar
         self.navigationItem.titleView = UIImageView(image: UIImage(named: "Logo-Nav"))
         
-        // Remove tableView gap
+        // Remove table view gap
         tableView.separatorStyle = .none
+        
+        // Configure table view header
+        summaryHeader = tableView.tableHeaderView
+        tableView.tableHeaderView = nil
+        tableView.addSubview(summaryHeader)
+        tableView.contentInset = UIEdgeInsets(top: summaryHeaderHeight, left: 0, bottom: 0, right: 0)
+        tableView.contentOffset = CGPoint(x: 0, y: -summaryHeaderHeight)
+        updateHeader()
+        
+        // Add observers for notifications
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshMainVC(_:)), name: NSNotification.Name(rawValue: "refreshMain"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(medicationDeleted), name: NSNotification.Name(rawValue: "medicationDeleted"), object: nil)
         
         // Display tutorial on first launch
         let dictionary = Bundle.main.infoDictionary!
@@ -273,7 +281,15 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     func updateHeader() {
-        self.view.backgroundColor = UIColor(white: 0.98, alpha: 1)
+        // Update bounds and alpha
+        var headerRect = CGRect(x: 0, y: -summaryHeaderHeight, width: tableView.bounds.width, height: summaryHeaderHeight)
+        if tableView.contentOffset.y <= -summaryHeaderHeight {
+            headerRect.origin.y = tableView.contentOffset.y
+            headerRect.size.height = -tableView.contentOffset.y
+        }
+        
+        summaryHeader.frame = headerRect
+        summaryHeader.alpha = (-0.01 * tableView.contentOffset.y) - 0.5
         
         // Initialize main string
         var string = NSMutableAttributedString(string: "No more doses today")
@@ -291,11 +307,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         let nextMed = medication.sorted(by: Medicine.sortByNextDose).filter({ $0.reminderEnabled == true }).first
         if let date = nextMed?.nextDose {
             // If dose is in the past, warn of overdue doses
-            if date.compare(Date()) == .orderedAscending {
-//                UIView.animate(withDuration: 0.4, animations: {
-//                    self.view.backgroundColor = UIColor.medRed
-//                })
-                
+            if date.compare(Date()) == .orderedAscending {                
                 string = NSMutableAttributedString(string: "Overdue")
                 string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
                 string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.medRed, range: NSMakeRange(0, string.length))
@@ -345,33 +357,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - Table view data source
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        var alpha = (-0.02 * scrollView.contentOffset.y) + 1
-        alpha = (alpha > 1) ? 1 : (alpha < 0) ? 0 : alpha
-        print("\(scrollView.contentOffset.y) = \(alpha)")
-        summaryHeader.alpha = alpha
-        
-//        if scrollView.contentOffset.y > 0 {
-//            if summaryHeader.layer.shadowOpacity == 0 {
-//                if summaryHeaderBorder.superlayer == nil {
-//                    summaryHeaderBorder.frame = CGRect(x: 0, y: summaryHeader.frame.height - 1, width: summaryHeader.frame.width, height: 1)
-//                    summaryHeaderBorder.backgroundColor = UIColor(white: 0, alpha: 0.2).cgColor
-//                    summaryHeader.layer.addSublayer(summaryHeaderBorder)
-//                }
-//
-//                summaryHeader.layer.shadowOffset = CGSize(width: 0, height: 1)
-//                summaryHeader.layer.shadowRadius = 2
-//                summaryHeader.layer.shadowColor = UIColor.black.cgColor
-//                summaryHeader.layer.shadowOpacity = 0.3
-//            }
-//        } else {
-//            if summaryHeader.layer.shadowOpacity > 0 {
-//                if summaryHeaderBorder.superlayer != nil {
-//                    summaryHeaderBorder.removeFromSuperlayer()
-//                }
-//
-//                self.summaryHeader.layer.shadowOpacity = 0
-//            }
-//        }
+        updateHeader()
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -548,7 +534,11 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         if tableView.isEditing == true {
             performSegue(withIdentifier: "editMedication", sender: medication[indexPath.row])
         } else {
-            selectedMed = medication[indexPath.row]
+            // Don't update selected med if no history
+            let med = medication[indexPath.item]
+            if let count = med.doseHistory?.count, count > 0 {
+                selectedMed = med
+            }
         }
     }
     
@@ -570,7 +560,14 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         
         if let navVC = self.splitViewController?.viewControllers[safe: 1] {
             if let detailVC = (navVC as? UINavigationController)?.viewControllers[safe: 0] as? MedicineDetailsTVC {
-                detailVC.med = selectedMed
+                if selectedMed == nil {
+                    selectedMed = detailVC.med
+                    if let med = selectedMed, let row = medication.index(of: med) {
+                        tableView.selectRow(at: IndexPath(row: row, section: 0), animated: false, scrollPosition: .none)
+                    }
+                } else {
+                    detailVC.med = selectedMed
+                }
             }
         }
     }
@@ -594,8 +591,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 alert.addAction(UIAlertAction(title: "Snooze Dose", style: UIAlertActionStyle.default, handler: {(action) -> Void in
                     med.snoozeNotification()
                     
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                     NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 }))
             }
             
@@ -607,8 +604,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 self.appDelegate.indexMedication()
                 self.appDelegate.setDynamicShortcuts()
                 
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
             }))
             
             // If last dose is set, allow user to undo last dose
@@ -621,8 +618,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                     self.appDelegate.indexMedication()
                     self.appDelegate.setDynamicShortcuts()
                     
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                     NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 }))
             }
             
@@ -635,7 +632,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             // Set popover for iPad
             if let cell = tableView.cellForRow(at: index) as? MedicineCell {
                 alert.popoverPresentationController?.sourceView = cell.addButton
-                alert.popoverPresentationController?.sourceRect = cell.addButton.bounds
+                alert.popoverPresentationController?.sourceRect = cell.addButton.bounds.insetBy(dx: 10, dy: 0)
                 alert.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.left
             }
             
@@ -712,8 +709,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.fade)
         }
         
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil, userInfo: ["reload":false])
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
     }
     
     @objc func medicationDeleted() {

@@ -341,12 +341,11 @@ class Medicine: NSManagedObject {
             } else if cal.isDateInTomorrow(date) {
                 dateString = "Tomorrow at "
             } else if date.isDateInWeek() {
-                dateFormatter.dateFormat = "EEEE at "
-                dateString = dateFormatter.string(from: date)
+                dateString = date.string(withFormat: "EEEE") + " at "
             } else {
                 // Default case
-                dateFormatter.dateFormat = "MMM d at "
-                dateString = dateFormatter.string(from: date)
+                dateFormatter.dateFormat = "MMM d"
+                dateString = date.string(withFormat: "MMM d") + " at "
             }
         }
         
@@ -360,8 +359,7 @@ class Medicine: NSManagedObject {
                 dateString.append("Midnight")
             }
         } else {
-            dateFormatter.dateFormat = "h:mm a"
-            dateString.append(dateFormatter.string(from: date))
+            dateString.append(date.string(withFormat: "h:mm a"))
         }
         
         return dateString

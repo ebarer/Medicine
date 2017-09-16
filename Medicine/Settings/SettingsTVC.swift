@@ -184,8 +184,8 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
                         let masterVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
                         masterVC.performSegue(withIdentifier: "tutorial", sender: masterVC)
                         
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                     }
                 }
             }))

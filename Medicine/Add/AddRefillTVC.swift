@@ -69,7 +69,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
         // Set values
         if let med = med {
             // Set title
-            self.navigationItem.title = "Refill \(med.name!)"
+            self.navigationItem.title = "Log Refill"
                 
             // Set refill parameters
             if let prev = med.refillHistory?.array.last as? Refill {
@@ -339,8 +339,8 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
         
         cdStack.save()
         
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
         
         dismiss(animated: true, completion: nil)
     }
@@ -348,6 +348,10 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
     @IBAction func cancelRefill(_ sender: AnyObject) {
         cdStack.context.delete(refill)
         cdStack.save()
+        
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+        
         dismiss(animated: true, completion: nil)
     }
     

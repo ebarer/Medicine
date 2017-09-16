@@ -13,6 +13,7 @@ class AddDoseTVC: UITableViewController {
     
     var med: Medicine?
     var dose: Dose
+    var initialDosageAmount: Float?
 
     
     // MARK: - Outlets
@@ -61,6 +62,9 @@ class AddDoseTVC: UITableViewController {
             medCell.accessoryType = UITableViewCellAccessoryType.none
             medCell.selectionStyle = UITableViewCellSelectionStyle.none
         }
+        
+        // Preserve dosage amount in case of cancel
+        initialDosageAmount = med?.dosage
 
         // Set picker min/max values
         picker.maximumDate = Date()
@@ -102,6 +106,7 @@ class AddDoseTVC: UITableViewController {
                 self.med = med
                 dose.medicine = med
                 dose.dosage = med.dosage
+                initialDosageAmount = med.dosage
                 dose.dosageUnitInt = med.dosageUnitInt
             }
         }
@@ -199,6 +204,7 @@ class AddDoseTVC: UITableViewController {
     @IBAction func medicationUnwindSelect(_ unwindSegue: UIStoryboardSegue) {
         if let vc = unwindSegue.source as? AddDoseTVC_Medicine {
             self.med = vc.selectedMed
+            self.initialDosageAmount = self.med?.dosage
         }
     }
     
@@ -215,10 +221,7 @@ class AddDoseTVC: UITableViewController {
                 }
                 
                 cdStack.save()
-                
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
-                
+
                 dismiss(animated: true, completion: nil)
             } catch {
                 presentDoseAlert()
@@ -226,11 +229,23 @@ class AddDoseTVC: UITableViewController {
         } else {
             presentMedAlert()
         }
+        
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
     }
     
     @IBAction func cancelDose(_ sender: AnyObject?) {
         cdStack.context.delete(dose)
         cdStack.save()
+        
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+        
+        // On cancel, revert medication dosage
+        if let initialDosageAmount = initialDosageAmount {
+            med?.dosage = initialDosageAmount
+        }
+        
         dismiss(animated: true, completion: nil)
     }
     
@@ -252,8 +267,8 @@ class AddDoseTVC: UITableViewController {
             doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
                 self.cdStack.save()
                 
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 
                 self.dismiss(animated: true, completion: nil)
             }))

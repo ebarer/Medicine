@@ -10,14 +10,14 @@ import UIKit
 
 extension Date {
     
-    func string(dateStyle: DateFormatter.Style = .none, timeStyle: DateFormatter.Style = .none) -> String? {
+    func string(dateStyle: DateFormatter.Style = .none, timeStyle: DateFormatter.Style = .none) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = dateStyle
         formatter.timeStyle = timeStyle
         return formatter.string(from: self)
     }
     
-    func string(withFormat format: String) -> String? {
+    func string(withFormat format: String) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = format
         return formatter.string(from: self)

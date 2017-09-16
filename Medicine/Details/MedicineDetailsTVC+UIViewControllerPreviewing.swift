@@ -76,8 +76,8 @@ extension MedicineDetailsTVC: UIViewControllerPreviewingDelegate {
                 
                 self.cdStack.save()
                 
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
             }
         }
         
