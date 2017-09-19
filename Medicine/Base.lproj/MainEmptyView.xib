@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13189.4" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13165.3"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -15,28 +16,29 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="BnB-8R-wPV">
-                    <rect key="frame" x="128" y="163" width="119" height="100"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="119" id="EmS-NH-RDc"/>
-                        <constraint firstAttribute="height" constant="100" id="XyJ-RC-T0i"/>
-                    </constraints>
-                </imageView>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Medication" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lBX-Bp-4HC">
-                    <rect key="frame" x="105" y="307" width="165.5" height="33"/>
-                    <fontDescription key="fontDescription" type="system" weight="light" pointSize="27"/>
-                    <color key="textColor" red="0.66666666666666663" green="0.66666666666666663" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <nil key="highlightedColor"/>
-                </label>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="Vv0-pi-Lz3">
+                    <rect key="frame" x="0.0" y="202.5" width="375" height="162.5"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="BnB-8R-wPV">
+                            <rect key="frame" x="187.5" y="0.0" width="250" height="100"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="100" id="F7R-Qz-zfc"/>
+                            </constraints>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Medication" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lBX-Bp-4HC">
+                            <rect key="frame" x="0.0" y="130" width="375" height="32.5"/>
+                            <fontDescription key="fontDescription" type="system" weight="light" pointSize="27"/>
+                            <color key="textColor" red="0.66666666666666663" green="0.66666666666666663" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                </stackView>
             </subviews>
             <color key="backgroundColor" white="0.97999999999999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="lBX-Bp-4HC" firstAttribute="top" secondItem="BnB-8R-wPV" secondAttribute="bottom" constant="44" id="CwA-ir-BDL"/>
-                <constraint firstItem="BnB-8R-wPV" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="YOE-dN-VOQ"/>
-                <constraint firstItem="lBX-Bp-4HC" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" constant="-14.75" id="a2O-TD-bEG">
-                    <variation key="heightClass=regular-widthClass=compact" constant="-10"/>
-                </constraint>
-                <constraint firstItem="lBX-Bp-4HC" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="lVF-aU-BrW"/>
+                <constraint firstItem="Vv0-pi-Lz3" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" constant="-50" id="RcW-0s-w15"/>
+                <constraint firstAttribute="trailingMargin" secondItem="Vv0-pi-Lz3" secondAttribute="trailing" constant="25" id="gpb-UP-rRi"/>
+                <constraint firstItem="Vv0-pi-Lz3" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leadingMargin" constant="25" id="oI6-h7-zBc"/>
             </constraints>
             <point key="canvasLocation" x="261" y="158"/>
         </view>

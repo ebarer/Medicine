@@ -36,6 +36,39 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(snoozeReminderAction(_:)), name: NSNotification.Name(rawValue: "snoozeReminderAction"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refillAction(_:)), name: NSNotification.Name(rawValue: "refillAction"), object: nil)
     }
+    
+    // Display tutorial on first launch
+    override func viewDidAppear(_ animated: Bool) {
+        onboarding()
+    }
+    
+    func onboarding() {
+        let dictionary = Bundle.main.infoDictionary!
+        let version = dictionary["CFBundleShortVersionString"] as! String
+        let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        
+        // On first launch, show welcome screen
+        if defaults.bool(forKey: "firstLaunch") == true {
+            guard let count = try? cdStack.context.count(for: fetchRequest), count > 0 else {
+                defaults.set(false, forKey: "firstLaunch")
+                print("Onboarding: first launch")
+                self.performSegue(withIdentifier: "onboardingFirstLaunch", sender: self)
+                return
+            }
+        }
+            
+        // On new version, show new features screen
+        if defaults.string(forKey: "version") != version {
+            defaults.set(false, forKey: "firstLaunch")
+            defaults.setValue(version, forKey: "version")
+            print("Onboarding: new features")
+            self.performSegue(withIdentifier: "onboardingNewFeatures", sender: self)
+        } else {
+            print("No onboarding necessary.")
+            self.performSegue(withIdentifier: "onboardingFirstLaunch", sender: self)
+//            self.performSegue(withIdentifier: "onboardingNewFeatures", sender: self)
+        }
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

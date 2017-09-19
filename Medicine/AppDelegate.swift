@@ -51,25 +51,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Add observer for day change
         NotificationCenter.default.addObserver(self, selector: #selector(rescheduleNotifications(completionHandler:)), name: .NSCalendarDayChanged, object: nil)
         
-        // Register for notifications and actions
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) {(accepted, error) in
-            if accepted {
-                UNUserNotificationCenter.current().setNotificationCategories(self.notificationCategories)
-                UNUserNotificationCenter.current().delegate = self
-            } else {
-                NSLog("Notification access denied.", [])
-            }
-        }
-        
         setUserDefaults()
         
         return true
     }
-    
-    func applicationDidEnterBackground(_ application: UIApplication) {
-        
-    }
-    
+
     func applicationWillEnterForeground(_ application: UIApplication) {
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
@@ -117,10 +103,12 @@ extension AppDelegate {
             }
         }
         
-        logNotifications()
-        setDynamicShortcuts()
-        updateBadgeCount()
-        indexMedication()
+        DispatchQueue.main.async {
+            self.logNotifications()
+            self.setDynamicShortcuts()
+            self.updateBadgeCount()
+            self.indexMedication()
+        }
         
         if let completion = completionHandler {
             completion()
@@ -267,6 +255,34 @@ extension AppDelegate: UISplitViewControllerDelegate {
 
 // MARK: - Notifications
 extension AppDelegate: UNUserNotificationCenterDelegate {
+    func checkNotificationAuthorization() {
+        UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+            switch settings.authorizationStatus {
+            case .notDetermined:
+                NSLog("Authorization status: UNDETERMINED")
+            case .authorized:
+                NSLog("Authorization status: AUTHORIZED")
+            case .denied:
+                NSLog("Authorization status: DENIED")
+            }
+        }
+    }
+    
+    func requestNotificationAuthorization() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) {(accepted, error) in
+            if accepted {
+                self.configureNotificationAuthorization()
+            } else {
+                NSLog("Notification access denied.", [])
+            }
+        }
+    }
+    
+    func configureNotificationAuthorization() {
+        UNUserNotificationCenter.current().setNotificationCategories(self.notificationCategories)
+        UNUserNotificationCenter.current().delegate = self
+    }
+    
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         let actionIdentifier = response.actionIdentifier
         let notificationIdentifier = response.notification.request.identifier

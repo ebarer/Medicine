@@ -262,7 +262,7 @@
                                                     <rect key="frame" x="98" y="12" width="261" height="20"/>
                                                     <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                    <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="done"/>
+                                                    <textInputTraits key="textInputTraits" keyboardType="decimalPad" returnKeyType="done"/>
                                                     <connections>
                                                         <action selector="updateDosage:" destination="kZ7-qR-OR1" eventType="editingChanged" id="h7v-gY-SE7"/>
                                                     </connections>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="bHg-3T-44S">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--WhatsNew-->
+        <scene sceneID="5Rp-M2-Tnc">
+            <objects>
+                <viewController title="WhatsNew" id="bHg-3T-44S" customClass="NewFeatures" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Jyz-d5-ScP">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Template" translatesAutoresizingMaskIntoConstraints="NO" id="k37-SR-9il">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="What's New" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fje-DS-3Dt">
+                                <rect key="frame" x="72.5" y="95" width="230" height="48"/>
+                                <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="40"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y3F-Kv-FSW">
+                                <rect key="frame" x="57.5" y="572" width="260" height="45"/>
+                                <color key="backgroundColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="V0h-1a-Lft"/>
+                                    <constraint firstAttribute="width" constant="260" id="rVd-e5-yCK"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal" title="Continue"/>
+                                <connections>
+                                    <action selector="dismiss:" destination="bHg-3T-44S" eventType="touchUpInside" id="2D0-Zu-Npb"/>
+                                    <action selector="touchDown:" destination="bHg-3T-44S" eventType="touchDown" id="3OX-or-cZv"/>
+                                    <action selector="touchDown:" destination="bHg-3T-44S" eventType="touchDragInside" id="Elj-6A-WGZ"/>
+                                    <action selector="touchUp:" destination="bHg-3T-44S" eventType="touchDragOutside" id="L9N-07-Ndq"/>
+                                    <action selector="touchUp:" destination="bHg-3T-44S" eventType="touchUpOutside" id="SxE-lO-Kdr"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Medicine Manager has been updated to take advantage of the latest features in iOS 11." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bDH-c9-jYi">
+                                <rect key="frame" x="35" y="163" width="305" height="36"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="7k6-3b-nKP">
+                                <rect key="frame" x="35" y="234" width="55" height="55"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="55" id="HDX-Vs-SPe"/>
+                                    <constraint firstAttribute="height" constant="55" id="ot1-sS-Ixo"/>
+                                </constraints>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MS5-iI-1ba">
+                                <rect key="frame" x="35" y="329" width="55" height="55"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="55" id="CVI-YB-rYh"/>
+                                    <constraint firstAttribute="width" constant="55" id="f5c-3C-OAC"/>
+                                </constraints>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3Vu-Cd-kfd">
+                                <rect key="frame" x="35" y="424" width="55" height="55"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="55" id="ekF-ZJ-5bs"/>
+                                    <constraint firstAttribute="height" constant="55" id="jlX-jV-59q"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="7k6-3b-nKP" firstAttribute="top" secondItem="bDH-c9-jYi" secondAttribute="bottom" constant="35" id="FQZ-ty-LdE"/>
+                            <constraint firstItem="bDH-c9-jYi" firstAttribute="top" secondItem="fje-DS-3Dt" secondAttribute="bottom" constant="20" id="GGh-fc-IIn"/>
+                            <constraint firstItem="MS5-iI-1ba" firstAttribute="top" secondItem="7k6-3b-nKP" secondAttribute="bottom" constant="40" id="MAC-Fj-AXN"/>
+                            <constraint firstItem="fje-DS-3Dt" firstAttribute="centerX" secondItem="Jyz-d5-ScP" secondAttribute="centerX" id="P8m-Zw-otB"/>
+                            <constraint firstItem="fje-DS-3Dt" firstAttribute="top" secondItem="KGD-9v-S93" secondAttribute="top" constant="75" id="RkA-cM-xvh"/>
+                            <constraint firstItem="3Vu-Cd-kfd" firstAttribute="top" secondItem="MS5-iI-1ba" secondAttribute="bottom" constant="40" id="UQl-mB-1rQ"/>
+                            <constraint firstItem="y3F-Kv-FSW" firstAttribute="centerX" secondItem="Jyz-d5-ScP" secondAttribute="centerX" id="Ue8-yf-TcH"/>
+                            <constraint firstItem="k37-SR-9il" firstAttribute="leading" secondItem="KGD-9v-S93" secondAttribute="leading" id="YyN-Ne-IBf"/>
+                            <constraint firstItem="k37-SR-9il" firstAttribute="trailing" secondItem="KGD-9v-S93" secondAttribute="trailing" id="baX-il-jtE"/>
+                            <constraint firstItem="bDH-c9-jYi" firstAttribute="leading" secondItem="Jyz-d5-ScP" secondAttribute="leading" constant="35" id="gFz-7y-ZPO"/>
+                            <constraint firstItem="k37-SR-9il" firstAttribute="top" secondItem="Jyz-d5-ScP" secondAttribute="top" id="hUi-W9-hd4"/>
+                            <constraint firstItem="KGD-9v-S93" firstAttribute="bottom" secondItem="y3F-Kv-FSW" secondAttribute="bottom" constant="50" id="kxQ-LU-A5P"/>
+                            <constraint firstItem="MS5-iI-1ba" firstAttribute="centerX" secondItem="7k6-3b-nKP" secondAttribute="centerX" id="q5b-tR-SHM"/>
+                            <constraint firstItem="7k6-3b-nKP" firstAttribute="leading" secondItem="bDH-c9-jYi" secondAttribute="leading" id="qDf-Az-T5V"/>
+                            <constraint firstItem="3Vu-Cd-kfd" firstAttribute="centerX" secondItem="MS5-iI-1ba" secondAttribute="centerX" id="sBA-GA-Yh2"/>
+                            <constraint firstAttribute="trailing" secondItem="bDH-c9-jYi" secondAttribute="trailing" constant="35" id="tWJ-Aj-N0Z"/>
+                            <constraint firstItem="k37-SR-9il" firstAttribute="bottom" secondItem="KGD-9v-S93" secondAttribute="bottom" id="yje-oH-dST"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="KGD-9v-S93"/>
+                    </view>
+                    <connections>
+                        <outlet property="dismissButton" destination="y3F-Kv-FSW" id="QxP-dR-5PK"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6Nq-Ed-O5n" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="104.8" y="136.28185907046478"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="Template" width="375" height="667"/>
+    </resources>
+</document>

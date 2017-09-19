@@ -16,7 +16,7 @@
                 <viewControllerPlaceholder storyboardName="Upgrade" id="l1N-4I-mqi" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jlM-d8-EFB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3392" y="358"/>
+            <point key="canvasLocation" x="3389" y="335"/>
         </scene>
         <!--AddRefill-->
         <scene sceneID="lan-nL-PWk">
@@ -222,7 +222,6 @@
                         <segue destination="KKX-VQ-lBK" kind="presentation" identifier="addMedication" modalPresentationStyle="formSheet" id="Cho-HC-bOJ"/>
                         <segue destination="bZR-7Y-tt8" kind="presentation" identifier="addDose" modalPresentationStyle="formSheet" id="4v2-Sv-MA2"/>
                         <segue destination="0rS-bm-Zw4" kind="presentation" identifier="refillPrescription" modalPresentationStyle="formSheet" id="Vhm-6N-fFD"/>
-                        <segue destination="omS-jf-M2h" kind="presentation" identifier="tutorial" id="HBU-Gi-8t2"/>
                         <segue destination="l1N-4I-mqi" kind="presentation" identifier="upgrade" modalPresentationStyle="formSheet" id="VLK-Ab-JKe"/>
                     </connections>
                 </viewController>
@@ -412,6 +411,8 @@
                         <segue destination="HGE-ul-mTl" kind="presentation" identifier="refillPrescription" modalPresentationStyle="formSheet" id="UNh-mw-cOy"/>
                         <segue destination="0LB-ck-hiT" kind="relationship" relationship="viewControllers" id="eyw-KS-1Zi"/>
                         <segue destination="tMS-nO-ybq" kind="relationship" relationship="viewControllers" id="Ina-G6-Eh6"/>
+                        <segue destination="omS-jf-M2h" kind="presentation" identifier="onboardingFirstLaunch" id="8R0-9p-vUl"/>
+                        <segue destination="dq4-2i-mUk" kind="presentation" identifier="onboardingNewFeatures" modalPresentationStyle="formSheet" id="Vc3-bh-aBD"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="o8O-sL-lb1" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -424,15 +425,15 @@
                 <viewControllerPlaceholder storyboardName="Settings" id="9tF-0m-LzC" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ooh-0C-F3k" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3391" y="434"/>
+            <point key="canvasLocation" x="3388" y="381"/>
         </scene>
-        <!--Tutorial-->
+        <!--FirstLaunch-->
         <scene sceneID="uJe-Pw-JeJ">
             <objects>
-                <viewControllerPlaceholder storyboardName="Tutorial" id="omS-jf-M2h" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardName="FirstLaunch" id="omS-jf-M2h" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FD3-8j-bs6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3388" y="274"/>
+            <point key="canvasLocation" x="117" y="1550"/>
         </scene>
         <!--History-->
         <scene sceneID="fpV-lt-R8E">
@@ -472,7 +473,7 @@
                 <viewControllerPlaceholder storyboardName="AddDose" id="jhv-gA-12s" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sZ3-gF-2Uo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-12" y="1455"/>
+            <point key="canvasLocation" x="14" y="1455"/>
         </scene>
         <!--AddRefill-->
         <scene sceneID="ots-6m-s5S">
@@ -480,7 +481,7 @@
                 <viewControllerPlaceholder storyboardName="AddRefill" id="HGE-ul-mTl" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aKd-87-Sr4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="500" y="1455"/>
+            <point key="canvasLocation" x="474" y="1455"/>
         </scene>
         <!--MedicineDetails-->
         <scene sceneID="OSd-GO-5ms">
@@ -491,6 +492,14 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Hlf-VE-diw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1834" y="890"/>
+        </scene>
+        <!--NewFeatures-->
+        <scene sceneID="Hfb-ly-mRY">
+            <objects>
+                <viewControllerPlaceholder storyboardName="NewFeatures" id="dq4-2i-mUk" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NHw-8p-87j" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="373" y="1550"/>
         </scene>
     </scenes>
     <resources>

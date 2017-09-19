@@ -13,9 +13,9 @@ import UserNotifications
 
 class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
 
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
-    
     
     // MARK: - Outlets
     @IBOutlet var sortLabel: UILabel!
@@ -155,46 +155,45 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     // MARK: - Helper methods
     func resetApp() {
-        let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-        if let medication = try? cdStack.context.fetch(fetchRequest) {
-            for med in medication {
-                cdStack.context.delete(med)
-            }
-            
-            cdStack.save()
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Medicine.fetchRequest()
+        let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        batchDeleteRequest.resultType = .resultTypeCount
+        
+        if let index = self.tableView.indexPathForSelectedRow {
+            self.tableView.deselectRow(at: index, animated: false)
+        }
+        
+        do {
+            let deleteCount = try cdStack.context.execute(batchDeleteRequest) as! NSBatchDeleteResult
+            print("Deleted \(deleteCount) objects")
+            cdStack.context.reset()
+
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
             
             // Clear scheduled notifications
             UNUserNotificationCenter.current().removeAllDeliveredNotifications()
             UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
             
             // Reset preferences
-            defaults.set(true, forKey: "firstLaunch")
             defaults.set(SortOrder.nextDosage.rawValue, forKey: "sortOrder")
             defaults.set(5, forKey: "snoozeLength")
+            defaults.set(3, forKey: "refillTime")
             defaults.set([], forKey: "todayData")
             defaults.synchronize()
             
             // Show reset confirmation
             let confirmationAlert = UIAlertController(title: "Reset Complete", message: "All medication, history, and preferences have been reset.", preferredStyle: UIAlertControllerStyle.alert)
             
-            confirmationAlert.addAction(UIAlertAction(title: "Restart", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
-                if let tbc = self.presentingViewController as? MainTBC {
-                    if let splitView = tbc.viewControllers?.filter({$0.isKind(of: UISplitViewController.self)}).first as? UISplitViewController {
-                        self.dismiss(animated: false, completion: nil)
-                        let masterVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
-                        masterVC.performSegue(withIdentifier: "tutorial", sender: masterVC)
-                        
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
-                    }
-                }
+            confirmationAlert.addAction(UIAlertAction(title: "Done", style: .default, handler: {(action) -> Void in
+                self.dismiss(animated: true, completion: nil)
             }))
-            
+
             confirmationAlert.view.tintColor = UIColor.gray
             self.present(confirmationAlert, animated: true, completion: nil)
-            if let index = self.tableView.indexPathForSelectedRow {
-                self.tableView.deselectRow(at: index, animated: false)
-            }
+        } catch {
+            let updateError = error as NSError
+            NSLog("\(updateError), \(updateError.userInfo)")
         }
     }
     

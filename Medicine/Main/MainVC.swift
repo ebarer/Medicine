@@ -15,7 +15,7 @@ import UserNotifications
 
 class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
-    // MARK: - Outlets
+    // Outlets
     @IBOutlet var addMedicationButton: UIBarButtonItem!
     @IBOutlet var summaryHeader: UIView!
     private let summaryHeaderHeight: CGFloat = 150.0
@@ -24,7 +24,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet var headerMedLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     
-    // MARK: - Helper variables
+    // Helper variables
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
@@ -36,7 +36,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     var medication = [Medicine]()
     var selectedMed: Medicine?
     
-    // MARK: - IAP variables
+    // IAP variables
     let productID = "com.ebarer.Medicine.Unlock"
     let trialLimit = 2
     var productLock = true
@@ -81,51 +81,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(refreshMainVC(_:)), name: NSNotification.Name(rawValue: "refreshMain"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(medicationDeleted), name: NSNotification.Name(rawValue: "medicationDeleted"), object: nil)
         
-        // Display tutorial on first launch
-        let dictionary = Bundle.main.infoDictionary!
-        let version = dictionary["CFBundleShortVersionString"] as! String
-        if defaults.string(forKey: "version") != version {
-            defaults.setValue(version, forKey: "version")
-            self.performSegue(withIdentifier: "tutorial", sender: self)
-        }
+        setNeedsStatusBarAppearanceUpdate()
     }
-    
-    func loadMedication() {
-        medication = [Medicine]()
-        
-        // Create fetch request, sorted by task time
-        let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
 
-        if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
-            // Sort by next dose
-            fetchRequest.sortDescriptors = [
-                NSSortDescriptor(key: "isNew", ascending: false),
-                NSSortDescriptor(key: "reminderEnabled", ascending: false),
-                NSSortDescriptor(key: "hasNextDose", ascending: false),
-                NSSortDescriptor(key: "dateNextDose", ascending: true),
-                NSSortDescriptor(key: "dateLastDose", ascending: false)
-            ]
-        } else {
-            // Sort by manually defined sort order
-            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-        }
-
-        if let results = try? cdStack.context.fetch(fetchRequest) {
-            medication = results
-            logMedication()
-        }
-    }
-    
-    func logMedication() {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .medium
-
-        print("Medication:")
-        for med in medication {
-            print("\t\(med.sortOrder): [\(med.medicineID)] \(med.name ?? "") \(med.isNew ? "(New) ->" : "->") \(med.hasNextDose) ? \(formatter.string(for: med.nextDose) ?? "No next dose")")
-        }
-    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -215,6 +173,43 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     
     // MARK: - Update values
+    func loadMedication() {
+        medication = [Medicine]()
+        
+        // Create fetch request, sorted by task time
+        let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
+        
+        if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
+            // Sort by next dose
+            fetchRequest.sortDescriptors = [
+                NSSortDescriptor(key: "isNew", ascending: false),
+                NSSortDescriptor(key: "reminderEnabled", ascending: false),
+                NSSortDescriptor(key: "hasNextDose", ascending: false),
+                NSSortDescriptor(key: "dateNextDose", ascending: true),
+                NSSortDescriptor(key: "dateLastDose", ascending: false)
+            ]
+        } else {
+            // Sort by manually defined sort order
+            fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
+        }
+        
+        if let results = try? cdStack.context.fetch(fetchRequest) {
+            medication = results
+            logMedication()
+        }
+    }
+    
+    func logMedication() {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .medium
+        
+        print("Medication:")
+        for med in medication {
+            print("\t\(med.sortOrder): [\(med.medicineID)] \(med.name ?? "") \(med.isNew ? "(New) ->" : "->") \(med.hasNextDose) ? \(formatter.string(for: med.nextDose) ?? "No next dose")")
+        }
+    }
+    
     @objc func refreshTable() {
         refreshMainVC()
     }
@@ -230,8 +225,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             selectMed()
         }
 
-        updateHeader()
         displayEmptyView()
+        updateHeader()
     }
     
     func displayEmptyView() {

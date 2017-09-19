@@ -9,7 +9,6 @@
 import UIKit
 
 extension Date {
-    
     func string(dateStyle: DateFormatter.Style = .none, timeStyle: DateFormatter.Style = .none) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = dateStyle
@@ -28,5 +27,4 @@ extension Date {
         formatter.dateFormat = format
         return formatter.date(from: dateString)
     }
-
 }
