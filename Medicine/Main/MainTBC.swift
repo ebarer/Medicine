@@ -66,6 +66,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             self.performSegue(withIdentifier: "onboardingNewFeatures", sender: self)
         } else {
             print("No onboarding necessary.")
+//            self.performSegue(withIdentifier: "onboardingFirstLaunch", sender: self)
         }
     }
 

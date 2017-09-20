@@ -294,7 +294,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         cell.preservesSuperviewLayoutMargins = true
         
         switch Rows(index: indexPath) {
-        case Rows.doseDetails:
+        case Rows.nextDose:
             if med?.refillHistory?.count == 0 {
                 cell.separatorInset = UIEdgeInsets.zero
             }

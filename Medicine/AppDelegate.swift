@@ -31,10 +31,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 // Configure split view on startup
                 splitView.delegate = self
                 
-                let bounds = splitView.view.bounds
-                splitView.minimumPrimaryColumnWidth = bounds.width / 2
-                splitView.maximumPrimaryColumnWidth = bounds.width / 2
-                splitView.preferredPrimaryColumnWidthFraction = 0.4
+                let dim = min(splitView.view.bounds.width, splitView.view.bounds.height)
+                splitView.minimumPrimaryColumnWidth = dim / 2
+                splitView.maximumPrimaryColumnWidth = dim / 2
+                splitView.preferredPrimaryColumnWidthFraction = 0.5
 
                 let detailNVC = splitView.viewControllers[1] as! UINavigationController
                 detailNVC.topViewController?.navigationItem.leftBarButtonItem = splitView.displayModeButtonItem

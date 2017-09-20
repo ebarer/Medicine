@@ -230,10 +230,10 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="yef-cs-8F9">
-                                                    <rect key="frame" x="16" y="15" width="343" height="19"/>
+                                                    <rect key="frame" x="16" y="15" width="343" height="19.5"/>
                                                     <subviews>
                                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="Prescription" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="60" translatesAutoresizingMaskIntoConstraints="NO" id="7tu-2X-gVs">
-                                                            <rect key="frame" x="0.0" y="0.0" width="90" height="19"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="90" height="19.5"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="90" id="oil-ZF-G6B"/>
                                                             </constraints>
@@ -242,18 +242,15 @@
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalHuggingPriority="249" text="Detail" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cQ7-ij-I05">
-                                                            <rect key="frame" x="100" y="0.0" width="243" height="19"/>
+                                                            <rect key="frame" x="100" y="0.0" width="243" height="19.5"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                     </subviews>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="19" id="cfa-tR-WNM"/>
-                                                    </constraints>
                                                 </stackView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uL0-sk-Rhf">
-                                                    <rect key="frame" x="16" y="44" width="343" height="45"/>
+                                                    <rect key="frame" x="16" y="44.5" width="343" height="38.5"/>
                                                     <string key="text">Prescription details
 extend onto the second line.</string>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
@@ -262,7 +259,7 @@ extend onto the second line.</string>
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="bottomMargin" secondItem="uL0-sk-Rhf" secondAttribute="bottom" id="9zI-J3-652"/>
+                                                <constraint firstAttribute="bottomMargin" relation="greaterThanOrEqual" secondItem="uL0-sk-Rhf" secondAttribute="bottom" priority="750" id="9zI-J3-652"/>
                                                 <constraint firstItem="uL0-sk-Rhf" firstAttribute="trailing" secondItem="SYr-zH-6rW" secondAttribute="trailingMargin" id="Fia-5l-Ycw"/>
                                                 <constraint firstItem="uL0-sk-Rhf" firstAttribute="top" secondItem="yef-cs-8F9" secondAttribute="bottom" constant="10" id="HUT-n1-GpS"/>
                                                 <constraint firstItem="uL0-sk-Rhf" firstAttribute="leading" secondItem="SYr-zH-6rW" secondAttribute="leadingMargin" id="doZ-I5-fjO"/>
