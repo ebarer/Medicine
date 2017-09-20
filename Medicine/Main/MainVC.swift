@@ -19,6 +19,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet var addMedicationButton: UIBarButtonItem!
     @IBOutlet var summaryHeader: UIView!
     private let summaryHeaderHeight: CGFloat = 150.0
+    @IBOutlet var headerTopConstraint: NSLayoutConstraint!
+    @IBOutlet var headerBottomConstraint: NSLayoutConstraint!
     @IBOutlet var headerDescriptionLabel: UILabel!
     @IBOutlet var headerCounterLabel: UILabel!
     @IBOutlet var headerMedLabel: UILabel!
@@ -41,8 +43,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     let trialLimit = 2
     var productLock = true
     var mvc: UpgradeVC?
-    
-    var longPressGesture: UILongPressGestureRecognizer?
     
     // MARK: - View methods
     override func viewDidLoad() {
@@ -280,9 +280,13 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     func updateHeader() {
         // Update bounds and alpha
         var headerRect = CGRect(x: 0, y: -summaryHeaderHeight, width: tableView.bounds.width, height: summaryHeaderHeight)
+        
         if tableView.contentOffset.y <= -summaryHeaderHeight {
             headerRect.origin.y = tableView.contentOffset.y
             headerRect.size.height = -tableView.contentOffset.y
+            let constraintConstant = (-0.12 * tableView.contentOffset.y) - 18
+            headerBottomConstraint.constant = constraintConstant
+            headerTopConstraint.constant = constraintConstant
         }
         
         summaryHeader.frame = headerRect
@@ -636,19 +640,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             alert.view.layoutIfNeeded()
             alert.view.tintColor = UIColor.gray
             present(alert, animated: true, completion: nil)
-        }
-    }
-    
-    @objc func takeDose(_ sender: UILongPressGestureRecognizer) {
-        let point = sender.location(in: self.tableView)
-        if let indexPath = self.tableView?.indexPathForRow(at: point) {
-            let med = medication[indexPath.row]
-            
-            if (sender.state == .began) {
-                self.performSegue(withIdentifier: "addDose", sender: med)
-                self.tableView.deselectRow(at: indexPath, animated: false)
-                self.selectedMed = nil
-            }
         }
     }
     

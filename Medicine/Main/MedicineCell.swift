@@ -77,8 +77,7 @@ class MedicineCell: UITableViewCell {
             }
         }
     }
-    
-    // Remove long press gesture when editing to prevent issues with reordering
+
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
         

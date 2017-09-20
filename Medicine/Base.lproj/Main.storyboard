@@ -48,7 +48,7 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="252" text="Next Dose" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="buh-D9-XUF">
-                                            <rect key="frame" x="149" y="15" width="77" height="25"/>
+                                            <rect key="frame" x="149" y="7" width="77" height="25"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="25" id="2jr-ZO-r6P"/>
                                             </constraints>
@@ -57,7 +57,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" text="1 pill of Tylenol" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Upl-L0-WgZ">
-                                            <rect key="frame" x="15" y="115" width="345" height="25"/>
+                                            <rect key="frame" x="15" y="118" width="345" height="25"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="25" id="OhF-bB-m92"/>
                                             </constraints>
@@ -74,14 +74,14 @@
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
+                                        <constraint firstItem="Upl-L0-WgZ" firstAttribute="top" secondItem="gxJ-Wi-7LD" secondAttribute="bottom" id="3KB-YJ-OuI"/>
                                         <constraint firstItem="gxJ-Wi-7LD" firstAttribute="leading" secondItem="I6r-XF-kgJ" secondAttribute="leading" constant="15" id="6O8-JM-X7w"/>
                                         <constraint firstItem="buh-D9-XUF" firstAttribute="centerX" secondItem="I6r-XF-kgJ" secondAttribute="centerX" id="7ry-Hx-gB0"/>
                                         <constraint firstItem="Upl-L0-WgZ" firstAttribute="leading" secondItem="I6r-XF-kgJ" secondAttribute="leading" constant="15" id="9UY-fN-Tki"/>
                                         <constraint firstItem="gxJ-Wi-7LD" firstAttribute="centerY" secondItem="I6r-XF-kgJ" secondAttribute="centerY" id="Ifn-Bw-sNo"/>
                                         <constraint firstAttribute="trailing" secondItem="Upl-L0-WgZ" secondAttribute="trailing" constant="15" id="Rlk-Pv-tZg"/>
                                         <constraint firstAttribute="trailing" secondItem="gxJ-Wi-7LD" secondAttribute="trailing" constant="15" id="psw-AK-VYJ"/>
-                                        <constraint firstItem="buh-D9-XUF" firstAttribute="top" secondItem="I6r-XF-kgJ" secondAttribute="top" constant="15" id="wV8-Zs-t0g"/>
-                                        <constraint firstAttribute="bottom" secondItem="Upl-L0-WgZ" secondAttribute="bottom" constant="10" id="x5f-yI-42M"/>
+                                        <constraint firstItem="gxJ-Wi-7LD" firstAttribute="top" secondItem="buh-D9-XUF" secondAttribute="bottom" id="qYy-D6-2aJ"/>
                                     </constraints>
                                 </view>
                                 <view key="tableFooterView" contentMode="scaleToFill" id="Qk6-CI-2pz">
@@ -214,9 +214,11 @@
                     </navigationItem>
                     <connections>
                         <outlet property="addMedicationButton" destination="7ES-lS-ja9" id="JFz-RD-x8q"/>
+                        <outlet property="headerBottomConstraint" destination="3KB-YJ-OuI" id="9k0-fK-ig1"/>
                         <outlet property="headerCounterLabel" destination="gxJ-Wi-7LD" id="KPT-b6-n0n"/>
                         <outlet property="headerDescriptionLabel" destination="buh-D9-XUF" id="tvD-vx-RlS"/>
                         <outlet property="headerMedLabel" destination="Upl-L0-WgZ" id="qGQ-KV-ykC"/>
+                        <outlet property="headerTopConstraint" destination="qYy-D6-2aJ" id="cWN-R3-ONL"/>
                         <outlet property="tableView" destination="nqo-4C-ZAo" id="Qqq-kc-Kc3"/>
                         <segue destination="KKX-VQ-lBK" kind="presentation" identifier="editMedication" modalPresentationStyle="formSheet" id="ZvU-1l-YKz"/>
                         <segue destination="KKX-VQ-lBK" kind="presentation" identifier="addMedication" modalPresentationStyle="formSheet" id="Cho-HC-bOJ"/>
