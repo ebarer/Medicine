@@ -37,7 +37,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(refillAction(_:)), name: NSNotification.Name(rawValue: "refillAction"), object: nil)
     }
     
-    // Display tutorial on first launch
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         onboarding()
@@ -67,8 +66,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             self.performSegue(withIdentifier: "onboardingNewFeatures", sender: self)
         } else {
             print("No onboarding necessary.")
-            self.performSegue(withIdentifier: "onboardingFirstLaunch", sender: self)
-//            self.performSegue(withIdentifier: "onboardingNewFeatures", sender: self)
         }
     }
 

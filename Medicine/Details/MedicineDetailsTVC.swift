@@ -279,7 +279,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         case Rows.name:
             return 70.0
         case Rows.prescriptionCount:
-            return ((med?.refillHistory?.count ?? 0) > 0) ? 105.0 : 0.0     // UITableViewAutomaticDimension
+            return ((med?.refillHistory?.count ?? 0) > 0) ? 100 : 0.0     // UITableViewAutomaticDimension
         case Rows.actions:
             return 100.0
         case Rows.notes:

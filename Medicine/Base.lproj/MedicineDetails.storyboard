@@ -222,66 +222,59 @@
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" layoutMarginsFollowReadableWidth="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="prescriptionCell" rowHeight="105" id="pms-ns-nHl">
-                                        <rect key="frame" x="0.0" y="205" width="375" height="105"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" layoutMarginsFollowReadableWidth="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="prescriptionCell" rowHeight="100" id="pms-ns-nHl">
+                                        <rect key="frame" x="0.0" y="205" width="375" height="100"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="pms-ns-nHl" id="SYr-zH-6rW">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="104.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="99.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="2mC-Hd-sNF">
-                                                    <rect key="frame" x="16" y="11" width="343" height="76.5"/>
+                                                <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="yef-cs-8F9">
+                                                    <rect key="frame" x="16" y="15" width="343" height="19"/>
                                                     <subviews>
-                                                        <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="yef-cs-8F9">
-                                                            <rect key="frame" x="0.0" y="0.0" width="343" height="28"/>
-                                                            <subviews>
-                                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="Prescription" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="60" translatesAutoresizingMaskIntoConstraints="NO" id="7tu-2X-gVs">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="90" height="28"/>
-                                                                    <constraints>
-                                                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="90" id="oil-ZF-G6B"/>
-                                                                    </constraints>
-                                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                    <nil key="highlightedColor"/>
-                                                                </label>
-                                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalHuggingPriority="249" text="Detail" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cQ7-ij-I05">
-                                                                    <rect key="frame" x="100" y="0.0" width="243" height="28"/>
-                                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                    <nil key="highlightedColor"/>
-                                                                </label>
-                                                            </subviews>
+                                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="Prescription" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="60" translatesAutoresizingMaskIntoConstraints="NO" id="7tu-2X-gVs">
+                                                            <rect key="frame" x="0.0" y="0.0" width="90" height="19"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="height" constant="28" id="cfa-tR-WNM"/>
+                                                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="90" id="oil-ZF-G6B"/>
                                                             </constraints>
-                                                        </stackView>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uL0-sk-Rhf">
-                                                            <rect key="frame" x="0.0" y="38" width="343" height="38.5"/>
-                                                            <string key="text">Prescription details
-extend onto the second line.</string>
                                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
+                                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalHuggingPriority="249" text="Detail" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cQ7-ij-I05">
+                                                            <rect key="frame" x="100" y="0.0" width="243" height="19"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
                                                     </subviews>
                                                     <constraints>
-                                                        <constraint firstAttribute="trailing" secondItem="uL0-sk-Rhf" secondAttribute="trailing" id="9Oy-ep-T0p"/>
-                                                        <constraint firstItem="yef-cs-8F9" firstAttribute="leading" secondItem="2mC-Hd-sNF" secondAttribute="leading" id="9d6-2g-l0i"/>
-                                                        <constraint firstAttribute="trailing" secondItem="yef-cs-8F9" secondAttribute="trailing" id="BUb-S6-wER"/>
-                                                        <constraint firstItem="uL0-sk-Rhf" firstAttribute="leading" secondItem="2mC-Hd-sNF" secondAttribute="leading" id="N86-8I-sWF"/>
+                                                        <constraint firstAttribute="height" constant="19" id="cfa-tR-WNM"/>
                                                     </constraints>
                                                 </stackView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uL0-sk-Rhf">
+                                                    <rect key="frame" x="16" y="44" width="343" height="45"/>
+                                                    <string key="text">Prescription details
+extend onto the second line.</string>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="2mC-Hd-sNF" firstAttribute="top" secondItem="SYr-zH-6rW" secondAttribute="topMargin" id="7IT-bt-RLe"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="2mC-Hd-sNF" secondAttribute="trailing" id="T7C-Ry-XOx"/>
-                                                <constraint firstItem="2mC-Hd-sNF" firstAttribute="leading" secondItem="SYr-zH-6rW" secondAttribute="leadingMargin" id="njX-Cn-vAk"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="uL0-sk-Rhf" secondAttribute="bottom" id="9zI-J3-652"/>
+                                                <constraint firstItem="uL0-sk-Rhf" firstAttribute="trailing" secondItem="SYr-zH-6rW" secondAttribute="trailingMargin" id="Fia-5l-Ycw"/>
+                                                <constraint firstItem="uL0-sk-Rhf" firstAttribute="top" secondItem="yef-cs-8F9" secondAttribute="bottom" constant="10" id="HUT-n1-GpS"/>
+                                                <constraint firstItem="uL0-sk-Rhf" firstAttribute="leading" secondItem="SYr-zH-6rW" secondAttribute="leadingMargin" id="doZ-I5-fjO"/>
+                                                <constraint firstItem="yef-cs-8F9" firstAttribute="top" secondItem="SYr-zH-6rW" secondAttribute="topMargin" constant="4" id="uSF-Qr-hVr"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="yef-cs-8F9" secondAttribute="trailing" id="vli-pV-ihQ"/>
+                                                <constraint firstItem="yef-cs-8F9" firstAttribute="leading" secondItem="SYr-zH-6rW" secondAttribute="leadingMargin" id="xK2-x5-sBR"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" selectionStyle="none" indentationWidth="0.0" reuseIdentifier="actionCell" rowHeight="100" id="mgb-Vp-OKh">
-                                        <rect key="frame" x="0.0" y="310" width="375" height="100"/>
+                                        <rect key="frame" x="0.0" y="305" width="375" height="100"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="mgb-Vp-OKh" id="Y4a-C3-dXI">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="99.5"/>
@@ -352,7 +345,7 @@ extend onto the second line.</string>
                                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="doseHistoryCell" textLabel="u7p-Qm-u0R" imageView="jEk-A0-Gso" rowHeight="50" style="IBUITableViewCellStyleDefault" id="PRK-SG-2FB">
-                                        <rect key="frame" x="0.0" y="410" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="405" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="PRK-SG-2FB" id="y1U-2Z-nyD">
                                             <rect key="frame" x="0.0" y="0.0" width="342" height="49.5"/>
@@ -376,7 +369,7 @@ extend onto the second line.</string>
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="refillHistoryCell" textLabel="lbf-gf-3tZ" imageView="WBO-58-vjP" rowHeight="50" style="IBUITableViewCellStyleDefault" id="dwA-uN-uNZ">
-                                        <rect key="frame" x="0.0" y="460" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="455" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dwA-uN-uNZ" id="U8f-sa-1ce">
                                             <rect key="frame" x="0.0" y="0.0" width="342" height="49.5"/>
@@ -404,7 +397,7 @@ extend onto the second line.</string>
                             <tableViewSection headerTitle="Notes" id="RpD-ad-E5f">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="notesCell" rowHeight="75" id="5fn-z9-aBd">
-                                        <rect key="frame" x="0.0" y="566" width="375" height="75"/>
+                                        <rect key="frame" x="0.0" y="561" width="375" height="75"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="5fn-z9-aBd" id="XcV-gi-l81">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="74.5"/>
@@ -433,7 +426,7 @@ extend onto the second line.</string>
                             <tableViewSection id="Hka-Gh-Nst">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="deleteCell" textLabel="biY-Zj-onz" rowHeight="50" style="IBUITableViewCellStyleDefault" id="aj1-Ne-fbq">
-                                        <rect key="frame" x="0.0" y="677" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="672" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="aj1-Ne-fbq" id="yTG-Rz-4kA">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
