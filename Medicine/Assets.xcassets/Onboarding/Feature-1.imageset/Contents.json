@@ -2,11 +2,15 @@
   "images" : [
     {
       "idiom" : "universal",
+      "filename" : "Feature-1.pdf"
+    },
+    {
+      "idiom" : "universal",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Simulator Screen Shot - iPhone 8 - 2017-09-19 at 01.21.57.png",
+      "filename" : "Feature-1@2x.png",
       "scale" : "2x"
     },
     {
@@ -17,5 +21,8 @@
   "info" : {
     "version" : 1,
     "author" : "xcode"
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
   }
 }

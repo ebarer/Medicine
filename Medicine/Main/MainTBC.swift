@@ -39,12 +39,14 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     // Display tutorial on first launch
     override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         onboarding()
     }
     
     func onboarding() {
         let dictionary = Bundle.main.infoDictionary!
-        let version = dictionary["CFBundleShortVersionString"] as! String
+//        let version = dictionary["CFBundleShortVersionString"] as! String
+        let version = dictionary["CFBundleVersion"] as! String
         let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
         
         // On first launch, show welcome screen

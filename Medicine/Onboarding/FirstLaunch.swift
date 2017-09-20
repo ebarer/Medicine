@@ -17,7 +17,8 @@ class FirstLaunch: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController?.navigationBar.shadowImage = UIImage()
         
         appIcon.layer.masksToBounds = true
@@ -37,6 +38,10 @@ class FirstLaunch: UIViewController {
         attString.addAttribute(.paragraphStyle, value: style, range: range)
         
         welcomeMessage.attributedText = attString
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .default
     }
 
     override func didReceiveMemoryWarning() {

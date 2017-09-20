@@ -78,6 +78,10 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         
         tableView.reloadSections(IndexSet(integer: Rows.name.index().section), with: .none)
     }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

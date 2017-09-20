@@ -69,6 +69,10 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
         self.navigationController?.setToolbarHidden(false, animated: false)
         refreshView()
     }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

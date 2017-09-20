@@ -170,11 +170,20 @@ Medicine Manager</string>
                     <navigationItem key="navigationItem" title="Notifications" id="Bt7-n2-gkU"/>
                     <connections>
                         <outlet property="allowButton" destination="Srm-SH-887" id="60O-MJ-Vcr"/>
+                        <segue destination="VEH-Wv-vij" kind="show" identifier="showNewFeatures" id="PxT-dw-hcc"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IdR-VI-VAa" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="248.80000000000001" y="1142.8785607196403"/>
+        </scene>
+        <!--NewFeatures-->
+        <scene sceneID="VrN-Pv-0rF">
+            <objects>
+                <viewControllerPlaceholder storyboardName="NewFeatures" id="VEH-Wv-vij" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9Tg-hw-8cv" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="826" y="1142"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="JFT-CB-4Td">

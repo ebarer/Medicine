@@ -83,6 +83,10 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate, UI
         
         updateAlertLabel()
     }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

@@ -80,10 +80,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         // Add observers for notifications
         NotificationCenter.default.addObserver(self, selector: #selector(refreshMainVC(_:)), name: NSNotification.Name(rawValue: "refreshMain"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(medicationDeleted), name: NSNotification.Name(rawValue: "medicationDeleted"), object: nil)
-        
-        setNeedsStatusBarAppearanceUpdate()
     }
-
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -118,8 +115,13 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         NSLog("Deactivate timer")
         timer?.invalidate()
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
     }
     
     override func didReceiveMemoryWarning() {

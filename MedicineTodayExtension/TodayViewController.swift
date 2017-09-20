@@ -24,6 +24,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     // MARK: - View methods
     override func viewDidLoad() {
+        super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(updateLabels), name: UserDefaults.didChangeNotification, object: nil)
     }
     

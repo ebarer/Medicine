@@ -72,6 +72,10 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
         displayEmptyView()
     }
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }

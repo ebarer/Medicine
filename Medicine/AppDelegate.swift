@@ -13,7 +13,7 @@ import StoreKit
 import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 
     var window: UIWindow?
     let stack = CoreDataStack()!
@@ -22,6 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - Application methods
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        UIApplication.shared.statusBarStyle = .lightContent
+        
         // Handle views on startup
         if let tbc = self.window!.rootViewController as? UITabBarController {
             if let splitView = tbc.viewControllers?.filter({$0.isKind(of: UISplitViewController.self)}).first as? UISplitViewController {
@@ -43,6 +45,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 NSLog("IAP transaction observer added")
             }
         }
+        
+        // Attach delegate for notifications
+        configureNotificationAuthorization()
         
         // Setup background fetch to reload reschedule notifications
         UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
@@ -254,7 +259,7 @@ extension AppDelegate: UISplitViewControllerDelegate {
 }
 
 // MARK: - Notifications
-extension AppDelegate: UNUserNotificationCenterDelegate {
+extension AppDelegate {
     func checkNotificationAuthorization() {
         UNUserNotificationCenter.current().getNotificationSettings { (settings) in
             switch settings.authorizationStatus {
@@ -341,6 +346,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         
         completionHandler([])
     }
+    
+    
     
     var notificationCategories: Set<UNNotificationCategory> {
         var options: UNNotificationActionOptions = [.authenticationRequired]

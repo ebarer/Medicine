@@ -34,6 +34,10 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
         super.viewWillAppear(animated)
         requestProductInfo()
     }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

@@ -46,6 +46,10 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate, UIPi
         dosageInput.resignFirstResponder()
     }
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }

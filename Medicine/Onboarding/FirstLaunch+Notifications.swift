@@ -47,21 +47,27 @@ class FirstLaunch_Notifications: UIViewController {
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) {(accepted, error) in
                     if accepted {
                         self.appDelegate.configureNotificationAuthorization()
-                        self.dismiss(animated: true)
                     } else {
                         NSLog("Notification access denied.", [])
-                        self.dismiss(animated: true)
                     }
+                    
+                    self.nextSegue()
                 }
             } else {
-                self.dismiss(animated: true)
+                self.nextSegue()
             }
         }
     }
     
     @IBAction func denyNotifications(_ sender: Any) {
         NSLog("Notification authorization: Denied")
-        self.dismiss(animated: true)
+        nextSegue()
+    }
+    
+    func nextSegue() {
+        DispatchQueue.main.async {
+            self.performSegue(withIdentifier: "showNewFeatures", sender: nil)
+        }
     }
 
 }
