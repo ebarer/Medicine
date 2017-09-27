@@ -46,8 +46,8 @@ class Medicine: NSManagedObject {
             self.dateNextDose = date
         }
         
-        // Ensure new medications are at top of sort
-        if self.doseHistory?.count == 0 {
+        // Ensure new medications are at top of sort (for hourly)
+        if self.doseHistory?.count == 0 && self.hasNextDose == false {
             self.isNew = true
         } else {
             self.isNew = false

@@ -48,6 +48,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // MARK: - DEBUG
+        // defaults.set(true, forKey: "debug")
+        
         // Register for 3D touch if available
         if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: tableView)

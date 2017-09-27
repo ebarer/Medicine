@@ -83,8 +83,10 @@ struct CoreDataStack {
                                     configuration: nil,
                                     storeURL: dbURL,
                                     options: options as [NSObject : AnyObject])
+            
+            print("Opened store at: \(dbURL)")
         } catch {
-            print("unable to add store at \(dbURL)")
+            print("unable to add store at: \(dbURL)")
         }
     }
     
