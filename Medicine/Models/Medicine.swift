@@ -876,9 +876,14 @@ class Medicine: NSManagedObject {
                 }
             }
             
-            // Schedule for next interval until it is for the future
-            while date.compare(Date()) == .orderedAscending && cal.isDateInToday(date) == false {
-                date = (cal as NSCalendar).date(byAdding: NSCalendar.Unit.day, value: Int(interval), to: date, options: [])!
+            // If dose is scheduled for today but in the past, mark as overdue
+            if cal.isDateInToday(date) {
+                return date
+            } else {
+                // Schedule for next interval until it is for the future
+                while date.compare(Date()) == .orderedAscending && cal.isDateInToday(date) == false {
+                    date = (cal as NSCalendar).date(byAdding: NSCalendar.Unit.day, value: Int(interval), to: date, options: [])!
+                }
             }
             
             if lastDose?.next?.compare(Date()) == .orderedAscending {

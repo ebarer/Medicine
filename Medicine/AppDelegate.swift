@@ -17,7 +17,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     var window: UIWindow?
     let stack = CoreDataStack()!
-    let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     var backgroundTask: UIBackgroundTaskIdentifier?
 
     // MARK: - Application methods
@@ -46,17 +45,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
         
-        // Attach delegate for notifications
-        configureNotificationAuthorization()
+        setUserDefaults()
         
-        // Setup background fetch to reload reschedule notifications
-        UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
-        backgroundTask = application.beginBackgroundTask(withName: "rescheduleNotifications", expirationHandler: nil)
+        // Attach delegate for notifications and reschedule notifications
+        configureNotificationAuthorization()
+        rescheduleNotifications()
         
         // Add observer for day change
         NotificationCenter.default.addObserver(self, selector: #selector(rescheduleNotifications(completionHandler:)), name: .NSCalendarDayChanged, object: nil)
         
-        setUserDefaults()
+        // Setup background fetch to reload reschedule notifications
+        UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
+        backgroundTask = application.beginBackgroundTask(withName: "rescheduleNotifications", expirationHandler: nil)
         
         return true
     }
@@ -64,6 +64,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationWillEnterForeground(_ application: UIApplication) {
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
+        rescheduleNotifications()
     }
     
     func applicationWillResignActive(_ application: UIApplication) {
@@ -284,6 +285,7 @@ extension AppDelegate {
     }
     
     func configureNotificationAuthorization() {
+        NSLog("Notifications configured.")
         UNUserNotificationCenter.current().setNotificationCategories(self.notificationCategories)
         UNUserNotificationCenter.current().delegate = self
     }
@@ -384,18 +386,23 @@ extension AppDelegate {
             fatalError("No user defaults")
         }
         
+        // Set first launch
+        if defaults.value(forKey: "finishedFirstLaunch") == nil {
+            defaults.set(false, forKey: "finishedFirstLaunch")
+        }
+        
         // Set sort order to "next dosage"
         if defaults.value(forKey: "sortOrder") == nil {
             defaults.set(SortOrder.nextDosage.rawValue, forKey: "sortOrder")
         }
         
         // Set snooze duration to 5 minutes
-        if (defaults.value(forKey: "snoozeLength") == nil) {
+        if defaults.value(forKey: "snoozeLength") == nil {
             defaults.set(5, forKey: "snoozeLength")
         }
         
         // Set refill time to 3 days
-        if (defaults.value(forKey: "refillTime") == nil) {
+        if defaults.value(forKey: "refillTime") == nil {
             defaults.set(3, forKey: "refillTime")
         }
         

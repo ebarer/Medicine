@@ -330,7 +330,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 // Accomodate 24h times
                 let range = (dateString.contains("AM")) ? dateString.range(of: "AM") : dateString.range(of: "PM")
                 if let range = range {
-                    let pos = dateString.characters.distance(from: dateString.startIndex, to: range.lowerBound)
+                    let pos = dateString.distance(from: dateString.startIndex, to: range.lowerBound)
                     string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 24.0), range: NSMakeRange(pos-1, 3))
                     string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(white: 0, alpha: 0.3), range: NSMakeRange(pos-1, 3))
                 }
@@ -537,6 +537,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if tableView.isEditing == true {
             performSegue(withIdentifier: "editMedication", sender: medication[indexPath.row])
+            tableView.setEditing(false, animated: true)
         } else {
             // Don't update selected med if no history
             let med = medication[indexPath.item]

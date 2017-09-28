@@ -69,7 +69,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             // Accomodate 24h times
             let range = (dateString.contains("AM")) ? dateString.range(of: "AM") : dateString.range(of: "PM")
             if let range = range {
-                let pos = dateString.characters.distance(from: dateString.startIndex, to: range.lowerBound)
+                let pos = dateString.distance(from: dateString.startIndex, to: range.lowerBound)
                 string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 22.0), range: NSMakeRange(pos-1, 3))
                 string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(white: 0, alpha: 0.5), range: NSMakeRange(pos-1, 3))
             }

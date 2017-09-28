@@ -48,25 +48,31 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         let version = dictionary["CFBundleVersion"] as! String
         let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
         
-        // On first launch, show welcome screen
-        if defaults.bool(forKey: "firstLaunch") == true {
-            guard let count = try? cdStack.context.count(for: fetchRequest), count > 0 else {
-                defaults.set(false, forKey: "firstLaunch")
+        // If first launch and medication count is 0, show "Welcome" screen
+        if defaults.bool(forKey: "finishedFirstLaunch") == false {
+            if let count = try? cdStack.context.count(for: fetchRequest), count == 0 {
+                defaults.set(true, forKey: "finishedFirstLaunch")
+                defaults.setValue(version, forKey: "version")
+                defaults.synchronize()
+                
                 print("Onboarding: first launch")
+                
                 self.performSegue(withIdentifier: "onboardingFirstLaunch", sender: self)
                 return
             }
         }
             
-        // On new version, show new features screen
+        // Otherwise, on new version, show "New Features" screen
         if defaults.string(forKey: "version") != version {
-            defaults.set(false, forKey: "firstLaunch")
+            defaults.set(true, forKey: "finishedFirstLaunch")
             defaults.setValue(version, forKey: "version")
+            defaults.synchronize()
+            
             print("Onboarding: new features")
+            
             self.performSegue(withIdentifier: "onboardingNewFeatures", sender: self)
         } else {
             print("No onboarding necessary.")
-//            self.performSegue(withIdentifier: "onboardingFirstLaunch", sender: self)
         }
     }
 
