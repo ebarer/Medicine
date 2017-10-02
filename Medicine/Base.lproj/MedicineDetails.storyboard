@@ -278,7 +278,7 @@ extend onto the second line.</string>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" horizontalCompressionResistancePriority="749" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Mf-Xz-vhH">
-                                                    <rect key="frame" x="15" y="25" width="148.5" height="50"/>
+                                                    <rect key="frame" x="8" y="25" width="155.5" height="50"/>
                                                     <color key="backgroundColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="50" id="S3P-W2-LV3"/>
@@ -308,7 +308,7 @@ extend onto the second line.</string>
                                                     </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xXh-Of-6Gb">
-                                                    <rect key="frame" x="211.5" y="25" width="148.5" height="50"/>
+                                                    <rect key="frame" x="211.5" y="25" width="155.5" height="50"/>
                                                     <color key="backgroundColor" white="0.92000000000000004" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="50" id="6D1-30-Tua"/>
@@ -328,13 +328,13 @@ extend onto the second line.</string>
                                                 </button>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="7Mf-Xz-vhH" firstAttribute="leading" secondItem="Y4a-C3-dXI" secondAttribute="leading" constant="15" id="Cym-DX-806"/>
+                                                <constraint firstItem="7Mf-Xz-vhH" firstAttribute="leading" secondItem="Y4a-C3-dXI" secondAttribute="leadingMargin" id="Cym-DX-806"/>
                                                 <constraint firstItem="W2p-CR-pRq" firstAttribute="leading" secondItem="7Mf-Xz-vhH" secondAttribute="trailing" constant="10" id="PVG-E0-u57"/>
                                                 <constraint firstItem="W2p-CR-pRq" firstAttribute="centerX" secondItem="Y4a-C3-dXI" secondAttribute="centerX" id="dj2-4y-Wyc"/>
                                                 <constraint firstItem="xXh-Of-6Gb" firstAttribute="centerY" secondItem="Y4a-C3-dXI" secondAttribute="centerY" id="k9s-IV-3Of"/>
                                                 <constraint firstItem="xXh-Of-6Gb" firstAttribute="leading" secondItem="W2p-CR-pRq" secondAttribute="trailing" constant="10" id="kUF-nD-zRd"/>
                                                 <constraint firstItem="7Mf-Xz-vhH" firstAttribute="centerY" secondItem="Y4a-C3-dXI" secondAttribute="centerY" id="qBz-dW-Cdr"/>
-                                                <constraint firstAttribute="trailing" secondItem="xXh-Of-6Gb" secondAttribute="trailing" constant="15" id="vgi-R4-Fb0"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="xXh-Of-6Gb" secondAttribute="trailing" id="vgi-R4-Fb0"/>
                                                 <constraint firstItem="W2p-CR-pRq" firstAttribute="centerY" secondItem="Y4a-C3-dXI" secondAttribute="centerY" id="yUM-02-8QC"/>
                                             </constraints>
                                         </tableViewCellContentView>

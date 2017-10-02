@@ -152,7 +152,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             notesField.text = med.notes
             
             // Correct inset
-            tableView.reloadRows(at: [Rows.name.index()], with: .none)
+            tableView.reloadRows(at: [Rows.name.index(), Rows.nextDose.index()], with: .none)
         }
     }
     
