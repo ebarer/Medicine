@@ -554,37 +554,32 @@ class Medicine: NSManagedObject {
      - Returns: Int: number of days remaining
     */
     func refillDaysRemaining() -> Int? {
-        // Only calculate if there is a prescription refill history
-        if self.prescriptionCount > 0 {
-            if let history = self.doseArray() {
-                // Only calculate the daily consumption average
-                // when medication has more than a week of data
-                if history.count >= 7  {
-                    // Determine total amount of medication consumed
-                    var doseCount: Float = 0.0
-                    for i in history {
-                        for j in i.1 {
-                            doseCount += j.dosage
-                        }
-                    }
-                    
-                    // Calculate daily consumption average
-                    let dailyAvg = round(doseCount / Float(history.count))
-                    
-                    // Calculate number of days remaining
-                    let days = Int(floorf(self.prescriptionCount / dailyAvg))
-                    
-                    return days
-                }
-            }
-            
+        // Only calculate the daily consumption average
+        // if there is a prescription refill history, and
+        // the medication has more than a week of usage data
+        guard self.prescriptionCount > 0,
+            let history = self.doseArray(),
+            history.count >= 7
+        else {
             if intervalUnit == Intervals.daily {
                 let days = Int(floorf(prescriptionCount * (interval / dosage)))
                 return days
+            } else {
+                return nil
             }
         }
+
+        // Determine total amount of medication consumed
+        let doseCount = Array(history.values).reduce(0, { $0 + $1.reduce(0, { $0 + $1.dosage }) })
         
-        return nil
+        // Calculate daily consumption average
+        let dailyAvg = round(doseCount / Float(history.count))
+        if dailyAvg == 0 { return nil }
+        
+        // Calculate number of days remaining
+        let days = Int(floorf(self.prescriptionCount / dailyAvg))
+        
+        return days
     }
     
     /**

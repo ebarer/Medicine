@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Application methods
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        UIApplication.shared.statusBarStyle = .lightContent
+//        UIApplication.shared.statusBarStyle = .lightContent
         
         // Handle views on startup
         if let tbc = self.window!.rootViewController as? UITabBarController {
@@ -108,7 +108,7 @@ extension AppDelegate {
                 med.scheduleNextNotification()
             }
         }
-        
+
         DispatchQueue.main.async {
             self.logNotifications()
             self.setDynamicShortcuts()
@@ -198,12 +198,12 @@ extension AppDelegate {
                                                                  userInfo: ["action" : "takeDose", "medID" : med.medicineID])
                     
                     shortcutItems.append(shortcutItem)
-                } else {
+                } else if let name = med.name {
                     let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
                     let subtitle = "\(dose) — As needed"
                     
                     let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
-                                                                 localizedTitle: "Take \(med.name!)",
+                                                                 localizedTitle: "Take \(name)",
                                                                  localizedSubtitle: subtitle,
                                                                  icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
                                                                  userInfo: ["action" : "takeDose", "medID" : med.medicineID])
@@ -270,6 +270,8 @@ extension AppDelegate {
                 NSLog("Authorization status: AUTHORIZED")
             case .denied:
                 NSLog("Authorization status: DENIED")
+            case .provisional:
+                NSLog("Authorization status: PROVISIONAL")
             }
         }
     }

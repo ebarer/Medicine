@@ -10,13 +10,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Medicine/AppDelegate.swift"
-            timestampString = "528371064.860933"
+            timestampString = "553580905.813736"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "338"
-            endingLineNumber = "338"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            startingLineNumber = "342"
+            endingLineNumber = "342"
+            landmarkName = "userNotificationCenter(_:willPresent:withCompletionHandler:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -26,13 +26,124 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Medicine/Models/Medicine.swift"
-            timestampString = "528284551.19804"
+            timestampString = "553580905.8140481"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "33"
             endingLineNumber = "33"
             landmarkName = "nextDose"
             landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Medicine/AppDelegate.swift"
+            timestampString = "553580905.815034"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "155"
+            endingLineNumber = "155"
+            landmarkName = "handleShortcut(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Medicine/Models/Medicine.swift"
+            timestampString = "553580905.815089"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "560"
+            endingLineNumber = "560"
+            landmarkName = "refillDaysRemaining()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Medicine/Models/Medicine.swift"
+            timestampString = "553581039.368469"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "573"
+            endingLineNumber = "573"
+            landmarkName = "refillDaysRemaining()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Medicine.Medicine.refillDaysRemaining() -&gt; Swift.Optional&lt;Swift.Int&gt;"
+                  moduleName = "Medicine"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ebarer/Developer/Medicine/Medicine/Models/Medicine.swift"
+                  timestampString = "553581039.378302"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "573"
+                  endingLineNumber = "573"
+                  offsetFromSymbolStart = "348">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Float, Swift.Array&lt;Medicine.Dose&gt;) -&gt; Swift.Float in Medicine.Medicine.refillDaysRemaining() -&gt; Swift.Optional&lt;Swift.Int&gt;"
+                  moduleName = "Medicine"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ebarer/Developer/Medicine/Medicine/Models/Medicine.swift"
+                  timestampString = "553581039.381021"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "573"
+                  endingLineNumber = "573"
+                  offsetFromSymbolStart = "40">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Float, Medicine.Dose) -&gt; Swift.Float in closure #1 (Swift.Float, Swift.Array&lt;Medicine.Dose&gt;) -&gt; Swift.Float in Medicine.Medicine.refillDaysRemaining() -&gt; Swift.Optional&lt;Swift.Int&gt;"
+                  moduleName = "Medicine"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ebarer/Developer/Medicine/Medicine/Models/Medicine.swift"
+                  timestampString = "553581039.383352"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "573"
+                  endingLineNumber = "573"
+                  offsetFromSymbolStart = "36">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Medicine/Models/Medicine.swift"
+            timestampString = "553581047.478721"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "583"
+            endingLineNumber = "583"
+            landmarkName = "refillDaysRemaining()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
