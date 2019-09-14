@@ -20,7 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var backgroundTask: UIBackgroundTaskIdentifier?
 
     // MARK: - Application methods
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 //        UIApplication.shared.statusBarStyle = .lightContent
         
         // Handle views on startup
@@ -39,9 +39,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 detailNVC.topViewController?.navigationItem.leftBarButtonItem = splitView.displayModeButtonItem
                 
                 // Add IAP observer to MainVC
-                let masterVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
+                let masterVC = splitView.viewControllers[0].children[0] as! MainVC
                 SKPaymentQueue.default().add(masterVC)
-                NSLog("IAP transaction observer added")
+                NSLog("AppDelegate", "IAP transaction observer added")
             }
         }
         
@@ -55,7 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationCenter.default.addObserver(self, selector: #selector(rescheduleNotifications(completionHandler:)), name: .NSCalendarDayChanged, object: nil)
         
         // Setup background fetch to reload reschedule notifications
-        UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
+        UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum)
         backgroundTask = application.beginBackgroundTask(withName: "rescheduleNotifications", expirationHandler: nil)
         
         return true
@@ -77,8 +77,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.stack.save()
         
         // Remove IAP observers
-        if let vcs = window!.rootViewController?.childViewControllers.filter({$0.isKind(of: UINavigationController.self)}).first {
-            if let vc = vcs.childViewControllers.filter({$0.isKind(of: MainVC.self)}).first {
+        if let vcs = window!.rootViewController?.children.filter({$0.isKind(of: UINavigationController.self)}).first {
+            if let vc = vcs.children.filter({$0.isKind(of: MainVC.self)}).first {
                 SKPaymentQueue.default().remove(vc as! MainVC)
             }
         }
@@ -90,16 +90,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 // MARK: - Background Fetch: Notification scheduling
 extension AppDelegate {
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        NSLog("Background fetch:")
+        NSLog("AppDelegate", "Background fetch:")
         
         rescheduleNotifications {
-            NSLog("Completed background fetch.")
+            NSLog("AppDelegate", "Completed background fetch.")
             completionHandler(UIBackgroundFetchResult.newData)
         }
     }
     
     @objc func rescheduleNotifications(completionHandler: (() -> Void)? = nil) {
-        NSLog("Rescheduling notifications")
+        NSLog("AppDelegate", "Rescheduling notifications")
         
         let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
         request.predicate = NSPredicate(format: "reminderEnabled == true", [])
@@ -129,7 +129,7 @@ extension AppDelegate {
                         continue
                     }
                     let logMessage = "Notification: \(request.identifier), Date: \(date)"
-                    NSLog(logMessage)
+                    NSLog("AppDelegate",logMessage)
                 }
             }
         }
@@ -138,7 +138,7 @@ extension AppDelegate {
     func updateBadgeCount() {
         let count = Medicine.overdueCount()
         UIApplication.shared.applicationIconBadgeNumber = count
-        NSLog("Updating app badge count to: \(count)")
+        NSLog("AppDelegate", "Updating app badge count to: \(count)")
     }
 }
 
@@ -151,7 +151,7 @@ extension AppDelegate {
     @discardableResult func handleShortcut(_ shortcutItem: UIApplicationShortcutItem) -> Bool {
         if let tbc = self.window!.rootViewController as? UITabBarController {
             if let splitView = tbc.viewControllers?.filter({$0.isKind(of: UISplitViewController.self)}).first as? UISplitViewController {
-                let mainVC = splitView.viewControllers[0].childViewControllers[0] as! MainVC
+                let mainVC = splitView.viewControllers[0].children[0] as! MainVC
                 mainVC.handleShortcut(shortcutItem: shortcutItem)
             }
         }
@@ -160,7 +160,7 @@ extension AppDelegate {
     }
 
     func setDynamicShortcuts() {
-        NSLog("Updating dynamic shortcuts")
+        NSLog("AppDelegate", "Updating dynamic shortcuts")
         
         let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
         request.predicate = NSPredicate(format: "reminderEnabled == true", argumentArray: [])
@@ -179,35 +179,38 @@ extension AppDelegate {
                 if med.isOverdue().flag {
                     let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
                     let subtitle = "\(dose) — Overdue"
-                    
+                    let userInfo:[String : NSSecureCoding] = ["action" : NSString(string: "takeDose"),
+                                                              "medID" : NSString(string: med.medicineID)]
                     let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.overdue",
                                                                  localizedTitle: "Take \(med.name!)",
                                                                  localizedSubtitle: subtitle,
-                        icon: UIApplicationShortcutIcon(templateImageName: "OverdueGlyph"),
-                        userInfo: ["action" : "takeDose", "medID" : med.medicineID])
-                    
+                                                                 icon: UIApplicationShortcutIcon(templateImageName: "OverdueIcon"),
+                                                                 userInfo: userInfo)
+
                     shortcutItems.append(shortcutItem)
                 } else if let date = med.nextDose {
                     let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
                     let subtitle = "\(dose) — \(Medicine.dateString(date))"
-                    
+                    let userInfo:[String : NSSecureCoding] = ["action" : NSString(string: "takeDose"),
+                                                              "medID" : NSString(string: med.medicineID)]
                     let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
                                                                  localizedTitle: "Take \(med.name!)",
                                                                  localizedSubtitle: subtitle,
-                                                                 icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
-                                                                 userInfo: ["action" : "takeDose", "medID" : med.medicineID])
-                    
+                                                                 icon: UIApplicationShortcutIcon(templateImageName: "TakeDoseIcon"),
+                                                                 userInfo: userInfo)
+
                     shortcutItems.append(shortcutItem)
                 } else if let name = med.name {
                     let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
                     let subtitle = "\(dose) — As needed"
-                    
+                    let userInfo:[String : NSSecureCoding] = ["action" : NSString(string: "takeDose"),
+                                                              "medID" : NSString(string: med.medicineID)]
                     let shortcutItem = UIApplicationShortcutItem(type: "com.ebarer.Medicine.takeDose",
                                                                  localizedTitle: "Take \(name)",
                                                                  localizedSubtitle: subtitle,
-                                                                 icon: UIApplicationShortcutIcon(templateImageName: "NextDoseGlyph"),
-                                                                 userInfo: ["action" : "takeDose", "medID" : med.medicineID])
-                    
+                                                                 icon: UIApplicationShortcutIcon(templateImageName: "TakeDoseIcon"),
+                                                                 userInfo: userInfo)
+
                     shortcutItems.append(shortcutItem)
                 }
             }
@@ -220,7 +223,7 @@ extension AppDelegate {
 // MARK: - Core Spotlight
 extension AppDelegate {
     func indexMedication() {
-        NSLog("Indexing medication for CoreSpotlight")
+        NSLog("AppDelegate", "Indexing medication for CoreSpotlight")
         
         // Update spotlight index
         let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
@@ -265,13 +268,15 @@ extension AppDelegate {
         UNUserNotificationCenter.current().getNotificationSettings { (settings) in
             switch settings.authorizationStatus {
             case .notDetermined:
-                NSLog("Authorization status: UNDETERMINED")
+                NSLog("AppDelegate", "Authorization status: UNDETERMINED")
             case .authorized:
-                NSLog("Authorization status: AUTHORIZED")
+                NSLog("AppDelegate", "Authorization status: AUTHORIZED")
             case .denied:
-                NSLog("Authorization status: DENIED")
+                NSLog("AppDelegate", "Authorization status: DENIED")
             case .provisional:
-                NSLog("Authorization status: PROVISIONAL")
+                NSLog("AppDelegate", "Authorization status: PROVISIONAL")
+            @unknown default:
+                NSLog("AppDelegate", "Authorization status: UNKNOWN (\(settings))")
             }
         }
     }
@@ -281,13 +286,13 @@ extension AppDelegate {
             if accepted {
                 self.configureNotificationAuthorization()
             } else {
-                NSLog("Notification access denied.", [])
+                NSLog("AppDelegate", "Notification access denied.", [])
             }
         }
     }
     
     func configureNotificationAuthorization() {
-        NSLog("Notifications configured.")
+        NSLog("AppDelegate", "Notifications configured.")
         UNUserNotificationCenter.current().setNotificationCategories(self.notificationCategories)
         UNUserNotificationCenter.current().delegate = self
     }
@@ -298,7 +303,7 @@ extension AppDelegate {
         let category = response.notification.request.content.categoryIdentifier
         let userInfo = response.notification.request.content.userInfo
 
-        NSLog("Notification received (background): \(notificationIdentifier), \(actionIdentifier), \(userInfo)")
+        NSLog("AppDelegate", "Notification received (background): \(notificationIdentifier), \(actionIdentifier), \(userInfo)")
         
         if actionIdentifier == "takeDose" {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "takeDoseAction"), object: nil, userInfo: userInfo)
@@ -336,7 +341,7 @@ extension AppDelegate {
         let category = notification.request.content.categoryIdentifier
         let userInfo = notification.request.content.userInfo
 
-        NSLog("Notification received (foreground): \(identifier), \(category), \(userInfo)")
+        NSLog("AppDelegate", "Notification received (foreground): \(identifier), \(category), \(userInfo)")
         
         if category == "Dose Reminder" || category == "Dose Reminder - No Snooze" {
             NotificationCenter.default.post(name: Notification.Name(rawValue: "doseNotification"), object: nil, userInfo: userInfo)
@@ -385,7 +390,8 @@ extension AppDelegate {
 extension AppDelegate {
     func setUserDefaults() {
         guard let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine") else {
-            fatalError("No user defaults")
+            NSLog("AppDelegate", "AppDelegate", "Unable to load group user defaults");
+            return
         }
         
         // Set first launch

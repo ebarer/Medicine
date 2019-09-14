@@ -27,7 +27,7 @@ class MedicineCell: UITableViewCell {
     
     // MARK: - Constraints
     @IBOutlet var glyphWidth: NSLayoutConstraint!
-    @IBOutlet weak var addButton: UIButton!
+    @IBOutlet weak var actionButton: UIButton!
     var rowEditing: Bool = false
     
     // MARK: - View methods
@@ -40,13 +40,13 @@ class MedicineCell: UITableViewCell {
         self.tintColor = UIColor.medRed
         self.backgroundColor = .clear
         
-        self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
+        self.cellFrame?.layer.backgroundColor = UIColor.cellBackground.cgColor
         self.cellFrame?.layer.cornerRadius = 10.0
     }
     
     override func prepareForReuse() {
         subtitleGlyph.image = UIImage(named: "NextDoseIcon")
-        subtitle.textColor = UIColor.subtitle
+        subtitle.textColor = UIColor.subtitleLabel
         hideButton(false, animated: false)
     }
     
@@ -55,11 +55,11 @@ class MedicineCell: UITableViewCell {
         
         if !rowEditing {
             if selected {
-                self.cellFrame?.layer.backgroundColor = UIColor(white: 0.84, alpha: 1).cgColor
-                self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
+                self.cellFrame?.layer.backgroundColor = UIColor.cellBackgroundSelected.cgColor
+                self.cellShadow?.layer.backgroundColor = UIColor.cellBackground.cgColor
             } else {
-                self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
-                self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
+                self.cellFrame?.layer.backgroundColor = UIColor.cellBackground.cgColor
+                self.cellShadow?.layer.backgroundColor = UIColor.cellBackground.cgColor
             }
         }
     }
@@ -69,11 +69,11 @@ class MedicineCell: UITableViewCell {
         
         if !rowEditing {
             if highlighted {
-                self.cellFrame?.layer.backgroundColor = UIColor(white: 0.84, alpha: 1).cgColor
-                self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
+                self.cellFrame?.layer.backgroundColor = UIColor.cellBackgroundSelected.cgColor
+                self.cellShadow?.layer.backgroundColor = UIColor.cellBackground.cgColor
             } else {
-                self.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
-                self.cellShadow?.layer.backgroundColor = UIColor.white.cgColor
+                self.cellFrame?.layer.backgroundColor = UIColor.cellBackground.cgColor
+                self.cellShadow?.layer.backgroundColor = UIColor.cellBackground.cgColor
             }
         }
     }
@@ -96,13 +96,13 @@ class MedicineCell: UITableViewCell {
     func hideButton(_ hide: Bool, animated: Bool = true) {
         if animated {
             UIView.animate(withDuration: 0.2, animations: {
-                self.addButton.alpha = hide ? 0 : 1
+                self.actionButton.alpha = hide ? 0 : 1
             }, completion: { (completed) in
-                self.addButton.isHidden = hide
+                self.actionButton.isHidden = hide
             })
         } else {
-            self.addButton.alpha = hide ? 0 : 1
-            self.addButton.isHidden = hide
+            self.actionButton.alpha = hide ? 0 : 1
+            self.actionButton.isHidden = hide
         }
     }
 

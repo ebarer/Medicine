@@ -48,8 +48,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // MARK: - DEBUG
-        // defaults.set(true, forKey: "debug")
+/// MARK: - DEBUG
+// defaults.set(true, forKey: "debug")
         
         // Register for 3D touch if available
         if traitCollection.forceTouchCapability == .available {
@@ -67,7 +67,12 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         self.view.tintColor = UIColor.medRed
         
         // Add logo to navigation bar
-        self.navigationItem.titleView = UIImageView(image: UIImage(named: "Logo-Nav"))
+        let logoView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
+        let logoImageView = UIImageView(image: UIImage(named: "Logo"))
+        logoImageView.tintColor = UIColor.tableBackground
+        logoImageView.frame = CGRect(x: 0, y: 0, width: logoView.frame.width, height: logoView.frame.height)
+        logoView.addSubview(logoImageView)
+        self.navigationItem.titleView = logoView
         
         // Remove table view gap
         tableView.separatorStyle = .none
@@ -95,10 +100,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         
         if let selectedIndex = self.tableView.indexPathForSelectedRow {
             if let cell = self.tableView.cellForRow(at: selectedIndex) as? MedicineCell {
-                cell.cellFrame?.layer.backgroundColor = UIColor(white: 0.84, alpha: 1).cgColor
+                cell.cellFrame?.layer.backgroundColor = UIColor.cellBackgroundSelected.cgColor
 
                 self.transitionCoordinator?.animate(alongsideTransition: { (context) in
-                    cell.cellFrame?.layer.backgroundColor = UIColor.white.cgColor
+                    cell.cellFrame?.layer.backgroundColor = UIColor.cellBackground.cgColor
                 }, completion: { (context) in
                     if !context.isCancelled {
                         self.tableView.deselectRow(at: selectedIndex, animated: animated)
@@ -114,17 +119,19 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
         // Setup refresh timer
         timer = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(refreshTable), userInfo: nil, repeats: true)
-        NSLog("Activate timer")
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        NSLog("Deactivate timer")
         timer?.invalidate()
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        self.refreshTable()
     }
     
     override func didReceiveMemoryWarning() {
@@ -170,7 +177,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             guard let medID = shortcutItem.userInfo?["medID"] as? String else { return }
             let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
             fetchRequest.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [medID])
-            let med = try? cdStack.context.fetch(fetchRequest).first
+            let med = ((try? cdStack.context.fetch(fetchRequest).first) as Medicine??)
             performSegue(withIdentifier: "addDose", sender: med ?? nil)
         default: break
         }
@@ -224,6 +231,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         if reload == nil || reload != false {
             loadMedication()
             tableView.reloadData()
+            self.isEditing = tableView.isEditing;
         }
         
         if let collapsed = self.splitViewController?.isCollapsed, collapsed == false {
@@ -297,7 +305,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         
         // Initialize main string
         var string = NSMutableAttributedString(string: "No more doses today")
-        string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
+        string.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
         
         // Setup today widget data
         var todayData = [String: AnyObject]()
@@ -313,8 +321,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             // If dose is in the past, warn of overdue doses
             if date.compare(Date()) == .orderedAscending {                
                 string = NSMutableAttributedString(string: "Overdue")
-                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
-                string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.medRed, range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.medRed, range: NSMakeRange(0, string.length))
                 
                 headerCounterLabel.attributedText = string
             }
@@ -325,14 +333,15 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 dateFormatter.dateFormat = "h:mm a"
                 let dateString = dateFormatter.string(from: date)
                 string = NSMutableAttributedString(string: dateString)
-                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 70.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 70.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.medGray1, range: NSMakeRange(0, string.length))
 
                 // Accomodate 24h times
                 let range = (dateString.contains("AM")) ? dateString.range(of: "AM") : dateString.range(of: "PM")
                 if let range = range {
                     let pos = dateString.distance(from: dateString.startIndex, to: range.lowerBound)
-                    string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 24.0), range: NSMakeRange(pos-1, 3))
-                    string.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(white: 0, alpha: 0.3), range: NSMakeRange(pos-1, 3))
+                    string.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 24.0), range: NSMakeRange(pos-1, 3))
+                    string.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.medGray2, range: NSMakeRange(pos-1, 3))
                 }
 
                 headerCounterLabel.attributedText = string
@@ -345,7 +354,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         else if medication.count > 0 {
             if medication.first?.lastDose == nil {
                 string = NSMutableAttributedString(string: "Take first dose")
-                string.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
                 headerCounterLabel.attributedText = string
             }
         }
@@ -385,18 +394,22 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         
         // Set medication name
         cell.title.text = med.name
-        cell.title.textColor = UIColor.black
+        if #available(iOS 13.0, macCatalyst 13.0, *) {
+            cell.title.textColor = UIColor.label
+        } else {
+            cell.title.textColor = UIColor.black
+        }
         
         // Set subtitle and attributes
         cell.subtitleGlyph.image = UIImage(named: "NextDoseIcon")
-        cell.subtitle.textColor = UIColor.black
+        cell.subtitleGlyph.tintColor = UIColor.medGray2
+        cell.subtitle.textColor = UIColor.subtitleLabel
         let dose = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
         
         // If no doses taken, and medication is hourly
         if med.doseHistory?.count == 0 && med.intervalUnit == .hourly {
             cell.hideButton(true, animated: false)
             cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
-            cell.subtitle.textColor = UIColor.subtitle
             cell.subtitle.text = "Tap to take first dose"
         }
             
@@ -405,7 +418,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             if let date = med.nextDose {
                 // If next date is in the past, instruct user they can take next dose
                 if date.compare(Date()) == .orderedAscending {
-                    cell.subtitle.textColor = UIColor.subtitle
                     cell.subtitle.text = "Take next dose as needed"
                 } else {
                     cell.subtitle.text = "\(dose), \(Medicine.dateString(date))"
@@ -418,6 +430,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             if med.isOverdue().flag {
                 cell.title.textColor = UIColor.medRed
                 cell.subtitleGlyph.image = UIImage(named: "OverdueIcon")
+                cell.subtitleGlyph.tintColor = UIColor.medRed
                 
                 if let date = med.isOverdue().overdueDose {
                     cell.subtitle.textColor = UIColor.medRed
@@ -434,7 +447,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             else {
                 cell.hideButton(true, animated: false)
                 cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
-                cell.subtitle.textColor = UIColor.subtitle
                 cell.subtitle.text = "Tap to take first dose"
             }
         }
@@ -472,33 +484,37 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         return true
     }
     
-    @available(iOS 11.0, *)
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let takeAction = UIContextualAction(style: .normal, title: "Take\nDose") { (action, view, success: (Bool) -> Void) in
+        let takeAction = UIContextualAction(style: .normal, title: "Take Dose") { (action, view, success: (Bool) -> Void) in
             self.performSegue(withIdentifier: "addDose", sender: self.medication[indexPath.row])
             success(true)
         }
 
-        takeAction.image = UIImage(named: "TakeDoseAction")
+        takeAction.image = UIImage(named: "SwipeActionTakeDoseIcon")
         takeAction.backgroundColor = UIColor.medRed
 
         return UISwipeActionsConfiguration(actions: [takeAction])
     }
     
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let editAction = UITableViewRowAction(style: .normal, title: "Edit") { (action, indexPath) -> Void in
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let editAction = UIContextualAction(style: .normal, title: "Edit") { (action, view, success: (Bool) -> Void) in
             self.performSegue(withIdentifier: "editMedication", sender: self.medication[indexPath.row])
+            success(true)
         }
         
-        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) -> Void in
+        editAction.backgroundColor = UIColor.medGray3
+        
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, success: (Bool) -> Void) in
             if let name = self.medication[indexPath.row].name {
                 self.presentDeleteAlert(name, indexPath: indexPath)
+                success(true)
             }
+            success(false)
         }
         
         deleteAction.backgroundColor = UIColor.medRed
         
-        return [deleteAction, editAction]
+        return UISwipeActionsConfiguration(actions: [deleteAction, editAction])
     }
     
     
@@ -547,7 +563,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
     }
     
-    @IBAction func selectAddButton(_ sender: UIButton) {
+    @IBAction func selectActionButton(_ sender: UIButton) {
         let pos = sender.convert(CGPoint(), to: tableView)
         if let indexPath = tableView.indexPathForRow(at: pos) {
             presentActionMenu(indexPath)
@@ -556,7 +572,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     func selectMed() {
         if let med = selectedMed, let count = med.doseHistory?.count, count > 0 {
-            if let row = medication.index(of: med) {
+            if let row = medication.firstIndex(of: med) {
                 tableView.selectRow(at: IndexPath(row: row, section: 0), animated: false, scrollPosition: .none)
             }
         } else {
@@ -567,7 +583,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             if let detailVC = (navVC as? UINavigationController)?.viewControllers[safe: 0] as? MedicineDetailsTVC {
                 if selectedMed == nil {
                     selectedMed = detailVC.med
-                    if let med = selectedMed, let row = medication.index(of: med) {
+                    if let med = selectedMed, let row = medication.firstIndex(of: med) {
                         tableView.selectRow(at: IndexPath(row: row, section: 0), animated: false, scrollPosition: .none)
                     }
                 } else {
@@ -586,14 +602,14 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 dateString = "Last Dose: \(Medicine.dateString(date, today: true))"
             }
             
-            let alert = UIAlertController(title: med.name, message: dateString, preferredStyle: UIAlertControllerStyle.actionSheet)
+            let alert = UIAlertController(title: med.name, message: dateString, preferredStyle: UIAlertController.Style.actionSheet)
             
-            alert.addAction(UIAlertAction(title: "Take Dose", style: UIAlertActionStyle.default, handler: {(action) -> Void in
+            alert.addAction(UIAlertAction(title: "Take Dose", style: UIAlertAction.Style.default, handler: {(action) -> Void in
                 self.performSegue(withIdentifier: "addDose", sender: med)
             }))
             
             if med.isOverdue().flag {
-                alert.addAction(UIAlertAction(title: "Snooze Dose", style: UIAlertActionStyle.default, handler: {(action) -> Void in
+                alert.addAction(UIAlertAction(title: "Snooze Dose", style: UIAlertAction.Style.default, handler: {(action) -> Void in
                     med.snoozeNotification()
                     
                     NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
@@ -601,7 +617,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 }))
             }
             
-            alert.addAction(UIAlertAction(title: "Skip Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
+            alert.addAction(UIAlertAction(title: "Skip Dose", style: UIAlertAction.Style.destructive, handler: {(action) -> Void in
                 med.skipDose(context: self.cdStack.context)
                 self.cdStack.save()
                 
@@ -615,7 +631,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             
             // If last dose is set, allow user to undo last dose
             if (med.lastDose != nil) {
-                alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
+                alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertAction.Style.destructive, handler: {(action) -> Void in
                     med.untakeLastDose(context: self.cdStack.context)
                     self.cdStack.save()
 
@@ -628,21 +644,21 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 }))
             }
             
-            alert.addAction(UIAlertAction(title: "Refill Prescription", style: UIAlertActionStyle.default, handler: {(action) -> Void in
+            alert.addAction(UIAlertAction(title: "Refill Prescription", style: UIAlertAction.Style.default, handler: {(action) -> Void in
                 self.performSegue(withIdentifier: "refillPrescription", sender: med)
             }))
             
-            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel))
+            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel))
             
             // Set popover for iPad
             if let cell = tableView.cellForRow(at: index) as? MedicineCell {
-                alert.popoverPresentationController?.sourceView = cell.addButton
-                alert.popoverPresentationController?.sourceRect = cell.addButton.bounds.insetBy(dx: 10, dy: 0)
+                alert.popoverPresentationController?.sourceView = cell.actionButton
+                alert.popoverPresentationController?.sourceRect = cell.actionButton.bounds.insetBy(dx: 10, dy: 0)
                 alert.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.left
             }
             
             alert.view.layoutIfNeeded()
-            alert.view.tintColor = UIColor.gray
+            alert.view.tintColor = UIColor.alertTint
             present(alert, animated: true, completion: nil)
         }
     }
@@ -650,9 +666,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - Actions
     func presentDeleteAlert(_ name: String, indexPath: IndexPath) {
-        let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.alert)
+        let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertController.Style.alert)
         
-        deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {(action) -> Void in
+        deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: {(action) -> Void in
             self.tableView.deselectRow(at: indexPath, animated: false)
             self.selectedMed = nil
         }))
@@ -661,7 +677,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             self.deleteMed(indexPath)
         }))
         
-        deleteAlert.view.tintColor = UIColor.gray
+        deleteAlert.view.tintColor = UIColor.alertTint
         self.present(deleteAlert, animated: true, completion: nil)
     }
     
@@ -698,7 +714,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             displayEmptyView()
         } else {
             // Remove medication from array
-            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.fade)
+            tableView.deleteRows(at: [indexPath], with: UITableView.RowAnimation.fade)
         }
         
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil, userInfo: ["reload":false])
@@ -768,7 +784,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
         
         if segue.identifier == "addDose" {
-            if let vc = segue.destination.childViewControllers[0] as? AddDoseTVC {
+            if let vc = segue.destination.children[0] as? AddDoseTVC {
                 if let med = sender as? Medicine {
                     vc.med = med
                 }
@@ -776,7 +792,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
         
         if segue.identifier == "refillPrescription" {
-            if let vc = segue.destination.childViewControllers[0] as? AddRefillTVC {
+            if let vc = segue.destination.children[0] as? AddRefillTVC {
                 if let med = sender as? Medicine {
                     vc.med = med
                 }
@@ -784,7 +800,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
         
         if segue.identifier == "editMedication" {
-            if let vc = segue.destination.childViewControllers[0] as? AddMedicationTVC {
+            if let vc = segue.destination.children[0] as? AddMedicationTVC {
                 if let med = sender as? Medicine {
                     vc.med = med
                     vc.editMode = true
@@ -793,7 +809,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
         
         if segue.identifier == "upgrade" {
-            if let vc = segue.destination.childViewControllers[0] as? UpgradeVC {
+            if let vc = segue.destination.children[0] as? UpgradeVC {
                 mvc = vc
             }
         }
@@ -814,12 +830,15 @@ extension MainVC: SKPaymentTransactionObserver {
         for transaction in transactions {
             switch (transaction.transactionState) {
             case SKPaymentTransactionState.restored:
+                NSLog("SKPaymentTransactions", "Transaction state is Restored for transaction: \(transaction)")
                 queue.finishTransaction(transaction)
                 unlockManager()
             case SKPaymentTransactionState.purchased:
+                NSLog("SKPaymentTransactions", "Transaction state is Purchased for transaction: \(transaction)")
                 queue.finishTransaction(transaction)
                 unlockManager()
             case SKPaymentTransactionState.failed:
+                NSLog("SKPaymentTransactions", "Error: Transaction state is Failed for transaction: \(transaction)")
                 queue.finishTransaction(transaction)
                 
                 mvc?.purchaseButton.isEnabled = true
@@ -834,6 +853,7 @@ extension MainVC: SKPaymentTransactionObserver {
     
     func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
         if queue.transactions.count == 0 {
+            NSLog("IAP", "Error: Failed to restore IAP: user has no transactions")
             presentRestoreFailureAlert()
         }
         
@@ -842,6 +862,7 @@ extension MainVC: SKPaymentTransactionObserver {
             queue.finishTransaction(transaction)
             
             if pID == productID {
+                NSLog("IAP", "Succesfully unlocked full version: found transaction with product ID \(pID)")
                 unlockManager()
             }
         }
@@ -856,27 +877,31 @@ extension MainVC: SKPaymentTransactionObserver {
     }
     
     func presentPurchaseFailureAlert() {
-        mvc?.restoreButton.setTitle("Restore Purchase", for: UIControlState())
+        NSLog("IAP", "Error: Failed to purchase IAP")
+        
+        mvc?.restoreButton.setTitle("Restore Purchase", for: UIControl.State())
         mvc?.restoreButton.isEnabled = true
         mvc?.purchaseButton.isEnabled = true
         mvc?.purchaseIndicator.stopAnimating()
         
-        let failAlert = UIAlertController(title: "Purchase Failed", message: "Please try again later.", preferredStyle: UIAlertControllerStyle.alert)
-        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+        let failAlert = UIAlertController(title: "Purchase Failed", message: "Please try again later.", preferredStyle: UIAlertController.Style.alert)
+        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
         
-        failAlert.view.tintColor = UIColor.gray
+        failAlert.view.tintColor = UIColor.alertTint
         mvc?.present(failAlert, animated: true, completion: nil)
     }
     
     func presentRestoreFailureAlert() {
-        mvc?.restoreButton.setTitle("Restore Purchase", for: UIControlState())
+        NSLog("IAP", "Error: Failed to restore IAP")
+        
+        mvc?.restoreButton.setTitle("Restore Purchase", for: UIControl.State())
         mvc?.restoreButton.isEnabled = true
         mvc?.purchaseButton.isEnabled = true
         mvc?.purchaseIndicator.stopAnimating()
         
-        let failAlert = UIAlertController(title: "Restore Failed", message: "Please try again later. If the problem persists, use the purchase button above.", preferredStyle: UIAlertControllerStyle.alert)
-        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-        failAlert.view.tintColor = UIColor.gray
+        let failAlert = UIAlertController(title: "Restore Failed", message: "Please try again later. If the problem persists, use the purchase button above.", preferredStyle: UIAlertController.Style.alert)
+        failAlert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
+        failAlert.view.tintColor = UIColor.alertTint
         mvc?.present(failAlert, animated: true, completion: nil)
     }
     
@@ -890,6 +915,8 @@ extension MainVC: SKPaymentTransactionObserver {
     }
     
     func appLocked() -> Bool {
+        NSLog("IAP", "Indicated app is locked and user needs to purchase IAP")
+        
         // If debug device, disable medication limit
         if defaults.bool(forKey: "debug") == true {
             return false

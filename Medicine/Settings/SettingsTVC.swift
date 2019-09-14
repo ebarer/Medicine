@@ -24,16 +24,13 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     @IBOutlet var versionString: UILabel!
     @IBOutlet var copyrightString: UILabel!
 
-    
     // MARK: - View methods
     override func viewDidLoad() {
         super.viewDidLoad()
+
+//        self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         
         setLabels()
-        
-        if #available(iOS 11.0, *) {
-            self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.white]
-        }
         
         // Set version string
         let dictionary = Bundle.main.infoDictionary!
@@ -102,7 +99,6 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         refillLabel.text = refillString
     }
     
-    
     // MARK: - Table view delegate
     override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         switch section {
@@ -121,43 +117,64 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if tableView.cellForRow(at: indexPath)?.reuseIdentifier == "feedbackCell" {
-            if MFMailComposeViewController.canSendMail() {
-                if let deviceInfo = generateDeviceInfo().data(using: String.Encoding.utf8, allowLossyConversion: false) {
-                    let mc = MFMailComposeViewController()
-                    mc.mailComposeDelegate = self
-                    mc.setToRecipients(["hello@medicinemanagerapp.com"])
-                    mc.setSubject("Feedback for Medicine Manager")
-                    mc.addAttachmentData(deviceInfo, mimeType: "text/plain", fileName: "device_information.txt")
-                    
-                    self.present(mc, animated: true, completion: nil)
-                }
-            } else {
-                print("Can't send")
+            if (!sendFeedback()) {
+                self.tableView.deselectRow(at: indexPath, animated: true)
             }
         }
         
         if tableView.cellForRow(at: indexPath)?.reuseIdentifier == "resetCell" {
-            let deleteAlert = UIAlertController(title: "Reset Data and Settings?", message: "This will permanently delete all medication, history, and preferences.", preferredStyle: UIAlertControllerStyle.alert)
-            
-            deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {(action) -> Void in
-                self.tableView.deselectRow(at: indexPath, animated: true)
-            }))
-            
-            deleteAlert.addAction(UIAlertAction(title: "Reset Data and Settings", style: .destructive, handler: {(action) -> Void in
-                self.resetApp()
-            }))
-            
-            deleteAlert.view.tintColor = UIColor.gray
-            self.present(deleteAlert, animated: true, completion: nil)
+            promptForAppReset()
         }
+    }
+    
+    // MARK: - Helper methods
+    func sendFeedback() -> Bool {
+        if MFMailComposeViewController.canSendMail() {
+            let mc = MFMailComposeViewController()
+            mc.mailComposeDelegate = self
+            mc.setToRecipients(["feedback@ebarer.com"])
+            mc.setSubject("Feedback for Medicine Manager")
+            
+            DispatchQueue.global(qos: .userInitiated).async {
+                if let deviceInfo = self.generateDeviceInfo().data(using: .utf8, allowLossyConversion: false) {
+                    DispatchQueue.main.async {
+                        mc.addAttachmentData(deviceInfo, mimeType: "text/plain", fileName: "device_information.txt")
+                    }
+                }
+            }
+            
+            self.present(mc, animated: true, completion: nil)
+            return true
+        }
+        
+        NSLog("Settings", "Unable to send feedback: user unable to send mail.")
+        return false
     }
     
     func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         self.dismiss(animated: true, completion: nil)
+        if let indexPath = self.tableView.indexPathForSelectedRow {
+            self.tableView.deselectRow(at: indexPath, animated: true)
+        }
     }
     
+    func promptForAppReset() {
+        let deleteAlert = UIAlertController(title: "Reset Data and Settings?", message: "This will permanently delete all medication, history, and preferences.", preferredStyle: UIAlertController.Style.alert)
+        
+        deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: {(action) -> Void in
+            if let selectedIndex = self.tableView.indexPathForSelectedRow {
+                self.tableView.deselectRow(at: selectedIndex, animated: true)
+            }
+        }))
+        
+        deleteAlert.addAction(UIAlertAction(title: "Reset Data and Settings", style: .destructive, handler: {(action) -> Void in
+            self.resetApp()
+        }))
+        
+        deleteAlert.view.tintColor = UIColor.alertTint
+        self.present(deleteAlert, animated: true, completion: nil)
+    }
     
-    // MARK: - Helper methods
     func resetApp() {
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Medicine.fetchRequest()
         let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
@@ -169,7 +186,7 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         
         do {
             let deleteCount = try cdStack.context.execute(batchDeleteRequest) as! NSBatchDeleteResult
-            print("Deleted \(deleteCount) objects")
+            NSLog("ResetApp", "Deleted \(deleteCount) objects")
             cdStack.context.reset()
 
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
@@ -187,17 +204,17 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
             defaults.synchronize()
             
             // Show reset confirmation
-            let confirmationAlert = UIAlertController(title: "Reset Complete", message: "All medication, history, and preferences have been reset.", preferredStyle: UIAlertControllerStyle.alert)
+            let confirmationAlert = UIAlertController(title: "Reset Complete", message: "All medication, history, and preferences have been reset.", preferredStyle: UIAlertController.Style.alert)
             
             confirmationAlert.addAction(UIAlertAction(title: "Done", style: .default, handler: {(action) -> Void in
                 self.dismiss(animated: true, completion: nil)
             }))
 
-            confirmationAlert.view.tintColor = UIColor.gray
+            confirmationAlert.view.tintColor = UIColor.alertTint
             self.present(confirmationAlert, animated: true, completion: nil)
         } catch {
             let updateError = error as NSError
-            NSLog("\(updateError), \(updateError.userInfo)")
+            NSLog("ResetApp", "Error attempting to reset app: \(updateError), \(updateError.userInfo)")
         }
     }
     
@@ -253,7 +270,6 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         
         return identifier
     }
-    
     
     // MARK: - Navigation
     @IBAction func dismissSettings(_ sender: UIBarButtonItem) {

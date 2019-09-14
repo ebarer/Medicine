@@ -17,7 +17,10 @@ class FirstLaunch: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
+        if #available(iOS 13.0, macCatalyst 13.0, *) {
+            self.navigationController?.isModalInPresentation = true
+        }
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController?.navigationBar.shadowImage = UIImage()
         

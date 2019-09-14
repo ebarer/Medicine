@@ -9,7 +9,6 @@
 import UIKit
 
 class MedicineCell_CellFrame: UIView {
-
     override init(frame: CGRect) {
         super.init(frame: frame)
         drawShadow()
@@ -17,7 +16,7 @@ class MedicineCell_CellFrame: UIView {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.layer.backgroundColor = UIColor.white.cgColor
+        self.layer.backgroundColor = UIColor.cellBackground.cgColor
         self.layer.cornerRadius = 10.0
         drawShadow()
     }
@@ -28,5 +27,4 @@ class MedicineCell_CellFrame: UIView {
         self.layer.shadowColor = UIColor.black.cgColor
         self.layer.shadowOpacity = 0.3
     }
-
 }

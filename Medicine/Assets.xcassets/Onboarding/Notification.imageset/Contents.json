@@ -2,7 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "Notification.pdf"
+      "filename" : "Notification-CircleLight.pdf"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "Notification-CircleDark.pdf",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {

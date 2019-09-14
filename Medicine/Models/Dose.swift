@@ -15,7 +15,9 @@ class Dose: NSManagedObject {
         if let entity = NSEntityDescription.entity(forEntityName: "Dose", in: context) {
             self.init(entity: entity, insertInto: context)
         } else {
-            fatalError("Unable to find Entity name!")
+            let message = "Unable to find Dose entity."
+            NSLog("CoreData", message)
+            fatalError(message)
         }
     }
     

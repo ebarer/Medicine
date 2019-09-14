@@ -59,7 +59,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate, UI
             
             intervalPicker.selectRow(hr, inComponent: 0, animated: false)
             
-            if let minIndex = minutes.index(of: min) {
+            if let minIndex = minutes.firstIndex(of: min) {
                 intervalPicker.selectRow(minIndex, inComponent: 2, animated: false)
             } else {
                 intervalPicker.selectRow(0, inComponent: 2, animated: false)
@@ -95,6 +95,14 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate, UI
     
     // MARK: - Table view data source
     
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 0 {
+            return tableView.sectionHeaderHeight
+        }
+        
+        return UITableView.automaticDimension
+    }
+    
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let row = Rows(index: indexPath)
         
@@ -129,32 +137,30 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate, UI
         cell.layoutMargins = tableView.layoutMargins
         cell.separatorInset = tableView.separatorInset
         
-        switch(row) {
-        case Rows.intervalUnitLabel:
-            if row == selectedRow {
-                intervalUnitLabel.textColor = UIColor.medRed
+        if selectedRow == Rows(index: indexPath) {
+            cell.detailTextLabel?.textColor = UIColor.medRed
+        } else {
+            if #available(iOS 13.0, macCatalyst 13.0, *) {
+                cell.detailTextLabel?.textColor = UIColor.secondaryLabel
             } else {
-                intervalUnitLabel.textColor = UIColor.gray
+                cell.detailTextLabel?.textColor = UIColor.gray
             }
+        }
+        
+        switch(row) {
         case Rows.intervalLabel:
             if row != selectedRow {
-                intervalLabel.textColor = UIColor.gray
                 cell.preservesSuperviewLayoutMargins = false
                 cell.layoutMargins = UIEdgeInsets.zero
                 cell.separatorInset = UIEdgeInsets.zero
-                cell.contentView.layoutMargins = UIEdgeInsetsMake(0, tableView.separatorInset.left, 0, tableView.separatorInset.left)
-            } else {
-                intervalLabel.textColor = UIColor.medRed
+                cell.contentView.layoutMargins = UIEdgeInsets.init(top: 0, left: tableView.separatorInset.left, bottom: 0, right: tableView.separatorInset.left)
             }
         case Rows.alarmLabel:
             if row != selectedRow {
-                alarmLabel.textColor = UIColor.gray
                 cell.preservesSuperviewLayoutMargins = false
                 cell.layoutMargins = UIEdgeInsets.zero
                 cell.separatorInset = UIEdgeInsets.zero
-                cell.contentView.layoutMargins = UIEdgeInsetsMake(0, tableView.separatorInset.left, 0, tableView.separatorInset.left)
-            } else {
-                alarmLabel.textColor = UIColor.medRed
+                cell.contentView.layoutMargins = UIEdgeInsets.init(top: 0, left: tableView.separatorInset.left, bottom: 0, right: tableView.separatorInset.left)
             }
         default: break
         }
@@ -275,13 +281,13 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate, UI
                 case 1:
                     let unit = med.intervalUnit.units(med.interval)
                     let label = NSMutableAttributedString(string: unit)
-                    label.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.lightGray, range: NSMakeRange(0, label.length))
+                    label.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.medGray1, range: NSMakeRange(0, label.length))
                     return label
                 case 2:
                     return NSAttributedString(string: minutes[row % 4])
                 case 3:
                     let label = NSMutableAttributedString(string: "min")
-                    label.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.lightGray, range: NSMakeRange(0, label.length))
+                    label.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.medGray1, range: NSMakeRange(0, label.length))
                     return label
                 default:
                     return nil
@@ -293,7 +299,7 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate, UI
                 default:
                     let unit = med.intervalUnit.units(med.interval)
                     let label = NSMutableAttributedString(string: unit)
-                    label.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.lightGray, range: NSMakeRange(0, label.length))
+                    label.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.medGray1, range: NSMakeRange(0, label.length))
                     return label
                 }
             }

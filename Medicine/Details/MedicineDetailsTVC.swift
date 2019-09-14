@@ -12,22 +12,29 @@ import UserNotifications
 
 class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
     
-    weak var med:Medicine?
+    weak var med: Medicine?
     
     // MARK: - Outlets
     @IBOutlet var nameCell: UITableViewCell!
+    @IBOutlet var nameIcon: UIImageView!
+    @IBOutlet var nameIconWidth: NSLayoutConstraint!
+    @IBOutlet var nameLabelLeading: NSLayoutConstraint!
     @IBOutlet var nameLabel: UILabel!
+    
+    @IBOutlet var doseDetailsLabel: UILabel!
+    
     @IBOutlet var doseTitle: UILabel!
     @IBOutlet var doseLabel: UILabel!
-    @IBOutlet var doseDetailsLabel: UILabel!
+    
     @IBOutlet var prescriptionLabel: UILabel!
     @IBOutlet var prescriptionDescription: UILabel!
-    @IBOutlet var actionCell: UITableViewCell!
+    
     @IBOutlet var takeDoseButton: UIButton!
+    @IBOutlet var actionCell: UITableViewCell!
     @IBOutlet var refillButton: UIButton!
     @IBOutlet var actionsButton: UIButton!
-    @IBOutlet var notesField: UITextView!
     
+    @IBOutlet var notesField: UITextView!
     
     // MARK: - Helper variables
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
@@ -36,6 +43,14 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     
     let cal = Calendar.current
     let dateFormatter = DateFormatter()
+    
+    static let nameCellHeight: CGFloat = 70.0
+    static let fullNameIconWidth: CGFloat = 25.0
+    static let fullNameLeadingPadding: CGFloat = 12.0
+    static let actionCellHeight: CGFloat = 100.0
+    static let defaultCellHeight: CGFloat = 50.0
+    static let notesCellHeightMin: CGFloat = 50.0
+    static let notesBottomPadding: CGFloat = 25.0
     
     // MARK: - View methods
     override func viewDidLoad() {
@@ -69,6 +84,8 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             self.navigationController?.setToolbarHidden(true, animated: false)
         }
         
+        notesField.isScrollEnabled = false
+        
         // Update actions
         takeDoseButton.layer.cornerRadius = 10.0
         refillButton.layer.cornerRadius = 10.0
@@ -79,8 +96,16 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         tableView.reloadSections(IndexSet(integer: Rows.name.index().section), with: .none)
     }
     
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+    }
+    
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        self.refreshDetails()
     }
 
     override func didReceiveMemoryWarning() {
@@ -89,27 +114,6 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     
     @objc func refreshDetails() {
         // Select first medication if none selected
-//        if med == nil {
-//            let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-//            
-//            if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
-//                // Sort by next dose
-//                fetchRequest.sortDescriptors = [
-//                    NSSortDescriptor(key: "reminderEnabled", ascending: false),
-//                    NSSortDescriptor(key: "hasNextDose", ascending: false),
-//                    NSSortDescriptor(key: "dateNextDose", ascending: true),
-//                    NSSortDescriptor(key: "dateLastDose", ascending: false)
-//                ]
-//            } else {
-//                // Sort by manually defined sort order
-//                fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
-//            }
-//            
-//            if let medication = try? cdStack.context.fetch(fetchRequest) {
-//                self.med = medication.first
-//            }
-//        }
-        
         displayEmptyView()
         updateLabels()
     }
@@ -138,13 +142,19 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     
     func updateLabels() {
         if let med = med {
-            nameLabel.textColor = UIColor.black
             nameLabel.text = med.name
             
             var detailsString = "\(med.dosage.removeTrailingZero()) \(med.dosageUnit.units(med.dosage))"
                 detailsString += ", every \(med.intervalLabel())"
             
             doseDetailsLabel.text = detailsString
+            
+            if #available(iOS 13.0, macCatalyst 13.0, *) {
+                nameLabel.textColor = UIColor.label
+                
+            } else {
+                nameLabel.textColor = UIColor.black
+            }
             
             updateDose()
             updatePrescription()
@@ -159,14 +169,22 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     func updateDose() {
         if let med = med {
             // Set defaults
-            nameCell.imageView?.image = nil
-            nameLabel.textColor = UIColor.black
+            nameIcon.image = nil
+            nameIcon.tintColor = UIColor.medRed
+            nameIconWidth.constant = 0
+            nameLabelLeading.constant = 0
             
-            doseTitle.textColor = UIColor.lightGray
+            doseTitle.textColor = UIColor.medGray2
             doseTitle.text = "Next Dose"
             doseTitle.font = UIFont.systemFont(ofSize: 16.0, weight: UIFont.Weight.regular)
             
-            doseLabel.textColor = UIColor.black
+            if #available(iOS 13.0, macCatalyst 13.0, *) {
+                doseDetailsLabel.textColor = UIColor.label
+                doseLabel.textColor = UIColor.label
+            } else {
+                doseDetailsLabel.textColor = UIColor.black
+                doseLabel.textColor = UIColor.black
+            }
             
             // If no doses taken
             if med.doseHistory?.count == 0 && med.intervalUnit == .hourly {
@@ -191,8 +209,9 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             } else {
                 // If medication is overdue, set subtitle to next dosage date and tint red
                 if med.isOverdue().flag {
-                    nameCell.imageView?.image = UIImage(named: "OverdueGlyph")
-                    nameCell.imageView?.tintColor = UIColor.medRed
+                    nameIcon.image = UIImage(named: "OverdueIcon")
+                    nameIconWidth.constant = MedicineDetailsTVC.fullNameIconWidth
+                    nameLabelLeading.constant = MedicineDetailsTVC.fullNameLeadingPadding
                     nameLabel.textColor = UIColor.medRed
                     
                     doseTitle.textColor = UIColor.medRed
@@ -221,6 +240,12 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     }
     
     func updatePrescription() {
+        if #available(iOS 13.0, macCatalyst 13.0, *) {
+            prescriptionLabel.textColor = UIColor.label
+        } else {
+            prescriptionLabel.textColor = UIColor.black
+        }
+        
         if let med = med {
             if let historyCount = med.refillHistory?.count, historyCount > 0 {
                 let count = med.prescriptionCount
@@ -266,6 +291,14 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     }
     
     // MARK: - Table view data source
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == Rows.name.index().section {
+            return tableView.sectionHeaderHeight
+        }
+        
+        return UITableView.automaticDimension
+    }
+    
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == Rows.notes.index().section && med != nil {
             return "Notes"
@@ -277,16 +310,17 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch Rows(index: indexPath) {
         case Rows.name:
-            return 70.0
+            return MedicineDetailsTVC.nameCellHeight
         case Rows.prescriptionCount:
             return ((med?.refillHistory?.count ?? 0) > 0) ? 100 : 0.0     // UITableViewAutomaticDimension
         case Rows.actions:
-            return 100.0
+            return MedicineDetailsTVC.actionCellHeight
         case Rows.notes:
-            let height = notesField.contentSize.height + 30
-            return (height > 75.0) ? height : 75.0
+            let notesSize = notesField.sizeThatFits(notesField.frame.size)
+            return max(notesSize.height,
+                       MedicineDetailsTVC.notesCellHeightMin) + MedicineDetailsTVC.notesBottomPadding
         default:
-            return 50.0
+            return MedicineDetailsTVC.defaultCellHeight
         }
     }
     
@@ -349,10 +383,10 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             dateString = "Last Dose: \(Medicine.dateString(date, today: true))"
         }
         
-        let alert = UIAlertController(title: med.name, message: dateString, preferredStyle: UIAlertControllerStyle.actionSheet)
+        let alert = UIAlertController(title: med.name, message: dateString, preferredStyle: UIAlertController.Style.actionSheet)
         
         if med.isOverdue().flag {
-            alert.addAction(UIAlertAction(title: "Snooze Dose", style: UIAlertActionStyle.default, handler: {(action) -> Void in
+            alert.addAction(UIAlertAction(title: "Snooze Dose", style: UIAlertAction.Style.default, handler: {(action) -> Void in
                 med.snoozeNotification()
                 
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
@@ -360,7 +394,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             }))
         }
         
-        alert.addAction(UIAlertAction(title: "Skip Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
+        alert.addAction(UIAlertAction(title: "Skip Dose", style: UIAlertAction.Style.destructive, handler: {(action) -> Void in
             med.skipDose(context: self.cdStack.context)
             self.cdStack.save()
             
@@ -374,7 +408,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         
         // If last dose is set, allow user to undo last dose
         if (med.lastDose != nil) {
-            alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
+            alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertAction.Style.destructive, handler: {(action) -> Void in
                 med.untakeLastDose(context: self.cdStack.context)
                 self.cdStack.save()
                     
@@ -387,7 +421,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             }))
         }
         
-        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel))
+        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel))
         
         // Set popover for iPad
         alert.popoverPresentationController?.sourceView = actionsButton
@@ -395,16 +429,16 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         alert.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.up
         
         alert.view.layoutIfNeeded()
-        alert.view.tintColor = UIColor.gray
+        alert.view.tintColor = UIColor.alertTint
         present(alert, animated: true, completion: nil)
     }
 
     func presentDeleteAlert(_ indexPath: IndexPath) {
         if let med = med {
             if let name = med.name {
-                let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.alert)
+                let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertController.Style.alert)
                 
-                deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {(action) -> Void in
+                deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: {(action) -> Void in
                     self.tableView.deselectRow(at: indexPath, animated: true)
                 }))
                 
@@ -412,7 +446,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
                     self.deleteMed()
                 }))
                 
-                deleteAlert.view.tintColor = UIColor.gray
+                deleteAlert.view.tintColor = UIColor.alertTint
                 self.present(deleteAlert, animated: true, completion: nil)
             }
         } else {
@@ -457,7 +491,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if med != nil {
             if segue.identifier == "editMedication" {
-                if let vc = segue.destination.childViewControllers[0] as? AddMedicationTVC {
+                if let vc = segue.destination.children[0] as? AddMedicationTVC {
                     vc.med = self.med
                     vc.editMode = true
                     if let index = sender as? IndexPath, index == Rows.name.index() {
@@ -467,13 +501,13 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             }
             
             if segue.identifier == "addDose" {
-                if let vc = segue.destination.childViewControllers[0] as? AddDoseTVC {
+                if let vc = segue.destination.children[0] as? AddDoseTVC {
                     vc.med = self.med
                 }
             }
             
             if segue.identifier == "refillPrescription" {
-                if let vc = segue.destination.childViewControllers[0] as? AddRefillTVC {
+                if let vc = segue.destination.children[0] as? AddRefillTVC {
                     vc.med = self.med
                 }
             }

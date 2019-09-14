@@ -41,7 +41,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         self.clearsSelectionOnViewWillAppear = true
         
         let placeholder = NSAttributedString(string: "Enter medication name",
-                                             attributes: [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 32.0, weight: .light)])
+                                             attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 32.0, weight: .light)])
         self.medicationName.attributedPlaceholder = placeholder
         self.medicationName.delegate = self
         
@@ -124,11 +124,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     // MARK: - Table view data source
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        if editMode {
-            return 4
-        }
-        
-        return 3
+        return editMode ? 4 : 3
     }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -140,9 +136,9 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
                 return tableView.sectionHeaderHeight
             }
         case Rows.delete.index().section:
-            return tableView.sectionHeaderHeight + 10.0
+            return tableView.sectionHeaderHeight
         default:
-            return UITableViewAutomaticDimension
+            return UITableView.automaticDimension
         }
         
         return 0
@@ -176,19 +172,6 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         default: break
         }
     }
-    
-//    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-//        switch section {
-//        case Rows.prescription.index().section:
-//            if med.name != nil && med.name != "" {
-//                return 60.0
-//            }
-//        default:
-//            return UITableViewAutomaticDimension
-//        }
-//
-//        return 0
-//    }
     
     override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         if section == Rows.prescription.index().section {
@@ -245,7 +228,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         
         // Reload table view
         if temp == nil || temp == "" || sender.text!.isEmpty {
-            tableView.reloadSections(IndexSet(integer: Rows.prescription.index().section), with: UITableViewRowAnimation.automatic)
+            tableView.reloadSections(IndexSet(integer: Rows.prescription.index().section), with: UITableView.RowAnimation.automatic)
             tableView.beginUpdates()
             tableView.endUpdates()
         } else {
@@ -258,7 +241,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         med.reminderEnabled = sender.isOn
 
         // Update rows
-        tableView.reloadRows(at: [Rows.dosage.index()], with: UITableViewRowAnimation.none)
+        tableView.reloadRows(at: [Rows.dosage.index()], with: UITableView.RowAnimation.none)
         tableView.beginUpdates()
         tableView.endUpdates()
     }
@@ -266,9 +249,9 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     func presentDeleteAlert(_ indexPath: IndexPath) {
         if let med = med {
             if let name = med.name {
-                let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertControllerStyle.alert)
+                let deleteAlert = UIAlertController(title: "Delete \(name)?", message: "This will permanently delete \(name) and all of its history.", preferredStyle: UIAlertController.Style.alert)
                 
-                deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: {(action) -> Void in
+                deleteAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: {(action) -> Void in
                     self.tableView.deselectRow(at: indexPath, animated: true)
                 }))
                 
@@ -276,7 +259,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
                     self.deleteMed()
                 }))
                 
-                deleteAlert.view.tintColor = UIColor.gray
+                deleteAlert.view.tintColor = UIColor.alertTint
                 self.present(deleteAlert, animated: true, completion: nil)
             }
         } else {
@@ -330,7 +313,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         }
         
         if segue.identifier == "refillPrescription" {
-            if let vc = segue.destination.childViewControllers[0] as? AddRefillTVC {
+            if let vc = segue.destination.children[0] as? AddRefillTVC {
                 if let index = self.tableView.indexPathForSelectedRow {
                     self.tableView.deselectRow(at: index, animated: false)
                 }
@@ -351,7 +334,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
                 do {
                     lastDose.next = try med.calculateNextDose(lastDose.date)
                 } catch {
-                    print("Unable to update last dose")
+                    NSLog("SaveMedication", "Unable to update last dose")
                 }
             }
         }
@@ -374,7 +357,9 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             cdStack.context.rollback()
         }
         
-        cdStack.save()
+        if (med.name != nil) {
+            cdStack.save()
+        }
         
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)

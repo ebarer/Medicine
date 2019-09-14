@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Kbg-Ff-MZ0">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Kbg-Ff-MZ0">
+    <device id="retina5_9" orientation="portrait" appearance="dark"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Full Version-->
+        <!--UpgradeVC-->
         <scene sceneID="9qX-gK-V9I">
             <objects>
                 <viewController id="02U-hZ-tkT" customClass="UpgradeVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
@@ -19,69 +16,71 @@
                         <viewControllerLayoutGuide type="bottom" id="Tnw-P7-VS2"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="weE-tT-Mjn">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="724"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="With a one time purchase you can unlock Medicine Manager to begin tracking all of your medication!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lvH-D5-VDV">
-                                <rect key="frame" x="41" y="237.5" width="293" height="57.5"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <rect key="frame" x="41" y="251.33333333333331" width="293" height="61"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T1w-Bc-DFr">
-                                <rect key="frame" x="41" y="375" width="293" height="30"/>
+                                <rect key="frame" x="127" y="417.33333333333331" width="121" height="30"/>
                                 <state key="normal" title="Restore Purchase">
-                                    <color key="titleColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="titleColor" name="medicineRed"/>
                                 </state>
                                 <connections>
                                     <action selector="restoreFullVersion:" destination="02U-hZ-tkT" eventType="touchUpInside" id="tS2-b9-GZ0"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Z6-Mw-Crr">
-                                <rect key="frame" x="112.5" y="320" width="150" height="40"/>
+                                <rect key="frame" x="57.666666666666657" y="352.33333333333331" width="260" height="50"/>
+                                <color key="backgroundColor" name="medicineRed"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="9Cb-rb-I0H"/>
+                                    <constraint firstAttribute="height" constant="50" id="9Cb-rb-I0H"/>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="J8d-UG-HSJ">
-                                        <variation key="widthClass=compact" constant="150"/>
+                                        <variation key="widthClass=compact" constant="260"/>
                                     </constraint>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
-                                <state key="normal" title="Buy">
-                                    <color key="titleColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <state key="normal" title="Unlock">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
                                     <action selector="purchaseFullVersion" destination="02U-hZ-tkT" eventType="touchUpInside" id="1oB-gB-ivy"/>
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="aP6-Dn-D2v">
-                                <rect key="frame" x="128" y="45" width="119" height="100"/>
+                                <rect key="frame" x="137.66666666666666" y="60" width="100" height="100"/>
+                                <color key="tintColor" name="medicineRed"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="100" id="GXu-qf-wt4"/>
-                                    <constraint firstAttribute="width" constant="119" id="hyc-98-ohc"/>
+                                    <constraint firstAttribute="width" secondItem="aP6-Dn-D2v" secondAttribute="height" multiplier="1:1" id="ggs-Yu-hpv"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Full Version" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="St7-ND-9O3">
-                                <rect key="frame" x="123" y="190" width="129.5" height="32.5"/>
-                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="27"/>
+                                <rect key="frame" x="121" y="205" width="133" height="31.333333333333343"/>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="26"/>
+                                <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="CGt-zO-Qk5">
-                                <rect key="frame" x="169" y="430" width="37" height="37"/>
-                                <color key="color" red="0.3333333432674408" green="0.3333333432674408" blue="0.3333333432674408" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <rect key="frame" x="169" y="472.33333333333337" width="37" height="37"/>
+                                <color key="color" name="medicineRed"/>
                             </activityIndicatorView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" name="tableBackground"/>
                         <constraints>
                             <constraint firstItem="lvH-D5-VDV" firstAttribute="top" secondItem="St7-ND-9O3" secondAttribute="bottom" constant="15" id="228-GV-JUS"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="T1w-Bc-DFr" secondAttribute="trailing" constant="25" id="D4m-Tl-BNi"/>
                             <constraint firstItem="aP6-Dn-D2v" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" id="LCI-l7-Sbb"/>
-                            <constraint firstItem="aP6-Dn-D2v" firstAttribute="top" secondItem="bXK-DI-Jt3" secondAttribute="bottom" constant="45" id="Tjb-n8-Zn7"/>
+                            <constraint firstItem="aP6-Dn-D2v" firstAttribute="top" secondItem="bXK-DI-Jt3" secondAttribute="bottom" constant="60" id="Tjb-n8-Zn7"/>
                             <constraint firstItem="St7-ND-9O3" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" id="Uta-cu-r00"/>
                             <constraint firstAttribute="trailingMargin" secondItem="lvH-D5-VDV" secondAttribute="trailing" constant="25" id="Yqr-1w-mo2"/>
                             <constraint firstItem="1Z6-Mw-Crr" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" id="a5a-Dr-Pga"/>
-                            <constraint firstItem="1Z6-Mw-Crr" firstAttribute="top" secondItem="lvH-D5-VDV" secondAttribute="bottom" constant="25" id="eK1-TC-LQQ"/>
+                            <constraint firstItem="1Z6-Mw-Crr" firstAttribute="top" secondItem="lvH-D5-VDV" secondAttribute="bottom" constant="40" id="eK1-TC-LQQ"/>
+                            <constraint firstItem="T1w-Bc-DFr" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" id="gQd-Fm-tFO"/>
                             <constraint firstItem="T1w-Bc-DFr" firstAttribute="top" secondItem="1Z6-Mw-Crr" secondAttribute="bottom" constant="15" id="h44-Ch-qaC"/>
-                            <constraint firstItem="T1w-Bc-DFr" firstAttribute="leading" secondItem="weE-tT-Mjn" secondAttribute="leadingMargin" constant="25" id="jE1-23-Zho"/>
                             <constraint firstItem="lvH-D5-VDV" firstAttribute="leading" secondItem="weE-tT-Mjn" secondAttribute="leadingMargin" constant="25" id="lsh-xX-bpB"/>
                             <constraint firstItem="CGt-zO-Qk5" firstAttribute="centerX" secondItem="weE-tT-Mjn" secondAttribute="centerX" id="mBj-sr-CqA"/>
                             <constraint firstItem="CGt-zO-Qk5" firstAttribute="top" secondItem="T1w-Bc-DFr" secondAttribute="bottom" constant="25" id="onK-Vo-ze9"/>
@@ -100,7 +99,7 @@
                             </mask>
                         </variation>
                     </view>
-                    <navigationItem key="navigationItem" title="Full Version" id="7Vk-Nc-CZn">
+                    <navigationItem key="navigationItem" id="7Vk-Nc-CZn">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="LPk-Rw-m9u">
                             <connections>
                                 <action selector="cancel:" destination="02U-hZ-tkT" id="Hx0-XG-VKQ"/>
@@ -124,10 +123,10 @@
                     <toolbarItems/>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="XY1-W8-BUq">
-                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="44" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <color key="barTintColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="tintColor" name="medicineRed"/>
+                        <color key="barTintColor" name="tableBackground"/>
                         <textAttributes key="titleTextAttributes">
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </textAttributes>
@@ -143,6 +142,12 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Logo" width="250" height="212"/>
+        <image name="Logo" width="500" height="500"/>
+        <namedColor name="medicineRed">
+            <color red="0.92156862745098034" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="tableBackground">
+            <color white="0.019999999552965164" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </namedColor>
     </resources>
 </document>

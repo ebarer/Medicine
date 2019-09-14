@@ -10,7 +10,9 @@ import UIKit
 
 class NewFeatures: UIViewController {
 
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    // MARK: - Helper variables
+    let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
+    let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     // MARK:- Outlets
     @IBOutlet var dismissButton: UIButton!
@@ -39,6 +41,13 @@ class NewFeatures: UIViewController {
     }
 
     @IBAction func dismiss(_ sender: AnyObject) {
+        let dictionary = Bundle.main.infoDictionary!
+        let version = dictionary["CFBundleVersion"] as! String
+        
+        defaults.set(true, forKey: "finishedFirstLaunch")
+        defaults.setValue(version, forKey: "version")
+        defaults.synchronize()
+
         self.dismiss(animated: true)
     }
 }

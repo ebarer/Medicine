@@ -57,6 +57,14 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate, UIPi
     
     // MARK: - Table view data source
     
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 0 {
+            return tableView.sectionHeaderHeight
+        }
+        
+        return UITableView.automaticDimension
+    }
+    
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath {
         case IndexPath(row: 2, section: 0):
@@ -79,7 +87,7 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate, UIPi
                 cell.preservesSuperviewLayoutMargins = false
                 cell.layoutMargins = UIEdgeInsets.zero
                 cell.separatorInset = UIEdgeInsets.zero
-                cell.contentView.layoutMargins = UIEdgeInsetsMake(0, tableView.separatorInset.left, 0, tableView.separatorInset.left)
+                cell.contentView.layoutMargins = UIEdgeInsets.init(top: 0, left: tableView.separatorInset.left, bottom: 0, right: tableView.separatorInset.left)
             }
         default: break
         }

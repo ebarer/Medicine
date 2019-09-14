@@ -44,19 +44,13 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     func onboarding() {
         let dictionary = Bundle.main.infoDictionary!
-//        let version = dictionary["CFBundleShortVersionString"] as! String
         let version = dictionary["CFBundleVersion"] as! String
         let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
         
         // If first launch and medication count is 0, show "Welcome" screen
         if defaults.bool(forKey: "finishedFirstLaunch") == false {
             if let count = try? cdStack.context.count(for: fetchRequest), count == 0 {
-                defaults.set(true, forKey: "finishedFirstLaunch")
-                defaults.setValue(version, forKey: "version")
-                defaults.synchronize()
-                
-                print("Onboarding: first launch")
-                
+                NSLog("FirstLaunch", "Initializing onboarding")
                 self.performSegue(withIdentifier: "onboardingFirstLaunch", sender: self)
                 return
             }
@@ -64,15 +58,11 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             
         // Otherwise, on new version, show "New Features" screen
         if defaults.string(forKey: "version") != version {
-            defaults.set(true, forKey: "finishedFirstLaunch")
-            defaults.setValue(version, forKey: "version")
-            defaults.synchronize()
-            
-            print("Onboarding: new features")
-            
+            NSLog("FirstLaunch", "Advertising new features")
             self.performSegue(withIdentifier: "onboardingNewFeatures", sender: self)
+            return
         } else {
-            print("No onboarding necessary.")
+            NSLog("FirstLaunch", "No onboarding necessary")
         }
     }
 
@@ -86,7 +76,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             self.tabBar.barStyle = .default
             
             if viewController == selectedVC {
-                let navVC = (viewController as! UISplitViewController).childViewControllers[0] as! UINavigationController
+                let navVC = (viewController as! UISplitViewController).children[0] as! UINavigationController
                 navVC.popToRootViewController(animated: true)
             }
         } else {
@@ -102,30 +92,30 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
             request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
             if let med = (try? cdStack.context.fetch(request))?.first {
-                print("doseNotification triggered for \(med.name ?? "unknown medicine")")
+                NSLog("Scheduling", "doseNotification triggered for \(med.name ?? "unknown medicine")")
                 
                 let message = String(format:"Time to take %g %@ of %@", med.dosage, med.dosageUnit.units(med.dosage), med.name!)
                 
                 let alert = UIAlertController(title: "Take \(med.name!)", message: message, preferredStyle: .alert)
                 
-                alert.addAction(UIAlertAction(title: "Take Dose", style:  UIAlertActionStyle.destructive, handler: {(action) -> Void in
+                alert.addAction(UIAlertAction(title: "Take Dose", style:  UIAlertAction.Style.destructive, handler: {(action) -> Void in
                     self.performSegue(withIdentifier: "addDose", sender: med)
                 }))
                 
                 if med.lastDose != nil {
-                    alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertActionStyle.default, handler: {(action) -> Void in
+                    alert.addAction(UIAlertAction(title: "Snooze", style: UIAlertAction.Style.default, handler: {(action) -> Void in
                         med.snoozeNotification()
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                     }))
                 }
                 
-                alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.cancel, handler: {(action) -> Void in
+                alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertAction.Style.cancel, handler: {(action) -> Void in
                     NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                     NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
                 }))
                 
-                alert.view.tintColor = UIColor.gray
+                alert.view.tintColor = UIColor.alertTint
                 self.present(alert, animated: true, completion: nil)
             }
         }
@@ -136,7 +126,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
             request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
             if let med = (try? cdStack.context.fetch(request))?.first {
-                print("refillNotification triggered for \(med.name ?? "unknown medicine")")
+                NSLog("Scheduling", "refillNotification triggered for \(med.name ?? "unknown medicine")")
                 
                 var message = "You are running low on \(med.name!) and should refill soon."
                 
@@ -148,13 +138,13 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 
                 let alert = UIAlertController(title: "Reminder to Refill \(med.name!)", message: message, preferredStyle: .alert)
                 
-                alert.addAction(UIAlertAction(title: "Refill", style:  UIAlertActionStyle.destructive, handler: {(action) -> Void in
+                alert.addAction(UIAlertAction(title: "Refill", style:  UIAlertAction.Style.destructive, handler: {(action) -> Void in
                     self.performSegue(withIdentifier: "refillPrescription", sender: med)
                 }))
                 
-                alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.cancel, handler: nil))
+                alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertAction.Style.cancel, handler: nil))
                 
-                alert.view.tintColor = UIColor.gray
+                alert.view.tintColor = UIColor.alertTint
                 self.present(alert, animated: true, completion: nil)
             }
         }
@@ -162,7 +152,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     // MARK: - Action observers
     @objc func takeDoseAction(_ notification: Notification) {
-        NSLog("takeDoseAction received", [])
+        NSLog("MainTBC", "takeDoseAction received")
         if let id = notification.userInfo!["id"] as? String {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
             request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
@@ -180,7 +170,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                 }
                 
                 cdStack.save()
-                NSLog("takeDoseAction performed", [])
+                NSLog("MainTBC", "takeDoseAction performed")
 
                 appDelegate.setDynamicShortcuts()
                 appDelegate.updateBadgeCount()
@@ -192,7 +182,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     }
     
     @objc func snoozeReminderAction(_ notification: Notification) {
-        NSLog("snoozeReminderAction received", [])
+        NSLog("MainTBC", "snoozeReminderAction received")
         if let id = notification.userInfo!["id"] as? String {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
             request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
@@ -208,13 +198,13 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     }
     
     @objc func refillAction(_ notification: Notification) {
-        NSLog("refillAction received", [])
+        NSLog("MainTBC", "refillAction received")
         if let id = notification.userInfo!["id"] as? String {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
             request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
             if let med = (try? cdStack.context.fetch(request))?.first {
                 performSegue(withIdentifier: "refillPrescription", sender: med)
-                NSLog("refillAction performed for %@", [med.name!])
+                NSLog("MainTBC", "refillAction performed for %@", [med.name!])
             }
         }
     }
@@ -222,7 +212,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "addDose" {
-            if let vc = segue.destination.childViewControllers[0] as? AddDoseTVC {
+            if let vc = segue.destination.children[0] as? AddDoseTVC {
                 if let med = sender as? Medicine {
                     vc.med = med
                 }
@@ -230,7 +220,7 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         }
         
         if segue.identifier == "refillPrescription" {
-            if let vc = segue.destination.childViewControllers[0] as? AddRefillTVC {
+            if let vc = segue.destination.children[0] as? AddRefillTVC {
                 if let med = sender as? Medicine {
                     vc.med = med
                 }

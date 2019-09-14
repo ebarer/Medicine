@@ -59,8 +59,8 @@ class AddDoseTVC: UITableViewController {
 
         // Prevent modification of medication when not in global history
         if !globalHistory {
-            medCell.accessoryType = UITableViewCellAccessoryType.none
-            medCell.selectionStyle = UITableViewCellSelectionStyle.none
+            medCell.accessoryType = UITableViewCell.AccessoryType.none
+            medCell.selectionStyle = UITableViewCell.SelectionStyle.none
         }
         
         // Preserve dosage amount in case of cancel
@@ -142,6 +142,7 @@ class AddDoseTVC: UITableViewController {
     
     
     // MARK: - Table view data source
+    
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath == IndexPath(row: 0, section: 0) {
             return 216.0
@@ -195,7 +196,7 @@ class AddDoseTVC: UITableViewController {
         }
         
         if segue.identifier == "refillPrescription" {
-            if let vc = segue.destination.childViewControllers[0] as? AddRefillTVC {
+            if let vc = segue.destination.children[0] as? AddRefillTVC {
                 vc.med = med
                 if let index = tableView.indexPathForSelectedRow {
                     self.tableView.deselectRow(at: index, animated: false)
@@ -257,18 +258,18 @@ class AddDoseTVC: UITableViewController {
     // MARK: - Error handling
     func presentMedAlert() {
         globalHistory = true
-        let alert = UIAlertController(title: "Invalid Medication", message: "You have to select a valid medication.", preferredStyle: UIAlertControllerStyle.alert)
-        alert.view.tintColor = UIColor.gray
+        let alert = UIAlertController(title: "Invalid Medication", message: "You have to select a valid medication.", preferredStyle: UIAlertController.Style.alert)
+        alert.view.tintColor = UIColor.alertTint
         self.present(alert, animated: true, completion: nil)
     }
     
     func presentDoseAlert() {
         if let med = self.med {
-            let doseAlert = UIAlertController(title: "Repeat Dose?", message: "You have logged a dose for \(med.name!) within the passed 5 minutes, do you wish to log another dose?", preferredStyle: UIAlertControllerStyle.alert)
+            let doseAlert = UIAlertController(title: "Repeat Dose?", message: "You have logged a dose for \(med.name!) within the passed 5 minutes, do you wish to log another dose?", preferredStyle: UIAlertController.Style.alert)
             
-            doseAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil))
+            doseAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
             
-            doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertActionStyle.destructive, handler: {(action) -> Void in
+            doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertAction.Style.destructive, handler: {(action) -> Void in
                 self.cdStack.save()
                 
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
@@ -277,7 +278,7 @@ class AddDoseTVC: UITableViewController {
                 self.dismiss(animated: true, completion: nil)
             }))
             
-            doseAlert.view.tintColor = UIColor.gray
+            doseAlert.view.tintColor = UIColor.alertTint
             self.present(doseAlert, animated: true, completion: nil)
         }
     }

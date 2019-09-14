@@ -167,14 +167,14 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
             }
         case Rows.conversionAmount:
             if med?.dosageUnit != refill.quantityUnit {
-                return tableView.rowHeight
+                return 50
             }
         case Rows.datePicker:
             if selectedRow == Rows.date {
                 return 216
             }
         default:
-            return tableView.rowHeight
+            return 50
         }
         
         return 0
@@ -182,39 +182,42 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let row = Rows(index: indexPath)
-        
+
         cell.preservesSuperviewLayoutMargins = true
         cell.layoutMargins = tableView.layoutMargins
         cell.separatorInset = tableView.separatorInset
-        
+
         if selectedRow == Rows(index: indexPath) {
             cell.detailTextLabel?.textColor = UIColor.medRed
         } else {
-            cell.detailTextLabel?.textColor = UIColor.gray
+            if #available(iOS 13.0, macCatalyst 13.0, *) {
+                cell.detailTextLabel?.textColor = UIColor.secondaryLabel
+            } else {
+                cell.detailTextLabel?.textColor = UIColor.gray
+            }
         }
-        
+
         switch(row) {
         case Rows.refillUnit:
             if row != selectedRow && med?.dosageUnit == refill.quantityUnit {
                 cell.preservesSuperviewLayoutMargins = false
                 cell.layoutMargins = UIEdgeInsets.zero
                 cell.separatorInset = UIEdgeInsets.zero
-                cell.contentView.layoutMargins = tableView.separatorInset
+                cell.contentView.layoutMargins = UIEdgeInsets.init(top: 0, left: tableView.separatorInset.left, bottom: 0, right: tableView.separatorInset.left)
             }
         case Rows.refillUnitPicker:
             if med?.dosageUnit == refill.quantityUnit {
-                print("Unit picker issue!")
                 cell.preservesSuperviewLayoutMargins = false
                 cell.layoutMargins = UIEdgeInsets.zero
                 cell.separatorInset = UIEdgeInsets.zero
-                cell.contentView.layoutMargins = tableView.separatorInset
+                cell.contentView.layoutMargins = UIEdgeInsets.init(top: 0, left: tableView.separatorInset.left, bottom: 0, right: tableView.separatorInset.left)
             }
         case Rows.date:
             if row != selectedRow {
                 cell.preservesSuperviewLayoutMargins = false
                 cell.layoutMargins = UIEdgeInsets.zero
                 cell.separatorInset = UIEdgeInsets.zero
-                cell.contentView.layoutMargins = tableView.separatorInset
+                cell.contentView.layoutMargins = UIEdgeInsets.init(top: 0, left: tableView.separatorInset.left, bottom: 0, right: tableView.separatorInset.left)
             }
         default: break
         }

@@ -9,7 +9,17 @@
 import UIKit
 
 extension UIColor {
-    static let medRed = UIColor(red: 1, green: 0, blue: 51/255, alpha: 1.0)
-    static let tableBackground = UIColor(white: 0.98, alpha: 1)
-    static let subtitle = UIColor(white: 0.7, alpha: 1)
+    static let medRed = UIColor(named: "medicineRed")!
+    static let medGray1 = UIColor(named: "medicineGray1")!
+    static let medGray2 = UIColor(named: "medicineGray2")!
+    static let medGray3 = UIColor(named: "medicineGray3")!
+    static let subtitleLabel = UIColor(named: "subtitleLabel")!
+    static let cellBackground = UIColor(named: "cellBackground")!
+    static let cellBackgroundSelected = UIColor(named: "cellBackgroundSelected")!
+    static let tableBackground = UIColor(named: "tableBackground")!
+    static let tableSeparator = UIColor(named: "tableSeparator")!
+    static let tableGroupedBackground = UIColor(named: "tableGroupedBackground")!
+    static let tableGroupedSeparator = UIColor(named: "tableGroupedSeparator")!
+    static let onboardingBackground = UIColor(named: "onboardingBackground")!
+    static let alertTint = UIColor(named: "medicineGray1")!
 }

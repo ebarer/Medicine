@@ -35,9 +35,9 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
         self.navigationController?.toolbar.tintColor = UIColor.medRed
         
         // Configure toolbar buttons
-        let fixedButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let exportButton = UIBarButtonItem(title: "Export", style: UIBarButtonItemStyle.plain, target: self, action: #selector(exportRefills))
-        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.plain, target: self, action: #selector(deleteRefills))
+        let fixedButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let exportButton = UIBarButtonItem(title: "Export", style: UIBarButtonItem.Style.plain, target: self, action: #selector(exportRefills))
+        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItem.Style.plain, target: self, action: #selector(deleteRefills))
         deleteButton.isEnabled = false
         
         normalButtons.append(exportButton)
@@ -52,7 +52,7 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
         
         // Add observeres for notifications
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: NSNotification.Name(rawValue: "refreshView"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: UIApplication.willEnterForegroundNotification, object: nil)
         
         // Define request for Doses
         let request: NSFetchRequest<NSFetchRequestResult> = Refill.fetchRequest()
@@ -74,6 +74,10 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        self.refreshView()
     }
     
     override func didReceiveMemoryWarning() {
@@ -127,7 +131,7 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
         }
         
         let border = CALayer()
-        border.backgroundColor = UIColor(white: 0.86, alpha: 1).cgColor
+        border.backgroundColor = UIColor.tableGroupedSeparator.cgColor
         border.frame = CGRect(x: 0, y: headerView.frame.height - 0.5, width: headerView.frame.width, height: 0.5)
         headerView.layer.addSublayer(border)
         
@@ -135,11 +139,13 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
             return nil
         }
         
-        dayLabel.textColor = UIColor.darkGray
+        dayLabel.textColor = UIColor.medGray1
         
         guard let dateLabel = headerView.viewWithTag(2) as? UILabel else {
             return nil
         }
+        
+        dateLabel.textColor = UIColor.medGray2
         
         if let fc = fetchedResultsController {
             guard let sectionDate = Date.fromString(fc.sections![section].name, withFormat: "YYYY-MM-dd HH:mm:ss ZZZ") else {
@@ -167,10 +173,10 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     
     override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let footerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 5))
-        footerView.backgroundColor = UIColor(white: 0.95, alpha: 1)
+        footerView.backgroundColor = UIColor.tableGroupedBackground
         
         let border = CALayer()
-        border.backgroundColor = UIColor(white: 0.86, alpha: 1).cgColor
+        border.backgroundColor = UIColor.tableGroupedSeparator.cgColor
         border.frame = CGRect(x: 0, y: 0, width: footerView.frame.width, height: 0.5)
         footerView.layer.addSublayer(border)
         
@@ -191,11 +197,13 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "historyCell", for: indexPath) as! HistoryCell
+        cell.dateLabel?.textColor = UIColor.subtitleLabel
+        cell.medLabel?.textColor = UIColor.subtitleLabel
+                    cell.historyLabel?.isHidden = true
         
         if let refill = self.fetchedResultsController!.object(at: indexPath) as? Refill {
             // Specify selection color
             cell.selectedBackgroundView = UIView()
-            cell.historyLabel?.isHidden = true
             
             // Setup cell
             let refillAmount = (refill.quantity * refill.conversion).removeTrailingZero()
@@ -206,14 +214,11 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
             }
             
             cell.dateLabel?.text = refill.date.string(timeStyle: .short)
-            
             cell.medLabel?.text = amount
             cell.medLabel?.textColor = UIColor.medRed
         } else {
             cell.dateLabel?.isHidden = true
-            
             cell.medLabel?.text = "No refills logged"
-            cell.medLabel?.textColor = UIColor(white: 0, alpha: 0.2)
         }
         
         return cell
@@ -230,8 +235,8 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
         return true
     }
     
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        tableView.selectRow(at: indexPath, animated: false, scrollPosition: UITableViewScrollPosition.none)
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        tableView.selectRow(at: indexPath, animated: false, scrollPosition: UITableView.ScrollPosition.none)
         deleteRefills()
     }
     
@@ -303,36 +308,41 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     
     @objc func exportRefills() {
         if MFMailComposeViewController.canSendMail() {
-            if let history = med.refillHistory?.array as? [Refill] {
-                var contents = "\(med.name!)\r"
-                
-                contents += "Date, Amount\r"
-                
-                for refill in history.reversed() {
-                    let dateFormatter = DateFormatter()
-                    dateFormatter.dateFormat = "YYYY-MM-dd h:mm a"
+            let mc = MFMailComposeViewController()
+            mc.mailComposeDelegate = self
+            mc.setSubject("\(med.name!) Refill History")
+            
+            DispatchQueue.global(qos: .userInitiated).async {
+                if let history = self.med.refillHistory?.array as? [Refill] {
+                    var contents = "\(self.med.name!)\r"
+                    
+                    contents += "Date, Amount\r"
+                    
+                    for refill in history.reversed() {
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.dateFormat = "YYYY-MM-dd h:mm a"
 
-                    contents += "\(dateFormatter.string(from: refill.date as Date)), "
-                    contents += "\((refill.quantity * refill.conversion).removeTrailingZero()) \(med.dosageUnit.units(med.prescriptionCount))"
-                    
-                    if refill.conversion != 1.0 {
-                        contents += " (\(refill.quantity.removeTrailingZero()) \(refill.quantityUnit.units(refill.quantity)))"
+                        contents += "\(dateFormatter.string(from: refill.date as Date)), "
+                        contents += "\((refill.quantity * refill.conversion).removeTrailingZero()) \(self.med.dosageUnit.units(self.med.prescriptionCount))"
+                        
+                        if refill.conversion != 1.0 {
+                            contents += " (\(refill.quantity.removeTrailingZero()) \(refill.quantityUnit.units(refill.quantity)))"
+                        }
+                        
+                        contents += "\r"
                     }
-                    
-                    contents += "\r"
-                }
-                
-                if let data = contents.data(using: String.Encoding.utf8, allowLossyConversion: false) {
-                    let mc = MFMailComposeViewController()
-                    mc.mailComposeDelegate = self
-                    mc.setSubject("\(med.name!) Refill History")
-                    mc.addAttachmentData(data, mimeType: "text/csv", fileName: "\(med.name!)_Refill_History.csv")
-                    
-                    self.present(mc, animated: true, completion: nil)
+                            
+                    if let data = contents.data(using: String.Encoding.utf8, allowLossyConversion: false) {
+                        DispatchQueue.main.async {
+                            mc.addAttachmentData(data, mimeType: "text/csv", fileName: "\(self.med.name!)_Refill_History.csv")
+                        }
+                    }
                 }
             }
+                
+            self.present(mc, animated: true, completion: nil)
         } else {
-            print("Can't send")
+            NSLog("Export", "Unable to export refill history for med (\(med.name!)): user unable to send mail.")
         }
     }
     
@@ -341,7 +351,7 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "addRefill" {
-            if let vc = segue.destination.childViewControllers[0] as? AddRefillTVC {
+            if let vc = segue.destination.children[0] as? AddRefillTVC {
                 self.fetchedResultsController?.delegate = nil
                 vc.med = med
             }

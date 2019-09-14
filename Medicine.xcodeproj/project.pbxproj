@@ -3,10 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE08C2A5232DC1D700B344BD /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE08C2A4232DC1D600B344BD /* UIColor+Extension.swift */; };
+		CE08C2A6232DCE2C00B344BD /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE08C2A4232DC1D600B344BD /* UIColor+Extension.swift */; };
 		CE0EA1871BAFDAED00F48A09 /* AddDose.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE0EA17D1BAFDAED00F48A09 /* AddDose.storyboard */; };
 		CE0EA1881BAFDAED00F48A09 /* AddMedication.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE0EA17F1BAFDAED00F48A09 /* AddMedication.storyboard */; };
 		CE0EA1891BAFDAED00F48A09 /* MainEmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE0EA1811BAFDAED00F48A09 /* MainEmptyView.xib */; };
@@ -17,7 +19,6 @@
 		CE0EA1991BAFF49100F48A09 /* MainTBC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0EA1981BAFF49100F48A09 /* MainTBC.swift */; };
 		CE0EA19D1BAFFDA200F48A09 /* AddDoseTVC+Medicine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0EA19C1BAFFDA200F48A09 /* AddDoseTVC+Medicine.swift */; };
 		CE15F3DB1F5EC6EE00DE24FF /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE69135D1F5CDC5A007EC59C /* Date+Extension.swift */; };
-		CE15F3DC1F5EC6F100DE24FF /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6913611F5D1C4D007EC59C /* UIColor+Extension.swift */; };
 		CE2325841BB1693C0013B72D /* HistoryEmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE2325821BB1693C0013B72D /* HistoryEmptyView.xib */; };
 		CE247B8F1B96618100E4EB5F /* AddMedicationTVC+Dosage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE247B8E1B96618100E4EB5F /* AddMedicationTVC+Dosage.swift */; };
 		CE247B911B96619B00E4EB5F /* AddMedicationTVC+Interval.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE247B901B96619B00E4EB5F /* AddMedicationTVC+Interval.swift */; };
@@ -26,7 +27,7 @@
 		CE2F6B181BBD5BA800707951 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2F6B171BBD5BA800707951 /* NotificationCenter.framework */; };
 		CE2F6B1B1BBD5BA800707951 /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2F6B1A1BBD5BA800707951 /* TodayViewController.swift */; };
 		CE2F6B1E1BBD5BA800707951 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE2F6B1C1BBD5BA800707951 /* MainInterface.storyboard */; };
-		CE2F6B221BBD5BA800707951 /* MedicineTodayExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = CE2F6B161BBD5BA800707951 /* MedicineTodayExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		CE2F6B221BBD5BA800707951 /* MedicineTodayExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = CE2F6B161BBD5BA800707951 /* MedicineTodayExtension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CE30D1571B9856D1007805DB /* Refill+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE30D1541B9856D1007805DB /* Refill+CoreDataProperties.swift */; };
 		CE30D1581B9856D1007805DB /* Refill.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE30D1551B9856D1007805DB /* Refill.swift */; };
 		CE38AF231B950517000D00AD /* AddDoseTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE38AF221B950517000D00AD /* AddDoseTVC.swift */; };
@@ -37,7 +38,6 @@
 		CE444BEB1F70C6D600AC37E8 /* FirstLaunch.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE444BE91F70C6D500AC37E8 /* FirstLaunch.swift */; };
 		CE6325CA1BA1661C00BAD562 /* UpgradeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6325C91BA1661C00BAD562 /* UpgradeVC.swift */; };
 		CE69135E1F5CDC5A007EC59C /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE69135D1F5CDC5A007EC59C /* Date+Extension.swift */; };
-		CE6913621F5D1C4D007EC59C /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6913611F5D1C4D007EC59C /* UIColor+Extension.swift */; };
 		CE6E551D1B9040C900805397 /* Medicine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */; };
 		CE6E551E1B9040C900805397 /* Medicine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551A1B9040C900805397 /* Medicine.swift */; };
 		CE6E551F1B9040C900805397 /* Dose+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551B1B9040C900805397 /* Dose+CoreDataProperties.swift */; };
@@ -94,6 +94,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CE08C2A4232DC1D600B344BD /* UIColor+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		CE0EA17E1BAFDAED00F48A09 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Medicine/Base.lproj/AddDose.storyboard; sourceTree = "<group>"; };
 		CE0EA1801BAFDAED00F48A09 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Medicine/Base.lproj/AddMedication.storyboard; sourceTree = "<group>"; };
 		CE0EA1821BAFDAED00F48A09 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Medicine/Base.lproj/MainEmptyView.xib; sourceTree = "<group>"; };
@@ -129,7 +130,6 @@
 		CE587A151BA9244400821D18 /* Medicine - 2. 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2. 2.xcdatamodel"; sourceTree = "<group>"; };
 		CE6325C91BA1661C00BAD562 /* UpgradeVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UpgradeVC.swift; path = Main/UpgradeVC.swift; sourceTree = "<group>"; };
 		CE69135D1F5CDC5A007EC59C /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
-		CE6913611F5D1C4D007EC59C /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Medicine+CoreDataProperties.swift"; path = "Medicine/Models/Medicine+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		CE6E551A1B9040C900805397 /* Medicine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Medicine.swift; path = Medicine/Models/Medicine.swift; sourceTree = "<group>"; };
 		CE6E551B1B9040C900805397 /* Dose+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Dose+CoreDataProperties.swift"; path = "Medicine/Models/Dose+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -223,7 +223,7 @@
 		CE6913601F5CDC69007EC59C /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				CE6913611F5D1C4D007EC59C /* UIColor+Extension.swift */,
+				CE08C2A4232DC1D600B344BD /* UIColor+Extension.swift */,
 				CE69135D1F5CDC5A007EC59C /* Date+Extension.swift */,
 				CEF80ECF1F716718007DF33D /* StatusBaryStyle+Extension.swift */,
 			);
@@ -416,13 +416,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0710;
-				LastUpgradeCheck = 1000;
+				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = "Elliot Barer";
 				TargetAttributes = {
 					CE2F6B151BBD5BA800707951 = {
 						CreatedOnToolsVersion = 7.1;
 						DevelopmentTeam = 5ZJB9DN7AQ;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1100;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -432,7 +432,7 @@
 					CEA250E41B90396C00BBE466 = {
 						CreatedOnToolsVersion = 7.0;
 						DevelopmentTeam = 5ZJB9DN7AQ;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1100;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -455,6 +455,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -506,7 +507,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE15F3DC1F5EC6F100DE24FF /* UIColor+Extension.swift in Sources */,
+				CE08C2A6232DCE2C00B344BD /* UIColor+Extension.swift in Sources */,
 				CE2F6B1B1BBD5BA800707951 /* TodayViewController.swift in Sources */,
 				CE15F3DB1F5EC6EE00DE24FF /* Date+Extension.swift in Sources */,
 			);
@@ -517,7 +518,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CECDC9511F477791007D4BB4 /* CoreDataStack.swift in Sources */,
-				CE6913621F5D1C4D007EC59C /* UIColor+Extension.swift in Sources */,
 				CEA2510C1B903E7D00BBE466 /* Medicine.xcdatamodeld in Sources */,
 				CE94A5B61BE8B13B008E58DF /* SettingsTVC+Refill.swift in Sources */,
 				CE6E551E1B9040C900805397 /* Medicine.swift in Sources */,
@@ -553,6 +553,7 @@
 				CE936E651C6C42770093BECF /* MedicineDetailsTVC+UIViewControllerPreviewing.swift in Sources */,
 				CEE935891F5B5E5E00EE8B77 /* MedicineCell+CellFrame.swift in Sources */,
 				CE0EA1951BAFE28200F48A09 /* HistoryTVC.swift in Sources */,
+				CE08C2A5232DC1D700B344BD /* UIColor+Extension.swift in Sources */,
 				CE0EA1971BAFE2B800F48A09 /* MedicineDoseHistoryTVC.swift in Sources */,
 				CE3A42541C13A27C0035E390 /* MedicineRefillHistoryTVC.swift in Sources */,
 			);
@@ -563,6 +564,7 @@
 /* Begin PBXTargetDependency section */
 		CE2F6B211BBD5BA800707951 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = CE2F6B151BBD5BA800707951 /* MedicineTodayExtension */;
 			targetProxy = CE2F6B201BBD5BA800707951 /* PBXContainerItemProxy */;
 		};
@@ -679,17 +681,24 @@
 				CODE_SIGN_ENTITLEMENTS = MedicineTodayExtension/MedicineTodayExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 2B001;
 				DEVELOPMENT_TEAM = 5ZJB9DN7AQ;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
 				INFOPLIST_FILE = MedicineTodayExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine.MedicineTodayExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -699,17 +708,24 @@
 				CODE_SIGN_ENTITLEMENTS = MedicineTodayExtension/MedicineTodayExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 2B001;
 				DEVELOPMENT_TEAM = 5ZJB9DN7AQ;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
 				INFOPLIST_FILE = MedicineTodayExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine.MedicineTodayExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -717,6 +733,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -760,7 +777,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -773,6 +790,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -810,10 +828,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -828,17 +847,24 @@
 				CODE_SIGN_ENTITLEMENTS = Medicine/Medicine.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 2B001;
+				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = 5ZJB9DN7AQ;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = Medicine/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -851,16 +877,23 @@
 				CODE_SIGN_ENTITLEMENTS = Medicine/Medicine.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 2B001;
+				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = 5ZJB9DN7AQ;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				INFOPLIST_FILE = Medicine/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

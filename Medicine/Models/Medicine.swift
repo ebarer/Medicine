@@ -30,7 +30,7 @@ class Medicine: NSManagedObject {
 
     // MARK: - Member variables
     var nextDose: Date? {
-        guard let date = try? calculateNextDose() else {
+        guard let date = ((try? calculateNextDose()) as Date??) else {
             self.hasNextDose = false
             self.dateNextDose = nil
             return nil
@@ -237,7 +237,7 @@ class Medicine: NSManagedObject {
                     return (false, date)
                 }
             } catch {
-                NSLog("Couldn't determine if \(name ?? "unknown medicine") is overdue; unable to calculate next dose.")
+                NSLog("Medicine", "Couldn't determine if \(name ?? "unknown medicine") is overdue; unable to calculate next dose.")
                 return (false, nil)
             }
         }
@@ -376,7 +376,9 @@ class Medicine: NSManagedObject {
                 self.dateCreated = Date()
             }
         } else {
-            fatalError("Unable to find Entity name!")
+            let message = "Unable to find Medicine entity."
+            NSLog("CoreData", message)
+            fatalError(message)
         }
     }
     
@@ -668,7 +670,6 @@ class Medicine: NSManagedObject {
         }
         
         guard reminderEnabled == true else {
-            print(self.doseNotificationIdentifier)
             UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [self.doseNotificationIdentifier])
             throw MedicineError.reminderDisabled
         }
@@ -683,7 +684,7 @@ class Medicine: NSManagedObject {
         let content = UNMutableNotificationContent()
         content.title = "Take \(name)"
         content.body = String(format:"Time to take %g %@ of %@", dosage, dosageUnit.units(dosage), name)
-        content.sound = UNNotificationSound.default()
+        content.sound = UNNotificationSound.default
         content.badge = NSNumber(integerLiteral: badgeCount)
         content.userInfo = ["id": medicineID]
         
@@ -699,9 +700,9 @@ class Medicine: NSManagedObject {
                 let formatter = DateFormatter()
                 formatter.dateStyle = .medium
                 formatter.timeStyle = .medium
-                print("DOSE Notification scheduled for \(formatter.string(from: date)) for \"\(name)\".")
+                NSLog("Scheduling", "Dose notification scheduled for \(formatter.string(from: date)) for \"\(name)\".")
             } else {
-                print("Error scheduling DOSE notification for \(name).")
+                NSLog("Scheduling", "Error scheduling dose notification for \(name).")
                 UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [self.doseNotificationIdentifier])
             }
         }
@@ -714,7 +715,7 @@ class Medicine: NSManagedObject {
         
         do {
             try scheduleNotification(date, badgeCount: Medicine.overdueCount(date))
-            NSLog("\tScheduled notification for: \(self.name!)")
+            NSLog("Medicine", "\tScheduled notification for: \(self.name!)")
             return true
         } catch {
             return false
@@ -770,17 +771,17 @@ class Medicine: NSManagedObject {
             }
             content.body = message
             
-            content.sound = UNNotificationSound.default()
+            content.sound = UNNotificationSound.default
             content.userInfo = ["id": self.medicineID, "type": "refill"]
             content.categoryIdentifier = "Refill Reminder"
             
             let request = UNNotificationRequest(identifier: refillNotificationIdentifier, content: content, trigger: trigger)
             UNUserNotificationCenter.current().add(request) { (error) in
                 if error == nil {
-                    print("REFILL notification scheduled for \(now) for \"\(self.name!)\".")
+                    NSLog("Scheduling", "Refill notification scheduled for \(now) for \"\(self.name!)\".")
                     self.refillFlag = false
                 } else {
-                    print("Error scheduling REFILL notification for \(self.name!).")
+                    NSLog("Scheduling", "Error scheduling refill notification for \(self.name!).")
                     UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [self.refillNotificationIdentifier])
                 }
             }

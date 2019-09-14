@@ -45,7 +45,7 @@ class SettingsTVC_Refill: UITableViewController {
         
         let selected = defaults.integer(forKey: "refillTime")
         if selected == refillArray[indexPath.row] {
-            cell.accessoryType = UITableViewCellAccessoryType.checkmark
+            cell.accessoryType = UITableViewCell.AccessoryType.checkmark
         }
         
         return cell

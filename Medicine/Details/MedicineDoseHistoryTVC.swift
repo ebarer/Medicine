@@ -33,9 +33,9 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
         self.navigationController?.toolbar.tintColor = UIColor.medRed
         
         // Configure toolbar buttons
-        let fixedButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        let exportButton = UIBarButtonItem(title: "Export", style: UIBarButtonItemStyle.plain, target: self, action: #selector(exportDoses))
-        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItemStyle.plain, target: self, action: #selector(deleteDoses))
+        let fixedButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let exportButton = UIBarButtonItem(title: "Export", style: UIBarButtonItem.Style.plain, target: self, action: #selector(exportDoses))
+        let deleteButton = UIBarButtonItem(title: "Delete", style: UIBarButtonItem.Style.plain, target: self, action: #selector(deleteDoses))
         deleteButton.isEnabled = false
         
         normalButtons.append(exportButton)
@@ -50,7 +50,7 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
 
         // Add observeres for notifications
         NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: NSNotification.Name(rawValue: "refreshView"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshView), name: UIApplication.willEnterForegroundNotification, object: nil)
         
         // Define request for Doses
         let request: NSFetchRequest<NSFetchRequestResult> = Dose.fetchRequest()
@@ -72,6 +72,10 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        self.refreshView()
     }
 
     override func didReceiveMemoryWarning() {
@@ -125,7 +129,7 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
         }
         
         let border = CALayer()
-        border.backgroundColor = UIColor(white: 0.86, alpha: 1).cgColor
+        border.backgroundColor = UIColor.tableGroupedSeparator.cgColor
         border.frame = CGRect(x: 0, y: headerView.frame.height - 0.5, width: headerView.frame.width, height: 0.5)
         headerView.layer.addSublayer(border)
         
@@ -133,11 +137,13 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
             return nil
         }
         
-        dayLabel.textColor = UIColor.darkGray
+        dayLabel.textColor = UIColor.medGray1
         
         guard let dateLabel = headerView.viewWithTag(2) as? UILabel else {
             return nil
         }
+        
+        dateLabel.textColor = UIColor.medGray2
         
         if let fc = fetchedResultsController {
             guard let sectionDate = Date.fromString(fc.sections![section].name, withFormat: "YYYY-MM-dd HH:mm:ss ZZZ") else {
@@ -165,10 +171,10 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
     
     override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let footerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 5))
-        footerView.backgroundColor = UIColor(white: 0.95, alpha: 1)
+        footerView.backgroundColor = UIColor.tableGroupedBackground
         
         let border = CALayer()
-        border.backgroundColor = UIColor(white: 0.86, alpha: 1).cgColor
+        border.backgroundColor = UIColor.tableGroupedSeparator.cgColor
         border.frame = CGRect(x: 0, y: 0, width: footerView.frame.width, height: 0.5)
         footerView.layer.addSublayer(border)
         
@@ -189,29 +195,27 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {        
         let cell = tableView.dequeueReusableCell(withIdentifier: "historyCell", for: indexPath) as! HistoryCell
+        cell.dateLabel?.textColor = UIColor.subtitleLabel
+        cell.medLabel?.textColor = UIColor.subtitleLabel
+        cell.historyLabel?.isHidden = true
         
         if let dose = self.fetchedResultsController!.object(at: indexPath) as? Dose {
             // Specify selection color
             cell.selectedBackgroundView = UIView()
-            cell.historyLabel?.isHidden = true
             
             if dose.dosage > 0 {
+                // Default
                 cell.dateLabel?.text = dose.date.string(timeStyle: .short)
-                
                 cell.medLabel?.text = String(format:"%g %@", dose.dosage, dose.dosageUnit.units(dose.dosage))
                 cell.medLabel?.textColor = UIColor.medRed
             } else {
+                // Skipped
                 cell.dateLabel?.text = dose.date.string(timeStyle: .short)
-                cell.dateLabel?.textColor = UIColor(white: 0, alpha: 0.2)
-                
                 cell.medLabel?.text = "Skipped"
-                cell.medLabel?.textColor = UIColor(white: 0, alpha: 0.2)
             }
         } else {
             cell.dateLabel?.isHidden = true
-            
             cell.medLabel?.text = "No doses logged"
-            cell.medLabel?.textColor = UIColor(white: 0, alpha: 0.2)
         }
         
         return cell
@@ -228,8 +232,8 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
         return true
     }
     
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        tableView.selectRow(at: indexPath, animated: false, scrollPosition: UITableViewScrollPosition.none)
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        tableView.selectRow(at: indexPath, animated: false, scrollPosition: UITableView.ScrollPosition.none)
         deleteDoses()
     }
     
@@ -298,43 +302,47 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
     
     @objc func exportDoses() {
         if MFMailComposeViewController.canSendMail() {
-            if let history = med.doseHistory?.array as? [Dose] {
-                var contents = "\(med.name!)\r"
-                    contents += "\(med.dosage.removeTrailingZero()) \(med.dosageUnit.units(med.dosage)) "
-                
-                if med.reminderEnabled {
-                    contents += "every \(med.interval.removeTrailingZero()) \(med.intervalUnit.units(med.interval))\r"
-                } else {
-                    contents += "as needed\r"
-                }
-                
-                contents += "Date, Dosage\r"
-                
-                for dose in history.reversed() {
-                    let dateFormatter = DateFormatter()
-                    dateFormatter.dateFormat = "YYYY-MM-dd h:mm a"
+            let mc = MFMailComposeViewController()
+            mc.mailComposeDelegate = self
+            mc.setSubject("\(med.name!) Dose History")
+            
+            DispatchQueue.global(qos: .userInitiated).async {
+                if let history = self.med.doseHistory?.array as? [Dose] {
+                    var contents = "\(self.med.name!)\r"
+                    contents += "\(self.med.dosage.removeTrailingZero()) \(self.med.dosageUnit.units(self.med.dosage)) "
                     
-                    contents += "\(dateFormatter.string(from: dose.date as Date)), "
-                    
-                    if dose.dosage > 0 {
-                        contents += "\(med.dosage.removeTrailingZero()) \(dose.dosageUnit.units(dose.dosage))\r"
+                    if self.med.reminderEnabled {
+                        contents += "every \(self.med.interval.removeTrailingZero()) \(self.med.intervalUnit.units(self.med.interval))\r"
                     } else {
-                        contents += "Skipped\r"
+                        contents += "as needed\r"
                     }
-                        
-                }
-                
-                if let data = contents.data(using: String.Encoding.utf8, allowLossyConversion: false) {
-                    let mc = MFMailComposeViewController()
-                    mc.mailComposeDelegate = self
-                    mc.setSubject("\(med.name!) Dose History")
-                    mc.addAttachmentData(data, mimeType: "text/csv", fileName: "\(med.name!)_Dose_History.csv")
                     
-                    self.present(mc, animated: true, completion: nil)
+                    contents += "Date, Dosage\r"
+                    
+                    for dose in history.reversed() {
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.dateFormat = "YYYY-MM-dd h:mm a"
+                        
+                        contents += "\(dateFormatter.string(from: dose.date as Date)), "
+                        
+                        if dose.dosage > 0 {
+                            contents += "\(self.med.dosage.removeTrailingZero()) \(dose.dosageUnit.units(dose.dosage))\r"
+                        } else {
+                            contents += "Skipped\r"
+                        }
+                    }
+                    
+                    if let data = contents.data(using: String.Encoding.utf8, allowLossyConversion: false) {
+                        DispatchQueue.main.async {
+                            mc.addAttachmentData(data, mimeType: "text/csv", fileName: "\(self.med.name!)_Dose_History.csv")
+                        }
+                    }
                 }
             }
+                
+            self.present(mc, animated: true, completion: nil)
         } else {
-            print("Can't send")
+            NSLog("Export", "Unable to export dose history for med (\(med.name!)): user unable to send mail.")
         }
     }
     
@@ -343,7 +351,7 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "addDose" {
-            if let vc = segue.destination.childViewControllers[0] as? AddDoseTVC {
+            if let vc = segue.destination.children[0] as? AddDoseTVC {
                 self.fetchedResultsController?.delegate = nil
                 vc.med = med
             }

@@ -27,7 +27,7 @@ class CoreDataTableViewController: UITableViewController {
 
     // MARK: Initializers
 
-    init(fetchedResultsController fc : NSFetchedResultsController<NSFetchRequestResult>, style : UITableViewStyle = .plain) {
+    init(fetchedResultsController fc : NSFetchedResultsController<NSFetchRequestResult>, style : UITableView.Style = .plain) {
         fetchedResultsController = fc
         super.init(style: style)
     }
@@ -43,9 +43,10 @@ class CoreDataTableViewController: UITableViewController {
 // MARK: - CoreDataTableViewController (Subclass Must Implement)
 
 extension CoreDataTableViewController {
-
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        fatalError("This method MUST be implemented by a subclass of CoreDataTableViewController")
+        let message = "cellForRowAtIndexPath reached superclass, it MUST be implemented by a subclass."
+        NSLog("CoreDataTVC", message)
+        fatalError(message)
     }
 }
 
@@ -103,7 +104,7 @@ extension CoreDataTableViewController {
             do {
                 try fc.performFetch()
             } catch let e as NSError {
-                print("Error while trying to perform a search: \n\(e)\n\(String(describing: fetchedResultsController))")
+                NSLog("CoreDataTVC", "Error while trying to perform a search: \n\(e)\n\(String(describing: fetchedResultsController))")
             }
         }
     }
@@ -151,6 +152,8 @@ extension CoreDataTableViewController: NSFetchedResultsControllerDelegate {
         case .move:
             tableView.deleteRows(at: [indexPath!], with: .none)
             tableView.insertRows(at: [newIndexPath!], with: .none)
+        @unknown default:
+            NSLog("CoreDataTVC", "Unknown event type (\(type)) invoked")
         }
     }
 

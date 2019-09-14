@@ -33,9 +33,9 @@ class SettingsTVC_Sort: UITableViewController {
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if indexPath.row == defaults.integer(forKey: "sortOrder") {
-            cell.accessoryType = UITableViewCellAccessoryType.checkmark
+            cell.accessoryType = UITableViewCell.AccessoryType.checkmark
         } else {
-            cell.accessoryType = UITableViewCellAccessoryType.none
+            cell.accessoryType = UITableViewCell.AccessoryType.none
         }
     }
 
@@ -49,7 +49,7 @@ class SettingsTVC_Sort: UITableViewController {
             
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
             guard var medication = try? cdStack.context.fetch(request) else {
-                NSLog("Couldn't retrieve medication list", [])
+                NSLog("Settings", "Couldn't retrieve medication list")
                 return
             }
             

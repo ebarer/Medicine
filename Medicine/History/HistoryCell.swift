@@ -27,7 +27,7 @@ class HistoryCell: UITableViewCell {
     func setupCell() {
         dateLabel?.isHidden = false
         dateLabel?.text = nil
-        dateLabel?.textColor = UIColor.darkGray
+        dateLabel?.textColor = UIColor.subtitleLabel
         
         medLabel?.text = nil
         medLabel?.textColor = UIColor.medRed

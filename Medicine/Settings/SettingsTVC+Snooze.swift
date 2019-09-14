@@ -45,7 +45,7 @@ class SettingsTVC_Snooze: UITableViewController {
         
         let selected = defaults.integer(forKey: "snoozeLength")
         if selected == snoozeArray[indexPath.row] {
-            cell.accessoryType = UITableViewCellAccessoryType.checkmark
+            cell.accessoryType = UITableViewCell.AccessoryType.checkmark
         }
         
         return cell

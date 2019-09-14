@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Fgr-cY-8Rx">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Fgr-cY-8Rx">
+    <device id="retina5_9" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -18,11 +17,11 @@
                         <viewControllerLayoutGuide type="bottom" id="Smf-rU-Yaj"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="U4x-DD-et4">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qbw-wE-XpR">
-                                <rect key="frame" x="57.5" y="236" width="260" height="165"/>
+                                <rect key="frame" x="57.666666666666657" y="308.66666666666669" width="260" height="165"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="260" id="Ttc-Tb-pcn">
                                         <variation key="heightClass=regular-widthClass=regular" constant="600"/>
@@ -38,8 +37,8 @@ Medicine Manager</string>
                                 </variation>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rgL-vq-m6y">
-                                <rect key="frame" x="57.5" y="542" width="260" height="50"/>
-                                <color key="backgroundColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <rect key="frame" x="57.666666666666657" y="653" width="260" height="50"/>
+                                <color key="backgroundColor" name="medicineRed"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="260" id="ITt-r2-dcn"/>
                                     <constraint firstAttribute="height" constant="50" id="mzS-7e-gqO"/>
@@ -57,7 +56,7 @@ Medicine Manager</string>
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo-Icon" translatesAutoresizingMaskIntoConstraints="NO" id="DR0-NF-Ekp">
-                                <rect key="frame" x="57.5" y="116" width="80" height="80"/>
+                                <rect key="frame" x="57.666666666666657" y="188.66666666666666" width="80" height="79.999999999999972"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="80" id="1af-JL-lof">
                                         <variation key="heightClass=regular-widthClass=regular" constant="100"/>
@@ -68,7 +67,7 @@ Medicine Manager</string>
                                 </constraints>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" name="onboardingBackground"/>
                         <constraints>
                             <constraint firstItem="rgL-vq-m6y" firstAttribute="centerX" secondItem="U4x-DD-et4" secondAttribute="centerX" id="54B-Er-QMh"/>
                             <constraint firstItem="qbw-wE-XpR" firstAttribute="centerX" secondItem="U4x-DD-et4" secondAttribute="centerX" id="HwM-sZ-1gr"/>
@@ -109,12 +108,12 @@ Medicine Manager</string>
                         <viewControllerLayoutGuide type="bottom" id="S2w-9r-Huf"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="ocl-MM-8F8">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Srm-SH-887">
-                                <rect key="frame" x="57.5" y="384.5" width="260" height="50"/>
-                                <color key="backgroundColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <rect key="frame" x="57.666666666666657" y="445.33333333333331" width="260" height="50"/>
+                                <color key="backgroundColor" name="medicineRed"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="HOy-aF-FZt"/>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="260" id="rQI-cj-zDt"/>
@@ -132,40 +131,42 @@ Medicine Manager</string>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eTg-Ex-7aG">
-                                <rect key="frame" x="150" y="449.5" width="75" height="29"/>
+                                <rect key="frame" x="150" y="510.33333333333326" width="75" height="29"/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" title="Don't Allow">
-                                    <color key="titleColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="titleColor" name="medicineRed"/>
                                 </state>
                                 <connections>
                                     <action selector="denyNotifications:" destination="w2O-Ez-Zvp" eventType="touchUpInside" id="AMA-Zs-dH8"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="To remind you to take your medication, Medicine Manager requires authorization to send you notifications." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7XV-8U-f8a">
-                                <rect key="frame" x="35" y="324" width="305" height="20.5"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <rect key="frame" x="32.666666666666657" y="348" width="310" height="57.333333333333314"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="310" id="jZg-yH-2zb"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Notification" translatesAutoresizingMaskIntoConstraints="NO" id="GAt-2f-13c">
-                                <rect key="frame" x="97.5" y="104" width="180" height="180"/>
+                                <rect key="frame" x="97.666666666666686" y="128" width="180" height="180"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="180" id="0gk-3H-9Ie"/>
                                     <constraint firstAttribute="height" constant="180" id="kFY-63-0Sx"/>
                                 </constraints>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" name="onboardingBackground"/>
                         <constraints>
                             <constraint firstItem="GAt-2f-13c" firstAttribute="centerX" secondItem="ocl-MM-8F8" secondAttribute="centerX" id="4bJ-8z-71e"/>
+                            <constraint firstItem="7XV-8U-f8a" firstAttribute="centerX" secondItem="ocl-MM-8F8" secondAttribute="centerX" id="9pN-PA-mGI"/>
                             <constraint firstItem="7XV-8U-f8a" firstAttribute="top" secondItem="GAt-2f-13c" secondAttribute="bottom" constant="40" id="S0e-fD-lZ8"/>
                             <constraint firstItem="eTg-Ex-7aG" firstAttribute="centerX" secondItem="ocl-MM-8F8" secondAttribute="centerX" id="YZT-12-4yM"/>
                             <constraint firstItem="eTg-Ex-7aG" firstAttribute="top" secondItem="Srm-SH-887" secondAttribute="bottom" constant="15" id="aCx-pn-DmW"/>
-                            <constraint firstItem="7XV-8U-f8a" firstAttribute="leading" secondItem="ocl-MM-8F8" secondAttribute="leading" constant="35" id="czS-BB-rAO"/>
                             <constraint firstItem="Srm-SH-887" firstAttribute="centerX" secondItem="ocl-MM-8F8" secondAttribute="centerX" id="dc8-oN-BB5"/>
                             <constraint firstItem="GAt-2f-13c" firstAttribute="top" secondItem="VRM-uY-hWl" secondAttribute="bottom" constant="40" id="tPy-FX-9TV"/>
-                            <constraint firstAttribute="trailing" secondItem="7XV-8U-f8a" secondAttribute="trailing" constant="35" id="teQ-Ku-yar"/>
                             <constraint firstItem="Srm-SH-887" firstAttribute="top" secondItem="7XV-8U-f8a" secondAttribute="bottom" constant="40" id="xgQ-pf-2iE"/>
                         </constraints>
                     </view>
@@ -193,9 +194,10 @@ Medicine Manager</string>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" modalPresentationStyle="formSheet" id="Fgr-cY-8Rx" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="YK5-VR-EoH">
-                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="44" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="tintColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="tintColor" name="medicineRed"/>
+                        <color key="barTintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -210,5 +212,11 @@ Medicine Manager</string>
     <resources>
         <image name="Logo-Icon" width="1024" height="1024"/>
         <image name="Notification" width="360" height="360"/>
+        <namedColor name="medicineRed">
+            <color red="0.92156862745098034" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="onboardingBackground">
+            <color white="0.10000000000000001" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </namedColor>
     </resources>
 </document>
