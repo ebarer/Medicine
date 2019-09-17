@@ -14,7 +14,6 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     // MARK: - Helper variables
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     var selectedVC: UIViewController? = nil
     
@@ -49,8 +48,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         
         // If first launch and medication count is 0, show "Welcome" screen
         if defaults.bool(forKey: "finishedFirstLaunch") == false {
-            if let count = try? cdStack.context.count(for: fetchRequest), count == 0 {
-                NSLog("FirstLaunch", "Initializing onboarding")
+            if let count = try? CoreDataStack.shared.context.count(for: fetchRequest), count == 0 {
+                NSLog("FirstLaunch: Initializing onboarding")
                 self.performSegue(withIdentifier: "onboardingFirstLaunch", sender: self)
                 return
             }
@@ -58,11 +57,11 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
             
         // Otherwise, on new version, show "New Features" screen
         if defaults.string(forKey: "version") != version {
-            NSLog("FirstLaunch", "Advertising new features")
+            NSLog("FirstLaunch: Advertising new features")
             self.performSegue(withIdentifier: "onboardingNewFeatures", sender: self)
             return
         } else {
-            NSLog("FirstLaunch", "No onboarding necessary")
+            NSLog("FirstLaunch: No onboarding necessary")
         }
     }
 
@@ -91,8 +90,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         if let id = notification.userInfo!["id"] as? String {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
             request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
-            if let med = (try? cdStack.context.fetch(request))?.first {
-                NSLog("Scheduling", "doseNotification triggered for \(med.name ?? "unknown medicine")")
+            if let med = (try? CoreDataStack.shared.context.fetch(request))?.first {
+                NSLog("Scheduling: doseNotification triggered for \(med.name ?? "unknown medicine")")
                 
                 let message = String(format:"Time to take %g %@ of %@", med.dosage, med.dosageUnit.units(med.dosage), med.name!)
                 
@@ -125,8 +124,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
         if let id = notification.userInfo!["id"] as? String {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
             request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
-            if let med = (try? cdStack.context.fetch(request))?.first {
-                NSLog("Scheduling", "refillNotification triggered for \(med.name ?? "unknown medicine")")
+            if let med = (try? CoreDataStack.shared.context.fetch(request))?.first {
+                NSLog("Scheduling: refillNotification triggered for \(med.name ?? "unknown medicine")")
                 
                 var message = "You are running low on \(med.name!) and should refill soon."
                 
@@ -152,12 +151,12 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     
     // MARK: - Action observers
     @objc func takeDoseAction(_ notification: Notification) {
-        NSLog("MainTBC", "takeDoseAction received")
+        NSLog("MainTBC: takeDoseAction received")
         if let id = notification.userInfo!["id"] as? String {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
             request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
-            if let medication = try? cdStack.context.fetch(request), let med = medication.first {
-                let dose = Dose(insertInto: cdStack.context)
+            if let medication = try? CoreDataStack.shared.context.fetch(request), let med = medication.first {
+                let dose = Dose(insertInto: CoreDataStack.shared.context)
                 dose.date = Date()
                 dose.dosage = med.dosage
                 dose.dosageUnitInt = med.dosageUnitInt
@@ -169,8 +168,8 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
                     med.sendRefillNotification()
                 }
                 
-                cdStack.save()
-                NSLog("MainTBC", "takeDoseAction performed")
+                CoreDataStack.shared.save()
+                NSLog("MainTBC: takeDoseAction performed")
 
                 appDelegate.setDynamicShortcuts()
                 appDelegate.updateBadgeCount()
@@ -182,11 +181,11 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     }
     
     @objc func snoozeReminderAction(_ notification: Notification) {
-        NSLog("MainTBC", "snoozeReminderAction received")
+        NSLog("MainTBC: snoozeReminderAction received")
         if let id = notification.userInfo!["id"] as? String {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
             request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
-            if let medication = try? cdStack.context.fetch(request), let med = medication.first {
+            if let medication = try? CoreDataStack.shared.context.fetch(request), let med = medication.first {
                 med.snoozeNotification()
                 appDelegate.setDynamicShortcuts()
                 
@@ -198,13 +197,13 @@ class MainTBC: UITabBarController, UITabBarControllerDelegate {
     }
     
     @objc func refillAction(_ notification: Notification) {
-        NSLog("MainTBC", "refillAction received")
+        NSLog("MainTBC: refillAction received")
         if let id = notification.userInfo!["id"] as? String {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
             request.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [id])
-            if let med = (try? cdStack.context.fetch(request))?.first {
+            if let med = (try? CoreDataStack.shared.context.fetch(request))?.first {
                 performSegue(withIdentifier: "refillPrescription", sender: med)
-                NSLog("MainTBC", "refillAction performed for %@", [med.name!])
+                NSLog("MainTBC: refillAction performed for %@", [med.name!])
             }
         }
     }

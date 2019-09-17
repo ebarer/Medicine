@@ -11,13 +11,16 @@ import CoreData
 
 class SettingsTVC_Sort: UITableViewController {
 
-    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     // MARK: - View methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if #available(iOS 13.0, macCatalyst 13.0, *) {
+            self.navigationController?.isModalInPresentation = true
+        }
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -48,8 +51,8 @@ class SettingsTVC_Sort: UITableViewController {
             defaults.synchronize()
             
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-            guard var medication = try? cdStack.context.fetch(request) else {
-                NSLog("Settings", "Couldn't retrieve medication list")
+            guard var medication = try? CoreDataStack.shared.context.fetch(request) else {
+                NSLog("Settings: Couldn't retrieve medication list")
                 return
             }
             

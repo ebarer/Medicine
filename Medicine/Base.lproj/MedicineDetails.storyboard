@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="FvX-DV-NhA">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="FvX-DV-NhA">
     <device id="retina5_9" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15508"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -18,24 +18,24 @@
                         <color key="backgroundColor" name="tableGroupedBackground"/>
                         <color key="separatorColor" name="tableGroupedSeparator"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="headerCell" rowHeight="80" id="YVg-IO-fQV">
-                                <rect key="frame" x="0.0" y="28" width="375" height="80"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="headerCell" rowHeight="70" id="YVg-IO-fQV">
+                                <rect key="frame" x="0.0" y="28" width="375" height="70"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="YVg-IO-fQV" id="08F-VD-MjG">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="80"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="70"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="csA-xV-9bi">
-                                            <rect key="frame" x="16" y="28" width="343" height="41"/>
+                                            <rect key="frame" x="16" y="20.333333333333332" width="343" height="38.666666666666671"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" tag="1" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="500" verticalCompressionResistancePriority="500" text="Day" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SS9-Km-lU3">
-                                                    <rect key="frame" x="0.0" y="0.0" width="343" height="24"/>
-                                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="343" height="21.666666666666668"/>
+                                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
                                                     <color key="textColor" name="medicineGray1"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" tag="2" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="500" verticalCompressionResistancePriority="500" text="Date" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h0U-3z-n77">
-                                                    <rect key="frame" x="0.0" y="24" width="343" height="17"/>
+                                                    <rect key="frame" x="0.0" y="21.666666666666668" width="343" height="17.000000000000004"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <color key="textColor" name="medicineGray2"/>
                                                     <nil key="highlightedColor"/>
@@ -52,15 +52,15 @@
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" name="tableGroupedBackground"/>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="historyCell" rowHeight="60" id="2Gm-3c-A4C" customClass="HistoryCell" customModule="Medicine" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="108" width="375" height="60"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="historyCell" rowHeight="50" id="2Gm-3c-A4C" customClass="HistoryCell" customModule="Medicine" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="98" width="375" height="50"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2Gm-3c-A4C" id="waF-ie-fiW">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="60"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="500" verticalCompressionResistancePriority="500" text="12:00 AM" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bGg-X4-eeJ">
-                                            <rect key="frame" x="16" y="20.333333333333336" width="75" height="19.333333333333336"/>
+                                            <rect key="frame" x="16" y="15.333333333333334" width="75" height="19.333333333333329"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="75" id="wt4-V6-CRE"/>
                                             </constraints>
@@ -68,17 +68,17 @@
                                             <color key="textColor" name="subtitleLabel"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <stackView opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Q9C-W2-i99">
-                                            <rect key="frame" x="111" y="11" width="264" height="38"/>
+                                        <stackView opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" axis="vertical" distribution="fillProportionally" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="Q9C-W2-i99">
+                                            <rect key="frame" x="111" y="11" width="264" height="28"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="750" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kms-xQ-STm">
-                                                    <rect key="frame" x="0.0" y="0.0" width="264" height="20.333333333333332"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="33.333333333333336" height="15.333333333333334"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" name="medicineRed"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B5s-0R-J02">
-                                                    <rect key="frame" x="0.0" y="20.333333333333329" width="264" height="17.666666666666671"/>
+                                                    <rect key="frame" x="0.0" y="15.333333333333332" width="28.333333333333332" height="12.666666666666668"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <color key="textColor" name="medicineRed"/>
                                                     <nil key="highlightedColor"/>
@@ -132,7 +132,7 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" alwaysBounceVertical="YES" keyboardDismissMode="onDrag" dataMode="static" style="grouped" rowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" contentViewInsetsToSafeArea="NO" id="jtd-GR-Mg6">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="724"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="tableBackground"/>
+                        <color key="backgroundColor" name="tableGroupedBackground"/>
                         <color key="tintColor" name="medicineRed"/>
                         <color key="separatorColor" name="tableSeparator"/>
                         <sections>
@@ -154,15 +154,17 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V8O-gi-Fq1">
-                                                    <rect key="frame" x="53" y="16" width="80" height="38"/>
+                                                    <rect key="frame" x="53" y="11" width="306" height="48"/>
                                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="32"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="V8O-gi-Fq1" secondAttribute="trailing" constant="20" symbolic="YES" id="UDh-ZE-efb"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="V8O-gi-Fq1" secondAttribute="bottom" id="0PC-gn-Yga"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="V8O-gi-Fq1" secondAttribute="trailing" id="3Id-b5-ZgQ"/>
                                                 <constraint firstItem="gZN-gn-vYe" firstAttribute="centerY" secondItem="mzN-Ni-m3u" secondAttribute="centerY" id="fkk-hM-Wkv"/>
+                                                <constraint firstItem="V8O-gi-Fq1" firstAttribute="top" secondItem="mzN-Ni-m3u" secondAttribute="topMargin" id="iUy-b2-5Wq"/>
                                                 <constraint firstItem="V8O-gi-Fq1" firstAttribute="leading" secondItem="mzN-Ni-m3u" secondAttribute="leadingMargin" priority="900" id="lly-PR-gMo"/>
                                                 <constraint firstItem="gZN-gn-vYe" firstAttribute="leading" secondItem="mzN-Ni-m3u" secondAttribute="leadingMargin" id="oPy-ka-n2X"/>
                                                 <constraint firstItem="V8O-gi-Fq1" firstAttribute="leading" secondItem="gZN-gn-vYe" secondAttribute="trailing" constant="12" id="x5I-Jb-iaO"/>
@@ -292,14 +294,20 @@ extend onto the second line.</string>
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="100"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" horizontalCompressionResistancePriority="749" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Mf-Xz-vhH">
+                                                <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" horizontalCompressionResistancePriority="749" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Mf-Xz-vhH">
                                                     <rect key="frame" x="16" y="25" width="147.66666666666666" height="50"/>
-                                                    <color key="backgroundColor" name="medicineRed"/>
+                                                    <color key="backgroundColor" name="actionDose"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="50" id="S3P-W2-LV3"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                                     <state key="normal" title="Take Dose">
+                                                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    </state>
+                                                    <state key="selected">
+                                                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    </state>
+                                                    <state key="highlighted">
                                                         <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </state>
                                                     <connections>
@@ -323,14 +331,17 @@ extend onto the second line.</string>
                                                         <action selector="presentActionMenu:" destination="bId-i9-gti" eventType="touchUpInside" id="Edp-sB-cfR"/>
                                                     </connections>
                                                 </button>
-                                                <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xXh-Of-6Gb">
+                                                <button opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xXh-Of-6Gb">
                                                     <rect key="frame" x="211.66666666666663" y="25" width="147.33333333333337" height="50"/>
-                                                    <color key="backgroundColor" name="cellBackgroundSelected"/>
+                                                    <color key="backgroundColor" name="actionRefill"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="50" id="6D1-30-Tua"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                                     <state key="normal" title="Refill">
+                                                        <color key="titleColor" name="medicineRed"/>
+                                                    </state>
+                                                    <state key="highlighted">
                                                         <color key="titleColor" name="medicineRed"/>
                                                     </state>
                                                     <connections>
@@ -361,18 +372,18 @@ extend onto the second line.</string>
                                         <rect key="frame" x="0.0" y="388" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="PRK-SG-2FB" id="y1U-2Z-nyD">
-                                            <rect key="frame" x="0.0" y="0.0" width="347.66666666666669" height="50"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="348" height="50"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Dose History" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="u7p-Qm-u0R">
-                                                    <rect key="frame" x="61.333333333333343" y="0.0" width="278.33333333333337" height="50"/>
+                                                    <rect key="frame" x="61" y="0.0" width="279" height="50"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="DoseHistoryIcon" id="jEk-A0-Gso">
-                                                    <rect key="frame" x="16" y="0.0" width="30.333333333333343" height="50"/>
+                                                    <rect key="frame" x="16" y="0.0" width="30" height="50"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </imageView>
                                             </subviews>
@@ -387,18 +398,18 @@ extend onto the second line.</string>
                                         <rect key="frame" x="0.0" y="438" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dwA-uN-uNZ" id="U8f-sa-1ce">
-                                            <rect key="frame" x="0.0" y="0.0" width="347.66666666666669" height="50"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="348" height="50"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Refill History" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="lbf-gf-3tZ">
-                                                    <rect key="frame" x="61.333333333333343" y="0.0" width="278.33333333333337" height="50"/>
+                                                    <rect key="frame" x="61" y="0.0" width="279" height="50"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="RefillHistoryIcon" id="WBO-58-vjP">
-                                                    <rect key="frame" x="16" y="0.0" width="30.333333333333343" height="50"/>
+                                                    <rect key="frame" x="16" y="0.0" width="30" height="50"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </imageView>
                                             </subviews>
@@ -522,24 +533,24 @@ extend onto the second line.</string>
                         <color key="backgroundColor" name="tableGroupedBackground"/>
                         <color key="separatorColor" name="tableGroupedSeparator"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="headerCell" rowHeight="80" id="HU7-aQ-2ec">
-                                <rect key="frame" x="0.0" y="28" width="375" height="80"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="headerCell" rowHeight="70" id="HU7-aQ-2ec">
+                                <rect key="frame" x="0.0" y="28" width="375" height="70"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="HU7-aQ-2ec" id="NTH-nl-GeS">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="80"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="70"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="g9y-qD-xch">
-                                            <rect key="frame" x="16" y="28" width="343" height="41"/>
+                                            <rect key="frame" x="16" y="20.333333333333332" width="343" height="38.666666666666671"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" tag="1" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="500" verticalCompressionResistancePriority="500" text="Day" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oLs-Oa-Y0i">
-                                                    <rect key="frame" x="0.0" y="0.0" width="343" height="24"/>
-                                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="343" height="21.666666666666668"/>
+                                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
                                                     <color key="textColor" name="medicineGray1"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" tag="2" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="500" verticalCompressionResistancePriority="500" text="Date" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Url-NW-9P6">
-                                                    <rect key="frame" x="0.0" y="24" width="343" height="17"/>
+                                                    <rect key="frame" x="0.0" y="21.666666666666668" width="343" height="17.000000000000004"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <color key="textColor" name="medicineGray2"/>
                                                     <nil key="highlightedColor"/>
@@ -556,15 +567,15 @@ extend onto the second line.</string>
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" name="tableGroupedBackground"/>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="historyCell" rowHeight="60" id="Ts2-3i-NcH" customClass="HistoryCell" customModule="Medicine" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="108" width="375" height="60"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="historyCell" rowHeight="50" id="Ts2-3i-NcH" customClass="HistoryCell" customModule="Medicine" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="98" width="375" height="50"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Ts2-3i-NcH" id="tb0-g4-wMO">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="60"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="500" verticalCompressionResistancePriority="500" text="12:00 AM" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="emm-ho-uH1">
-                                            <rect key="frame" x="16" y="20.333333333333336" width="75" height="19.333333333333336"/>
+                                            <rect key="frame" x="16" y="15.333333333333334" width="75" height="19.333333333333329"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="75" id="usk-sv-Fjg"/>
                                             </constraints>
@@ -572,17 +583,17 @@ extend onto the second line.</string>
                                             <color key="textColor" name="subtitleLabel"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <stackView opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="f20-fS-ZJ8">
-                                            <rect key="frame" x="111" y="11" width="264" height="38"/>
+                                        <stackView opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" axis="vertical" distribution="fillProportionally" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="f20-fS-ZJ8">
+                                            <rect key="frame" x="111" y="11" width="264" height="28"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="750" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nEr-2O-m6H">
-                                                    <rect key="frame" x="0.0" y="0.0" width="264" height="20.333333333333332"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="33.333333333333336" height="15.333333333333334"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" name="medicineRed"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hyi-c3-xTG">
-                                                    <rect key="frame" x="0.0" y="20.333333333333329" width="264" height="17.666666666666671"/>
+                                                    <rect key="frame" x="0.0" y="15.333333333333332" width="28.333333333333332" height="12.666666666666668"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <color key="textColor" name="medicineRed"/>
                                                     <nil key="highlightedColor"/>
@@ -661,10 +672,10 @@ extend onto the second line.</string>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" id="rdN-jA-mOA">
                         <rect key="frame" x="0.0" y="44" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <color key="barTintColor" name="medicineRed"/>
+                        <color key="tintColor" name="medicineRed"/>
+                        <color key="barTintColor" name="tableGroupedBackground"/>
                         <textAttributes key="titleTextAttributes">
-                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <color key="textColor" name="medicineGray1"/>
                         </textAttributes>
                         <textAttributes key="largeTitleTextAttributes">
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -685,35 +696,38 @@ extend onto the second line.</string>
         <image name="DoseHistoryIcon" width="60" height="100"/>
         <image name="OverdueIcon" width="44" height="44"/>
         <image name="RefillHistoryIcon" width="60" height="100"/>
-        <namedColor name="cellBackground">
-            <color white="0.10980392156862745" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        <namedColor name="actionDose">
+            <color red="1" green="0.0" blue="0.20000000298023224" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="cellBackgroundSelected">
-            <color white="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        <namedColor name="actionRefill">
+            <color white="0.89999997615814209" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </namedColor>
+        <namedColor name="cellBackground">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </namedColor>
         <namedColor name="medicineGray1">
-            <color red="0.6600000262260437" green="0.6600000262260437" blue="0.6600000262260437" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color white="0.30000001192092896" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </namedColor>
+        <namedColor name="medicineGray1">
+            <color white="0.30000001192092896" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </namedColor>
         <namedColor name="medicineGray2">
-            <color red="0.33000000000000002" green="0.33000000000000002" blue="0.33000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color white="0.44999998807907104" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </namedColor>
         <namedColor name="medicineRed">
-            <color red="0.92156862745098034" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="subtitleLabel">
-            <color white="0.5" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </namedColor>
-        <namedColor name="tableBackground">
-            <color white="0.019999999552965164" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <color white="0.44999998807907104" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </namedColor>
         <namedColor name="tableGroupedBackground">
-            <color red="0.05000000074505806" green="0.05000000074505806" blue="0.05000000074505806" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color white="0.94999998807907104" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </namedColor>
         <namedColor name="tableGroupedSeparator">
-            <color white="0.17999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <color white="0.86000001430511475" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </namedColor>
         <namedColor name="tableSeparator">
-            <color white="0.17999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <color white="0.86000001430511475" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </namedColor>
     </resources>
 </document>

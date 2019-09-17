@@ -27,7 +27,6 @@ class AddDoseTVC: UITableViewController {
     
     
     // MARK: - Helper variables
-    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     let cal = Calendar.current
@@ -41,7 +40,7 @@ class AddDoseTVC: UITableViewController {
         dateFormatter.timeStyle = DateFormatter.Style.short
         dateFormatter.dateStyle = DateFormatter.Style.none
 
-        dose = Dose(insertInto: cdStack.context)
+        dose = Dose(insertInto: CoreDataStack.shared.context)
         dose.date = Date()
         
         super.init(coder: aDecoder)
@@ -52,10 +51,16 @@ class AddDoseTVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.clearsSelectionOnViewWillAppear = true
+        
+        if #available(iOS 13.0, macCatalyst 13.0, *) {
+            self.navigationController?.isModalInPresentation = true
+        }
+        
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
 
         // Modify VC
         self.view.tintColor = UIColor.medRed
-        tableView.tableHeaderView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: tableView.bounds.size.width, height: 0.01))  // Remove tableView gap
 
         // Prevent modification of medication when not in global history
         if !globalHistory {
@@ -106,7 +111,7 @@ class AddDoseTVC: UITableViewController {
                 NSSortDescriptor(key: "dateLastDose", ascending: false)
             ]
             
-            if let med = (try? cdStack.context.fetch(fetchRequest))?.first {
+            if let med = (try? CoreDataStack.shared.context.fetch(fetchRequest))?.first {
                 self.med = med
                 dose.medicine = med
                 dose.dosage = med.dosage
@@ -142,6 +147,14 @@ class AddDoseTVC: UITableViewController {
     
     
     // MARK: - Table view data source
+    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 0 {
+            return tableView.sectionHeaderHeight
+        }
+        
+        return UITableView.automaticDimension
+    }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath == IndexPath(row: 0, section: 0) {
@@ -225,7 +238,7 @@ class AddDoseTVC: UITableViewController {
                     med.sendRefillNotification()
                 }
                 
-                cdStack.save()
+                CoreDataStack.shared.save()
 
                 dismiss(animated: true, completion: nil)
             } catch {
@@ -240,8 +253,8 @@ class AddDoseTVC: UITableViewController {
     }
     
     @IBAction func cancelDose(_ sender: AnyObject?) {
-        cdStack.context.delete(dose)
-        cdStack.save()
+        CoreDataStack.shared.context.delete(dose)
+        CoreDataStack.shared.save()
         
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
@@ -270,7 +283,7 @@ class AddDoseTVC: UITableViewController {
             doseAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
             
             doseAlert.addAction(UIAlertAction(title: "Add Dose", style: UIAlertAction.Style.destructive, handler: {(action) -> Void in
-                self.cdStack.save()
+                CoreDataStack.shared.save()
                 
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)

@@ -62,7 +62,7 @@ extension MedicineDetailsTVC: UIViewControllerPreviewingDelegate {
     override var previewActionItems : [UIPreviewActionItem] {
         let takeAction = UIPreviewAction(title: "Take Dose", style: .default) { (action: UIPreviewAction, vc: UIViewController) -> Void in
             if let med = self.med {
-                let dose = Dose(insertInto: self.cdStack.context)
+                let dose = Dose(insertInto: CoreDataStack.shared.context)
                 dose.date = Date()
                 dose.dosage = med.dosage
                 dose.dosageUnit = med.dosageUnit
@@ -74,7 +74,7 @@ extension MedicineDetailsTVC: UIViewControllerPreviewingDelegate {
                     med.sendRefillNotification()
                 }
                 
-                self.cdStack.save()
+                CoreDataStack.shared.save()
                 
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)

@@ -18,6 +18,10 @@ class SettingsTVC_Refill: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if #available(iOS 13.0, macCatalyst 13.0, *) {
+            self.navigationController?.isModalInPresentation = true
+        }
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {

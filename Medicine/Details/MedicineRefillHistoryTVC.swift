@@ -14,9 +14,6 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     
     weak var med: Medicine!
     
-    // MARK: - Helper variables
-    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
-    
     var normalButtons = [UIBarButtonItem]()
     var editButtons = [UIBarButtonItem]()
     
@@ -30,7 +27,6 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
         
         // Modify VC
         self.view.tintColor = UIColor.medRed
-        
         self.navigationController?.toolbar.isTranslucent = true
         self.navigationController?.toolbar.tintColor = UIColor.medRed
         
@@ -61,7 +57,7 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
         request.fetchLimit = 500
         
         self.fetchedResultsController = NSFetchedResultsController(fetchRequest: request,
-                                                                   managedObjectContext: cdStack.context,
+                                                                   managedObjectContext: CoreDataStack.shared.context,
                                                                    sectionNameKeyPath: "dateSection",
                                                                    cacheName: nil)
     }
@@ -122,18 +118,13 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 80.0
+        return 70.0
     }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let headerView = tableView.dequeueReusableCell(withIdentifier: "headerCell")?.contentView else {
             return nil
         }
-        
-        let border = CALayer()
-        border.backgroundColor = UIColor.tableGroupedSeparator.cgColor
-        border.frame = CGRect(x: 0, y: headerView.frame.height - 0.5, width: headerView.frame.width, height: 0.5)
-        headerView.layer.addSublayer(border)
         
         guard let dayLabel = headerView.viewWithTag(1) as? UILabel else {
             return nil
@@ -174,12 +165,6 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let footerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 5))
         footerView.backgroundColor = UIColor.tableGroupedBackground
-        
-        let border = CALayer()
-        border.backgroundColor = UIColor.tableGroupedSeparator.cgColor
-        border.frame = CGRect(x: 0, y: 0, width: footerView.frame.width, height: 0.5)
-        footerView.layer.addSublayer(border)
-        
         return footerView
     }
     
@@ -286,7 +271,7 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
         if let selectedRowIndexes = tableView.indexPathsForSelectedRows {
             for indexPath in selectedRowIndexes.reversed() {
                 if let refill = self.fetchedResultsController!.object(at: indexPath) as? Refill {
-                    med.removeRefill(refill, moc: cdStack.context)
+                    med.removeRefill(refill, moc: CoreDataStack.shared.context)
                     
                     if tableView.numberOfRows(inSection: indexPath.section) == 1 {
                         tableView.deleteSections(IndexSet(integer: indexPath.section), with: .automatic)
@@ -342,7 +327,7 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
                 
             self.present(mc, animated: true, completion: nil)
         } else {
-            NSLog("Export", "Unable to export refill history for med (\(med.name!)): user unable to send mail.")
+            NSLog("Export: Unable to export refill history for med (\(med.name!)): user unable to send mail.")
         }
     }
     

@@ -40,16 +40,16 @@ class FirstLaunch_Notifications: UIViewController {
     
     
     @IBAction func authorizeNotifications(_ sender: Any) {
-        NSLog("FirstLaunch", "Requesting notification authorization.")
+        NSLog("FirstLaunch: Requesting notification authorization.")
         
         UNUserNotificationCenter.current().getNotificationSettings { (settings) in
             if settings.authorizationStatus == .notDetermined {
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) {(accepted, error) in
                     if accepted {
                         self.appDelegate.configureNotificationAuthorization()
-                        NSLog("FirstLaunch", "Notification authorization granted.")
+                        NSLog("FirstLaunch: Notification authorization granted.")
                     } else {
-                        NSLog("FirstLaunch", "Notification authorization denied.")
+                        NSLog("FirstLaunch: Notification authorization denied.")
                     }
                     
                     self.nextSegue()
@@ -61,7 +61,7 @@ class FirstLaunch_Notifications: UIViewController {
     }
     
     @IBAction func denyNotifications(_ sender: Any) {
-        NSLog("FirstLaunch", "User skipped notification authorization request.")
+        NSLog("FirstLaunch: User skipped notification authorization request.")
         nextSegue()
     }
     

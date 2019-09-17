@@ -26,6 +26,10 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate, UIPi
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if #available(iOS 13.0, macCatalyst 13.0, *) {
+            self.navigationController?.isModalInPresentation = true
+        }
+        
         // Modify VC
         self.view.tintColor = UIColor.medRed
         

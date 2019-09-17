@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="cyn-iY-QeU">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -150,7 +151,7 @@
                                 </connections>
                             </button>
                         </subviews>
-                        <color key="backgroundColor" name="onboardingBackground"/>
+                        <color key="backgroundColor" name="popoverBackground"/>
                         <constraints>
                             <constraint firstItem="3BB-Rx-FaU" firstAttribute="width" secondItem="wOG-4A-Tfk" secondAttribute="width" id="4wf-5g-jWT"/>
                             <constraint firstItem="aMn-0r-S8U" firstAttribute="leading" secondItem="k6J-mI-CxB" secondAttribute="leading" id="EOf-VP-1Cf"/>
@@ -176,10 +177,10 @@
         <image name="Feature-2" width="130" height="130"/>
         <image name="Feature-3" width="130" height="130"/>
         <namedColor name="medicineRed">
-            <color red="0.92156862745098034" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.93000000000000005" green="0.0" blue="0.18600000000000017" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="onboardingBackground">
-            <color white="0.10000000000000001" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        <namedColor name="popoverBackground">
+            <color white="0.079999998211860657" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </namedColor>
     </resources>
 </document>

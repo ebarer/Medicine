@@ -24,10 +24,12 @@ struct CoreDataStack {
     
     // MARK: Initializers
     
+    static let shared = CoreDataStack()!
+    
     init?() {
         // Assumes the model is in the main bundle
         guard let modelURL = Bundle.main.url(forResource: "Medicine", withExtension: "momd") else {
-            NSLog("CoreData", "Unable to find DataModel in the main bundle")
+            NSLog("CoreData: Unable to find DataModel in the main bundle")
             return nil
         }
         self.modelURL = modelURL
@@ -60,7 +62,7 @@ struct CoreDataStack {
         let fm = FileManager.default
         
         guard let docUrl = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.com.ebarer.Medicine") else {
-            NSLog("CoreData", "Unable to reach the documents folder")
+            NSLog("CoreData: Unable to reach the documents folder")
             return nil
         }
         
@@ -84,9 +86,9 @@ struct CoreDataStack {
                                     storeURL: dbURL,
                                     options: options as [NSObject : AnyObject])
             
-            NSLog("CoreData", "Opened store at: \(dbURL)")
+            NSLog("CoreData: Opened store at: \(dbURL)")
         } catch {
-            NSLog("CoreData", "Unable to add store at: \(dbURL)")
+            NSLog("CoreData: Unable to add store at: \(dbURL)")
         }
     }
     
@@ -117,7 +119,7 @@ extension CoreDataStack {
             do {
                 try self.backgroundContext.save()
             } catch {
-                NSLog("CoreData", "Unable to save background context: \(error)")
+                NSLog("CoreData: Unable to save background context: \(error)")
             }
         }
     }
@@ -126,7 +128,7 @@ extension CoreDataStack {
 // MARK: - CoreDataStack (Save Data)
 
 extension CoreDataStack {
-    func save() {
+    func save(forcePersistence:Bool = false) {
         // We call this synchronously, but it's a very fast
         // operation (it doesn't hit the disk). We need to know
         // when it ends so we can call the next save (on the persisting
@@ -137,16 +139,25 @@ extension CoreDataStack {
                 do {
                     try self.context.save()
                 } catch {
-                    NSLog("CoreData", "Unable to save synchronous (main) context: \(error)")
+                    NSLog("CoreData: Unable to save synchronous (main) context: \(error)")
                 }
                 
                 // now we save in the background
-                self.persistingContext.perform() {
+                if forcePersistence {
                     do {
                         try self.persistingContext.save()
-                        NSLog("CoreData", "Succesfully save persistent context")
+                        NSLog("CoreData: Succesfully save persistent context")
                     } catch {
-                        NSLog("CoreData", "Error while saving persistent context: \(error)")
+                        NSLog("CoreData: Error while saving persistent context: \(error)")
+                    }
+                } else {
+                    self.persistingContext.perform() {
+                        do {
+                            try self.persistingContext.save()
+                            NSLog("CoreData: Succesfully save persistent context")
+                        } catch {
+                            NSLog("CoreData: Error while saving persistent context: \(error)")
+                        }
                     }
                 }
             }

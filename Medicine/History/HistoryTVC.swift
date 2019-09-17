@@ -11,9 +11,6 @@ import CoreData
 import MessageUI
 
 class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelegate {
-    
-    // MARK: - Helper variables
-    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
 
     var editButtons = [UIBarButtonItem]()
     
@@ -25,6 +22,9 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
         
         // Modify VC
         self.view.tintColor = UIColor.medRed
+        
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
         
         self.navigationController?.toolbar.isTranslucent = true
         self.navigationController?.toolbar.tintColor = UIColor.medRed
@@ -52,7 +52,7 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
         request.fetchLimit = 300
 
         self.fetchedResultsController = NSFetchedResultsController(fetchRequest: request,
-                                                                   managedObjectContext: cdStack.context,
+                                                                   managedObjectContext: CoreDataStack.shared.context,
                                                                    sectionNameKeyPath: "dateSection",
                                                                    cacheName: nil)
         
@@ -83,7 +83,7 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
 
     func displayEmptyView() {
         let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-        if let count = try? cdStack.context.count(for: request), count == 0 {
+        if let count = try? CoreDataStack.shared.context.count(for: request), count == 0 {
             navigationItem.leftBarButtonItem?.isEnabled = false
             navigationItem.rightBarButtonItem?.isEnabled = false
             
@@ -121,7 +121,7 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
     }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 80.0
+        return 70.0
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -129,10 +129,10 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
             return nil
         }
         
-        let border = CALayer()
-        border.backgroundColor = UIColor.tableGroupedSeparator.cgColor
-        border.frame = CGRect(x: 0, y: headerView.frame.height - 0.5, width: headerView.frame.width, height: 0.5)
-        headerView.layer.addSublayer(border)
+//        let border = CALayer()
+//        border.backgroundColor = UIColor.tableGroupedSeparator.cgColor
+//        border.frame = CGRect(x: 0, y: headerView.frame.height - 0.5, width: headerView.frame.width, height: 0.5)
+//        headerView.layer.addSublayer(border)
         
         guard let dayLabel = headerView.viewWithTag(1) as? UILabel else {
             return nil
@@ -173,12 +173,6 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
     override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let footerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 5))
         footerView.backgroundColor = UIColor.tableGroupedBackground
-        
-        let border = CALayer()
-        border.backgroundColor = UIColor.tableGroupedSeparator.cgColor
-        border.frame = CGRect(x: 0, y: 0, width: footerView.frame.width, height: 0.5)
-        footerView.layer.addSublayer(border)
-        
         return footerView
     }
 
@@ -188,7 +182,7 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if let fc = fetchedResultsController {
             let count = fc.sections![indexPath.section].numberOfObjects
-            return (count > 0) ? 60.0 : tableView.rowHeight
+            return (count > 0) ? 65.0 : tableView.rowHeight
         }
         
         return tableView.rowHeight
@@ -289,16 +283,16 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
                     let med = dose.medicine!
                     
                     if med.lastDose == dose {
-                        _ = med.untakeLastDose(context: cdStack.context)
+                        _ = med.untakeLastDose(context: CoreDataStack.shared.context)
                     } else {
-                        med.untakeDose(dose, context: cdStack.context)
+                        med.untakeDose(dose, context: CoreDataStack.shared.context)
                     }
                     
-                    cdStack.context.delete(dose)
+                    CoreDataStack.shared.context.delete(dose)
                 }
             }
             
-            cdStack.save()
+            CoreDataStack.shared.save()
             
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
@@ -349,7 +343,7 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
             
             self.present(mc, animated: true, completion: nil)
         } else {
-            NSLog("Export", "Unable to export global history: user unable to send mail.")
+            NSLog("Export: Unable to export global history: user unable to send mail.")
         }
     }
     

@@ -46,12 +46,12 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     // MARK: - Store kit delegate/observer
     func requestProductInfo() {
         if SKPaymentQueue.canMakePayments() {
-            NSLog("IAP", "Starting IAP process")
+            NSLog("IAP: Starting IAP process")
             let productRequest = SKProductsRequest(productIdentifiers: Set([productID]))
             productRequest.delegate = self
             productRequest.start()
         } else {
-            NSLog("IAP", "Error: Cannot perform IAP: user cannot make payments")
+            NSLog("IAP: Error: Cannot perform IAP: user cannot make payments")
         }
     }
     
@@ -64,21 +64,23 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
             return
         }
         
-        purchaseButton.setTitle(upgrade.localizedPrice, for: UIControl.State())
+        DispatchQueue.main.async {
+            self.purchaseButton.setTitle("Unlock for \(upgrade.localizedPrice)", for: UIControl.State())
+        }
     }
 
     
     @IBAction func purchaseFullVersion() {
         // Check that user can make purchases
         guard SKPaymentQueue.canMakePayments() == true else {
-            NSLog("IAP", "Error: Cannot perform IAP: user cannot make payments")
+            NSLog("IAP: Error: Cannot perform IAP: user cannot make payments")
             displayPurchaseFailureAlert()
             return
         }
         
         // Check that there are products to purchase
         guard let _ = products?.count, let upgrade = products?.first else {
-            NSLog("IAP", "Error: Cannot perform IAP: no products available for purchase")
+            NSLog("IAP: Error: Cannot perform IAP: no products available for purchase")
             displayPurchaseFailureAlert()
             return
         }
@@ -108,7 +110,7 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
     }
     
     @IBAction func restoreFullVersion(_ sender: AnyObject) {
-        NSLog("IAP", "Attempting to restore full version from previous purchase")
+        NSLog("IAP: Attempting to restore full version from previous purchase")
         
         // Modify UI elements
         purchaseButton.isEnabled = false
@@ -120,7 +122,7 @@ class UpgradeVC: UIViewController, SKProductsRequestDelegate {
         if SKPaymentQueue.canMakePayments() {
             SKPaymentQueue.default().restoreCompletedTransactions()
         } else {
-            NSLog("IAP", "Error: Cannot restore full version: user unable to make payments")
+            NSLog("IAP: Error: Cannot restore full version: user unable to make payments")
         }
     }
     

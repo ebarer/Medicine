@@ -15,6 +15,8 @@ import UserNotifications
 
 class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
+    let debugMode: Bool = true
+    
     // Outlets
     @IBOutlet var addMedicationButton: UIBarButtonItem!
     @IBOutlet var summaryHeader: UIView!
@@ -28,7 +30,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     // Helper variables
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     var timer: Timer?
     
@@ -48,9 +49,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-/// MARK: - DEBUG
-// defaults.set(true, forKey: "debug")
-        
         // Register for 3D touch if available
         if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: tableView)
@@ -66,10 +64,13 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         // Modify VC tint and Navigation Item
         self.view.tintColor = UIColor.medRed
         
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        
         // Add logo to navigation bar
         let logoView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
         let logoImageView = UIImageView(image: UIImage(named: "Logo"))
-        logoImageView.tintColor = UIColor.tableBackground
+        logoImageView.tintColor = UIColor.medGray1
         logoImageView.frame = CGRect(x: 0, y: 0, width: logoView.frame.width, height: logoView.frame.height)
         logoView.addSubview(logoImageView)
         self.navigationItem.titleView = logoView
@@ -81,9 +82,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         summaryHeader = tableView.tableHeaderView
         tableView.tableHeaderView = nil
         tableView.addSubview(summaryHeader)
-        tableView.contentInset = UIEdgeInsets(top: summaryHeaderHeight, left: 0, bottom: 0, right: 0)
+        tableView.contentInset = UIEdgeInsets(top: summaryHeaderHeight + 35, left: 0, bottom: 0, right: 0)
         tableView.contentOffset = CGPoint(x: 0, y: -summaryHeaderHeight)
-        updateHeader()
         
         // Add observers for notifications
         NotificationCenter.default.addObserver(self, selector: #selector(refreshMainVC(_:)), name: NSNotification.Name(rawValue: "refreshMain"), object: nil)
@@ -95,7 +95,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         self.navigationController?.setToolbarHidden(true, animated: true)
         
         refreshMainVC()
-
         selectMed()
         
         if let selectedIndex = self.tableView.indexPathForSelectedRow {
@@ -177,7 +176,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             guard let medID = shortcutItem.userInfo?["medID"] as? String else { return }
             let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
             fetchRequest.predicate = NSPredicate(format: "medicineID == %@", argumentArray: [medID])
-            let med = ((try? cdStack.context.fetch(fetchRequest).first) as Medicine??)
+            let med = ((try? CoreDataStack.shared.context.fetch(fetchRequest).first) as Medicine??)
             performSegue(withIdentifier: "addDose", sender: med ?? nil)
         default: break
         }
@@ -187,8 +186,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     // MARK: - Update values
     func loadMedication() {
         medication = [Medicine]()
-        
-        // Create fetch request, sorted by task time
+
         let fetchRequest: NSFetchRequest<Medicine> = Medicine.fetchRequest()
         
         if defaults.integer(forKey: "sortOrder") == SortOrder.nextDosage.rawValue {
@@ -205,7 +203,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             fetchRequest.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
         }
         
-        if let results = try? cdStack.context.fetch(fetchRequest) {
+        if let results = try? CoreDataStack.shared.context.fetch(fetchRequest) {
             medication = results
             logMedication()
         }
@@ -242,7 +240,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         updateHeader()
     }
     
-    func displayEmptyView() {
+    func displayEmptyView(withAnimation: Bool = false) {
         if medication.count == 0 {
             // Display edit button
             self.navigationItem.rightBarButtonItems?.removeObject(self.editButtonItem)
@@ -250,20 +248,25 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             // Display empty message
             if self.view.viewWithTag(1001) == nil {     // Prevent duplicate empty views being added
                 if let emptyView = UINib(nibName: "MainEmptyView", bundle: nil).instantiate(withOwner: self, options: nil)[0] as? UIView {
+                    emptyView.traitCollectionDidChange(nil)
                     emptyView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
                     emptyView.tag = 1001
                     emptyView.alpha = 0.0
                     self.view.addSubview(emptyView)
                     
-                    UIView.animate(withDuration: 0.5,
-                        animations: { () -> Void in
-                            self.summaryHeader.alpha = 0.0
-                            self.tableView.alpha = 0.0
-                            emptyView.alpha = 1.0
-                        }, completion: { (val) -> Void in
-                            self.summaryHeader.isHidden = true
-                            self.tableView.isHidden = true
-                    })
+                    if (!withAnimation) {
+                        emptyView.alpha = 1.0
+                    } else {
+                        UIView.animate(withDuration: 0.5,
+                            animations: { () -> Void in
+                                self.summaryHeader.alpha = 0.0
+                                self.tableView.alpha = 0.0
+                                emptyView.alpha = 1.0
+                            }, completion: { (val) -> Void in
+                                self.summaryHeader.isHidden = true
+                                self.tableView.isHidden = true
+                        })
+                    }
                 }
             }
         } else {
@@ -289,6 +292,11 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     func updateHeader() {
+        guard medication.count > 0 else {
+            summaryHeader.alpha = 0
+            return
+        }
+        
         // Update bounds and alpha
         var headerRect = CGRect(x: 0, y: -summaryHeaderHeight, width: tableView.bounds.width, height: summaryHeaderHeight)
         
@@ -304,27 +312,37 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         summaryHeader.alpha = (-0.01 * tableView.contentOffset.y) - 0.5
         
         // Initialize main string
-        var string = NSMutableAttributedString(string: "No more doses today")
-        string.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
-        
-        // Setup today widget data
-        var todayData = [String: AnyObject]()
-        todayData["date"] = nil
+        var string = NSMutableAttributedString(string: "No scheduled doses today")
+        string.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 32.0), range: NSMakeRange(0, string.length))
         
         // Setup summary labels
         headerCounterLabel.attributedText = string
         headerDescriptionLabel.text = nil
         headerMedLabel.text = nil
         
-        let nextMed = medication.sorted(by: Medicine.sortByNextDose).filter({ $0.reminderEnabled == true }).first
+        let nextMed = medication.sorted(by: Medicine.sortByNextDose).filter({ $0.reminderEnabled }).first
         if let date = nextMed?.nextDose {
             // If dose is in the past, warn of overdue doses
-            if date.compare(Date()) == .orderedAscending {                
-                string = NSMutableAttributedString(string: "Overdue")
-                string.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
+            if date.compare(Date()) == .orderedAscending {
+                string = NSMutableAttributedString(string: " Overdue")
+                string.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 38.0), range: NSMakeRange(0, string.length))
+                
+                headerCounterLabel.attributedText = string
+                
+                let warningIconAttachment = NSTextAttachment()
+                warningIconAttachment.image = UIImage(named: "OverdueIcon")
+                let size = headerCounterLabel.font.capHeight
+                warningIconAttachment.bounds = CGRect(x: 0, y: 0, width: size, height: size)
+                let warningIconString = NSAttributedString(attachment: warningIconAttachment)
+                
+                string.insert(warningIconString, at: 0)
+                
                 string.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.medRed, range: NSMakeRange(0, string.length))
                 
                 headerCounterLabel.attributedText = string
+                
+                let dose = String(format:"%g %@", nextMed!.dosage, nextMed!.dosageUnit.units(nextMed!.dosage))
+                headerMedLabel.text = "\(dose) of \(nextMed!.name!)"
             }
             // Show next scheduled dose
             else if Calendar.current.isDateInToday(date) {
@@ -333,7 +351,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 dateFormatter.dateFormat = "h:mm a"
                 let dateString = dateFormatter.string(from: date)
                 string = NSMutableAttributedString(string: dateString)
-                string.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 70.0, weight: UIFont.Weight.thin), range: NSMakeRange(0, string.length))
+                string.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 70.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
                 string.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.medGray1, range: NSMakeRange(0, string.length))
 
                 // Accomodate 24h times
@@ -352,21 +370,14 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
         // Prompt to take first dose
         else if medication.count > 0 {
-            if medication.first?.lastDose == nil {
-                string = NSMutableAttributedString(string: "Take first dose")
-                string.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 32.0, weight: UIFont.Weight.light), range: NSMakeRange(0, string.length))
+            if medication.first?.lastDose == nil, let name = medication.first?.name {
+                string = NSMutableAttributedString(string: "Take first dose of \(name)")
+                string.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 32.0), range: NSMakeRange(0, string.length))
                 headerCounterLabel.attributedText = string
             }
         }
-        
-        // Set today widget information
-        todayData["descriptionString"] = headerDescriptionLabel.text as AnyObject?
-        todayData["dateString"] = headerCounterLabel.text as AnyObject?
-        todayData["medString"] = headerMedLabel.text as AnyObject?
-        
-        defaults.set((todayData as NSDictionary), forKey: "todayData")
-        defaults.synchronize()
     }
+    
     
     // MARK: - Table view data source
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -408,7 +419,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         
         // If no doses taken, and medication is hourly
         if med.doseHistory?.count == 0 && med.intervalUnit == .hourly {
-            cell.hideButton(true, animated: false)
+            cell.enableChevron(enable: true)
             cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
             cell.subtitle.text = "Tap to take first dose"
         }
@@ -445,7 +456,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 
             // If no other conditions met, instruct user on how to take dose
             else {
-                cell.hideButton(true, animated: false)
+                cell.enableChevron(enable: true)
                 cell.subtitleGlyph.image = UIImage(named: "AddDoseIcon")
                 cell.subtitle.text = "Tap to take first dose"
             }
@@ -472,7 +483,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 med.sortOrder = Int16(index)
             }
 
-            cdStack.save()
+            CoreDataStack.shared.save()
 
             // Set sort order to "manually"
             defaults.set(0, forKey: "sortOrder")
@@ -491,7 +502,7 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         }
 
         takeAction.image = UIImage(named: "SwipeActionTakeDoseIcon")
-        takeAction.backgroundColor = UIColor.medRed
+        takeAction.backgroundColor = UIColor.medGray2
 
         return UISwipeActionsConfiguration(actions: [takeAction])
     }
@@ -618,8 +629,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             }
             
             alert.addAction(UIAlertAction(title: "Skip Dose", style: UIAlertAction.Style.destructive, handler: {(action) -> Void in
-                med.skipDose(context: self.cdStack.context)
-                self.cdStack.save()
+                med.skipDose(context: CoreDataStack.shared.context)
+                CoreDataStack.shared.save()
                 
                 // Update spotlight index values and home screen shortcuts
                 self.appDelegate.indexMedication()
@@ -632,8 +643,8 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             // If last dose is set, allow user to undo last dose
             if (med.lastDose != nil) {
                 alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertAction.Style.destructive, handler: {(action) -> Void in
-                    med.untakeLastDose(context: self.cdStack.context)
-                    self.cdStack.save()
+                    med.untakeLastDose(context: CoreDataStack.shared.context)
+                    CoreDataStack.shared.save()
 
                     // Update spotlight index values and home screen shortcuts
                     self.appDelegate.indexMedication()
@@ -703,22 +714,22 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         medication.remove(at: indexPath.row)
         
         // Remove medication from persistent store
-        cdStack.context.delete(med)
-        cdStack.save()
+        CoreDataStack.shared.context.delete(med)
+        CoreDataStack.shared.save()
         
         // Update spotlight index values and home screen shortcuts
         appDelegate.removeIndex(med: med)
         appDelegate.setDynamicShortcuts()
         
         if medication.count == 0 {
-            displayEmptyView()
+            displayEmptyView(withAnimation: true)
         } else {
             // Remove medication from array
             tableView.deleteRows(at: [indexPath], with: UITableView.RowAnimation.fade)
         }
         
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil, userInfo: ["reload":false])
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "medicationDeleted"), object: nil, userInfo: ["reload":false])
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "medicationDeleted"), object: nil)
     }
     
     @objc func medicationDeleted() {
@@ -782,6 +793,15 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 }
             }
         }
+                
+        if segue.identifier == "editMedication" {
+            if let vc = segue.destination.children[0] as? AddMedicationTVC {
+                if let med = sender as? Medicine {
+                    vc.med = med
+                    vc.editMode = true
+                }
+            }
+        }
         
         if segue.identifier == "addDose" {
             if let vc = segue.destination.children[0] as? AddDoseTVC {
@@ -795,15 +815,6 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             if let vc = segue.destination.children[0] as? AddRefillTVC {
                 if let med = sender as? Medicine {
                     vc.med = med
-                }
-            }
-        }
-        
-        if segue.identifier == "editMedication" {
-            if let vc = segue.destination.children[0] as? AddMedicationTVC {
-                if let med = sender as? Medicine {
-                    vc.med = med
-                    vc.editMode = true
                 }
             }
         }
@@ -830,15 +841,15 @@ extension MainVC: SKPaymentTransactionObserver {
         for transaction in transactions {
             switch (transaction.transactionState) {
             case SKPaymentTransactionState.restored:
-                NSLog("SKPaymentTransactions", "Transaction state is Restored for transaction: \(transaction)")
+                NSLog("SKPaymentTransactions: Transaction state is Restored for transaction: \(transaction)")
                 queue.finishTransaction(transaction)
                 unlockManager()
             case SKPaymentTransactionState.purchased:
-                NSLog("SKPaymentTransactions", "Transaction state is Purchased for transaction: \(transaction)")
+                NSLog("SKPaymentTransactions: Transaction state is Purchased for transaction: \(transaction)")
                 queue.finishTransaction(transaction)
                 unlockManager()
             case SKPaymentTransactionState.failed:
-                NSLog("SKPaymentTransactions", "Error: Transaction state is Failed for transaction: \(transaction)")
+                NSLog("SKPaymentTransactions: Error: Transaction state is Failed for transaction: \(transaction)")
                 queue.finishTransaction(transaction)
                 
                 mvc?.purchaseButton.isEnabled = true
@@ -853,7 +864,7 @@ extension MainVC: SKPaymentTransactionObserver {
     
     func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
         if queue.transactions.count == 0 {
-            NSLog("IAP", "Error: Failed to restore IAP: user has no transactions")
+            NSLog("IAP: Error: Failed to restore IAP: user has no transactions")
             presentRestoreFailureAlert()
         }
         
@@ -862,7 +873,7 @@ extension MainVC: SKPaymentTransactionObserver {
             queue.finishTransaction(transaction)
             
             if pID == productID {
-                NSLog("IAP", "Succesfully unlocked full version: found transaction with product ID \(pID)")
+                NSLog("IAP: Succesfully unlocked full version: found transaction with product ID \(pID)")
                 unlockManager()
             }
         }
@@ -877,7 +888,7 @@ extension MainVC: SKPaymentTransactionObserver {
     }
     
     func presentPurchaseFailureAlert() {
-        NSLog("IAP", "Error: Failed to purchase IAP")
+        NSLog("IAP: Error: Failed to purchase IAP")
         
         mvc?.restoreButton.setTitle("Restore Purchase", for: UIControl.State())
         mvc?.restoreButton.isEnabled = true
@@ -892,7 +903,7 @@ extension MainVC: SKPaymentTransactionObserver {
     }
     
     func presentRestoreFailureAlert() {
-        NSLog("IAP", "Error: Failed to restore IAP")
+        NSLog("IAP: Error: Failed to restore IAP")
         
         mvc?.restoreButton.setTitle("Restore Purchase", for: UIControl.State())
         mvc?.restoreButton.isEnabled = true
@@ -915,21 +926,14 @@ extension MainVC: SKPaymentTransactionObserver {
     }
     
     func appLocked() -> Bool {
-        NSLog("IAP", "Indicated app is locked and user needs to purchase IAP")
-        
-        // If debug device, disable medication limit
-        if defaults.bool(forKey: "debug") == true {
-            return false
-        }
+        NSLog("IAP: Indicated app is locked and user needs to purchase IAP")
         
         // If limit exceeded and product locked, return true
-        if medication.count >= trialLimit {
-            if productLock == true {
-                return true
-            }
+        if medication.count < trialLimit {
+            return false
         }
-        
-        return false
+
+        return productLock && !debugMode
     }
     
     func continueToAdd() {

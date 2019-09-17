@@ -67,7 +67,7 @@ Medicine Manager</string>
                                 </constraints>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" name="onboardingBackground"/>
+                        <color key="backgroundColor" name="popoverBackground"/>
                         <constraints>
                             <constraint firstItem="rgL-vq-m6y" firstAttribute="centerX" secondItem="U4x-DD-et4" secondAttribute="centerX" id="54B-Er-QMh"/>
                             <constraint firstItem="qbw-wE-XpR" firstAttribute="centerX" secondItem="U4x-DD-et4" secondAttribute="centerX" id="HwM-sZ-1gr"/>
@@ -158,7 +158,7 @@ Medicine Manager</string>
                                 </constraints>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" name="onboardingBackground"/>
+                        <color key="backgroundColor" name="popoverBackground"/>
                         <constraints>
                             <constraint firstItem="GAt-2f-13c" firstAttribute="centerX" secondItem="ocl-MM-8F8" secondAttribute="centerX" id="4bJ-8z-71e"/>
                             <constraint firstItem="7XV-8U-f8a" firstAttribute="centerX" secondItem="ocl-MM-8F8" secondAttribute="centerX" id="9pN-PA-mGI"/>
@@ -215,8 +215,8 @@ Medicine Manager</string>
         <namedColor name="medicineRed">
             <color red="0.92156862745098034" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="onboardingBackground">
-            <color white="0.10000000000000001" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        <namedColor name="popoverBackground">
+            <color white="0.079999998211860657" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </namedColor>
     </resources>
 </document>

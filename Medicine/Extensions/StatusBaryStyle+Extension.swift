@@ -10,18 +10,19 @@ import UIKit
 
 extension UITabBarController {
     open override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+        return .default
     }
 }
 
 extension UISplitViewController {
     open override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+        return .default
     }
 }
 
 extension UINavigationController {
     open override var preferredStatusBarStyle: UIStatusBarStyle {
-        return topViewController?.preferredStatusBarStyle ?? .lightContent
+        return .default
+//        return topViewController?.preferredStatusBarStyle ?? .lightContent
     }
 }

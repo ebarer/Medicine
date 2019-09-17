@@ -104,7 +104,7 @@ extension CoreDataTableViewController {
             do {
                 try fc.performFetch()
             } catch let e as NSError {
-                NSLog("CoreDataTVC", "Error while trying to perform a search: \n\(e)\n\(String(describing: fetchedResultsController))")
+                NSLog("CoreDataTVC: Error while trying to perform a search: \n\(e)\n\(String(describing: fetchedResultsController))")
             }
         }
     }
@@ -153,7 +153,7 @@ extension CoreDataTableViewController: NSFetchedResultsControllerDelegate {
             tableView.deleteRows(at: [indexPath!], with: .none)
             tableView.insertRows(at: [newIndexPath!], with: .none)
         @unknown default:
-            NSLog("CoreDataTVC", "Unknown event type (\(type)) invoked")
+            NSLog("CoreDataTVC: Unknown event type (\(type)) invoked")
         }
     }
 

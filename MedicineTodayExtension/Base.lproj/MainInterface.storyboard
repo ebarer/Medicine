@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13189.4" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="M4Y-Lb-cyx">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="M4Y-Lb-cyx">
+    <device id="retina4_7" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13165.3"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -22,45 +19,38 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="100"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="7:36 " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HXM-f4-Fvj">
-                                <rect key="frame" x="16" y="10" width="288" height="60"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="60" id="Prw-pR-y2L"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="50"/>
-                                <color key="textColor" white="0.17999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1 pill of Tylenol" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zU9-iD-h8s">
-                                <rect key="frame" x="16" y="70" width="288" height="20"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="20" id="ex2-V4-0j1"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
-                                <color key="textColor" white="0.17999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kas-Ce-PxG">
-                                <rect key="frame" x="16" y="0.0" width="288" height="100"/>
-                                <connections>
-                                    <action selector="launchApp" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="ypF-aF-jcV"/>
-                                </connections>
-                            </button>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="NcX-EC-RgF">
+                                <rect key="frame" x="25" y="7" width="270" height="60"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No scheduled doses today" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HXM-f4-Fvj">
+                                        <rect key="frame" x="0.0" y="0.0" width="270" height="60"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="Prw-pR-y2L"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1 pill of Tylenol" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zU9-iD-h8s">
+                                        <rect key="frame" x="0.0" y="0.0" width="270" height="20"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="20" id="ex2-V4-0j1"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
                         </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="1" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="kas-Ce-PxG" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leadingMargin" id="1Uy-Tj-hlF"/>
-                            <constraint firstItem="HXM-f4-Fvj" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leadingMargin" id="5hZ-y1-ur1"/>
-                            <constraint firstItem="kas-Ce-PxG" firstAttribute="top" secondItem="Ft6-oW-KC0" secondAttribute="bottom" id="9Zh-Ky-eMF"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="kas-Ce-PxG" secondAttribute="trailing" id="G15-EV-35O"/>
-                            <constraint firstItem="HXM-f4-Fvj" firstAttribute="top" secondItem="Ft6-oW-KC0" secondAttribute="bottom" constant="10" id="Ib8-wn-RXi"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="HXM-f4-Fvj" secondAttribute="trailing" id="YdY-YH-Fat"/>
-                            <constraint firstItem="zU9-iD-h8s" firstAttribute="top" secondItem="HXM-f4-Fvj" secondAttribute="bottom" id="Yfu-6P-XIb"/>
-                            <constraint firstItem="FKl-LY-JtV" firstAttribute="top" secondItem="kas-Ce-PxG" secondAttribute="bottom" id="cjj-ev-8gO"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="zU9-iD-h8s" secondAttribute="trailing" id="hVn-Wz-Ewl"/>
-                            <constraint firstItem="zU9-iD-h8s" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leadingMargin" id="i9E-Cq-11L"/>
+                            <constraint firstItem="NcX-EC-RgF" firstAttribute="centerX" secondItem="S3S-Oj-5AN" secondAttribute="centerX" id="YWH-lz-lKt"/>
+                            <constraint firstItem="NcX-EC-RgF" firstAttribute="centerY" secondItem="S3S-Oj-5AN" secondAttribute="centerY" constant="-13" id="psN-WA-Bvi"/>
                         </constraints>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="QKC-aD-DMa" appends="YES" id="38H-Cj-I2x"/>
+                        </connections>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <nil key="simulatedStatusBarMetrics"/>
@@ -71,12 +61,16 @@
                     <connections>
                         <outlet property="doseMainLabel" destination="HXM-f4-Fvj" id="neT-K3-tMT"/>
                         <outlet property="doseMedLabel" destination="zU9-iD-h8s" id="SzA-mQ-fdj"/>
-                        <outlet property="topConstraint" destination="Ib8-wn-RXi" id="eTT-6o-Ndy"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vXp-U4-Rya" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="QKC-aD-DMa">
+                    <connections>
+                        <action selector="tapWidget:" destination="M4Y-Lb-cyx" id="KzT-tS-xtD"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="248" y="283"/>
+            <point key="canvasLocation" x="359.4202898550725" y="189.50892857142856"/>
         </scene>
     </scenes>
 </document>

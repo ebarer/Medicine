@@ -53,14 +53,10 @@ class FirstLaunch: UIViewController {
 
     // MARK: - Button events
     @IBAction func touchDown(_ sender: UIButton) {
-        UIView.animate(withDuration: 0.2) {
-            sender.layer.backgroundColor = sender.layer.backgroundColor?.copy(alpha: 0.5)
-        }
+        sender.layer.backgroundColor = UIColor.actionDoseHighlighted.cgColor
     }
     
     @IBAction func touchUp(_ sender: UIButton) {
-        UIView.animate(withDuration: 0.2) {
-            sender.layer.backgroundColor = sender.layer.backgroundColor?.copy(alpha: 1.0)
-        }
+        sender.layer.backgroundColor = UIColor.actionDose.cgColor
     }
 }

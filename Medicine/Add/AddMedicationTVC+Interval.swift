@@ -40,6 +40,10 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate, UI
         // Modify VC
         self.view.tintColor = UIColor.medRed
         
+        if #available(iOS 13.0, macCatalyst 13.0, *) {
+            self.navigationController?.isModalInPresentation = true
+        }
+        
         // Setup date formatter
         dateFormatter.timeStyle = DateFormatter.Style.short
         dateFormatter.dateStyle = DateFormatter.Style.none

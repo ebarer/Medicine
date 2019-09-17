@@ -28,8 +28,6 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     
     // MARK: - Helper variables
-    
-    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let cal = Calendar.current
     let dateFormatter = DateFormatter()
 
@@ -40,7 +38,14 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         super.viewDidLoad()
         self.clearsSelectionOnViewWillAppear = true
         
-        let placeholder = NSAttributedString(string: "Enter medication name",
+        if #available(iOS 13.0, macCatalyst 13.0, *) {
+            self.navigationController?.isModalInPresentation = true
+        }
+
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        
+        let placeholder = NSAttributedString(string: "Medication",
                                              attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 32.0, weight: .light)])
         self.medicationName.attributedPlaceholder = placeholder
         self.medicationName.delegate = self
@@ -54,7 +59,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         
         // Setup medicine object
         if editMode == false {
-            med = Medicine(insertInto: cdStack.context)
+            med = Medicine(insertInto: CoreDataStack.shared.context)
         }
     }
     
@@ -274,8 +279,8 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
             UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [med.doseNotificationIdentifier])
             
             // Remove medication from persistent store
-            cdStack.context.delete(med)
-            cdStack.save()
+            CoreDataStack.shared.context.delete(med)
+            CoreDataStack.shared.save()
             
             // Send notifications
             NotificationCenter.default.post(name: Notification.Name(rawValue: "medicationDeleted"), object: nil)
@@ -326,7 +331,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     @IBAction func saveMedication(_ sender: AnyObject?) {
         if !editMode {
             let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-            if let count = try? cdStack.context.count(for: request) {
+            if let count = try? CoreDataStack.shared.context.count(for: request) {
                 med.sortOrder = Int16(count)
             }
         } else {
@@ -334,12 +339,12 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
                 do {
                     lastDose.next = try med.calculateNextDose(lastDose.date)
                 } catch {
-                    NSLog("SaveMedication", "Unable to update last dose")
+                    NSLog("SaveMedication: Unable to update last dose")
                 }
             }
         }
         
-        cdStack.save()
+        CoreDataStack.shared.save()
         
         // Reschedule next notification
         med.scheduleNextNotification()
@@ -351,14 +356,18 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     }
     
     @IBAction func cancelMedication(_ sender: AnyObject?) {
+        cancel()
+    }
+    
+    func cancel() {
         if !editMode {
-            cdStack.context.delete(med)
+            CoreDataStack.shared.context.delete(med)
         } else {
-            cdStack.context.rollback()
+            CoreDataStack.shared.context.rollback()
         }
         
         if (med.name != nil) {
-            cdStack.save()
+            CoreDataStack.shared.save()
         }
         
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
@@ -366,7 +375,6 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
         
         dismiss(animated: true, completion: nil)
     }
-    
 }
 
 

@@ -38,7 +38,6 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     
     // MARK: - Helper variables
     let appDelegate = (UIApplication.shared.delegate as! AppDelegate)
-    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     let cal = Calendar.current
@@ -64,6 +63,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         
         // Add observeres for notifications
         NotificationCenter.default.addObserver(self, selector: #selector(refreshDetails), name: NSNotification.Name(rawValue: "refreshView"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(medicationDeleted), name: NSNotification.Name(rawValue: "medicationDeleted"), object: nil)
         
         // Register for 3D touch if available
         if traitCollection.forceTouchCapability == .available {
@@ -116,6 +116,11 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         // Select first medication if none selected
         displayEmptyView()
         updateLabels()
+    }
+    
+    @objc func medicationDeleted() {
+        self.med = nil;
+        refreshDetails()
     }
     
     func displayEmptyView() {
@@ -240,53 +245,65 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     }
     
     func updatePrescription() {
+        guard let med = med,
+              let historyCount = med.refillHistory?.count,
+              historyCount > 0
+        else {
+            prescriptionLabel.text = "None"
+            return
+        }
+        
         if #available(iOS 13.0, macCatalyst 13.0, *) {
             prescriptionLabel.textColor = UIColor.label
         } else {
             prescriptionLabel.textColor = UIColor.black
         }
-        
-        if let med = med {
-            if let historyCount = med.refillHistory?.count, historyCount > 0 {
-                let count = med.prescriptionCount
-                let numberFormatter = NumberFormatter()
-                numberFormatter.numberStyle = NumberFormatter.Style.decimal
-                
-                if count.isZero {
-                    prescriptionLabel.text = "None remaining"
-                } else if let count = numberFormatter.string(from: NSNumber(value: count)) {
-                    prescriptionLabel.text = "\(count) \(med.dosageUnit.units(med.prescriptionCount)) remaining"
-                }
-            } else {
-                prescriptionLabel.text = "None"
-            }
 
-            if med.prescriptionCount < med.dosage {
-                prescriptionDescription.text = "You do not appear to have enough \(med.name!) remaining to take the next dose. "
-            } else {
-                if let days = med.refillDaysRemaining() {
-                    if days <= 1 {
-                        prescriptionDescription.text = "You will need to refill after the next dose. "
-                    } else {
-                        prescriptionDescription.text = "Based on current usage, your prescription should last approximately \(days) \(Intervals.daily.units(Float(days))). "
-                    }
+        let count = med.prescriptionCount
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = NumberFormatter.Style.decimal
+        
+        if count.isZero {
+            prescriptionLabel.text = "None remaining"
+        } else if let count = numberFormatter.string(from: NSNumber(value: count)) {
+            prescriptionLabel.text = "\(count) \(med.dosageUnit.units(med.prescriptionCount)) remaining"
+        }
+        
+        if med.prescriptionCount < med.dosage {
+            prescriptionDescription.text = "You do not appear to have enough \(med.name!) remaining to take the next dose. "
+        } else {
+            if let days = med.refillDaysRemaining() {
+                if days <= 1 {
+                    prescriptionDescription.text = "You will need to refill after the next dose. "
                 } else {
-                    prescriptionDescription.text = "Continue taking doses to receive an approximation for your prescription duration."
+                    prescriptionDescription.text = "Based on current usage, your prescription should last approximately \(days) \(Intervals.daily.units(Float(days))). "
                 }
+            } else {
+                prescriptionDescription.text = "Continue taking doses to receive an approximation for your prescription duration."
             }
         }
     }
     
     // MARK: - Button events
     @IBAction func touchDown(_ sender: UIButton) {
-        UIView.animate(withDuration: 0.2) {
-            sender.layer.backgroundColor = sender.layer.backgroundColor?.copy(alpha: 0.5)
+        switch (sender.tag) {
+        case Actions.takeDose.rawValue:
+            sender.layer.backgroundColor = UIColor.actionDoseHighlighted.cgColor
+        case Actions.refill.rawValue:
+            sender.layer.backgroundColor = UIColor.actionRefillHighlighted.cgColor
+        default:
+            break
         }
     }
     
     @IBAction func touchUp(_ sender: UIButton) {
-        UIView.animate(withDuration: 0.2) {
-            sender.layer.backgroundColor = sender.layer.backgroundColor?.copy(alpha: 1.0)
+        switch (sender.tag) {
+        case Actions.takeDose.rawValue:
+            sender.layer.backgroundColor = UIColor.actionDose.cgColor
+        case Actions.refill.rawValue:
+            sender.layer.backgroundColor = UIColor.actionRefill.cgColor
+        default:
+            break
         }
     }
     
@@ -361,7 +378,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     // MARK: - Handle notes field
     func textViewDidChange(_ textView: UITextView) {
         med?.notes = textView.text
-        cdStack.save()
+        CoreDataStack.shared.save()
 
         tableView.beginUpdates()
         tableView.endUpdates()
@@ -395,8 +412,8 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         }
         
         alert.addAction(UIAlertAction(title: "Skip Dose", style: UIAlertAction.Style.destructive, handler: {(action) -> Void in
-            med.skipDose(context: self.cdStack.context)
-            self.cdStack.save()
+            med.skipDose(context: CoreDataStack.shared.context)
+            CoreDataStack.shared.save()
             
             // Update spotlight index values and home screen shortcuts
             self.appDelegate.indexMedication()
@@ -409,8 +426,8 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         // If last dose is set, allow user to undo last dose
         if (med.lastDose != nil) {
             alert.addAction(UIAlertAction(title: "Undo Last Dose", style: UIAlertAction.Style.destructive, handler: {(action) -> Void in
-                med.untakeLastDose(context: self.cdStack.context)
-                self.cdStack.save()
+                med.untakeLastDose(context: CoreDataStack.shared.context)
+                CoreDataStack.shared.save()
                     
                 // Update spotlight index values and home screen shortcuts
                 self.appDelegate.indexMedication()
@@ -464,8 +481,8 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             self.med = nil
             
             // Remove medication from persistent store
-            cdStack.context.delete(med)
-            cdStack.save()
+            CoreDataStack.shared.context.delete(med)
+            CoreDataStack.shared.save()
 
             // Send notifications
             NotificationCenter.default.post(name: Notification.Name(rawValue: "medicationDeleted"), object: nil)
@@ -594,4 +611,9 @@ private enum Rows: Int {
             return IndexPath(row: 0, section: 0)
         }
     }
+}
+
+private enum Actions: Int {
+    case takeDose = 0
+    case refill = 1
 }

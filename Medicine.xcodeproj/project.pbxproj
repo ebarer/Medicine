@@ -60,6 +60,17 @@
 		CECD22B61BE95088007C5F25 /* AddRefillTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECD22B51BE95088007C5F25 /* AddRefillTVC.swift */; };
 		CECDC9511F477791007D4BB4 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECDC94F1F477791007D4BB4 /* CoreDataStack.swift */; };
 		CECDC9521F477791007D4BB4 /* CoreDataTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECDC9501F477791007D4BB4 /* CoreDataTableViewController.swift */; };
+		CED345282330E6A0000AC45E /* Medicine.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CEA2510A1B903E7D00BBE466 /* Medicine.xcdatamodeld */; };
+		CED345292330E6A5000AC45E /* migrationV22toV25.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = CE3AB2FD1C66CCDE0036AC30 /* migrationV22toV25.xcmappingmodel */; };
+		CED3452A2330E6AA000AC45E /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECDC94F1F477791007D4BB4 /* CoreDataStack.swift */; };
+		CED3452B2330E6AA000AC45E /* CoreDataTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECDC9501F477791007D4BB4 /* CoreDataTableViewController.swift */; };
+		CED3452C2330E6AA000AC45E /* Medicine+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E55191B9040C900805397 /* Medicine+CoreDataProperties.swift */; };
+		CED3452D2330E6AA000AC45E /* Medicine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551A1B9040C900805397 /* Medicine.swift */; };
+		CED3452E2330E6AA000AC45E /* Dose+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551B1B9040C900805397 /* Dose+CoreDataProperties.swift */; };
+		CED3452F2330E6AA000AC45E /* Dose.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6E551C1B9040C900805397 /* Dose.swift */; };
+		CED345302330E6AA000AC45E /* Refill+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE30D1541B9856D1007805DB /* Refill+CoreDataProperties.swift */; };
+		CED345312330E6AA000AC45E /* Refill.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE30D1551B9856D1007805DB /* Refill.swift */; };
+		CED345322330F883000AC45E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CEA250F21B90396C00BBE466 /* Assets.xcassets */; };
 		CEE849811C13932600880484 /* MedicineDetailsTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE849801C13932600880484 /* MedicineDetailsTVC.swift */; };
 		CEE935891F5B5E5E00EE8B77 /* MedicineCell+CellFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE935881F5B5E5E00EE8B77 /* MedicineCell+CellFrame.swift */; };
 		CEEB07901C5EA9FA00EEF86C /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEEB078E1C5EA9FA00EEF86C /* Settings.storyboard */; };
@@ -452,10 +463,9 @@
 			};
 			buildConfigurationList = CEA250E01B90396C00BBE466 /* Build configuration list for PBXProject "Medicine" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);
@@ -475,6 +485,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CED345322330F883000AC45E /* Assets.xcassets in Resources */,
 				CE2F6B1E1BBD5BA800707951 /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -507,9 +518,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CED3452B2330E6AA000AC45E /* CoreDataTableViewController.swift in Sources */,
+				CED345312330E6AA000AC45E /* Refill.swift in Sources */,
+				CED3452D2330E6AA000AC45E /* Medicine.swift in Sources */,
 				CE08C2A6232DCE2C00B344BD /* UIColor+Extension.swift in Sources */,
+				CED345302330E6AA000AC45E /* Refill+CoreDataProperties.swift in Sources */,
 				CE2F6B1B1BBD5BA800707951 /* TodayViewController.swift in Sources */,
 				CE15F3DB1F5EC6EE00DE24FF /* Date+Extension.swift in Sources */,
+				CED3452A2330E6AA000AC45E /* CoreDataStack.swift in Sources */,
+				CED3452E2330E6AA000AC45E /* Dose+CoreDataProperties.swift in Sources */,
+				CED3452F2330E6AA000AC45E /* Dose.swift in Sources */,
+				CED345292330E6A5000AC45E /* migrationV22toV25.xcmappingmodel in Sources */,
+				CED345282330E6A0000AC45E /* Medicine.xcdatamodeld in Sources */,
+				CED3452C2330E6AA000AC45E /* Medicine+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -681,7 +702,7 @@
 				CODE_SIGN_ENTITLEMENTS = MedicineTodayExtension/MedicineTodayExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 2B001;
+				CURRENT_PROJECT_VERSION = 191010;
 				DEVELOPMENT_TEAM = 5ZJB9DN7AQ;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
 				INFOPLIST_FILE = MedicineTodayExtension/Info.plist;
@@ -691,7 +712,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 2.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine.MedicineTodayExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -708,7 +729,7 @@
 				CODE_SIGN_ENTITLEMENTS = MedicineTodayExtension/MedicineTodayExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 2B001;
+				CURRENT_PROJECT_VERSION = 191010;
 				DEVELOPMENT_TEAM = 5ZJB9DN7AQ;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
 				INFOPLIST_FILE = MedicineTodayExtension/Info.plist;
@@ -718,7 +739,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 2.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine.MedicineTodayExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -847,7 +868,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medicine/Medicine.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 2B001;
+				CURRENT_PROJECT_VERSION = 191010;
 				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = 5ZJB9DN7AQ;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
@@ -857,7 +878,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 2.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -877,7 +898,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medicine/Medicine.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 2B001;
+				CURRENT_PROJECT_VERSION = 191010;
 				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = 5ZJB9DN7AQ;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
@@ -887,7 +908,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 2.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

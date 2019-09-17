@@ -28,9 +28,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
     @IBOutlet var picker: UIDatePicker!
 
     
-    // MARK: - Helper variables
-    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
-    
+    // MARK: - Helper variables    
     let cal = Calendar.current
     let dateFormatter = DateFormatter()
     fileprivate var selectedRow = Rows.none
@@ -39,7 +37,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
     // MARK: - Initialization
     
     required init?(coder aDecoder: NSCoder) {
-        refill = Refill(context: cdStack.context)
+        refill = Refill(context: CoreDataStack.shared.context)
         refill.date = Date()
         
         // Setup date formatter
@@ -55,6 +53,13 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
     override func viewDidLoad() {
         super.viewDidLoad()
         self.clearsSelectionOnViewWillAppear = true
+        
+        if #available(iOS 13.0, macCatalyst 13.0, *) {
+            self.navigationController?.isModalInPresentation = true
+        }
+        
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
         
         // Modify VC
         self.view.tintColor = UIColor.medRed
@@ -345,7 +350,7 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
         med?.addRefill(refill)
         refill.medicine = med
         
-        cdStack.save()
+        CoreDataStack.shared.save()
         
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
@@ -354,8 +359,8 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
     }
     
     @IBAction func cancelRefill(_ sender: AnyObject) {
-        cdStack.context.delete(refill)
-        cdStack.save()
+        CoreDataStack.shared.context.delete(refill)
+        CoreDataStack.shared.save()
         
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
         NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)

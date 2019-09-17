@@ -35,6 +35,8 @@ class Medicine: NSManagedObject {
             self.dateNextDose = nil
             return nil
         }
+        
+        lastDose?.next = date
 
         // For as needed medication, if their next dose is in the past,
         // push it into the future to ensure correct sorting
@@ -237,7 +239,7 @@ class Medicine: NSManagedObject {
                     return (false, date)
                 }
             } catch {
-                NSLog("Medicine", "Couldn't determine if \(name ?? "unknown medicine") is overdue; unable to calculate next dose.")
+                NSLog("Medicine: Couldn't determine if \(name ?? "unknown medicine") is overdue; unable to calculate next dose.")
                 return (false, nil)
             }
         }
@@ -546,8 +548,7 @@ class Medicine: NSManagedObject {
         moc.delete(refill)
         
         // Save refill deletion
-        let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
-        cdStack.save()
+        CoreDataStack.shared.save()
     }
 
     /**
@@ -560,8 +561,8 @@ class Medicine: NSManagedObject {
         // if there is a prescription refill history, and
         // the medication has more than a week of usage data
         guard self.prescriptionCount > 0,
-            let history = self.doseArray(),
-            history.count >= 7
+              let history = self.doseArray(),
+              history.count >= 7
         else {
             if intervalUnit == Intervals.daily {
                 let days = Int(floorf(prescriptionCount * (interval / dosage)))
@@ -700,9 +701,9 @@ class Medicine: NSManagedObject {
                 let formatter = DateFormatter()
                 formatter.dateStyle = .medium
                 formatter.timeStyle = .medium
-                NSLog("Scheduling", "Dose notification scheduled for \(formatter.string(from: date)) for \"\(name)\".")
+                NSLog("Scheduling: Dose notification scheduled for \(formatter.string(from: date)) for \"\(name)\".")
             } else {
-                NSLog("Scheduling", "Error scheduling dose notification for \(name).")
+                NSLog("Scheduling: Error scheduling dose notification for \(name).")
                 UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [self.doseNotificationIdentifier])
             }
         }
@@ -715,7 +716,7 @@ class Medicine: NSManagedObject {
         
         do {
             try scheduleNotification(date, badgeCount: Medicine.overdueCount(date))
-            NSLog("Medicine", "\tScheduled notification for: \(self.name!)")
+            NSLog("Medicine: \tScheduled notification for: \(self.name!)")
             return true
         } catch {
             return false
@@ -738,8 +739,7 @@ class Medicine: NSManagedObject {
         self.lastDose?.next = snoozeDate
         
         // Save modifications to last dose
-        let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
-        cdStack.save()
+        CoreDataStack.shared.save()
         
         // Schedule new notification
         do {
@@ -778,10 +778,10 @@ class Medicine: NSManagedObject {
             let request = UNNotificationRequest(identifier: refillNotificationIdentifier, content: content, trigger: trigger)
             UNUserNotificationCenter.current().add(request) { (error) in
                 if error == nil {
-                    NSLog("Scheduling", "Refill notification scheduled for \(now) for \"\(self.name!)\".")
+                    NSLog("Scheduling: Refill notification scheduled for \(now) for \"\(self.name!)\".")
                     self.refillFlag = false
                 } else {
-                    NSLog("Scheduling", "Error scheduling refill notification for \(self.name!).")
+                    NSLog("Scheduling: Error scheduling refill notification for \(self.name!).")
                     UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [self.refillNotificationIdentifier])
                 }
             }
@@ -799,10 +799,9 @@ class Medicine: NSManagedObject {
     - Returns: Number of overdue items at date
     */
     class func overdueCount(_ date: Date = Date()) -> Int {
-        let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
         let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
         request.predicate = NSPredicate(format: "reminderEnabled == true", argumentArray: [])
-        if let medication = try? cdStack.context.fetch(request) {
+        if let medication = try? CoreDataStack.shared.context.fetch(request) {
             return medication.filter({
                 guard let next = $0.nextDose else { return false }
                 return next.compare(date) != .orderedDescending
@@ -831,13 +830,27 @@ class Medicine: NSManagedObject {
             
             // Calculate interval from date provided
             if let date = date {
-                var next = (cal as NSCalendar).date(byAdding: NSCalendar.Unit.hour, value: hr, to: date, options: [])!
-                next = (cal as NSCalendar).date(byAdding: NSCalendar.Unit.minute, value: min, to: next, options: [])!
-                return next
+                var nextDose = (cal as NSCalendar).date(byAdding: NSCalendar.Unit.hour, value: hr, to: date, options: [])!
+                nextDose = (cal as NSCalendar).date(byAdding: NSCalendar.Unit.minute, value: min, to: nextDose, options: [])!
+                return nextDose
+            }
+            
+            guard let lastDose = lastDose else {
+                return nil
+            }
+            
+            // Try to use next date from last dose
+            if let nextDose = lastDose.next {
+                return nextDose
             }
             
             // Calculate interval based on last dose
-            return lastDose?.next as Date?
+            NSLog("Medicine: Found last dose (%@) without a calculated next dose", lastDose)
+            
+            let date = lastDose.date
+            var nextDose = (cal as NSCalendar).date(byAdding: NSCalendar.Unit.hour, value: hr, to: date, options: [])!
+            nextDose = (cal as NSCalendar).date(byAdding: NSCalendar.Unit.minute, value: min, to: nextDose, options: [])!
+            return nextDose
             
         case .daily:
             guard let alarm = intervalAlarm else {

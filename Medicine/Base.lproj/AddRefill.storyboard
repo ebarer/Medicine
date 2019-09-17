@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="M0b-9s-RmH">
     <device id="retina5_9" orientation="portrait" appearance="dark"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -14,7 +15,7 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="onDrag" dataMode="static" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="J9C-cP-Yox">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="724"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="tableGroupedBackground"/>
+                        <color key="backgroundColor" name="popoverBackground"/>
                         <color key="separatorColor" name="tableGroupedSeparator"/>
                         <view key="tableHeaderView" contentMode="scaleToFill" id="u59-Jb-GhU">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="75"/>
@@ -23,7 +24,7 @@
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You currently have X pills of Y." lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lcS-JN-vxI">
                                     <rect key="frame" x="18" y="8" width="339" height="59"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                    <color key="textColor" name="medicineGray"/>
+                                    <color key="textColor" name="medicineGray1"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
@@ -74,7 +75,7 @@
                                                 <constraint firstItem="hfh-ci-lQv" firstAttribute="top" secondItem="XPo-yK-9M6" secondAttribute="top" id="eIE-9g-GNp"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" name="cellBackground"/>
+                                        <color key="backgroundColor" name="popoverCellBackground"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="quantityUnit" textLabel="QfD-Fd-e3Y" detailTextLabel="bbz-e6-bfM" style="IBUITableViewCellStyleValue1" id="h5e-AF-rh1">
                                         <rect key="frame" x="0.0" y="137" width="375" height="44"/>
@@ -99,7 +100,7 @@
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" name="cellBackground"/>
+                                        <color key="backgroundColor" name="popoverCellBackground"/>
                                         <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="quantityUnitPicker" rowHeight="162" id="AoI-i7-McV">
@@ -124,7 +125,7 @@
                                                 <constraint firstItem="OpM-Pd-D9u" firstAttribute="leading" secondItem="tly-wJ-d5h" secondAttribute="leading" id="k1h-BQ-pab"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" name="cellBackground"/>
+                                        <color key="backgroundColor" name="popoverCellBackground"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="conversion" id="K7P-dN-Lhf">
                                         <rect key="frame" x="0.0" y="343" width="375" height="44"/>
@@ -164,7 +165,7 @@
                                                 <constraint firstItem="0dz-CM-yLG" firstAttribute="leading" secondItem="XRc-eE-bs0" secondAttribute="trailing" id="gJW-aJ-gcA"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" name="cellBackground"/>
+                                        <color key="backgroundColor" name="popoverCellBackground"/>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -193,7 +194,7 @@
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" name="cellBackground"/>
+                                        <color key="backgroundColor" name="popoverCellBackground"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="datePicker" rowHeight="216" id="NrN-lx-JIf">
                                         <rect key="frame" x="0.0" y="467" width="375" height="216"/>
@@ -216,7 +217,7 @@
                                                 <constraint firstItem="WIM-uP-8U8" firstAttribute="centerY" secondItem="60c-O6-15f" secondAttribute="centerY" id="oI0-7K-DLF"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" name="cellBackground"/>
+                                        <color key="backgroundColor" name="popoverCellBackground"/>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -263,7 +264,7 @@
                         <rect key="frame" x="0.0" y="44" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" name="medicineRed"/>
-                        <color key="barTintColor" name="cellBackground"/>
+                        <color key="barTintColor" name="popoverBackground"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -276,20 +277,20 @@
         </scene>
     </scenes>
     <resources>
-        <namedColor name="cellBackground">
-            <color white="0.10980392156862745" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </namedColor>
-        <namedColor name="medicineGray">
-            <color red="0.6600000262260437" green="0.6600000262260437" blue="0.6600000262260437" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="medicineGray1">
+            <color white="0.75" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </namedColor>
         <namedColor name="medicineRed">
-            <color red="0.92156862745098034" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.93000000000000005" green="0.0" blue="0.18600000000000017" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="tableGroupedBackground">
-            <color red="0.05000000074505806" green="0.05000000074505806" blue="0.05000000074505806" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="popoverBackground">
+            <color white="0.079999998211860657" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </namedColor>
+        <namedColor name="popoverCellBackground">
+            <color white="0.10999999940395355" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </namedColor>
         <namedColor name="tableGroupedSeparator">
-            <color white="0.14000000000000001" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <color white="0.18000000715255737" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </namedColor>
     </resources>
 </document>

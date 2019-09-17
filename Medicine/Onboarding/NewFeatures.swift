@@ -20,6 +20,10 @@ class NewFeatures: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if #available(iOS 13.0, macCatalyst 13.0, *) {
+            self.isModalInPresentation = true
+        }
+        
         dismissButton.layer.cornerRadius = 10.0
     }
 
@@ -29,15 +33,11 @@ class NewFeatures: UIViewController {
     
     // MARK: - Button events
     @IBAction func touchDown(_ sender: UIButton) {
-        UIView.animate(withDuration: 0.2) {
-            sender.layer.backgroundColor = sender.layer.backgroundColor?.copy(alpha: 0.5)
-        }
+        sender.layer.backgroundColor = UIColor.actionDoseHighlighted.cgColor
     }
     
     @IBAction func touchUp(_ sender: UIButton) {
-        UIView.animate(withDuration: 0.2) {
-            sender.layer.backgroundColor = sender.layer.backgroundColor?.copy(alpha: 1.0)
-        }
+        sender.layer.backgroundColor = UIColor.actionDose.cgColor
     }
 
     @IBAction func dismiss(_ sender: AnyObject) {

@@ -28,6 +28,7 @@ class MedicineCell: UITableViewCell {
     // MARK: - Constraints
     @IBOutlet var glyphWidth: NSLayoutConstraint!
     @IBOutlet weak var actionButton: UIButton!
+    @IBOutlet var stackTrailing: NSLayoutConstraint!
     var rowEditing: Bool = false
     
     // MARK: - View methods
@@ -47,7 +48,7 @@ class MedicineCell: UITableViewCell {
     override func prepareForReuse() {
         subtitleGlyph.image = UIImage(named: "NextDoseIcon")
         subtitle.textColor = UIColor.subtitleLabel
-        hideButton(false, animated: false)
+        enableChevron(enable: false)
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -80,16 +81,24 @@ class MedicineCell: UITableViewCell {
 
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
-        
-        if med?.doseHistory?.count == 0 && med?.intervalUnit == .hourly {
-            self.hideButton(true, animated: false)
-            return
-        }
-        
-        if editing && !rowEditing {
-            self.hideButton(true)
+        var shouldEnableChevron = med?.doseHistory?.count == 0 && med?.intervalUnit == .hourly
+        shouldEnableChevron = shouldEnableChevron || (editing && !rowEditing)
+        enableChevron(enable: shouldEnableChevron)
+    }
+    
+    func enableChevron(enable: Bool) {
+        if #available(iOS 13.0, *) {
+            if enable {
+                self.actionButton.setImage(UIImage(systemName: "chevron.right"), for: .normal)
+                self.actionButton.isEnabled = false
+                self.stackTrailing.constant = 5.0
+            } else {
+                self.actionButton.setImage(UIImage(named: "ActionIcon"), for: .normal)
+                self.actionButton.isEnabled = true
+                self.stackTrailing.constant = 15.0
+            }
         } else {
-            self.hideButton(false)
+            self.hideButton(enable, animated: true)
         }
     }
     

@@ -14,9 +14,6 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
     
     weak var med: Medicine!
     
-    // MARK: - Helper variables
-    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
-    
     var normalButtons = [UIBarButtonItem]()
     var editButtons = [UIBarButtonItem]()
     
@@ -28,7 +25,6 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
         
         // Modify VC
         self.view.tintColor = UIColor.medRed
-        
         self.navigationController?.toolbar.isTranslucent = true
         self.navigationController?.toolbar.tintColor = UIColor.medRed
         
@@ -59,7 +55,7 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
         request.fetchLimit = 300
 
         self.fetchedResultsController = NSFetchedResultsController(fetchRequest: request,
-                                                                   managedObjectContext: cdStack.context,
+                                                                   managedObjectContext: CoreDataStack.shared.context,
                                                                    sectionNameKeyPath: "dateSection",
                                                                    cacheName: nil)
     }
@@ -120,18 +116,13 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
     }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 80.0
+        return 70.0
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let headerView = tableView.dequeueReusableCell(withIdentifier: "headerCell")?.contentView else {
             return nil
         }
-        
-        let border = CALayer()
-        border.backgroundColor = UIColor.tableGroupedSeparator.cgColor
-        border.frame = CGRect(x: 0, y: headerView.frame.height - 0.5, width: headerView.frame.width, height: 0.5)
-        headerView.layer.addSublayer(border)
         
         guard let dayLabel = headerView.viewWithTag(1) as? UILabel else {
             return nil
@@ -172,12 +163,6 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
     override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let footerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 5))
         footerView.backgroundColor = UIColor.tableGroupedBackground
-        
-        let border = CALayer()
-        border.backgroundColor = UIColor.tableGroupedSeparator.cgColor
-        border.frame = CGRect(x: 0, y: 0, width: footerView.frame.width, height: 0.5)
-        footerView.layer.addSublayer(border)
-        
         return footerView
     }
 
@@ -281,16 +266,16 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
             for indexPath in selectedRowIndexes.reversed() {
                 if let dose = self.fetchedResultsController!.object(at: indexPath) as? Dose {
                     if med.lastDose == dose {
-                        _ = med.untakeLastDose(context: cdStack.context)
+                        _ = med.untakeLastDose(context: CoreDataStack.shared.context)
                     } else {
-                        med.untakeDose(dose, context: cdStack.context)
+                        med.untakeDose(dose, context: CoreDataStack.shared.context)
                     }
                     
-                    cdStack.context.delete(dose)
+                    CoreDataStack.shared.context.delete(dose)
                 }
             }
             
-            cdStack.save()
+            CoreDataStack.shared.save()
             
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
@@ -342,7 +327,7 @@ class MedicineDoseHistoryTVC: CoreDataTableViewController, MFMailComposeViewCont
                 
             self.present(mc, animated: true, completion: nil)
         } else {
-            NSLog("Export", "Unable to export dose history for med (\(med.name!)): user unable to send mail.")
+            NSLog("Export: Unable to export dose history for med (\(med.name!)): user unable to send mail.")
         }
     }
     

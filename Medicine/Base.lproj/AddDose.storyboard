@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="0VT-Kq-zHt">
     <device id="retina5_9" orientation="portrait" appearance="dark"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -11,10 +12,10 @@
         <scene sceneID="5aA-lR-f9d">
             <objects>
                 <tableViewController id="HPy-gl-Dzk" customClass="AddDoseTVC" customModule="Medicine" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" dataMode="static" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="FMi-Tu-xFA">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="FMi-Tu-xFA">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="724"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="tableGroupedBackground"/>
+                        <color key="backgroundColor" name="popoverBackground"/>
                         <color key="separatorColor" name="tableGroupedSeparator"/>
                         <sections>
                             <tableViewSection id="Jdt-ce-pyv">
@@ -40,7 +41,7 @@
                                                 <constraint firstItem="C5L-05-w6E" firstAttribute="leading" secondItem="Dxr-OV-Dvi" secondAttribute="leading" id="qLJ-6z-kpp"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" name="cellBackground"/>
+                                        <color key="backgroundColor" name="popoverCellBackground"/>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -69,7 +70,7 @@
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" name="cellBackground"/>
+                                        <color key="backgroundColor" name="popoverCellBackground"/>
                                         <connections>
                                             <segue destination="5Kx-CR-Z0X" kind="show" identifier="selectMedicine" id="oKe-yq-Goa"/>
                                         </connections>
@@ -97,7 +98,7 @@
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" name="cellBackground"/>
+                                        <color key="backgroundColor" name="popoverCellBackground"/>
                                         <connections>
                                             <segue destination="ugv-Ma-Il2" kind="show" identifier="setDosage" id="EWq-K3-YNo"/>
                                         </connections>
@@ -127,7 +128,7 @@
                                                 </imageView>
                                             </subviews>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" name="cellBackground"/>
+                                        <color key="backgroundColor" name="popoverCellBackground"/>
                                         <connections>
                                             <segue destination="vP0-ol-dyP" kind="presentation" identifier="refillPrescription" modalPresentationStyle="overCurrentContext" id="XSU-TH-tlS"/>
                                         </connections>
@@ -181,7 +182,7 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="50" sectionHeaderHeight="18" sectionFooterHeight="18" id="KdD-OH-Jel">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="724"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="tableGroupedBackground"/>
+                        <color key="backgroundColor" name="popoverBackground"/>
                         <color key="tintColor" red="0.98431372549999996" green="0.0" blue="0.17254901959999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <color key="separatorColor" name="tableGroupedSeparator"/>
                         <prototypes>
@@ -201,7 +202,7 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
-                                <color key="backgroundColor" name="cellBackground"/>
+                                <color key="backgroundColor" name="popoverCellBackground"/>
                                 <connections>
                                     <segue destination="anD-EE-vcQ" kind="unwind" unwindAction="medicationUnwindSelect:" id="iwu-BF-myW"/>
                                 </connections>
@@ -228,7 +229,7 @@
                         <rect key="frame" x="0.0" y="44" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" name="medicineRed"/>
-                        <color key="barTintColor" name="cellBackground"/>
+                        <color key="barTintColor" name="popoverBackground"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -246,7 +247,7 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="uDn-aP-MpB">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="724"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="tableGroupedBackground"/>
+                        <color key="backgroundColor" name="popoverBackground"/>
                         <color key="separatorColor" name="tableGroupedSeparator"/>
                         <sections>
                             <tableViewSection id="0N5-Hn-nTZ">
@@ -287,7 +288,7 @@
                                                 <constraint firstAttribute="trailingMargin" secondItem="hHG-Es-Vrw" secondAttribute="trailing" id="dQ7-Fg-LTJ"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" name="cellBackground"/>
+                                        <color key="backgroundColor" name="popoverCellBackground"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="dosageUnit" textLabel="bM9-0u-qMO" detailTextLabel="c5a-EH-RUi" style="IBUITableViewCellStyleValue1" id="L2q-pQ-jAC">
                                         <rect key="frame" x="0.0" y="62" width="375" height="44"/>
@@ -312,7 +313,7 @@
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" name="cellBackground"/>
+                                        <color key="backgroundColor" name="popoverCellBackground"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="dosageUnitPicker" rowHeight="162" id="1n2-Qr-fsL">
                                         <rect key="frame" x="0.0" y="106" width="375" height="162"/>
@@ -336,7 +337,7 @@
                                                 <constraint firstItem="wU2-Ez-cDF" firstAttribute="leading" secondItem="iIn-OF-K3F" secondAttribute="leading" id="qY4-ii-euz"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" name="cellBackground"/>
+                                        <color key="backgroundColor" name="popoverCellBackground"/>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -360,17 +361,17 @@
     </scenes>
     <resources>
         <image name="RefillHistoryIcon" width="60" height="100"/>
-        <namedColor name="cellBackground">
-            <color white="0.10980392156862745" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </namedColor>
         <namedColor name="medicineRed">
-            <color red="0.92156862745098034" green="0.0" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.93000000000000005" green="0.0" blue="0.18600000000000017" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="tableGroupedBackground">
-            <color red="0.05000000074505806" green="0.05000000074505806" blue="0.05000000074505806" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="popoverBackground">
+            <color white="0.079999998211860657" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </namedColor>
+        <namedColor name="popoverCellBackground">
+            <color white="0.10999999940395355" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </namedColor>
         <namedColor name="tableGroupedSeparator">
-            <color white="0.17999999999999999" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <color white="0.18000000715255737" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </namedColor>
     </resources>
 </document>

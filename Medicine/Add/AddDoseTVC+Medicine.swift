@@ -13,11 +13,14 @@ class AddDoseTVC_Medicine: CoreDataTableViewController {
 
     // MARK: - Helper variables
     var selectedMed: Medicine?
-    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if #available(iOS 13.0, macCatalyst 13.0, *) {
+            self.navigationController?.isModalInPresentation = true
+        }
         
         // Create fetch request
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Medicine.fetchRequest()
@@ -37,7 +40,7 @@ class AddDoseTVC_Medicine: CoreDataTableViewController {
         
         // Create the FetchedResultsController
         self.fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
-                                                                   managedObjectContext: cdStack.context,
+                                                                   managedObjectContext: CoreDataStack.shared.context,
                                                                    sectionNameKeyPath: nil,
                                                                    cacheName: nil)
     }
@@ -51,6 +54,14 @@ class AddDoseTVC_Medicine: CoreDataTableViewController {
     }
 
     // MARK: - Table view data source
+    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 0 {
+            return tableView.sectionHeaderHeight
+        }
+        
+        return UITableView.automaticDimension
+    }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "medicineCell", for: indexPath)

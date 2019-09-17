@@ -14,7 +14,6 @@ import UserNotifications
 class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    let cdStack = (UIApplication.shared.delegate as! AppDelegate).stack
     let defaults = UserDefaults(suiteName: "group.com.ebarer.Medicine")!
     
     // MARK: - Outlets
@@ -28,7 +27,8 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-//        self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
         
         setLabels()
         
@@ -147,7 +147,7 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
             return true
         }
         
-        NSLog("Settings", "Unable to send feedback: user unable to send mail.")
+        NSLog("Settings: Unable to send feedback: user unable to send mail.")
         return false
     }
     
@@ -185,9 +185,9 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         }
         
         do {
-            let deleteCount = try cdStack.context.execute(batchDeleteRequest) as! NSBatchDeleteResult
-            NSLog("ResetApp", "Deleted \(deleteCount) objects")
-            cdStack.context.reset()
+            let deleteCount = try CoreDataStack.shared.context.execute(batchDeleteRequest) as! NSBatchDeleteResult
+            NSLog("ResetApp: Deleted \(deleteCount) objects")
+            CoreDataStack.shared.context.reset()
 
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
@@ -200,7 +200,6 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
             defaults.set(SortOrder.nextDosage.rawValue, forKey: "sortOrder")
             defaults.set(5, forKey: "snoozeLength")
             defaults.set(3, forKey: "refillTime")
-            defaults.set([], forKey: "todayData")
             defaults.synchronize()
             
             // Show reset confirmation
@@ -214,7 +213,7 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
             self.present(confirmationAlert, animated: true, completion: nil)
         } catch {
             let updateError = error as NSError
-            NSLog("ResetApp", "Error attempting to reset app: \(updateError), \(updateError.userInfo)")
+            NSLog("ResetApp: Error attempting to reset app: \(updateError), \(updateError.userInfo)")
         }
     }
     
@@ -237,7 +236,7 @@ class SettingsTVC: UITableViewController, MFMailComposeViewControllerDelegate {
         deviceInfo += "Obfuscated Medicine Information:\r"
         
         let request: NSFetchRequest<Medicine> = Medicine.fetchRequest()
-        if let medication = try? cdStack.context.fetch(request) {
+        if let medication = try? CoreDataStack.shared.context.fetch(request) {
             for (index, med) in medication.enumerated() {
                 if let score = med.adherenceScore() {
                     deviceInfo += "Medicine \(index) (\(score)%): "
