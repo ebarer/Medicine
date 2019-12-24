@@ -155,13 +155,21 @@ class AddDoseTVC: UITableViewController {
         
         return UITableView.automaticDimension
     }
-    
+        
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return heightForIndexPath(indexPath)
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return heightForIndexPath(indexPath)
+    }
+    
+    func heightForIndexPath(_ indexPath: IndexPath) -> CGFloat {
         if indexPath == IndexPath(row: 0, section: 0) {
             return 216.0
         }
         
-        return 50.0
+        return UITableView.automaticDimension
     }
     
     override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {

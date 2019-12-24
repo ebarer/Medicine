@@ -43,6 +43,9 @@ class MedicineCell: UITableViewCell {
         
         self.cellFrame?.layer.backgroundColor = UIColor.cellBackground.cgColor
         self.cellFrame?.layer.cornerRadius = 10.0
+        
+        // Setup fonts
+        title.font = UIFont.preferredFont(for: .title2, weight: .medium)
     }
     
     override func prepareForReuse() {
@@ -91,11 +94,11 @@ class MedicineCell: UITableViewCell {
             if enable {
                 self.actionButton.setImage(UIImage(systemName: "chevron.right"), for: .normal)
                 self.actionButton.isEnabled = false
-                self.stackTrailing.constant = 5.0
+                self.stackTrailing.constant = 15.0
             } else {
                 self.actionButton.setImage(UIImage(named: "ActionIcon"), for: .normal)
                 self.actionButton.isEnabled = true
-                self.stackTrailing.constant = 15.0
+                self.stackTrailing.constant = 25.0
             }
         } else {
             self.hideButton(enable, animated: true)

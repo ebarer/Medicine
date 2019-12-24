@@ -70,13 +70,21 @@ class AddMedicationTVC_Dosage: UITableViewController, UIPickerViewDelegate, UIPi
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return heightForIndexPath(indexPath)
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return heightForIndexPath(indexPath)
+    }
+    
+    func heightForIndexPath(_ indexPath: IndexPath) -> CGFloat {
         switch indexPath {
         case IndexPath(row: 2, section: 0):
             if editMode == false {
                 return 162
             }
         default:
-            return 50
+            return UITableView.automaticDimension
         }
         
         return 0

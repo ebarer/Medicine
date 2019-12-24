@@ -108,6 +108,14 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate, UI
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return heightForIndexPath(indexPath)
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return heightForIndexPath(indexPath)
+    }
+    
+    func heightForIndexPath(_ indexPath: IndexPath) -> CGFloat {
         let row = Rows(index: indexPath)
         
         switch(row) {
@@ -121,14 +129,14 @@ class AddMedicationTVC_Interval: UITableViewController, UIPickerViewDelegate, UI
             }
         case Rows.alarmLabel:
             if med.intervalUnit == Intervals.daily {
-                return 50
+                return UITableView.automaticDimension
             }
         case Rows.alarmPicker:
             if selectedRow == Rows.alarmLabel {
                 return 216
             }
         default:
-            return 50
+            return UITableView.automaticDimension
         }
         
         return 0

@@ -121,7 +121,11 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
     }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 70.0
+        return UITableView.automaticDimension
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
+        return 50.0
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -180,6 +184,10 @@ class HistoryTVC: CoreDataTableViewController, MFMailComposeViewControllerDelega
     // MARK: - Table rows
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         if let fc = fetchedResultsController {
             let count = fc.sections![indexPath.section].numberOfObjects
             return (count > 0) ? 65.0 : tableView.rowHeight

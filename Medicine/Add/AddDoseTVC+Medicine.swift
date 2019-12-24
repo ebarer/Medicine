@@ -63,6 +63,14 @@ class AddDoseTVC_Medicine: CoreDataTableViewController {
         return UITableView.automaticDimension
     }
 
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "medicineCell", for: indexPath)
         
@@ -75,7 +83,6 @@ class AddDoseTVC_Medicine: CoreDataTableViewController {
         
         return cell
     }
-
     
     // MARK: - Navigation
     

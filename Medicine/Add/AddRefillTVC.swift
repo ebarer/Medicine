@@ -18,7 +18,8 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
     // MARK: - Outlets
     
     @IBOutlet var saveButton: UIBarButtonItem!
-    @IBOutlet var prescriptionCountLabel: UILabel!
+    @IBOutlet var refillDescriptionView: UIView!
+    @IBOutlet var refillDescriptionLabel: UILabel!
     @IBOutlet var quantityInput: UITextField!
     @IBOutlet var quantityUnitLabel: UILabel!
     @IBOutlet var quantityUnitPicker: UIPickerView!
@@ -147,7 +148,8 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
                 }
             }
             
-            prescriptionCountLabel.text = refillGuide
+//            refillDescriptionLabel.text = refillGuide
+//            refillDescriptionView.layoutSubviews()
         }
     }
     
@@ -161,8 +163,16 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
     
     
     // MARK: - Table view data source
-    
+        
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return heightForIndexPath(indexPath)
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return heightForIndexPath(indexPath)
+    }
+    
+    func heightForIndexPath(_ indexPath: IndexPath) -> CGFloat {
         let row = Rows(index: indexPath)
         
         switch row {
@@ -172,14 +182,14 @@ class AddRefillTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDat
             }
         case Rows.conversionAmount:
             if med?.dosageUnit != refill.quantityUnit {
-                return 50
+                return 50.0
             }
         case Rows.datePicker:
             if selectedRow == Rows.date {
                 return 216
             }
         default:
-            return 50
+            return UITableView.automaticDimension
         }
         
         return 0

@@ -118,7 +118,11 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 70.0
+        return UITableView.automaticDimension
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
+        return 50.0
     }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -172,6 +176,10 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
     // MARK: - Table rows
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         if let fc = fetchedResultsController {
             let count = fc.sections![indexPath.section].numberOfObjects
             return (count > 0) ? 50.0 : tableView.rowHeight
@@ -272,22 +280,17 @@ class MedicineRefillHistoryTVC: CoreDataTableViewController, MFMailComposeViewCo
             for indexPath in selectedRowIndexes.reversed() {
                 if let refill = self.fetchedResultsController!.object(at: indexPath) as? Refill {
                     med.removeRefill(refill, moc: CoreDataStack.shared.context)
-                    
-                    if tableView.numberOfRows(inSection: indexPath.section) == 1 {
-                        tableView.deleteSections(IndexSet(integer: indexPath.section), with: .automatic)
-                    } else {
-                        tableView.deleteRows(at: [indexPath], with: .automatic)
-                    }
+                    CoreDataStack.shared.context.delete(refill)
                 }
             }
-
-            displayEmptyView()
             
-            updateDeleteButtonLabel()
-            setEditing(false, animated: true)
+            CoreDataStack.shared.save()
             
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshMain"), object: nil)
             NotificationCenter.default.post(name: Notification.Name(rawValue: "refreshView"), object: nil)
+            
+            updateDeleteButtonLabel()
+            setEditing(false, animated: true)
         }
     }
     

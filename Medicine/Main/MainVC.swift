@@ -365,7 +365,9 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 headerCounterLabel.attributedText = string
 
                 let dose = String(format:"%g %@", nextMed!.dosage, nextMed!.dosageUnit.units(nextMed!.dosage))
-                headerMedLabel.text = "\(dose) of \(nextMed!.name!)"
+                if let name = nextMed?.name {
+                    headerMedLabel.text = "\(dose) of \(name)"
+                }
             }
         }
         // Prompt to take first dose
@@ -393,6 +395,10 @@ class MainVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return 100.0
     }
     

@@ -55,27 +55,24 @@ extension CoreDataTableViewController {
 extension CoreDataTableViewController {
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        if let fc = fetchedResultsController {
-            return (fc.sections?.count)!
-        } else {
+        guard let fc = fetchedResultsController, let sections = fc.sections else {
             return 0
         }
+        
+        return sections.count
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let fc = fetchedResultsController {
-            return fc.sections![section].numberOfObjects
-        } else {
-            return 0
-        }
+        return self.numberOfRows(for: section)
     }
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if let fc = fetchedResultsController {
-            return fc.sections![section].name
-        } else {
+        guard let fc = fetchedResultsController, let sections = fc.sections else {
             return nil
         }
+        
+        let sectionResults = sections[section]
+        return sectionResults.name
     }
 
     override func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
@@ -110,11 +107,12 @@ extension CoreDataTableViewController {
     }
 
     func numberOfRows(for section: Int) -> Int {
-        if let fc = fetchedResultsController {
-            return fc.sections![section].numberOfObjects
-        } else {
+        guard let fc = fetchedResultsController, let sections = fc.sections else {
             return 0
         }
+        
+        let sectionResults = sections[section]
+        return sectionResults.numberOfObjects
     }
 }
 
@@ -144,14 +142,24 @@ extension CoreDataTableViewController: NSFetchedResultsControllerDelegate {
 
         switch(type) {
         case .insert:
-            tableView.insertRows(at: [newIndexPath!], with: .none)
+            if let newIndex = newIndexPath {
+                tableView.insertRows(at: [newIndex], with: .none)
+            }
         case .delete:
-            tableView.deleteRows(at: [indexPath!], with: .none)
+            if let index = indexPath {
+                tableView.deleteRows(at: [index], with: .none)
+            }
         case .update:
-            tableView.reloadRows(at: [indexPath!], with: .none)
+            if let index = indexPath {
+                tableView.reloadRows(at: [index], with: .none)
+            }
         case .move:
-            tableView.deleteRows(at: [indexPath!], with: .none)
-            tableView.insertRows(at: [newIndexPath!], with: .none)
+            if let oldIndex = indexPath {
+                tableView.deleteRows(at: [oldIndex], with: .none)
+            }
+            if let newIndex = newIndexPath {
+                tableView.insertRows(at: [newIndex], with: .none)
+            }
         @unknown default:
             NSLog("CoreDataTVC: Unknown event type (\(type)) invoked")
         }

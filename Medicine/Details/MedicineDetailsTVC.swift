@@ -26,6 +26,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     @IBOutlet var doseTitle: UILabel!
     @IBOutlet var doseLabel: UILabel!
     
+    @IBOutlet var prescriptionStack: UIStackView!
     @IBOutlet var prescriptionLabel: UILabel!
     @IBOutlet var prescriptionDescription: UILabel!
     
@@ -43,13 +44,11 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     let cal = Calendar.current
     let dateFormatter = DateFormatter()
     
-    static let nameCellHeight: CGFloat = 70.0
     static let fullNameIconWidth: CGFloat = 25.0
     static let fullNameLeadingPadding: CGFloat = 12.0
+    static let prescriptionCellHeightMin: CGFloat = 75.0
     static let actionCellHeight: CGFloat = 100.0
-    static let defaultCellHeight: CGFloat = 50.0
     static let notesCellHeightMin: CGFloat = 50.0
-    static let notesBottomPadding: CGFloat = 25.0
     
     // MARK: - View methods
     override func viewDidLoad() {
@@ -92,7 +91,10 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         
         displayEmptyView()
         updateLabels()
-        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         tableView.reloadSections(IndexSet(integer: Rows.name.index().section), with: .none)
     }
     
@@ -116,6 +118,8 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
         // Select first medication if none selected
         displayEmptyView()
         updateLabels()
+        
+        tableView.reloadRows(at: [Rows.name.index(), Rows.nextDose.index()], with: .none)
     }
     
     @objc func medicationDeleted() {
@@ -148,6 +152,7 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     func updateLabels() {
         if let med = med {
             nameLabel.text = med.name
+            nameLabel.font = UIFont.preferredFont(for: .largeTitle, weight: .semibold)
             
             var detailsString = "\(med.dosage.removeTrailingZero()) \(med.dosageUnit.units(med.dosage))"
                 detailsString += ", every \(med.intervalLabel())"
@@ -156,7 +161,6 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             
             if #available(iOS 13.0, macCatalyst 13.0, *) {
                 nameLabel.textColor = UIColor.label
-                
             } else {
                 nameLabel.textColor = UIColor.black
             }
@@ -165,9 +169,6 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             updatePrescription()
             
             notesField.text = med.notes
-            
-            // Correct inset
-            tableView.reloadRows(at: [Rows.name.index(), Rows.nextDose.index()], with: .none)
         }
     }
     
@@ -181,7 +182,6 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
             
             doseTitle.textColor = UIColor.medGray2
             doseTitle.text = "Next Dose"
-            doseTitle.font = UIFont.systemFont(ofSize: 16.0, weight: UIFont.Weight.regular)
             
             if #available(iOS 13.0, macCatalyst 13.0, *) {
                 doseDetailsLabel.textColor = UIColor.label
@@ -221,11 +221,9 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
                     
                     doseTitle.textColor = UIColor.medRed
                     doseTitle.text = "Overdue"
-                    doseTitle.font = UIFont.systemFont(ofSize: 16.0, weight: UIFont.Weight.semibold)
 
                     if let date = med.isOverdue().overdueDose {
                         doseLabel.textColor = UIColor.medRed
-                        doseLabel.font = UIFont.systemFont(ofSize: 16.0)
                         doseLabel.text = Medicine.dateString(date)
                     }
                 }
@@ -325,19 +323,34 @@ class MedicineDetailsTVC: UITableViewController, UITextFieldDelegate, UITextView
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return heightForIndexPath(indexPath)
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return heightForIndexPath(indexPath)
+    }
+    
+    func heightForIndexPath(_ indexPath: IndexPath) -> CGFloat {
         switch Rows(index: indexPath) {
-        case Rows.name:
-            return MedicineDetailsTVC.nameCellHeight
         case Rows.prescriptionCount:
-            return ((med?.refillHistory?.count ?? 0) > 0) ? 100 : 0.0     // UITableViewAutomaticDimension
+            guard let count = med?.refillHistory?.count, count > 0 else {
+                return 0.0
+            }
+            
+            prescriptionLabel.sizeToFit()
+            let labelBounds = prescriptionLabel.frame
+            let constraintRect = CGSize(width: tableView.frame.width, height: .greatestFiniteMagnitude)
+            let descriptionBounds = prescriptionDescription.sizeThatFits(constraintRect)
+            let contentHeight = labelBounds.height + 15.0 + descriptionBounds.height
+            return max(contentHeight * 1.5, MedicineDetailsTVC.prescriptionCellHeightMin)
         case Rows.actions:
             return MedicineDetailsTVC.actionCellHeight
         case Rows.notes:
             let notesSize = notesField.sizeThatFits(notesField.frame.size)
-            return max(notesSize.height,
-                       MedicineDetailsTVC.notesCellHeightMin) + MedicineDetailsTVC.notesBottomPadding
+            let notesBottomPadding = notesField.font?.pointSize ?? UIFont.preferredFont(forTextStyle: .body).pointSize
+            return max(notesSize.height, MedicineDetailsTVC.notesCellHeightMin) + notesBottomPadding
         default:
-            return MedicineDetailsTVC.defaultCellHeight
+            return UITableView.automaticDimension
         }
     }
     

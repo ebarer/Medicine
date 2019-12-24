@@ -45,6 +45,7 @@
 		CE7519761BB00CA9000A2879 /* SettingsTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7519751BB00CA9000A2879 /* SettingsTVC.swift */; };
 		CE7519781BB00CB5000A2879 /* SettingsTVC+Sort.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7519771BB00CB5000A2879 /* SettingsTVC+Sort.swift */; };
 		CE75197A1BB00CFE000A2879 /* SettingsTVC+Snooze.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7519791BB00CFE000A2879 /* SettingsTVC+Snooze.swift */; };
+		CE84B18823B2D75B003E5537 /* UIFont+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE84B18723B2D75B003E5537 /* UIFont+Extension.swift */; };
 		CE936E631C6C36400093BECF /* MainTVC+UIViewControllerPreviewing.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE936E621C6C36400093BECF /* MainTVC+UIViewControllerPreviewing.swift */; };
 		CE936E651C6C42770093BECF /* MedicineDetailsTVC+UIViewControllerPreviewing.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE936E641C6C42770093BECF /* MedicineDetailsTVC+UIViewControllerPreviewing.swift */; };
 		CE94A5B61BE8B13B008E58DF /* SettingsTVC+Refill.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE94A5B51BE8B13B008E58DF /* SettingsTVC+Refill.swift */; };
@@ -150,6 +151,7 @@
 		CE7519791BB00CFE000A2879 /* SettingsTVC+Snooze.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Snooze.swift"; path = "Settings/SettingsTVC+Snooze.swift"; sourceTree = "<group>"; };
 		CE7A8E7F1BB89CD1001727B9 /* Medicine - 2.3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 2.3.xcdatamodel"; sourceTree = "<group>"; };
 		CE8064241F483ED000B7A1AD /* Medicine - 3.1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Medicine - 3.1.xcdatamodel"; sourceTree = "<group>"; };
+		CE84B18723B2D75B003E5537 /* UIFont+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+Extension.swift"; sourceTree = "<group>"; };
 		CE936E621C6C36400093BECF /* MainTVC+UIViewControllerPreviewing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainTVC+UIViewControllerPreviewing.swift"; sourceTree = "<group>"; };
 		CE936E641C6C42770093BECF /* MedicineDetailsTVC+UIViewControllerPreviewing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "MedicineDetailsTVC+UIViewControllerPreviewing.swift"; path = "Details/MedicineDetailsTVC+UIViewControllerPreviewing.swift"; sourceTree = "<group>"; };
 		CE94A5B51BE8B13B008E58DF /* SettingsTVC+Refill.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "SettingsTVC+Refill.swift"; path = "Settings/SettingsTVC+Refill.swift"; sourceTree = "<group>"; };
@@ -237,6 +239,7 @@
 				CE08C2A4232DC1D600B344BD /* UIColor+Extension.swift */,
 				CE69135D1F5CDC5A007EC59C /* Date+Extension.swift */,
 				CEF80ECF1F716718007DF33D /* StatusBaryStyle+Extension.swift */,
+				CE84B18723B2D75B003E5537 /* UIFont+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -576,6 +579,7 @@
 				CE0EA1951BAFE28200F48A09 /* HistoryTVC.swift in Sources */,
 				CE08C2A5232DC1D700B344BD /* UIColor+Extension.swift in Sources */,
 				CE0EA1971BAFE2B800F48A09 /* MedicineDoseHistoryTVC.swift in Sources */,
+				CE84B18823B2D75B003E5537 /* UIFont+Extension.swift in Sources */,
 				CE3A42541C13A27C0035E390 /* MedicineRefillHistoryTVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -702,7 +706,7 @@
 				CODE_SIGN_ENTITLEMENTS = MedicineTodayExtension/MedicineTodayExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 191010;
+				CURRENT_PROJECT_VERSION = 200101.1;
 				DEVELOPMENT_TEAM = 5ZJB9DN7AQ;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
 				INFOPLIST_FILE = MedicineTodayExtension/Info.plist;
@@ -712,7 +716,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2.1.1;
+				MARKETING_VERSION = 2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine.MedicineTodayExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -729,7 +733,7 @@
 				CODE_SIGN_ENTITLEMENTS = MedicineTodayExtension/MedicineTodayExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 191010;
+				CURRENT_PROJECT_VERSION = 200101.1;
 				DEVELOPMENT_TEAM = 5ZJB9DN7AQ;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
 				INFOPLIST_FILE = MedicineTodayExtension/Info.plist;
@@ -739,7 +743,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2.1.1;
+				MARKETING_VERSION = 2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine.MedicineTodayExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -868,7 +872,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medicine/Medicine.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 191010;
+				CURRENT_PROJECT_VERSION = 200101.1;
 				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = 5ZJB9DN7AQ;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
@@ -878,7 +882,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.1;
+				MARKETING_VERSION = 2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -898,7 +902,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medicine/Medicine.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 191010;
+				CURRENT_PROJECT_VERSION = 200101.1;
 				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = 5ZJB9DN7AQ;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
@@ -908,7 +912,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.1;
+				MARKETING_VERSION = 2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ebarer.Medicine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

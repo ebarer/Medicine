@@ -107,6 +107,7 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     func updateLabels() {
         // Set name label
         medicationName.text = med.name
+        medicationName.font = UIFont.preferredFont(for: .largeTitle, weight: .medium)
         
         // Set dosage label
         dosageLabel.text = String(format:"%g %@", med.dosage, med.dosageUnit.units(med.dosage))
@@ -151,19 +152,28 @@ class AddMedicationTVC: UITableViewController, UITextFieldDelegate, UITextViewDe
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch Rows(index: indexPath) {
-        case Rows.name:
-            return 70.0
         case Rows.prescription:
-            if med.name != nil && med.name != "" {
-                return 50.0
-            } else {
-                return 0
+            guard let name = med.name, !name.isEmpty else {
+                return 0.0
             }
+            
+            return UITableView.automaticDimension
         default:
-            break
+            return UITableView.automaticDimension
         }
-        
-        return 50.0
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        switch Rows(index: indexPath) {
+        case Rows.prescription:
+            guard let name = med.name, !name.isEmpty else {
+                return 0.0
+            }
+            
+            return UITableView.automaticDimension
+        default:
+            return UITableView.automaticDimension
+        }
     }
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
